@@ -154,10 +154,10 @@ export const kitchensGetSubcategoriesByCategory = async (
   }
 };
 
-export const kitchensGetSubcategories = async () => {
+export const kitchensGetSubcategories = async (query: any) => {
   try {
     const response = await axiosInstance.get(
-      apiConfig.kitchens.getAllSubCategories
+      `${apiConfig.kitchens.getAllSubCategories( query)}`
     );
     return response.data;
   } catch (error: any) {

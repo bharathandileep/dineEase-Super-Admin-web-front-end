@@ -127,6 +127,9 @@ function OrgSubCategories() {
       return (categoryMatch || createdAtMatch) && statusMatch;
     });
   }, [searchTerm, statusFilter, menuItems]);
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
 
   const SubCategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.subcategoryName}</span>;
@@ -173,6 +176,11 @@ function OrgSubCategories() {
   };
 
   const columns = [
+    {
+      Header: "No.",
+      accessor: "number",
+      Cell: NumberColumn,
+    },
     { Header: "Sub Category", accessor: "subcategoryName", Cell: SubCategoryColumn },
     { Header: "Category", accessor: "Category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
@@ -191,8 +199,8 @@ function OrgSubCategories() {
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
-            { label: "Organizations", path: "/apps/org/subcategory" },
-            { label: "Sub Category", path: "/apps/org/subcategory", active: true }, // Fixed path typo
+            { label: "Organizations", path: "/apps/organizations/subcategory" },
+            { label: "Sub Category", path: "/apps/organizations/subcategory", active: true }, // Fixed path typo
           ]}
           title={"Organization Subcategories"} // Fixed title typo from "Customers"
         />

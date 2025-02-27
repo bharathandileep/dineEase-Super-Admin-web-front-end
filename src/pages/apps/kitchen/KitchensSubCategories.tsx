@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, Row, Col, Button, Spinner, Form } from "react-bootstrap";
-import { toggleSubcategoryStatus } from "../../../server/admin/menu";
 import { toast } from "react-toastify";
 import AddkitchenCategory from "./modal/AddkitchenCategory";
 import {
   kitchensDeleteSubcategory,
   kitchensGetSubcategories,
+  kitchensToggleSubcategoryStatus,
 } from "../../../server/admin/kitchens";
 import { Link } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
@@ -13,7 +13,7 @@ import Table from "../../../components/Table";
 
 function KitchensSubCategories() {
   const isSubCategory = true;
-  const [show, setShow] = useState<boolean>(false);
+  const [show, setShow] = useState(false);
   const [action, setAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState<any[]>([]);
@@ -21,66 +21,48 @@ function KitchensSubCategories() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const handleToggleStatus = async (id: string) => {
     try {
-      const response = await toggleSubcategoryStatus(id);
+      const response = await kitchensToggleSubcategoryStatus(id);
       if (response.status) {
         setMenuItems((prevItems) =>
           prevItems.map((item) =>
             item._id === id ? { ...item, status: !item.status } : item
           )
         );
+        toast.success("Status updated successfully.");
       } else {
-        toast.error(response);
+        toast.error(response.message || "Failed to toggle status.");
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Error toggling status.");
+      toast.error(error.response?.data?.message || "Error toggling status.");
     }
   };
 
   const onSearchData = (searchValue: string) => {
     setSearchTerm(searchValue.toLowerCase());
+    setCurrentPage(1); // Reset to first page on search
   };
 
-  const filteredMenuItems = useMemo(() => {
-    return menuItems.filter((value) => {
-      const searchLower = searchTerm.toLowerCase();
-
-      // Ensure subcategory name search works properly
-      const subcategoryName = value.subcategoryName?.toLowerCase() || "";
-      const categoryMatch = subcategoryName.includes(searchLower);
-
-      // Handle date conversion safely
-      const createdAtString = value.createdAt
-        ? new Date(value.createdAt).toLocaleDateString()
-        : "";
-      const createdAtMatch = createdAtString
-        .toLowerCase()
-        .includes(searchLower);
-
-      // **Fix status filtering logic**
-      let statusMatch = true;
-      if (statusFilter === "active") statusMatch = value.status === true;
-      if (statusFilter === "inactive") statusMatch = value.status === false;
-
-      return (categoryMatch || createdAtMatch) && statusMatch;
-    });
-  }, [searchTerm, statusFilter, menuItems]);
-
-  // Handle edit
   const handleEdit = (id: string) => {
     const item = menuItems.find((menu) => menu._id === id);
-    setAction("edit");
-    setSelectedItem(item);
-    setShow(true);
+    if (item) {
+      setAction("edit");
+      setSelectedItem(item);
+      setShow(true);
+    } else {
+      toast.error("Subcategory not found for editing.");
+    }
   };
 
-  // Handle delete
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this subcategory?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this subcategory?")) return;
     try {
       const response = await kitchensDeleteSubcategory(id);
       if (response.status) {
@@ -95,14 +77,26 @@ function KitchensSubCategories() {
     }
   };
 
-  // Fetch subcategories
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleSizePerPageChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when size changes
+  };
+
   useEffect(() => {
     const fetchAllCategories = async () => {
       setLoading(true);
       try {
-        const response = await kitchensGetSubcategories();
+        const response = await kitchensGetSubcategories( { page: currentPage, limit: pageSize });
         if (response.status) {
           setMenuItems(response.data.categories);
+          setTotalPages(response.data.pagination?.totalPages || 1);
+          setTotalItems(response.data.pagination?.totalItems || response.data.categories.length);
         } else {
           toast.error("Failed to load subcategories.");
         }
@@ -114,13 +108,33 @@ function KitchensSubCategories() {
       }
     };
     fetchAllCategories();
-  }, [isDeleted, show]);
+  }, [currentPage, pageSize, isDeleted, show]);
 
+  const filteredMenuItems = useMemo(() => {
+    return menuItems.filter((value) => {
+      const searchLower = searchTerm.toLowerCase();
+      const subcategoryName = value.subcategoryName?.toLowerCase() || "";
+      const categoryMatch = subcategoryName.includes(searchLower);
+      const createdAtString = value.createdAt
+        ? new Date(value.createdAt).toLocaleDateString()
+        : "";
+      const createdAtMatch = createdAtString.toLowerCase().includes(searchLower);
+      let statusMatch = true;
+      if (statusFilter === "active") statusMatch = value.status === true;
+      if (statusFilter === "inactive") statusMatch = value.status === false;
+      return (categoryMatch || createdAtMatch) && statusMatch;
+    });
+  }, [searchTerm, statusFilter, menuItems]);
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
+  
   const SubCategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.subcategoryName}</span>;
   };
+
   const CategoryColumn = ({ row }: { row: any }) => {
-    return <span className="fw-bold">{row?.original?.category?.category}</span>;
+    return <span className="fw-bold">{row?.original?.category?.category || "N/A"}</span>;
   };
 
   const CreatedAtColumn = ({ row }: { row: any }) => {
@@ -131,11 +145,11 @@ function KitchensSubCategories() {
     return (
       <button
         className={`badge border-0 text-white ${
-          row.original.status ? "bg-success" : "bg-secondary"
+          row?.original?.status ? "bg-success" : "bg-secondary"
         }`}
         onClick={() => handleToggleStatus(row?.original?._id)}
       >
-        {row.original.status ? "Active" : "Inactive"}
+        {row.original?.status ? "Active" : "Inactive"}
       </button>
     );
   };
@@ -161,30 +175,15 @@ function KitchensSubCategories() {
 
   const columns = [
     {
-      Header: "Sub Category",
-      accessor: "subcategoryName",
-      Cell: SubCategoryColumn,
+      Header: "No.",
+      accessor: "number",
+      Cell: NumberColumn,
     },
-    {
-      Header: "Category",
-      accessor: "Category",
-      Cell: CategoryColumn,
-    },
-    {
-      Header: "Created At",
-      accessor: "createdAt",
-      Cell: CreatedAtColumn,
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: StatusColumn,
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: ActionColumn,
-    },
+    { Header: "Sub Category", accessor: "subcategoryName", Cell: SubCategoryColumn },
+    { Header: "Category", accessor: "Category", Cell: CategoryColumn },
+    { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
+    { Header: "Status", accessor: "status", Cell: StatusColumn },
+    { Header: "Action", accessor: "action", Cell: ActionColumn },
   ];
 
   const sizePerPageList = [
@@ -192,32 +191,29 @@ function KitchensSubCategories() {
     { text: "20", value: 20 },
     { text: "50", value: 50 },
   ];
+
   return (
     <>
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
             { label: "Kitchen", path: "/apps/kitchen/category" },
-            {
-              label: "Sub Category",
-              path: "/apps/kitchen/customers",
-              active: true,
-            },
+            { label: "Sub Category", path: "/apps/kitchen/subcategory", active: true },
           ]}
-          title={"Customers"}
+          title={"Kitchen Subcategories"}
         />
-        <div
-          className="mb-3"
-          style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
-        >
+        <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
           <div className="d-flex align-items-center justify-content-between">
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
-              Kitches Sub Category
+              Kitchen Sub Categories
             </h3>
             <Link
               to="#"
               className="btn btn-danger waves-effect waves-light"
-              onClick={() => setShow(true)}
+              onClick={() => {
+                setAction("add");
+                setShow(true);
+              }}
             >
               <i className="mdi mdi-plus-circle me-1"></i> Add New
             </Link>
@@ -230,10 +226,7 @@ function KitchensSubCategories() {
                 <Row className="justify-content-between">
                   <Col className="col-auto">
                     <form className="d-flex align-items-center">
-                      <label
-                        htmlFor="inputPassword2"
-                        className="visually-hidden"
-                      >
+                      <label htmlFor="inputPassword2" className="visually-hidden">
                         Search
                       </label>
                       <div>
@@ -249,9 +242,7 @@ function KitchensSubCategories() {
                   </Col>
                   <Col className="col-auto">
                     <div className="d-flex align-items-center">
-                      <label htmlFor="status-select" className="me-2 mb-0">
-                        Sort By
-                      </label>
+                      <label htmlFor="status-select" className="me-2 mb-0">Sort By</label>
                       <div>
                         <Form.Select
                           className="w-auto"
@@ -290,13 +281,16 @@ function KitchensSubCategories() {
                 columns={columns}
                 data={filteredMenuItems}
                 isSearchable={false}
-                pageSize={10}
+                pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}
                 pagination={true}
                 isSelectable={false}
                 theadClass="table-light"
-                searchBoxClass="mb-2"
+                onPageChange={handlePageChange}
+                onSizePerPageChange={handleSizePerPageChange}
+                totalPages={totalPages}
+                currentPage={currentPage}
               />
             )}
           </div>

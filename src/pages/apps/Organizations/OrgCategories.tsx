@@ -128,6 +128,9 @@ function OrgCategories() {
   }, [searchTerm, statusFilter, menuItems]);
 
   /* Column render functions */
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
   const CategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.category}</span>;
   };
@@ -170,6 +173,11 @@ function OrgCategories() {
 
   // Define columns
   const columns = [
+    {
+      Header: "No.",
+      accessor: "number",
+      Cell: NumberColumn,
+    },
     { Header: "Category", accessor: "category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
     { Header: "Status", accessor: "status", Cell: StatusColumn },
@@ -187,8 +195,8 @@ function OrgCategories() {
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
-            { label: "Organizations", path: "/apps/org/category" },
-            { label: "Category", path: "/apps/org/category", active: true }, // Fixed path typo
+            { label: "Organizations", path: "/apps/organizations/category" },
+            { label: "Category", path: "/apps/organizations/category", active: true }, // Fixed path typo
           ]}
           title={"Organization Categories"} // Fixed title typo from "Customers"
         />

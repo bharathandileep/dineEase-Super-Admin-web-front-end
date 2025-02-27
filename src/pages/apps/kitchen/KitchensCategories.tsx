@@ -128,6 +128,9 @@ function KitchensCategories() {
   }, [searchTerm, statusFilter, menuItems]);
 
   /* Column render functions */
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
   const CategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row.original.category}</span>;
   };
@@ -170,6 +173,11 @@ function KitchensCategories() {
 
   // Define columns
   const columns = [
+    {
+      Header: "No.",
+      accessor: "number",
+      Cell: NumberColumn,
+    },
     { Header: "Category", accessor: "category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
     { Header: "Status", accessor: "status", Cell: StatusColumn },

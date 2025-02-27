@@ -75,7 +75,7 @@ const OrgEmployeeDetails = () => {
           const response = await deleteOrgEmployee(id);
           if (response.status) {
             toast.success("Employee deleted successfully!");
-            navigate("/apps/organizations/employ/list");
+            navigate("/apps/organizations/employee/list"); // Redirect to the employee list after deletion
           } else {
             toast.error("Failed to delete employee.");
           }
@@ -152,7 +152,7 @@ const OrgEmployeeDetails = () => {
           <div className="d-flex gap-2">
             <Button
               variant="light"
-              onClick={() => navigate(`/apps/organizations/employ/edit/${id}`)}
+              onClick={() => navigate(`/apps/organizations/employee/edit/${id}`)}
             >
               <Pencil size={16} className="me-1" /> Edit
             </Button>
@@ -180,22 +180,19 @@ const OrgEmployeeDetails = () => {
                 }}
               />
 
-              {/* Employee Name */}
-              <h4 className="mb-2 text-2xl font-bold">
-                {orgemployee.username}
-              </h4>
-              <Badge
-                bg={
-                  orgemployee.employee_status === "Active"
-                    ? "success"
-                    : "danger"
-                }
-                className="mb-3"
-                onClick={handleToggleStatus}
-                style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
-              >
-                {orgemployee.employee_status}
-              </Badge>
+             
+
+
+             {/* Employee Name */}
+<h4 className="mb-2 text-2xl font-bold">{orgemployee.username}</h4>
+<Badge
+  bg={orgemployee.employee_status === "Active" ? "success" : "danger"}
+  className="mb-3"
+  onClick={handleToggleStatus}
+  style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
+>
+  {orgemployee.employee_status}
+</Badge>
 
               {/* Contact Information */}
               <div className="text-start">

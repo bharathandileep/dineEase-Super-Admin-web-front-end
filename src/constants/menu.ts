@@ -29,12 +29,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
     children: [
       {
         key: "kitchen-list",
-        label: "List of Kitchens",
+        label: "• List of Kitchens",
         url: "/apps/kitchen/list",
         parentKey: "apps-kitchen",
       },
     ],
   },
+  
   {
     key: "apps-Organizations",
     label: "Organizations",
@@ -43,20 +44,20 @@ const MENU_ITEMS: MenuItemTypes[] = [
     children: [
       {
         key: "Organizations-list",
-        label: "List of Organizations",
+        label: "• List of Organizations",
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
       // {
       //   key: "Organization-employadd",
       //   label: "Organizations employ list",
-      //   url: "/apps/organizations/employ/add",
+      //   url: "/apps/organizations/employee/add",
       //   parentKey: "apps-Organizations",
       // },
       {
         key: "Organization-employadd",
-        label: "Organizations employ-list",
-        url: "/apps/organizations/employ/list",
+        label: "• employ-list",
+        url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
     ],
@@ -71,18 +72,19 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "Menu-list",
         label: "Menu",
+        icon: "archive",
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
           {
             key: "Menu-list",
-            label: "Category",
+            label: "• Category",
             url: "/apps/menu/category",
             parentKey: "apps-menu",
           },
           {
             key: "Menu-add",
-            label: "Subcategory",
+            label: "• Subcategory",
             url: "/apps/menu/subcategory",
             parentKey: "apps-menu",
           },
@@ -90,20 +92,21 @@ const MENU_ITEMS: MenuItemTypes[] = [
       },
       {
         key: "app-orgaization-category",
-        label: "Organiztion",
+        label: "Organization",
+        icon: "briefcase",
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
           {
             key: "orgaization-category",
-            label: "Category",
-            url: "/apps/org/category",
+            label: "• Category",
+            url: "/apps/organizations/category",
             parentKey: "app-orgaization-category",
           },
           {
             key: "orgaization-category",
-            label: "Subcategory",
-            url: "/apps/org/subcategory",
+            label: "• Subcategory",
+            url: "/apps/organizations/subcategory",
             parentKey: "app-orgaization-category",
           },
         ],
@@ -111,17 +114,18 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "app-menu-category",
         label: "Kitchens",
+        icon: "trello",
         parentKey: "apps-menu",
         children: [
           {
             key: "Menu-category",
-            label: "Category",
+            label: "• Category",
             url: "/apps/kitchen/category",
             parentKey: "app-menu-category",
           },
           {
             key: "Menu-subcategory",
-            label: "Subcategory",
+            label: "• Subcategory",
             url: "/apps/kitchen/subcategory",
             parentKey: "app-menu-category",
           },
@@ -130,31 +134,36 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key:"apps-menu-items",
         label:"Menuitems",
+        icon: "shopping-bag",
         parentKey:"apps-menu",
         children:[
           {
             key:"Menu-items",
-            label:"Menuitems adding",
+            label:"• Menuitems adding",
             url:"/apps/kitchen/menu",
             parentKey:"app-menu-items",
           },
           {
             key:"apps-item",
-            label:"Menuitems Listing",
+            label:"• Menuitems Listing",
             url:"/apps/kitchen/listing",
             parentKey:"app-menu-items"
 
           },
           {
-            key:"apps-itemmenu",
-            label:"Item Editing",
-            url:"/apps/kitchen/editing/:id"
-          }
+            key:"apps-item",
+            label:"• Menuitems Details",
+            url: "/apps/kitchen/item-details/:id",
+            parentKey:"app-menu-items"
+
+          },
+      
         ]
       },
       {
         key: "apps-employee",
         label: "Employee-list",
+        icon: "user",
         url: "/apps/employee/list",
       },
     ],

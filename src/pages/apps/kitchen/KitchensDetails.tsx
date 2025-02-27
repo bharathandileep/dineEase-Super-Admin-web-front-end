@@ -104,15 +104,20 @@ function KitchensDetails() {
     navigate(`/apps/kitchen/edit/${id}`);
   };
   const onDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
+   
+   
+    if (!confirmDelete) return;
+ 
     setLoading(true);
-    window.confirm("Are your sure delete this organisation");
     try {
       const response = await deletekitchenDetails(id);
-      if (response.status) {
+     
+      if (response?.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
       } else {
-        toast.error(response.message);
+        toast.error(response?.message || "Failed to delete kitchen.");
       }
     } catch (error) {
       toast.error("An error occurred while deleting kitchen details.");

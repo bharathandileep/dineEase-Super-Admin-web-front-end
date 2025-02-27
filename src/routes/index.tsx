@@ -11,7 +11,7 @@ import MenuSubCategory from "../pages/apps/menu/MenuSubCategory";
 import KitchensSubCategories from "../pages/apps/kitchen/KitchensSubCategories";
 import KitchensCategories from "../pages/apps/kitchen/KitchensCategories";
 import OurMenu from "../pages/apps/kitchen/OurMenu";
-import MenuItems from "../pages/apps/MenuItems/MenuItems";
+import MenuItems from "../pages/apps/MenuItems/Items";
 import ItemsListing from "../pages/apps/MenuItems/ItemsListing";
 import ItemsEditing from "../pages/apps/MenuItems/ItemsEditing";
 import MenuDetails from "../pages/apps/kitchen/MenuDetails";
@@ -30,6 +30,9 @@ import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
+
+import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
+import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
 
 // import Root from './Root';
 
@@ -330,37 +333,37 @@ const organizationsAppRoutes = {
       route: PrivateRoute,
     },
     {
-      path: "/apps/org/category",
+      path: "/apps/organizations/category",
       name: "Edit Organizations",
       element: <OrgCategories />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/org/subcategory",
+      path: "/apps/organizations/subcategory",
       name: "Edit Organizations",
       element: <OrgSubCategories />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/organizations/employ/add",
+      path: "/apps/organizations/employee/add",
       name: "Organizations employ add",
       element: <OrgEmployeeManagement />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/organizations/employ/list",
+      path: "/apps/organizations/employee/list",
       name: "Organisation Employee List",
       element: <OrgEmployeeList />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/organizations/employ/edit/:id",
+      path: "/apps/organizations/employee/edit/:id",
       name: "Organisation Employee edit",
       element: <OrgEmployeeEdit />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/organizations/employ/details/:id",
+      path: "/apps/organizations/employee/details/:id",
       name: "Organisation Employee details",
       element: <OrgEmployeeDetails />,
       route: PrivateRoute,
@@ -429,12 +432,12 @@ const kitchenAppRoutes = {
     {
       path: "/apps/kitchen/editing/:id",
       name: "Editing",
-      element: <ItemsEditing />,
+      element: <EditFoodItem />,
     },
     {
-      path: "/apps/kitchen/:kitchenId/item-details/:id",
+      path: "/apps/kitchen/item-details/:id",
       name: "Editing",
-      element: <MenuDetails />,
+      element: <ItemDetails />,
     },
   ],
 };

@@ -29,7 +29,7 @@ export const apiConfig = {
     deletekitchens: (kitchenId: string | undefined) =>
       `/kitchens/delete/${kitchenId}`,
     getAllkitchens: (query: any) =>
-      `/kitchens/all?page=${query.page}&limit=${query.limit}`,
+      `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`, 
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
 
@@ -41,7 +41,7 @@ export const apiConfig = {
       `/kitchens/categories/${id}/toggle-status`,
 
     createSubcategory: "/kitchens/subcategories",
-    getAllSubCategories: "/kitchens/subcategories/all",
+    getAllSubCategories:(query:any)=> `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}`,  
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/kitchens/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -59,7 +59,7 @@ export const apiConfig = {
       `/organization/update/${orgId}`,
     deleteOrganization: (orgId: string | undefined) =>
       `/organization/delete/${orgId}`,
-    getAllOrganization:(query:any)=> `/organization/all?page=${query.page}&limit=${query.limit}`,    
+   getAllOrganization: (query: any) => `/organization/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`, 
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",

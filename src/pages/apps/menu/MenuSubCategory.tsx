@@ -123,6 +123,9 @@ function MenuSubCategory() {
       return (categoryMatch || createdAtMatch) && statusMatch;
     });
   }, [searchTerm, statusFilter, menuItems]);
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
 
   const SubCategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row.original.subcategoryName}</span>;
@@ -169,6 +172,11 @@ function MenuSubCategory() {
   };
 
   const columns = [
+    {
+      Header: "No.",
+      accessor: "number",
+      Cell: NumberColumn,
+    },
     { Header: "Sub Category", accessor: "subcategoryName", Cell: SubCategoryColumn },
     { Header: "Category", accessor: "Category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },

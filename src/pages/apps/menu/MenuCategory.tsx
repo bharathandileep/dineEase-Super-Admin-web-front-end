@@ -32,12 +32,18 @@ function MenuCategory() {
       setLoading(true);
       try {
         // Updated to include pagination parameters
-        const response = await getAllCategories({ page: currentPage, limit: pageSize });
+        const response = await getAllCategories({
+          page: currentPage,
+          limit: pageSize,
+        });
         console.log(response.data);
         if (response.status) {
           setMenuItems(response.data.categories);
           setTotalPages(response.data.pagination?.totalPages || 1); // Adjust based on your backend response
-          setTotalItems(response.data.pagination?.totalItems || response.data.categories.length);
+          setTotalItems(
+            response.data.pagination?.totalItems ||
+              response.data.categories.length
+          );
         } else {
           toast.error("Failed to load menu categories.");
         }
@@ -82,7 +88,8 @@ function MenuCategory() {
   };
 
   const handleDelete = async (id: any) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
     try {
       const response = await deleteCategory(id);
       if (response.status) {
@@ -116,7 +123,9 @@ function MenuCategory() {
       const createdAtString = value.createdAt
         ? new Date(value.createdAt).toLocaleDateString()
         : "";
-      const createdAtMatch = createdAtString.toLowerCase().includes(searchLower);
+      const createdAtMatch = createdAtString
+        .toLowerCase()
+        .includes(searchLower);
       let statusMatch = true;
       if (statusFilter === "active") statusMatch = value.status === true;
       if (statusFilter === "inactive") statusMatch = value.status === false;
@@ -125,8 +134,11 @@ function MenuCategory() {
   }, [searchTerm, statusFilter, menuItems]);
 
   /* Column render functions */
+  const NumberColumn = ({ row }: { row: any }) => {
+    return <span className="fw-bold">{row.index + 1}</span>;
+  };
   const CategoryColumn = ({ row }: { row: any }) => {
-    return <span className="fw-bold">{row?.original?.category}</span>;
+    return <span className='fw-bold'>{row?.original?.category}</span>;
   };
 
   const CreatedAtColumn = ({ row }: { row: any }) => {
@@ -150,16 +162,16 @@ function MenuCategory() {
     return (
       <>
         <button
-          className="action-icon border-0 bg-transparent"
+          className='action-icon border-0 bg-transparent'
           onClick={() => handleEdit(row?.original._id)}
         >
-          <i className="mdi mdi-square-edit-outline"></i>
+          <i className='mdi mdi-square-edit-outline'></i>
         </button>
         <button
-          className="action-icon border-0 bg-transparent"
+          className='action-icon border-0 bg-transparent'
           onClick={() => handleDelete(row?.original._id)}
         >
-          <i className="mdi mdi-delete text-danger"></i>
+          <i className='mdi mdi-delete text-danger'></i>
         </button>
       </>
     );
@@ -167,6 +179,7 @@ function MenuCategory() {
 
   // Define columns
   const columns = [
+    { Header: "No.",accessor: "number",Cell: NumberColumn,},
     { Header: "Category", accessor: "category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
     { Header: "Status", accessor: "status", Cell: StatusColumn },
@@ -181,7 +194,7 @@ function MenuCategory() {
 
   return (
     <>
-      <div className="container py-2">
+      <div className='container py-2'>
         <PageTitle
           breadCrumbItems={[
             { label: "Menu", path: "/apps/menu/category" },
@@ -189,20 +202,23 @@ function MenuCategory() {
           ]}
           title={"Customers"} // Note: This might be a typo; should it be "Menu Categories"?
         />
-        <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
-          <div className="d-flex align-items-center justify-content-between">
-            <h3 className="page-title m-0" style={{ color: "#fff" }}>
+        <div
+          className='mb-3'
+          style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+        >
+          <div className='d-flex align-items-center justify-content-between'>
+            <h3 className='page-title m-0' style={{ color: "#fff" }}>
               Menu Category
             </h3>
             <Link
-              to="#"
-              className="btn btn-danger waves-effect waves-light"
+              to='#'
+              className='btn btn-danger waves-effect waves-light'
               onClick={() => {
                 setAction("add"); // Set action for adding new category
                 setShow(true);
               }}
             >
-              <i className="mdi mdi-plus-circle me-1"></i> Add New
+              <i className='mdi mdi-plus-circle me-1'></i> Add New
             </Link>
           </div>
         </div>
@@ -210,35 +226,40 @@ function MenuCategory() {
           <Col>
             <Card>
               <Card.Body>
-                <Row className="justify-content-between">
-                  <Col className="col-auto">
-                    <form className="d-flex align-items-center">
-                      <label htmlFor="inputPassword2" className="visually-hidden">
+                <Row className='justify-content-between'>
+                  <Col className='col-auto'>
+                    <form className='d-flex align-items-center'>
+                      <label
+                        htmlFor='inputPassword2'
+                        className='visually-hidden'
+                      >
                         Search
                       </label>
                       <div>
                         <input
-                          type="search"
-                          className="form-control my-1 my-lg-0"
-                          id="inputPassword2"
-                          placeholder="Search..."
+                          type='search'
+                          className='form-control my-1 my-lg-0'
+                          id='inputPassword2'
+                          placeholder='Search...'
                           onChange={(e) => onSearchData(e.target.value)}
                         />
                       </div>
                     </form>
                   </Col>
-                  <Col className="col-auto">
-                    <div className="d-flex align-items-center">
-                      <label htmlFor="status-select" className="me-2 mb-0">Sort By</label>
+                  <Col className='col-auto'>
+                    <div className='d-flex align-items-center'>
+                      <label htmlFor='status-select' className='me-2 mb-0'>
+                        Sort By
+                      </label>
                       <div>
                         <Form.Select
-                          className="w-auto"
+                          className='w-auto'
                           value={statusFilter}
                           onChange={(e: any) => setStatusFilter(e.target.value)}
                         >
-                          <option value="all">All</option>
-                          <option value="active">Active</option>
-                          <option value="inactive">Inactive</option>
+                          <option value='all'>All</option>
+                          <option value='active'>Active</option>
+                          <option value='inactive'>Inactive</option>
                         </Form.Select>
                       </div>
                     </div>
@@ -248,19 +269,19 @@ function MenuCategory() {
             </Card>
           </Col>
         </Row>
-        <div className="card shadow">
-          <div className="table-responsive">
+        <div className='card shadow'>
+          <div className='table-responsive'>
             {loading ? (
-              <div className="text-center my-4">
-                <Spinner animation="border" />
+              <div className='text-center my-4'>
+                <Spinner animation='border' />
                 <p>Loading menu categories...</p>
               </div>
             ) : menuItems.length === 0 ? (
-              <div className="text-center my-4">
+              <div className='text-center my-4'>
                 <p>No Menu Category Found</p>
               </div>
             ) : filteredMenuItems.length === 0 ? (
-              <div className="text-center my-4">
+              <div className='text-center my-4'>
                 <p>No results found for "{searchTerm}"</p>
               </div>
             ) : (
@@ -273,7 +294,7 @@ function MenuCategory() {
                 isSortable={true}
                 pagination={true}
                 isSelectable={false}
-                theadClass="table-light"
+                theadClass='table-light'
                 onPageChange={handlePageChange}
                 onSizePerPageChange={handleSizePerPageChange}
                 totalPages={totalPages}

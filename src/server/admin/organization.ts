@@ -8,10 +8,11 @@ export const getAllOrg = async (query:any) => {
     );
     return response.data;
   } catch (error: any) {
-    console.error("Login Error:", error.response?.data || error.message);
+    console.error("Error fetching organizations:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export const createNewOrg = async (orgData: any) => {
   try {
