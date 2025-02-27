@@ -61,7 +61,7 @@ const OrgEmployeeDetails = () => {
           const response = await deleteOrgEmployee(id);
           if (response.status) {
             toast.success("Employee deleted successfully!");
-            navigate("/apps/organizations/employ/list"); // Redirect to the employee list after deletion
+            navigate("/apps/organizations/employee/list"); // Redirect to the employee list after deletion
           } else {
             toast.error("Failed to delete employee.");
           }
@@ -134,7 +134,7 @@ const OrgEmployeeDetails = () => {
           <div className="d-flex gap-2">
             <Button
               variant="light"
-              onClick={() => navigate(`/apps/organizations/employ/edit/${id}`)}
+              onClick={() => navigate(`/apps/organizations/employee/edit/${id}`)}
             >
               <Pencil size={16} className="me-1" /> Edit
             </Button>
@@ -175,16 +175,6 @@ const OrgEmployeeDetails = () => {
 >
   {orgemployee.employee_status}
 </Badge>
-
-
-
-
-
-
-
-
-
-
 
               {/* Contact Information */}
               <div className="text-start">

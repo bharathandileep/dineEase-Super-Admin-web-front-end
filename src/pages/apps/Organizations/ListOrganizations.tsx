@@ -126,7 +126,7 @@ function ListOrganizations() {
         </div>
       </div>
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <Form.Group controlId="searchOrganizations">
           <Form.Control
             type="text"
@@ -135,7 +135,34 @@ function ListOrganizations() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </Form.Group>
-      </div>
+      </div> */}
+            <Row>
+              <Col>
+                <Card>
+                  <Card.Body>
+                    <Row className='justify-content-between'>
+                      <Col className='col-auto'>
+                        <form className='d-flex align-items-center'>
+                          <label htmlFor='inputPassword2' className='visually-hidden'>
+                            Search
+                          </label>
+                          <div>
+                            <input
+                              type='search'
+                              className='form-control my-1 my-lg-0'
+                              id='inputPassword2'
+                              placeholder='Search...'
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                          </div>
+                        </form>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
 
       {loading ? (
         <div className="text-center my-5">

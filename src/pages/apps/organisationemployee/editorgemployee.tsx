@@ -177,7 +177,7 @@ const OrgEmployeeEdit = () => {
         const response = await updateOrgEmployee(id, formData);
         if (response.status) {
           toast.success("Employee updated successfully!");
-          navigate("/apps/organizations/employ/list",);
+          navigate("/apps/organizations/employee/list",);
         } else {
           toast.error(response.message || "Failed to update employee.");
         }
@@ -492,7 +492,7 @@ const OrgEmployeeEdit = () => {
             <Button
               variant='light'
               className='me-2'
-              onClick={() => navigate("/apps/organizations/employ/list")}
+              onClick={() => navigate("/apps/organizations/employee/list")}
             >
               Cancel
             </Button>

@@ -61,7 +61,7 @@ const Pagination = ({
   return (
     <div className="d-lg-flex align-items-center text-center pb-1">
       {sizePerPageList.length > 0 && (
-        <div className="d-inline-block me-3">
+        <div className="d-inline-block me-3 ps-2">
           <label className="me-1">Display :</label>
           <select
             value={pageSize}
@@ -81,7 +81,7 @@ const Pagination = ({
         </div>
       )}
 
-      <span className="me-3">
+      <span className="me-6">
         Page{" "}
         <strong>
           {currentPage} of {totalPages}

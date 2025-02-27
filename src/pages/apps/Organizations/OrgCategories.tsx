@@ -195,8 +195,8 @@ function OrgCategories() {
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
-            { label: "Organizations", path: "/apps/org/category" },
-            { label: "Category", path: "/apps/org/category", active: true }, // Fixed path typo
+            { label: "Organizations", path: "/apps/organizations/category" },
+            { label: "Category", path: "/apps/organizations/category", active: true }, // Fixed path typo
           ]}
           title={"Organization Categories"} // Fixed title typo from "Customers"
         />

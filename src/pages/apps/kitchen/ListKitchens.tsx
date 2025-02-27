@@ -28,7 +28,11 @@ function ListKitchens() {
   const navigate = useNavigate();
   const isLoadingRef = useRef(false);
 
-  const fetchKitchens = async (currentPage: number, isNewSearch: boolean = false, searchQuery: string = "") => {
+  const fetchKitchens = async (
+    currentPage: number,
+    isNewSearch: boolean = false,
+    searchQuery: string = ""
+  ) => {
     if (isLoadingRef.current) return;
 
     if (isNewSearch) {
@@ -54,7 +58,9 @@ function ListKitchens() {
         } else {
           setKitchens((prev) => {
             const existingIds = new Set(prev.map((item) => item._id));
-            const newItems = kitchens.filter((item: any) => !existingIds.has(item._id));
+            const newItems = kitchens.filter(
+              (item: any) => !existingIds.has(item._id)
+            );
             return [...prev, ...newItems];
           });
         }
@@ -115,48 +121,72 @@ function ListKitchens() {
         title={"Kitchens"}
       />
 
-      <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
-        <div className="d-flex align-items-center justify-content-between">
-          <h3 className="page-title m-0" style={{ color: "#fff" }}>
+      <div
+        className='mb-3'
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
+        <div className='d-flex align-items-center justify-content-between'>
+          <h3 className='page-title m-0' style={{ color: "#fff" }}>
             Kitchens
           </h3>
-          <Link to="/apps/kitchen/new" className="btn btn-danger waves-effect waves-light">
-            <i className="mdi mdi-plus-circle me-1"></i> Add New Kitchen
+          <Link
+            to='/apps/kitchen/new'
+            className='btn btn-danger waves-effect waves-light'
+          >
+            <i className='mdi mdi-plus-circle me-1'></i> Add New Kitchen
           </Link>
         </div>
       </div>
-
-      <div className="mb-3">
-        <Form.Group controlId="searchKitchens">
-          <Form.Control
-            type="text"
-            placeholder="Search by name, email, phone, address, or type..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Form.Group>
-      </div>
-
+      <Row>
+        <Col>
+          <Card>
+            <Card.Body>
+              <Row className='justify-content-between'>
+                <Col className='col-auto'>
+                  <form className='d-flex align-items-center'>
+                    <label htmlFor='inputPassword2' className='visually-hidden'>
+                      Search
+                    </label>
+                    <div>
+                      <input
+                        type='search'
+                        className='form-control my-1 my-lg-0'
+                        id='inputPassword2'
+                        placeholder='Search...'
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </form>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
       {loading ? (
-        <div className="text-center my-5">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
+        <div className='text-center my-5'>
+          <Spinner animation='border' role='status'>
+            <span className='visually-hidden'>Loading...</span>
           </Spinner>
-          <p className="mt-2">Loading kitchens...</p>
+          <p className='mt-2'>Loading kitchens...</p>
         </div>
       ) : (
         <Row>
           {kitchens.length > 0 ? (
             kitchens.map((item) => (
-              <Col key={item._id} md={6} xl={3} className="mb-3">
+              <Col key={item._id} md={6} xl={3} className='mb-3'>
                 <Link to={`/apps/kitchen/${item._id}`}>
-                  <Card className="product-box h-100 shadow-sm">
-                    <Card.Body className="d-flex flex-column">
-                      <div className="bg-light mb-1">
+                  <Card className='product-box h-100 shadow-sm'>
+                    <Card.Body className='d-flex flex-column'>
+                      <div className='bg-light mb-1'>
                         <img
-                          src={item.kitchen_image || "https://via.placeholder.com/150"}
+                          src={
+                            item.kitchen_image ||
+                            "https://via.placeholder.com/150"
+                          }
                           alt={item.kitchen_name}
-                          className="img-fluid"
+                          className='img-fluid'
                           style={{
                             width: "100%",
                             height: "200px",
@@ -164,28 +194,29 @@ function ListKitchens() {
                           }}
                         />
                       </div>
-                      <div className="product-info mt-auto">
-                        <h5 className="font-24 mt-0 sp-line-1 bold">
+                      <div className='product-info mt-auto'>
+                        <h5 className='font-24 mt-0 sp-line-1 bold'>
                           {item.kitchen_name}
                         </h5>
-                        <div className="text-muted font-14">
-                          <div className="d-flex align-items-center mb-1 text-black">
-                            <i className="mdi mdi-map-marker me-1"></i>
+                        <div className='text-muted font-14'>
+                          <div className='d-flex align-items-center mb-1 text-black'>
+                            <i className='mdi mdi-map-marker me-1'></i>
                             <span>
-                              {item.addresses[0]?.street_address}, {item.addresses[0]?.city},{" "}
+                              {item.addresses[0]?.street_address},{" "}
+                              {item.addresses[0]?.city},{" "}
                               {item.addresses[0]?.country}
                             </span>
                           </div>
-                          <div className="d-flex align-items-center mb-1 text-black">
-                            <i className="mdi mdi-phone-classic me-1"></i>
+                          <div className='d-flex align-items-center mb-1 text-black'>
+                            <i className='mdi mdi-phone-classic me-1'></i>
                             <span>{item.kitchen_phone_number}</span>
                           </div>
-                          <div className="d-flex align-items-center text-black">
-                            <i className="mdi mdi-email me-1"></i>
+                          <div className='d-flex align-items-center text-black'>
+                            <i className='mdi mdi-email me-1'></i>
                             <span>{item.owner_email}</span>
                           </div>
-                          <div className="d-flex align-items-center text-black">
-                            <i className="mdi mdi-home-variant me-1"></i>
+                          <div className='d-flex align-items-center text-black'>
+                            <i className='mdi mdi-home-variant me-1'></i>
                             <span>{item.kitchen_type}</span>
                           </div>
                         </div>
@@ -198,15 +229,21 @@ function ListKitchens() {
           ) : (
             <Col>
               <Card>
-                <Card.Body className="text-center">
-                  <i className="mdi mdi-alert-circle-outline text-muted" style={{ fontSize: "48px" }}></i>
-                  <h4 className="mt-3">No Kitchens Found</h4>
-                  <p className="text-muted">
+                <Card.Body className='text-center'>
+                  <i
+                    className='mdi mdi-alert-circle-outline text-muted'
+                    style={{ fontSize: "48px" }}
+                  ></i>
+                  <h4 className='mt-3'>No Kitchens Found</h4>
+                  <p className='text-muted'>
                     {searchTerm
                       ? `No kitchens match your search criteria "${searchTerm}".`
                       : "There are no kitchens in the system yet."}
                   </p>
-                  <Button variant="primary" onClick={() => navigate("/apps/kitchen/new")}>
+                  <Button
+                    variant='primary'
+                    onClick={() => navigate("/apps/kitchen/new")}
+                  >
                     Add New Kitchen
                   </Button>
                 </Card.Body>
@@ -217,8 +254,8 @@ function ListKitchens() {
       )}
 
       {loadingMore && (
-        <div className="text-center my-4">
-          <Spinner animation="border" size="sm" /> Loading more...
+        <div className='text-center my-4'>
+          <Spinner animation='border' size='sm' /> Loading more...
         </div>
       )}
     </>
