@@ -52,11 +52,11 @@ export interface IKitchenDetails {
   addresses: Array<{
     _id: string;
     street_address: string;
-    city: string;
-    state: string;
-    district: string;
+    city_name: string;
+    state_name: string;
+    district_name: string;
     pincode: string;
-    country: string;
+    country_name: string;
   }>;
   fssaiDetails: Array<{
     _id: string;
@@ -104,15 +104,20 @@ function KitchensDetails() {
     navigate(`/apps/kitchen/edit/${id}`);
   };
   const onDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
+    
+    
+    if (!confirmDelete) return;
+  
     setLoading(true);
-    window.confirm("Are your sure delete this organisation");
     try {
       const response = await deletekitchenDetails(id);
-      if (response.status) {
+      
+      if (response?.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
       } else {
-        toast.error(response.message);
+        toast.error(response?.message || "Failed to delete kitchen.");
       }
     } catch (error) {
       toast.error("An error occurred while deleting kitchen details.");
@@ -120,6 +125,7 @@ function KitchensDetails() {
       setLoading(false);
     }
   };
+  
 
   const transformFoodData = (items: any[]): TransformedData => {
     return items.reduce((acc: TransformedData, item) => {
@@ -525,11 +531,11 @@ function KitchensDetails() {
               <p className="card-text mb-4">
                 {[
                   kitchenData?.addresses?.[0]?.street_address,
-                  kitchenData?.addresses?.[0]?.city,
-                  kitchenData?.addresses?.[0]?.district,
-                  kitchenData?.addresses?.[0]?.state,
+                  kitchenData?.addresses?.[0]?.city_name,
+                  kitchenData?.addresses?.[0]?.district_name,
+                  kitchenData?.addresses?.[0]?.state_name,
                   kitchenData?.addresses?.[0]?.pincode,
-                  kitchenData?.addresses?.[0]?.country,
+                  kitchenData?.addresses?.[0]?.country_name,
                 ]
                   .filter(Boolean)
                   .join(", ") || "No address available"}

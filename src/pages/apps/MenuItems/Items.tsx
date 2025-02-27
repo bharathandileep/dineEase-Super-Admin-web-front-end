@@ -189,7 +189,7 @@ const AddFoodItem = () => {
           <Col>
             <Card>
               <Card.Body className="text-center">
-                <Button variant="light" className="me-2" onClick={() => navigate("/apps/kitchen/listing")}>
+                <Button variant="danger" className="me-2" onClick={() => navigate("/apps/kitchen/listing")}>
                   Cancel
                 </Button>
                 <Button type="submit" variant="success">

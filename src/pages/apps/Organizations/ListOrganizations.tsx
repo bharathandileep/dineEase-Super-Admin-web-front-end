@@ -29,16 +29,17 @@ function ListOrganizations() {
 
     try {
       const response = await getAllOrg({ page: currentPage, limit: 4 });
-      const { orgnization
+      console.log(response);
+      const { organizations
         , totalPages, totalOrganizations } = response.data;
 
       if (isNewSearch) {
-        setCompanyInfo(orgnization);
+        setCompanyInfo(organizations);
       } else {
         // Prevent duplicates
         setCompanyInfo((prev) => {
           const existingIds = new Set(prev.map((item) => item._id));
-          const newItems = orgnization.filter(
+          const newItems = organizations.filter(
             (item: any) => !existingIds.has(item._id)
           );
           return [...prev, ...newItems];

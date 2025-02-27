@@ -60,20 +60,20 @@ const EmployeeList = () => {
     }
   };
 
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const response = await toggleEmployeeStatus(id);
-      if (response.status) {
-        toast.success("Employee status updated successfully!");
-        setEmployees(employees.map(emp => emp._id === id ? { ...emp, employee_status: emp.employee_status === "Active" ? "Inactive" : "Active" } : emp));
-      } else {
-        toast.error("Failed to update status.");
-      }
-    } catch (error) {
-      console.error("Error updating employee status:", error);
-      toast.error("An error occurred while updating status.");
-    }
-  };
+  // const handleToggleStatus = async (id: string) => {
+  //   try {
+  //     const response = await toggleEmployeeStatus(id);
+  //     if (response.status) {
+  //       toast.success("Employee status updated successfully!");
+  //       setEmployees(employees.map(emp => emp._id === id ? { ...emp, employee_status: emp.employee_status === "Active" ? "Inactive" : "Active" } : emp));
+  //     } else {
+  //       toast.error("Failed to update status.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating employee status:", error);
+  //     toast.error("An error occurred while updating status.");
+  //   }
+  // };
 
   return (
     <React.Fragment>
@@ -171,7 +171,7 @@ const EmployeeList = () => {
                       >
                         <Trash size={16} />
                       </Button>
-                      <Button
+                      {/* <Button
                         variant={employee.employee_status === "Active" ? "warning" : "secondary"}
                         size="sm"
                         onClick={(e) => {
@@ -180,7 +180,7 @@ const EmployeeList = () => {
                         }}
                       >
                         {employee.employee_status === "Active" ? <ToggleLeft size={16} /> : <ToggleRight size={16} />}
-                      </Button>
+                      </Button> */}
                     </div>
                   </Card.Body>
                 </Card>

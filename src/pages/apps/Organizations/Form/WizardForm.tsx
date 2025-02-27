@@ -1115,15 +1115,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setSubcategories([]);
     }
   }, [selectedCategoryId]);
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({ ...prev, [name]: value }));
-  //   if (errors[name as keyof FormData]) {
-  //     setErrors((prev) => ({ ...prev, [name]: undefined }));
-  //   }
-  // };
   const handleChange = async (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
@@ -1146,39 +1137,39 @@ export function WizardForm({ initialData }: WizardFormProps) {
  useEffect(() => {
     fetchCountries();
   }, []);
+  
   useEffect(() => {
     if (!id) return;
     const fetchOrgDetails = async () => {
       try {
         const response = await getOrgDetails(id);
-        const orgData = response.data[0]; // Assuming response.data[0] contains the organization details
+        const orgData = response.data;
 
-        // Correcting the state update syntax
         setFormData((prevFormData) => ({
           ...prevFormData,
-          organizationName: orgData.organizationName || "",
-          organizationLogo: orgData.organizationLogo,
-          managerName: orgData.managerName || "",
-          registerNumber: orgData.register_number || "",
-          contactNumber: orgData.contact_number || "",
-          category: orgData.category || "",
-          subcategoryName: orgData.subcategoryName || "",
-          email: orgData.email || "",
-          numberOfEmployees: orgData.no_of_employees.toString() || "",
-          addressType: orgData.addresses[0]?.address_type || "Office",
-          streetAddress: orgData.addresses[0]?.street_address || "",
-          district: orgData.addresses[0]?.district || "",
-          city: orgData.addresses[0]?.city || "",
-          state: orgData.addresses[0]?.state || "",
-          pincode: orgData.addresses[0]?.pincode || "",
-          country: orgData.addresses[0]?.country || "",
-          panNumber: orgData.panDetails[0]?.pan_card_number || "",
-          panCardUserName: orgData.panDetails[0]?.pan_card_user_name || "",
-          gstNumber: orgData.gstDetails[0]?.gst_number || "",
-          expiryDate: orgData.gstDetails[0]?.expiry_date || "",
+          organizationName: orgData?.organizationName || "",
+          organizationLogo: orgData?.organizationLogo,
+          managerName: orgData?.managerName || "",
+          registerNumber: orgData?.register_number || "",
+          contactNumber: orgData?.contact_number || "",
+          category: orgData?.category || "",
+          subcategoryName: orgData?.subcategoryName || "",
+          email: orgData?.email || "",
+          numberOfEmployees: orgData?.no_of_employees.toString() || "",
+          addressType: orgData?.addresses[0]?.address_type || "Office",
+          streetAddress: orgData?.addresses[0]?.street_address || "",
+          district: orgData?.addresses[0]?.district || "",
+          city: orgData?.addresses[0]?.city || "",
+          state: orgData?.addresses[0]?.state || "",
+          pincode: orgData?.addresses[0]?.pincode || "",
+          country: orgData?.addresses[0]?.country || "",
+          panNumber: orgData?.panDetails[0]?.pan_card_number || "",
+          panCardUserName: orgData?.panDetails[0]?.pan_card_user_name || "",
+          gstNumber: orgData?.gstDetails[0]?.gst_number || "",
+          expiryDate: orgData?.gstDetails[0]?.expiry_date || "",
           gstCertificateImage:
-            orgData.gstDetails[0]?.gst_certificate_image || "",
-          panCardImage: orgData.panDetails[0]?.pan_card_image || "",
+            orgData?.gstDetails[0]?.gst_certificate_image || "",
+          panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
         }));
       } catch (error) {
         console.error("Error fetching organization details:", error);
@@ -1462,7 +1453,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select Country</option>
                             {countries.map((country) => (
-                              <option key={country._id} value={country.country_name}>
+                              <option key={country._id} value={country.id}>
                                 {country.name}
                               </option>
                             ))}
@@ -1512,7 +1503,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select City</option>
                             {cities.map((city) => (
-                              <option key={city._id} value={city.city_name}>
+                              <option key={city._id} value={city.id}>
                                 {city.name}
                               </option>
                             ))}
@@ -1537,7 +1528,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select District</option>
                             {districts.map((district) => (
-                              <option key={district._id} value={district.district_name}>
+                              <option key={district._id} value={district.id}>
                                 {district.name}
                               </option>
                             ))}

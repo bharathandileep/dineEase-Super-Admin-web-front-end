@@ -1182,7 +1182,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   const fetchStates = async (countryName: string) => {
     try {
+      console.log(countryName);
+      
       const data = await getStatesByCountry(countryName); 
+      
       if (data?.success) {
         console.log(data)
         setStates(data.data);
@@ -1669,7 +1672,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select Country</option>
                             {countries.map((country) => (
-                              <option key={country._id} value={country.country_name}>
+                              <option key={country._id} value={country.id}>
                                 {country.name}
                               </option>
                             ))}
@@ -1719,7 +1722,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select City</option>
                             {cities.map((city) => (
-                              <option key={city._id} value={city.city_name}>
+                              <option key={city._id} value={city.id}>
                                 {city.name}
                               </option>
                             ))}
@@ -1744,7 +1747,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           >
                             <option value="">Select District</option>
                             {districts.map((district) => (
-                              <option key={district._id} value={district.district_name}>
+                              <option key={district._id} value={district.id}>
                                 {district.name}
                               </option>
                             ))}
@@ -1757,7 +1760,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
                       <div className="col-md-6">
                        <div className="form-group">
-                         <label className="form-label">Pincode</label>
+                        <label className="form-label">Pincode</label>
                          <input
                             type="text"
                             name="pincode"
@@ -1774,7 +1777,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </div> 
                   </div>
                 )}
                {currentStep === 2 && (

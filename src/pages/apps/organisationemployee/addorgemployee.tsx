@@ -333,7 +333,7 @@ const OrgEmployeeManagement = () => {
                       >
                         <option value="">Select Country</option>
                         {countries.map((country) => (
-                          <option key={country._id} value={country.country_name}>
+                          <option key={country._id} value={country.id}>
                             {country.name}
                           </option>
                         ))}
@@ -341,6 +341,7 @@ const OrgEmployeeManagement = () => {
                       {errors.country && (
                         <div className="invalid-feedback">{errors.country}</div>
                       )}
+                     
                     </div>
                   </Col>
                   
@@ -385,7 +386,7 @@ const OrgEmployeeManagement = () => {
                       >
                         <option value="">Select City</option>
                         {cities.map((city) => (
-                          <option key={city._id} value={city.city_name}>
+                          <option key={city._id} value={city.id}>
                             {city.name}
                           </option>
                         ))}
@@ -501,7 +502,7 @@ const OrgEmployeeManagement = () => {
         {/* Submit Button */}
         <Row className="mt-3 mb-4">
           <Col className="text-center">
-            <Button variant="light" className="me-2" onClick={() => navigate("/apps/organizations/employ/list")}>
+            <Button variant="danger" className="me-2" onClick={() => navigate("/apps/organizations/employ/list")}>
               Cancel
             </Button>
             <Button type="submit" variant="success">
