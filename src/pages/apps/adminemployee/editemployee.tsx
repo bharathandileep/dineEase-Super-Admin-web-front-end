@@ -69,7 +69,7 @@ const EditEmployee = () => {
       setLoading(true);
       try {
         const response = await getAllDesignations({page:1,limit:100});
-       console.log(response)
+     
         if (response.status) {
           setDesignations(response.data.designations);
          

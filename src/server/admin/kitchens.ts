@@ -78,12 +78,14 @@ export const kitchenCreateCategory = async (data: any) => {
 
 export const kitchensGetAllCategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      `${apiConfig.kitchens.getAllCategories(query)}`
-    );
+    console.log("Sending API Query:", query);
+    const url = `${apiConfig.kitchens.getAllCategories(query)}`;
+    console.log("Constructed URL:", url);
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error("Error fetching kitechn categories", error.response?.data || error.message);
+    console.error("Error fetching kitchen categories:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };
@@ -156,12 +158,15 @@ export const kitchensGetSubcategoriesByCategory = async (
 
 export const kitchensGetSubcategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      `${apiConfig.kitchens.getAllSubCategories( query)}`
-    );
+
+    const url = `${apiConfig.kitchens.getAllSubCategories(query)}`;
+
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error fetching kitchen subcategories:", error.response?.data || error.message);
+    throw error.response?.data || error;
   }
 };
 

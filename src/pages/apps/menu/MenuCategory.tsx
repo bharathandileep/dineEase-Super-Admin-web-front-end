@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import AddCategory from "./modal/AddCategory";
@@ -13,7 +12,7 @@ import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
 
 function MenuCategory() {
-  const isSubCategory = false;
+  const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [show, setShow] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,51 +30,78 @@ function MenuCategory() {
     const fetchAllCategories = async () => {
       setLoading(true);
       try {
-        // Updated to include pagination parameters
-        const response = await getAllCategories({
+        const query = {
           page: currentPage,
           limit: pageSize,
-        });
-        console.log(response.data);
+          search: searchTerm,
+          status: statusFilter,
+        };
+   
+        const response = await getAllCategories(query);
         if (response.status) {
           setMenuItems(response.data.categories);
-          setTotalPages(response.data.pagination?.totalPages || 1); // Adjust based on your backend response
-          setTotalItems(
-            response.data.pagination?.totalItems ||
-              response.data.categories.length
-          );
+          setTotalPages(response.data.pagination.totalPages);
+          setTotalItems(response.data.pagination.totalItems);
         } else {
           toast.error("Failed to load menu categories.");
         }
       } catch (error: any) {
-        console.error("Error:", error.response?.data || error.message);
+        console.error("Fetch Error:", error.response?.data || error.message);
         toast.error("An error occurred while fetching categories.");
       } finally {
         setLoading(false);
       }
     };
     fetchAllCategories();
-  }, [currentPage, pageSize, isDeleted, show]);
+  }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-    setSearchTerm(searchValue.toLowerCase());
-    setCurrentPage(1); // Reset to first page on search
+
+    setSearchTerm(searchValue);
+    setCurrentPage(1);
   };
 
   const handleToggleStatus = async (id: string) => {
     try {
       const response = await toggleCategoryStatus(id);
       if (response.status) {
-        setMenuItems((prevItems) =>
-          prevItems.map((item) =>
-            item._id === id ? { ...item, status: !item.status } : item
-          )
-        );
+        const item = menuItems.find((d) => d._id === id);
+        const newStatus = !item.status;
+
+        toast.success(`Category status changed to ${newStatus ? "Active" : "Inactive"}`);
+
+        if (statusFilter !== "all") {
+          if (
+            (statusFilter === "active" && !newStatus) ||
+            (statusFilter === "inactive" && newStatus)
+          ) {
+            setMenuItems((prevItems) => prevItems.filter((item) => item._id !== id));
+            setTotalItems((prev) => prev - 1);
+            const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
+            setTotalPages(newTotalPages);
+
+            if (menuItems.length === 1 && currentPage > 1) {
+              setCurrentPage(currentPage - 1);
+            }
+          } else {
+            setMenuItems((prevItems) =>
+              prevItems.map((item) =>
+                item._id === id ? { ...item, status: newStatus } : item
+              )
+            );
+          }
+        } else {
+          setMenuItems((prevItems) =>
+            prevItems.map((item) =>
+              item._id === id ? { ...item, status: newStatus } : item
+            )
+          );
+        }
       } else {
         toast.error("Failed to toggle status.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
+      console.error("Toggle Error:", error.response?.data || error.message);
       toast.error("Error toggling status.");
     }
   };
@@ -94,12 +120,23 @@ function MenuCategory() {
       const response = await deleteCategory(id);
       if (response.status) {
         toast.success(response.message);
-        setIsDeleted((prev) => !prev);
+
+        const remainingItems = totalItems - 1;
+        const newTotalPages = Math.ceil(remainingItems / pageSize);
+
+        if (menuItems.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          setIsDeleted((prev) => !prev);
+        }
+
+        setTotalItems(remainingItems);
+        setTotalPages(newTotalPages);
       } else {
         toast.error(response.message || "Delete failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
+      console.error("Delete Error:", error.response?.data || error.message);
       toast.error("Delete failed. Please try again.");
     }
   };
@@ -115,30 +152,14 @@ function MenuCategory() {
     setCurrentPage(1);
   };
 
-  const filteredMenuItems = useMemo(() => {
-    return menuItems.filter((value) => {
-      const categoryName = value.category?.toLowerCase() || "";
-      const searchLower = searchTerm.toLowerCase();
-      const categoryMatch = categoryName.includes(searchLower);
-      const createdAtString = value.createdAt
-        ? new Date(value.createdAt).toLocaleDateString()
-        : "";
-      const createdAtMatch = createdAtString
-        .toLowerCase()
-        .includes(searchLower);
-      let statusMatch = true;
-      if (statusFilter === "active") statusMatch = value.status === true;
-      if (statusFilter === "inactive") statusMatch = value.status === false;
-      return (categoryMatch || createdAtMatch) && statusMatch;
-    });
-  }, [searchTerm, statusFilter, menuItems]);
-
   /* Column render functions */
   const NumberColumn = ({ row }: { row: any }) => {
-    return <span className="fw-bold">{row.index + 1}</span>;
+    const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
+    return <span className="fw-bold">{rowNumber}</span>;
   };
+
   const CategoryColumn = ({ row }: { row: any }) => {
-    return <span className='fw-bold'>{row?.original?.category}</span>;
+    return <span className="fw-bold">{row?.original?.category}</span>;
   };
 
   const CreatedAtColumn = ({ row }: { row: any }) => {
@@ -162,24 +183,23 @@ function MenuCategory() {
     return (
       <>
         <button
-          className='action-icon border-0 bg-transparent'
+          className="action-icon border-0 bg-transparent"
           onClick={() => handleEdit(row?.original._id)}
         >
-          <i className='mdi mdi-square-edit-outline'></i>
+          <i className="mdi mdi-square-edit-outline"></i>
         </button>
         <button
-          className='action-icon border-0 bg-transparent'
+          className="action-icon border-0 bg-transparent"
           onClick={() => handleDelete(row?.original._id)}
         >
-          <i className='mdi mdi-delete text-danger'></i>
+          <i className="mdi mdi-delete text-danger"></i>
         </button>
       </>
     );
   };
 
-  // Define columns
   const columns = [
-    { Header: "No.",accessor: "number",Cell: NumberColumn,},
+    { Header: "No.", accessor: "number", Cell: NumberColumn },
     { Header: "Category", accessor: "category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
     { Header: "Status", accessor: "status", Cell: StatusColumn },
@@ -194,31 +214,31 @@ function MenuCategory() {
 
   return (
     <>
-      <div className='container py-2'>
+      <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
             { label: "Menu", path: "/apps/menu/category" },
-            { label: "Category", path: "/apps/menu/customers", active: true },
+            { label: "Category", path: "/apps/menu/category", active: true },
           ]}
-          title={"Customers"} // Note: This might be a typo; should it be "Menu Categories"?
+          title={"Menu Categories"}
         />
         <div
-          className='mb-3'
+          className="mb-3"
           style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
         >
-          <div className='d-flex align-items-center justify-content-between'>
-            <h3 className='page-title m-0' style={{ color: "#fff" }}>
+          <div className="d-flex align-items-center justify-content-between">
+            <h3 className="page-title m-0" style={{ color: "#fff" }}>
               Menu Category
             </h3>
             <Link
-              to='#'
-              className='btn btn-danger waves-effect waves-light'
+              to="#"
+              className="btn btn-danger waves-effect waves-light"
               onClick={() => {
-                setAction("add"); // Set action for adding new category
+                setAction("add");
                 setShow(true);
               }}
             >
-              <i className='mdi mdi-plus-circle me-1'></i> Add New
+              <i className="mdi mdi-plus-circle me-1"></i> Add New
             </Link>
           </div>
         </div>
@@ -226,40 +246,42 @@ function MenuCategory() {
           <Col>
             <Card>
               <Card.Body>
-                <Row className='justify-content-between'>
-                  <Col className='col-auto'>
-                    <form className='d-flex align-items-center'>
-                      <label
-                        htmlFor='inputPassword2'
-                        className='visually-hidden'
-                      >
+                <Row className="justify-content-between">
+                  <Col className="col-auto">
+                    <form className="d-flex align-items-center">
+                      <label htmlFor="inputPassword2" className="visually-hidden">
                         Search
                       </label>
                       <div>
                         <input
-                          type='search'
-                          className='form-control my-1 my-lg-0'
-                          id='inputPassword2'
-                          placeholder='Search...'
+                          type="search"
+                          className="form-control my-1 my-lg-0"
+                          id="inputPassword2"
+                          placeholder="Search..."
+                          value={searchTerm}
                           onChange={(e) => onSearchData(e.target.value)}
                         />
                       </div>
                     </form>
                   </Col>
-                  <Col className='col-auto'>
-                    <div className='d-flex align-items-center'>
-                      <label htmlFor='status-select' className='me-2 mb-0'>
-                        Sort By
+                  <Col className="col-auto">
+                    <div className="d-flex align-items-center">
+                      <label htmlFor="status-select" className="me-2 mb-0">
+                        Filter By
                       </label>
                       <div>
                         <Form.Select
-                          className='w-auto'
+                          className="w-auto"
                           value={statusFilter}
-                          onChange={(e: any) => setStatusFilter(e.target.value)}
+                          onChange={(e: any) => {
+                        
+                            setStatusFilter(e.target.value);
+                            setCurrentPage(1); 
+                          }}
                         >
-                          <option value='all'>All</option>
-                          <option value='active'>Active</option>
-                          <option value='inactive'>Inactive</option>
+                          <option value="all">All</option>
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
                         </Form.Select>
                       </div>
                     </div>
@@ -269,32 +291,28 @@ function MenuCategory() {
             </Card>
           </Col>
         </Row>
-        <div className='card shadow'>
-          <div className='table-responsive'>
+        <div className="card shadow">
+          <div className="table-responsive">
             {loading ? (
-              <div className='text-center my-4'>
-                <Spinner animation='border' />
+              <div className="text-center my-4">
+                <Spinner animation="border" />
                 <p>Loading menu categories...</p>
               </div>
             ) : menuItems.length === 0 ? (
-              <div className='text-center my-4'>
+              <div className="text-center my-4">
                 <p>No Menu Category Found</p>
-              </div>
-            ) : filteredMenuItems.length === 0 ? (
-              <div className='text-center my-4'>
-                <p>No results found for "{searchTerm}"</p>
               </div>
             ) : (
               <Table
                 columns={columns}
-                data={filteredMenuItems}
-                isSearchable={false} // Keep custom search above table
+                data={menuItems}
+                isSearchable={false}
                 pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}
                 pagination={true}
                 isSelectable={false}
-                theadClass='table-light'
+                theadClass="table-light"
                 onPageChange={handlePageChange}
                 onSizePerPageChange={handleSizePerPageChange}
                 totalPages={totalPages}

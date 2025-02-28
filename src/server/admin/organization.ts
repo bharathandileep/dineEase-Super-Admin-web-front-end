@@ -85,12 +85,15 @@ export const orgCreateCategory = async (data: any) => {
 
 export const orgGetAllCategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      apiConfig.organization.getAllCategories( query)
-    );
+    console.log("Sending API Query:", query);
+    const url = apiConfig.organization.getAllCategories(query);
+    console.log("Constructed URL:", url);
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error fetching categories:", error.response?.data || error.message);
+    throw error.response?.data || error;
   }
 };
 
@@ -157,12 +160,14 @@ export const orgGetSubcategoriesByCategory = async (
 
 export const orgGetSubcategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      `${apiConfig.organization.getAllSubCategories(query)}`    
-    );
+
+    const url = `${apiConfig.organization.getAllSubCategories(query)}`;
+  
+    const response = await axiosInstance.get(url);
+
     return response.data;
   } catch (error: any) {
-    console.error("Error fetching subcategories", error.response?.data || error.message);
+    console.error("Error fetching subcategories:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };

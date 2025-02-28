@@ -60,24 +60,6 @@ const FoodItemsList = () => {
     }
   };
 
-  // const handleStatusToggle = async (id: string) => {
-  //   try {
-  //     const response = await changeItemStatus(id);
-  //     if (response.status) {
-  //       setItems((prevItems) =>
-  //         prevItems.map((item) =>
-  //           item._id === id ? { ...item, status: response.data.status } : item
-  //         )
-  //       );
-  //       toast.success("Item status updated successfully!");
-  //     } else {
-  //       toast.error("Failed to update status.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating status:", error);
-  //     toast.error("An error occurred while updating status.");
-  //   }
-  // };
 
   return (
     <React.Fragment>
@@ -175,16 +157,6 @@ const FoodItemsList = () => {
                           Subcategory: {item?.subcategory?.subcategoryName || "Unknown Subcategory"}
                         </span>
                       </h5>
-                      {/* <Button
-                        variant={item.status ? "success" : "secondary"}
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStatusToggle(item._id);
-                        }}
-                      >
-                        {item.status ? "Active" : "Inactive"}
-                      </Button> */}
                       <h5 className="m-0">
                         <span className="text-muted">
                           Description: {item?.item_description}

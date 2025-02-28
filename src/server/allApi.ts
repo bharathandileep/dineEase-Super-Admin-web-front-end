@@ -131,7 +131,7 @@ export const fetchCompanyApi = async (page: number, limit: number): Promise<{
   const data = await response.json();
   return data;
 };
-// console.log(fetchCompanyApi);
+
 
 // delete company
 
