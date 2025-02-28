@@ -42,7 +42,7 @@ const ItemDetails = () => {
   }, [id]);
 
   const handleEdit = () => {
-    navigate(`/apps/kitchen/editing/${id}`);
+    navigate(`/apps/menu-item/editing/${id}`);
   };
 
   const handleDelete = async () => {
@@ -51,7 +51,7 @@ const ItemDetails = () => {
         const response = await deleteItem(id);
         if (response.status) {
           toast.success("Item deleted successfully!");
-          navigate("/apps/kitchen/menu");
+          navigate("/apps/menu-item/new");
         } else {
           toast.error("Failed to delete item.");
         }
@@ -95,7 +95,7 @@ const ItemDetails = () => {
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="breadcrumb m-0">
           <li className="breadcrumb-item">
-            <Link to="/apps/kitchen/menu">Kitchen</Link>
+            <Link to="/apps/menu-item/new">Kitchen</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             {item.item_name}

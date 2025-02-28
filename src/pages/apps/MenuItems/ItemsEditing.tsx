@@ -8,7 +8,10 @@ import { toast } from "react-toastify";
 import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components/";
 import { getItemById, updateItem } from "../../../server/admin/items";
-import { getAllCategories, getSubcategoriesByCategory } from "../../../server/admin/menu";
+import {
+  getAllCategories,
+  getSubcategoriesByCategory,
+} from "../../../server/admin/menu";
 
 const EditFoodItem = () => {
   const { id } = useParams();
@@ -20,6 +23,7 @@ const EditFoodItem = () => {
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [addMenulaoder, setMenuLoading] = useState(false);
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -28,7 +32,9 @@ const EditFoodItem = () => {
         console.log("Item response:", response);
         if (response.status) {
           setItem(response.data);
-          setSelectedCategoryId(response.data.category?._id || response.data.category || "");
+          setSelectedCategoryId(
+            response.data.category?._id || response.data.category || ""
+          );
         } else {
           toast.error("Failed to load item details.");
         }
@@ -92,26 +98,28 @@ const EditFoodItem = () => {
     item_description: yup.string().required("Description is required"),
   });
 
-  const { handleSubmit, register, control, formState: { errors }, setValue } = useForm({
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
     resolver: yupResolver(schema),
   });
-
-  // Set initial form values when item is loaded
   useEffect(() => {
     if (item) {
       setValue("item_name", item.item_name || "");
       setValue("category", item.category?._id || item.category || "");
       setValue("item_description", item.item_description || "");
-      // Don't set subcategory here; wait for subcategories to load
     }
   }, [item, setValue]);
-
-  // Set subcategory once subcategories are available
   useEffect(() => {
     if (item && subcategories.length > 0) {
       const subcategoryId = item.subcategory?._id || item.subcategory || "";
-      // Check if the subcategory exists in the fetched list
-      const validSubcategory = subcategories.find(sub => sub._id === subcategoryId);
+      const validSubcategory = subcategories.find(
+        (sub) => sub._id === subcategoryId
+      );
       if (validSubcategory) {
         setValue("subcategory", subcategoryId);
       }
@@ -120,6 +128,8 @@ const EditFoodItem = () => {
 
   const onSubmit = async (data: any) => {
     try {
+      setMenuLoading(true); // Start loading
+
       const formData = new FormData();
       formData.append("item_name", data.item_name);
       formData.append("category", data.category);
@@ -131,15 +141,18 @@ const EditFoodItem = () => {
       }
 
       const response = await updateItem(id, formData);
+
       if (response.status) {
         toast.success("Item updated successfully!");
-        navigate("/apps/kitchen/listing");
+        navigate("/apps/menu-items/list");
       } else {
         toast.error("Failed to update item.");
       }
     } catch (error) {
       console.error("Error updating item:", error);
       toast.error("Error updating item.");
+    } finally {
+      setMenuLoading(false); // Stop loading
     }
   };
 
@@ -223,31 +236,47 @@ const EditFoodItem = () => {
                       <img
                         src={item.item_image}
                         alt="Current Item"
-                        style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                        style={{
+                          width: "100%",
+                          height: "200px",
+                          objectFit: "cover",
+                        }}
                       />
                     </div>
                   )}
-                  <FileUploader onFileUpload={(files) => setItemImage(files[0])} />
+                  <FileUploader
+                    onFileUpload={(files) => setItemImage(files[0])}
+                  />
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <Card>
-                <Card.Body className="text-center">
-                  <Button
-                    variant="light"
-                    className="me-2"
-                    onClick={() => navigate("/apps/kitchen/listing")}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" variant="success">
-                    Update
-                  </Button>
-                </Card.Body>
-              </Card>
+          <Row className="mt-3 mb-4">
+            <Col className="text-end">
+              <Button
+                variant="light"
+                className="me-2"
+                onClick={() => navigate("/apps/menu-items/list")}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="success" disabled={addMenulaoder}>
+                {addMenulaoder ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                    />
+                    <span
+                      className="spinner-grow spinner-grow-sm"
+                      role="status"
+                    />
+                    Saving...
+                  </>
+                ) : (
+                  "Save"
+                )}
+              </Button>
             </Col>
           </Row>
         </form>

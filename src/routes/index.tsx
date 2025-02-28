@@ -419,23 +419,23 @@ const kitchenAppRoutes = {
       route: PrivateRoute,
     },
     {
-      path: "/apps/kitchen/menu",
+      path: "/apps/menu-item/new",
       name: "Items",
       element: <MenuItems />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/kitchen/listing",
+      path: "/apps/menu-items/list",
       name: "Listing",
       element: <ItemsListing />,
     },
     {
-      path: "/apps/kitchen/editing/:id",
+      path: "/apps/menu-item/editing/:id",
       name: "Editing",
       element: <EditFoodItem />,
     },
     {
-      path: "/apps/kitchen/item-details/:id",
+      path: "/apps/menu-item/:id",
       name: "Editing",
       element: <ItemDetails />,
     },

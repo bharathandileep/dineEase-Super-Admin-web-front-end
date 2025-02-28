@@ -48,12 +48,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
-      // {
-      //   key: "Organization-employadd",
-      //   label: "Organizations employ list",
-      //   url: "/apps/organizations/employee/add",
-      //   parentKey: "apps-Organizations",
-      // },
       {
         key: "Organization-employadd",
         label: "• employ-list",
@@ -78,7 +72,8 @@ const MENU_ITEMS: MenuItemTypes[] = [
         children: [
           {
             key: "Menu-list",
-            label: "• Category",
+            label: "Category",
+            icon: "briefcase",
             url: "/apps/menu/category",
             parentKey: "apps-menu",
           },
@@ -99,7 +94,8 @@ const MENU_ITEMS: MenuItemTypes[] = [
         children: [
           {
             key: "orgaization-category",
-            label: "• Category",
+            label: "Category",
+            icon: "briefcase",
             url: "/apps/organizations/category",
             parentKey: "app-orgaization-category",
           },
@@ -119,13 +115,15 @@ const MENU_ITEMS: MenuItemTypes[] = [
         children: [
           {
             key: "Menu-category",
-            label: "• Category",
+            icon: "mdi-circle-medium",
+            label: "Category",
             url: "/apps/kitchen/category",
             parentKey: "app-menu-category",
           },
           {
             key: "Menu-subcategory",
-            label: "• Subcategory",
+            icon: "mdi-circle-medium",
+            label: "Subcategory",
             url: "/apps/kitchen/subcategory",
             parentKey: "app-menu-category",
           },
@@ -133,36 +131,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
       },
       {
         key:"apps-menu-items",
-        label:"Menuitems",
+        label:"Menu items",
         icon: "shopping-bag",
         parentKey:"apps-menu",
-        children:[
-          {
-            key:"Menu-items",
-            label:"• Menuitems adding",
-            url:"/apps/kitchen/menu",
-            parentKey:"app-menu-items",
-          },
-          {
-            key:"apps-item",
-            label:"• Menuitems Listing",
-            url:"/apps/kitchen/listing",
-            parentKey:"app-menu-items"
-
-          },
-          {
-            key:"apps-item",
-            label:"• Menuitems Details",
-            url: "/apps/kitchen/item-details/:id",
-            parentKey:"app-menu-items"
-
-          },
-      
-        ]
+        url:"/apps/menu-items/list",
       },
       {
         key: "apps-employee",
-        label: "Employee-list",
+        label: "Employee list",
         icon: "user",
         url: "/apps/employee/list",
       },

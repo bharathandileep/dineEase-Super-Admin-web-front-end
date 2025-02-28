@@ -63,7 +63,25 @@ export const deletekitchenDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
+export const toggleKitchenStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens.toggleKitchenStatus(id)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
+
+
+
+
+
+
+//categories status
 export const kitchenCreateCategory = async (data: any) => {
   try {
     const response = await axiosInstance.post(

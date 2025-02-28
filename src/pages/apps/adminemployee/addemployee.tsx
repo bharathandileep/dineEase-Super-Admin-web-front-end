@@ -1,4 +1,3 @@
-
 // import React, { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 // import { Row, Col, Card, Button, Image } from "react-bootstrap";
@@ -9,11 +8,11 @@
 // import { FormInput } from "../../../components";
 // import { createEmployee } from "../../../server/admin/employeemanagment";
 // import { getAllDesignations } from "../../../server/admin/designations";
-// import { 
-//   getAllCountries, 
-//   getStatesByCountry, 
-//   getCitiesByState, 
-//   getDistrictsByState 
+// import {
+//   getAllCountries,
+//   getStatesByCountry,
+//   getCitiesByState,
+//   getDistrictsByState
 // } from "../../../server/admin/addressDetails";
 
 // const EmployeeManagement = () => {
@@ -23,13 +22,13 @@
 //   const [panImage, setPanImage] = useState<File | null>(null);
 //   const [designations, setDesignations] = useState<{ _id: string; designation_name: string }[]>([]);
 //   const [loading, setLoading] = useState(false);
-  
+
 //   // Location states
 //   const [countries, setCountries] = useState<{ _id: string; name: string; country_name: string }[]>([]);
 //   const [states, setStates] = useState<{ _id: string; name: string; id: string }[]>([]);
 //   const [cities, setCities] = useState<{ _id: string; name: string; city_name: string }[]>([]);
 //   const [districts, setDistricts] = useState<{ _id: string; name: string; district_name: string }[]>([]);
-  
+
 //   // Form data state for controlled inputs
 //   const [formData, setFormData] = useState({
 //     country: "",
@@ -39,7 +38,7 @@
 //     street_address: "",
 //     pincode: ""
 //   });
-  
+
 //   // Custom errors state for location fields
 //   const [errors, setErrors] = useState<{
 //     country?: string;
@@ -70,7 +69,7 @@
 //     };
 //     fetchDesignations();
 //   }, []);
-  
+
 //   // Fetch countries on component mount
 //   useEffect(() => {
 //     fetchCountries();
@@ -139,7 +138,7 @@
 //   ) => {
 //     const { name, value } = e.target;
 //     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
 //     // Update the react-hook-form value
 //     setValue(name, value);
 
@@ -529,7 +528,6 @@
 
 // export default EmployeeManagement;
 
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Button, Image } from "react-bootstrap";
@@ -540,11 +538,11 @@ import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components";
 import { createEmployee } from "../../../server/admin/employeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
-import { 
-  getAllCountries, 
-  getStatesByCountry, 
-  getCitiesByState, 
-  getDistrictsByState 
+import {
+  getAllCountries,
+  getStatesByCountry,
+  getCitiesByState,
+  getDistrictsByState,
 } from "../../../server/admin/addressDetails";
 
 const EmployeeManagement = () => {
@@ -552,38 +550,40 @@ const EmployeeManagement = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
-  const [designations, setDesignations] = useState<{ _id: string; designation_name: string }[]>([]);
+  const [designations, setDesignations] = useState<
+    { _id: string; designation_name: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
+  const [orgEmpLoading, setOrgEmpLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
 
   // Location state management
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  
-  // Form data state for custom fields not handled by react-hook-form
+
   const [formData, setFormData] = useState({
     country: "",
     state: "",
     city: "",
-    district: ""
+    district: "",
   });
-  
-  // Custom errors state
-  const [errors, setErrors] = useState<{[key: string]: string | undefined}>({});
 
   // Fetch designations and countries on component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations( {page:1,limit:100});
+        const response = await getAllDesignations({ page: 1, limit: 100 });
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
           toast.error("Failed to load designations.");
         }
-        
+
         // Fetch countries
         await fetchCountries();
       } catch (error) {
@@ -593,14 +593,14 @@ const EmployeeManagement = () => {
         setLoading(false);
       }
     };
-    
+
     fetchInitialData();
   }, []);
 
   // Location data fetching functions
   const fetchCountries = async () => {
     try {
-      const data = await getAllCountries(); 
+      const data = await getAllCountries();
       if (data?.success) {
         setCountries(data.data);
       }
@@ -608,10 +608,10 @@ const EmployeeManagement = () => {
       console.error("Error fetching countries:", error);
     }
   };
-  
+
   const fetchStates = async (countryName: string) => {
     try {
-      const data = await getStatesByCountry(countryName); 
+      const data = await getStatesByCountry(countryName);
       if (data?.success) {
         setStates(data.data);
       }
@@ -619,7 +619,7 @@ const EmployeeManagement = () => {
       console.error("Error fetching states:", error);
     }
   };
-  
+
   const fetchCities = async (stateName: string) => {
     try {
       const data = await getCitiesByState(stateName);
@@ -630,7 +630,7 @@ const EmployeeManagement = () => {
       console.error("Error fetching cities:", error);
     }
   };
-  
+
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -663,28 +663,27 @@ const EmployeeManagement = () => {
     }
   };
 
-  // React Hook Form setup
   const {
     handleSubmit,
     register,
     formState: { errors: formErrors },
   } = useForm();
 
-  // Handle Form Submission
   const onSubmit = async (data: any) => {
-    // Validate location fields
-    const locationErrors: {[key: string]: string} = {};
+    const locationErrors: { [key: string]: string } = {};
     if (!formData.country) locationErrors.country = "Country is required";
     if (!formData.state) locationErrors.state = "State is required";
     if (!formData.city) locationErrors.city = "City is required";
     if (!formData.district) locationErrors.district = "District is required";
-    
+
     if (Object.keys(locationErrors).length > 0) {
       setErrors(locationErrors);
       return;
     }
-    
+
     try {
+      setOrgEmpLoading(true);
+
       const formDataObj = new FormData();
 
       formDataObj.append("entity_id", "67a1083b3c9f01a384e9683c");
@@ -697,24 +696,19 @@ const EmployeeManagement = () => {
       formDataObj.append("employee_status", "Active");
       formDataObj.append("aadhar_number", data.aadhar_number);
       formDataObj.append("pan_number", data.pan_number);
-
-      // Address Fields
       formDataObj.append("street_address", data.street_address);
       formDataObj.append("city", formData.city);
       formDataObj.append("district", formData.district);
       formDataObj.append("pincode", data.pincode);
       formDataObj.append("state", formData.state);
       formDataObj.append("country", formData.country);
-
-      // Profile Picture Upload
       if (profileImage) {
         formDataObj.append("profile_picture", profileImage);
       }
-      // Aadhaar Card Upload
+
       if (aadharImage) {
         formDataObj.append("aadhar_image", aadharImage);
       }
-      // PAN Card Upload
       if (panImage) {
         formDataObj.append("pan_image", panImage);
       }
@@ -730,11 +724,14 @@ const EmployeeManagement = () => {
     } catch (error) {
       console.error("Error adding employee:", error);
       toast.error("Error adding employee. Please try again.");
+    } finally {
+      setOrgEmpLoading(false);
     }
   };
-
-  // Handle File Upload
-  const handleFileUpload = (files: File[], setImage: React.Dispatch<React.SetStateAction<File | null>>) => {
+  const handleFileUpload = (
+    files: File[],
+    setImage: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
     if (files.length > 0) {
       setImage(files[0]);
     }
@@ -750,11 +747,12 @@ const EmployeeManagement = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Row>
-          {/* Left Column - Employee Details */}
           <Col lg={6}>
             <Card>
               <Card.Body>
-                <h5 className="text-uppercase mt-0 mb-3">General Information</h5>
+                <h5 className="text-uppercase mt-0 mb-3">
+                  General Information
+                </h5>
                 <FormInput
                   name="username"
                   label="Employee Name"
@@ -814,7 +812,11 @@ const EmployeeManagement = () => {
             <Card>
               <Card.Body className="text-center">
                 <h5 className="text-uppercase mt-0 mb-3">Profile Picture</h5>
-                <FileUploader onFileUpload={(files) => handleFileUpload(Array.from(files), setProfileImage)} />
+                <FileUploader
+                  onFileUpload={(files) =>
+                    handleFileUpload(Array.from(files), setProfileImage)
+                  }
+                />
                 {profileImage && (
                   <Image
                     src={URL.createObjectURL(profileImage)}
@@ -833,7 +835,9 @@ const EmployeeManagement = () => {
           <Col lg={12}>
             <Card className="mt-3">
               <Card.Body>
-                <h5 className="text-uppercase mt-0 mb-3">Address Information</h5>
+                <h5 className="text-uppercase mt-0 mb-3">
+                  Address Information
+                </h5>
                 <Row>
                   <Col md={6}>
                     <FormInput
@@ -846,7 +850,7 @@ const EmployeeManagement = () => {
                       validation={{ required: "Street address is required" }}
                     />
                   </Col>
-                  
+
                   {/* Country Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -871,7 +875,7 @@ const EmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-                  
+
                   {/* State Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -897,7 +901,7 @@ const EmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-                  
+
                   {/* City Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -923,7 +927,7 @@ const EmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-                  
+
                   {/* District Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -945,11 +949,13 @@ const EmployeeManagement = () => {
                         ))}
                       </select>
                       {errors.district && (
-                        <div className="invalid-feedback">{errors.district}</div>
+                        <div className="invalid-feedback">
+                          {errors.district}
+                        </div>
                       )}
                     </div>
                   </Col>
-                  
+
                   <Col md={6}>
                     <FormInput
                       name="pincode"
@@ -972,7 +978,9 @@ const EmployeeManagement = () => {
           <Col lg={12}>
             <Card className="mt-3">
               <Card.Body>
-                <h5 className="text-uppercase mt-0 mb-3">Identification Details</h5>
+                <h5 className="text-uppercase mt-0 mb-3">
+                  Identification Details
+                </h5>
                 <Row>
                   <Col md={6}>
                     <FormInput
@@ -986,7 +994,11 @@ const EmployeeManagement = () => {
                     />
                     <div className="mb-3">
                       <label className="form-label">Aadhaar Card Image</label>
-                      <FileUploader onFileUpload={(files) => handleFileUpload(Array.from(files), setAadharImage)} />
+                      <FileUploader
+                        onFileUpload={(files) =>
+                          handleFileUpload(Array.from(files), setAadharImage)
+                        }
+                      />
                       {aadharImage && (
                         <Image
                           src={URL.createObjectURL(aadharImage)}
@@ -1009,7 +1021,11 @@ const EmployeeManagement = () => {
                     />
                     <div className="mb-3">
                       <label className="form-label">PAN Card Image</label>
-                      <FileUploader onFileUpload={(files) => handleFileUpload(Array.from(files), setPanImage)} />
+                      <FileUploader
+                        onFileUpload={(files) =>
+                          handleFileUpload(Array.from(files), setPanImage)
+                        }
+                      />
                       {panImage && (
                         <Image
                           src={URL.createObjectURL(panImage)}
@@ -1026,14 +1042,31 @@ const EmployeeManagement = () => {
           </Col>
         </Row>
 
-        {/* Submit Button */}
         <Row className="mt-3 mb-4">
-          <Col className="text-center">
-            <Button variant="danger" className="me-2" onClick={() => navigate("/apps/employee/list")}>
+          <Col className="text-end">
+            <Button
+              variant="danger"
+              className="me-2"
+              onClick={() => navigate("/apps/organizations/employ/list")}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="success">
-              Save
+            <Button type="submit" variant="success" disabled={orgEmpLoading}>
+              {orgEmpLoading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  />
+                  <span
+                    className="spinner-grow spinner-grow-sm"
+                    role="status"
+                  />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </Col>
         </Row>

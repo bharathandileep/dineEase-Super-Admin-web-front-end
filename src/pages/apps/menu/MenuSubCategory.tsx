@@ -198,7 +198,7 @@ function MenuSubCategory() {
             { label: "Menu", path: "/apps/menu/subcategory" },
             { label: "Sub Category", path: "/apps/menu/subcategory", active: true },
           ]}
-          title={"Customers"} // Note: Might be a typo; consider "Menu Subcategories"
+          title={"Customers"}
         />
         <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
           <div className="d-flex align-items-center justify-content-between">
@@ -209,7 +209,7 @@ function MenuSubCategory() {
               to="#"
               className="btn btn-danger waves-effect waves-light"
               onClick={() => {
-                setAction("add"); // Set action for adding new subcategory
+                setAction("add");
                 setShow(true);
               }}
             >

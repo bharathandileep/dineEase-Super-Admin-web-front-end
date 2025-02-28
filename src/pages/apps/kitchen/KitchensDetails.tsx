@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   deletekitchenDetails,
   getkitchenDetails,
+  toggleKitchenStatus,
 } from "../../../server/admin/kitchens";
 import {
   Row,
@@ -95,7 +96,8 @@ function KitchensDetails() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<boolean>(true);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
@@ -104,15 +106,16 @@ function KitchensDetails() {
     navigate(`/apps/kitchen/edit/${id}`);
   };
   const onDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
-    
-    
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this kitchen?"
+    );
+
     if (!confirmDelete) return;
-  
+
     setLoading(true);
     try {
       const response = await deletekitchenDetails(id);
-      
+
       if (response?.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
@@ -125,26 +128,28 @@ function KitchensDetails() {
       setLoading(false);
     }
   };
-  
-
+  // the fun to cover the menu items data for show on the chooee menu accordien
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
       const categoryName = item.category?.category;
       const subcategoryName = item.subcategory?.subcategoryName;
-  
+
       if (!categoryName || !subcategoryName) {
-        console.warn("Skipping item due to missing category/subcategory:", item);
+        console.warn(
+          "Skipping item due to missing category/subcategory:",
+          item
+        );
         return acc;
       }
-  
+
       if (!acc[categoryName]) {
         acc[categoryName] = {};
       }
-  
+
       if (!acc[categoryName][subcategoryName]) {
         acc[categoryName][subcategoryName] = [];
       }
-  
+
       acc[categoryName][subcategoryName].push({
         name: item.item_name,
         description: item.item_description,
@@ -152,21 +157,21 @@ function KitchensDetails() {
         status: item.status,
         itemId: item._id,
       });
-  
+
       console.log("inside transformFoodData:", acc);
       return acc;
     }, {} as TransformedData);
-  
+
     console.log("Final transformed data before return:", transformed);
     return transformed;
   };
-  
 
   useEffect(() => {
     const fetchKitchenDetails = async () => {
       try {
         const response = await getkitchenDetails(id);
         setKitchenData(response.data);
+        setStatus(response.data.status);
       } catch (error) {
         console.error("Error fetching kitchen details:", error);
       } finally {
@@ -180,8 +185,6 @@ function KitchensDetails() {
     const fetchItemDetails = async () => {
       try {
         const response = await listItems();
-        console.log("API Response:", response.data); // Ensure data exists
-  
         let transformedData;
         try {
           transformedData = transformFoodData(response.data);
@@ -190,10 +193,10 @@ function KitchensDetails() {
           console.error("Error transforming data:", error);
           return;
         }
-  
+
         setGroupedItems(transformedData);
         console.log("Transformed Data after setGroupedItems:", transformedData);
-  
+
         const firstCategory = Object.keys(transformedData)[0];
         if (firstCategory) {
           setActiveKey(firstCategory);
@@ -202,10 +205,9 @@ function KitchensDetails() {
         console.error("Error fetching kitchen details:", error);
       }
     };
-  
+
     fetchItemDetails();
   }, [loading]);
-  
 
   const handleAddToCart = (item: FoodItem) => {
     setCartItems((prevCart) => {
@@ -236,10 +238,8 @@ function KitchensDetails() {
   if (!kitchenData) {
     return <div>No data found</div>;
   }
-
   const CheckoutBar = ({ cartItems, onProceed }: any) => {
     if (cartItems?.length === 0) return null;
-
     return (
       <div
         style={{
@@ -281,6 +281,22 @@ function KitchensDetails() {
       toast.error(error.message || "An unexpected error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusToggle = async () => {
+    try {
+      const response = await toggleKitchenStatus(id);
+      if (response.status) {
+        setStatus((prev) => !prev);
+        toast.success(response.message);
+      } else {
+        toast.error(response.message || "Failed to toggle kitchen status.");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Error toggling kitchen status."
+      );
     }
   };
 
@@ -379,28 +395,44 @@ function KitchensDetails() {
                 ))}
               </div>
               <div className="d-flex gap-2">
-                {["Active", "Organic", "Veg"].map((badge, index) => (
-                  <Badge
-                    key={index}
-                    className="rounded-pill px-2 py-1"
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.9)",
-                      fontSize: "0.75rem",
-                      fontWeight: "500",
-                    }}
-                  >
-                    <i
-                      className={`mdi mdi-${
-                        badge === "Active"
-                          ? "check-circle"
-                          : badge === "Organic"
-                          ? "leaf"
-                          : "food-apple"
-                      } text-success me-1`}
-                    ></i>
-                    {badge}
-                  </Badge>
-                ))}
+                {[status ? "Active" : "Inactive", "Organic", "Veg"].map(
+                  (badge, index) => ( 
+                    <Badge
+                      key={index}
+                      className="rounded-pill px-2 py-1"
+                      style={{
+                        backgroundColor:
+                          badge === "Inactive"
+                            ? "rgba(200, 200, 200, 0.9)"
+                            : "rgba(255, 255, 255, 0.9)",
+                        fontSize: "0.75rem",
+                        fontWeight: "500",
+                        cursor:
+                          badge === "Active" || badge === "Inactive"
+                            ? "pointer"
+                            : "default",
+                      }}
+                      onClick={
+                        badge === "Active" || badge === "Inactive"
+                          ? () => handleStatusToggle()
+                          : undefined
+                      }
+                    >
+                      <i
+                        className={`mdi mdi-${
+                          badge === "Active"
+                            ? "check-circle text-success"
+                            : badge === "Inactive"
+                            ? "close-circle text-secondary"
+                            : badge === "Organic"
+                            ? "leaf text-success"
+                            : "food-apple text-success"
+                        } me-1`}
+                      ></i>
+                      {badge}
+                    </Badge>
+                  )
+                )}
               </div>
             </div>
           </Col>

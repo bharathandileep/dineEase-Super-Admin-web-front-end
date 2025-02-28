@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Button, Image } from "react-bootstrap";
@@ -11,67 +8,62 @@ import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components";
 import { createOrgEmployee } from "../../../server/admin/orgemployeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
-import { 
-  getAllCountries, 
-  getStatesByCountry, 
-  getCitiesByState, 
-  getDistrictsByState 
-} from "../../../server/admin/addressDetails"; // Assuming this is the path to your location API functions
+import {
+  getAllCountries,
+  getStatesByCountry,
+  getCitiesByState,
+  getDistrictsByState,
+} from "../../../server/admin/addressDetails";
 
 const OrgEmployeeManagement = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
-  const [designations, setDesignations] = useState<{ _id: string; designation_name: string }[]>([]);
+  const [designations, setDesignations] = useState<
+    { _id: string; designation_name: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
+  const [orgEmpLoading, setOrgEmpLoading] = useState(false);
 
-  // Location state management
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  
-  // Form data state for custom fields not handled by react-hook-form
+
   const [formData, setFormData] = useState({
     country: "",
     state: "",
     city: "",
-    district: ""
+    district: "",
   });
-  
-  // Custom errors state
-  const [errors, setErrors] = useState<{[key: string]: string | undefined}>({});
-
-  // Fetch designations and countries on component mount
+  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations( {page:1,limit:10});
+        const response = await getAllDesignations({ page: 1, limit: 10 });
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
           toast.error("Failed to load designations.");
         }
-        
-        // Fetch countries
         await fetchCountries();
       } catch (error) {
-        console.error("Error fetching initial data:", error);
         toast.error("An error occurred while loading initial data.");
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchInitialData();
   }, []);
 
-  // Location data fetching functions
   const fetchCountries = async () => {
     try {
-      const data = await getAllCountries(); 
+      const data = await getAllCountries();
       if (data?.success) {
         setCountries(data.data);
       }
@@ -79,10 +71,10 @@ const OrgEmployeeManagement = () => {
       console.error("Error fetching countries:", error);
     }
   };
-  
+
   const fetchStates = async (countryName: string) => {
     try {
-      const data = await getStatesByCountry(countryName); 
+      const data = await getStatesByCountry(countryName);
       if (data?.success) {
         setStates(data.data);
       }
@@ -90,7 +82,7 @@ const OrgEmployeeManagement = () => {
       console.error("Error fetching states:", error);
     }
   };
-  
+
   const fetchCities = async (stateName: string) => {
     try {
       const data = await getCitiesByState(stateName);
@@ -101,7 +93,7 @@ const OrgEmployeeManagement = () => {
       console.error("Error fetching cities:", error);
     }
   };
-  
+
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -134,7 +126,6 @@ const OrgEmployeeManagement = () => {
     }
   };
 
-  // React Hook Form setup
   const {
     handleSubmit,
     register,
@@ -142,21 +133,19 @@ const OrgEmployeeManagement = () => {
   } = useForm();
 
   const onSubmit = async (data: any) => {
-    // Validate location fields
-    const locationErrors: {[key: string]: string} = {};
+    const locationErrors: { [key: string]: string } = {};
     if (!formData.country) locationErrors.country = "Country is required";
     if (!formData.state) locationErrors.state = "State is required";
     if (!formData.city) locationErrors.city = "City is required";
     if (!formData.district) locationErrors.district = "District is required";
-    
+
     if (Object.keys(locationErrors).length > 0) {
       setErrors(locationErrors);
       return;
     }
-    
+
     try {
       const formDataObj = new FormData();
-
       formDataObj.append("entity_id", "67aad807dcbe481e9d130696");
       formDataObj.append("entity_type", "Organization");
       formDataObj.append("designation", data.designation);
@@ -167,39 +156,42 @@ const OrgEmployeeManagement = () => {
       formDataObj.append("employee_status", "Active");
       formDataObj.append("aadhar_number", data.aadhar_number);
       formDataObj.append("pan_number", data.pan_number);
-
-      // Address Fields
       formDataObj.append("street_address", data.street_address);
       formDataObj.append("city", formData.city);
       formDataObj.append("district", formData.district);
       formDataObj.append("pincode", data.pincode);
       formDataObj.append("state", formData.state);
       formDataObj.append("country", formData.country);
-
-      // Profile Picture Upload
       if (profileImage) {
         formDataObj.append("profile_picture", profileImage);
       }
-      // Aadhaar Card Upload
+
       if (aadharImage) {
         formDataObj.append("aadhar_image", aadharImage);
       }
-      // PAN Card Upload
       if (panImage) {
         formDataObj.append("pan_image", panImage);
       }
 
-      const response = await createOrgEmployee(formDataObj);
-
-      if (response.status) {
-        toast.success("Employee added successfully!");
-        navigate("/apps/organizations/employee/list");
-      } else {
-        toast.error(response.message || "Failed to add employee.");
+      setOrgEmpLoading(true);
+      try {
+        const response = await createOrgEmployee(formDataObj);
+        if (response.status) {
+          toast.success("Employee added successfully!");
+          navigate("/apps/organizations/employee/list");
+        } else {
+          toast.error(response.message || "Failed to add employee.");
+        }
+      } catch (error) {
+        console.error("Error adding employee:", error);
+        toast.error("Error adding employee. Please try again.");
+      } finally {
+        setOrgEmpLoading(false);
       }
     } catch (error) {
-      console.error("Error adding employee:", error);
-      toast.error("Error adding employee. Please try again.");
+      console.error("Unexpected error:", error);
+      toast.error("Unexpected error occurred. Please try again.");
+      setOrgEmpLoading(false);
     }
   };
   const handleFileUpload = (
@@ -325,7 +317,7 @@ const OrgEmployeeManagement = () => {
                       validation={{ required: "Street address is required" }}
                     />
                   </Col>
-                  
+
                   {/* Country Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -348,10 +340,9 @@ const OrgEmployeeManagement = () => {
                       {errors.country && (
                         <div className="invalid-feedback">{errors.country}</div>
                       )}
-                     
                     </div>
                   </Col>
-                  
+
                   {/* State Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -377,7 +368,7 @@ const OrgEmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-                  
+
                   {/* City Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -403,7 +394,7 @@ const OrgEmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-                  
+
                   {/* District Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -419,17 +410,22 @@ const OrgEmployeeManagement = () => {
                       >
                         <option value="">Select District</option>
                         {districts.map((district) => (
-                          <option key={district._id} value={district.district_name}>
+                          <option
+                            key={district._id}
+                            value={district.district_name}
+                          >
                             {district.name}
                           </option>
                         ))}
                       </select>
                       {errors.district && (
-                        <div className="invalid-feedback">{errors.district}</div>
+                        <div className="invalid-feedback">
+                          {errors.district}
+                        </div>
                       )}
                     </div>
                   </Col>
-                  
+
                   <Col md={6}>
                     <FormInput
                       name="pincode"
@@ -515,21 +511,37 @@ const OrgEmployeeManagement = () => {
             </Card>
           </Col>
         </Row>
-
-        {/* Submit Button */}
         <Row className="mt-3 mb-4">
-          <Col className="text-center">
-            <Button variant="danger" className="me-2" onClick={() => navigate("/apps/organizations/employ/list")}>
+          <Col className="text-end">
+            <Button
+              variant="danger"
+              className="me-2"
+              onClick={() => navigate("/apps/organizations/employ/list")}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="success">
-              Save
+            <Button type="submit" variant="success" disabled={orgEmpLoading}>
+              {orgEmpLoading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  />
+                  <span
+                    className="spinner-grow spinner-grow-sm"
+                    role="status"
+                  />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </Col>
         </Row>
       </form>
     </div>
   );
-};
+}; 
 
 export default OrgEmployeeManagement;

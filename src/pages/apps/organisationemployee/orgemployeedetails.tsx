@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
@@ -154,7 +152,9 @@ const OrgEmployeeDetails = () => {
           <div className="d-flex gap-2">
             <Button
               variant="light"
-              onClick={() => navigate(`/apps/organizations/employee/edit/${id}`)}
+              onClick={() =>
+                navigate(`/apps/organizations/employee/edit/${id}`)
+              }
             >
               <Pencil size={16} className="me-1" /> Edit
             </Button>
@@ -175,22 +175,29 @@ const OrgEmployeeDetails = () => {
                 }
                 alt={orgemployee.username}
                 className="rounded-circle mb-3"
-                style={{ width: "150px", height: "150px", objectFit: "contain" }}
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  objectFit: "contain",
+                }}
               />
 
-             
-
-
-             {/* Employee Name */}
-<h4 className="mb-2 text-2xl font-bold">{orgemployee.username}</h4>
-<Badge
-  bg={orgemployee.employee_status === "Active" ? "success" : "danger"}
-  className="mb-3"
-  onClick={handleToggleStatus}
-  style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
->
-  {orgemployee.employee_status}
-</Badge>
+              {/* Employee Name */}
+              <h4 className="mb-2 text-2xl font-bold">
+                {orgemployee.username}
+              </h4>
+              <Badge
+                bg={
+                  orgemployee.employee_status === "Active"
+                    ? "success"
+                    : "danger"
+                }
+                className="mb-3"
+                onClick={handleToggleStatus}
+                style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
+              >
+                {orgemployee.employee_status}
+              </Badge>
 
               {/* Contact Information */}
               <div className="text-start">
@@ -265,9 +272,16 @@ const OrgEmployeeDetails = () => {
           <Card className="shadow-sm">
             <Card.Body>
               <h5 className="card-title mb-3">Address Details</h5>
-              <p><MapPin size={16} className="me-2" /> {orgemployee.address?.street_address}</p>
-              <p>{orgemployee.address?.city}, {orgemployee.address?.district}</p>
-              <p>{orgemployee.address?.state}, {orgemployee.address?.pincode}</p>
+              <p>
+                <MapPin size={16} className="me-2" />{" "}
+                {orgemployee.address?.street_address}
+              </p>
+              <p>
+                {orgemployee.address?.city}, {orgemployee.address?.district}
+              </p>
+              <p>
+                {orgemployee.address?.state}, {orgemployee.address?.pincode}
+              </p>
             </Card.Body>
           </Card>
         </Col>
