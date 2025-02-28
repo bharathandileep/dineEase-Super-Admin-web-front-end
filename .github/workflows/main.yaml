@@ -1,0 +1,74 @@
+name: DineEase front CI/CD on Ubuntu 
+
+on:
+  push:
+    branches: [ development ]  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Test SSH Connection
+      uses: appleboy/ssh-action@master
+      with:
+        host: "13.233.245.17"
+        username: "ubuntu"
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          echo "SSH connection test successful"
+          sudo rm -rf /var/www/html
+          
+    # - name: Stop Pm2 Process
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: "13.233.245.17"
+    #     username: "ubuntu"
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     script: |
+    #       cd /var/www/html
+    #       pm2 stop react-app    
+
+    # - name: Stop Pm2 Process
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: "13.233.245.17"
+    #     username: "ubuntu"
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     script: |
+    #       cd /mnt/data/var/www/html
+    #       pm2 stop frontend     
+
+    - name: Deploy Application to AWS EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: "13.233.245.17"
+        username: "ubuntu"
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "./"
+        target: "/var/www/html"
+        overwrite: true
+        rm: true
+        
+    - name: Copy .env File to Deployment Directory
+      uses: appleboy/ssh-action@master
+      with:
+        host: "13.233.245.17"
+        username: "ubuntu"
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          sudo cp /home/ubuntu/secret/frontend/.env /var/www/html/.env     
+
+    - name: Install Dependencies and Restart Application
+      uses: appleboy/ssh-action@master
+      with:
+        host: "13.233.245.17"
+        username: "ubuntu"
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /var/www/html/
+          npm install
+          # pm2 start react-app

@@ -178,7 +178,7 @@ const OrgEmployeeList = () => {
             Employees
           </h3>
           <Link
-            to='/apps/organizations/employ/add'
+            to='/apps/organizations/employee/add'
             className='btn btn-danger waves-effect waves-light'
           >
             <i className='mdi mdi-plus-circle me-1'></i> Add New Employee

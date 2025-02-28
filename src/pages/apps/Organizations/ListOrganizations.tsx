@@ -47,14 +47,14 @@ function ListOrganizations() {
 
       const response = await getAllOrg(params);
       if (response.status) {
-        const { orgnization, totalPages, totalOrganization } = response.data;
+        const { organizations, totalPages, totalOrganization } = response.data;
 
         if (isNewSearch) {
-          setOrganizations(orgnization);
+          setOrganizations(organizations);
         } else {
           setOrganizations((prev) => {
             const existingIds = new Set(prev.map((item) => item._id));
-            const newItems = orgnization.filter((item: any) => !existingIds.has(item._id));
+            const newItems = organizations.filter((item: any) => !existingIds.has(item._id));
             return [...prev, ...newItems];
           });
         }
