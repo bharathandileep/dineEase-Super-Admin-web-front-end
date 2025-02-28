@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, Button, Row, Col, Spinner } from "react-bootstrap";
+import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { listItems, deleteItem, changeItemStatus } from "../../../server/admin/items";
 import { Pencil, Trash } from "lucide-react";
@@ -11,13 +12,22 @@ interface Item {
   item_name: string;
   item_description: string;
   status: boolean;
-  category?: { _id: string; category: string };
-  subcategory?: { _id: string; subcategoryName: string };
+  category?: { 
+    name: string;
+    category: string;  // Added to match the actual data structure
+  };
+  subcategory?: { 
+    name: string;
+    subcategoryName: string;  // Added to match the actual data structure
+  };
+  categoryName?: string;
+  subcategoryName?: string;
 }
 
 const FoodItemsList = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +35,13 @@ const FoodItemsList = () => {
       try {
         const response = await listItems();
         if (response.status) {
-          setItems(response.data);
+          setItems(
+            response.data.map((item: Item) => ({
+              ...item,
+              categoryName: item.category?.category || "Unknown Category",
+              subcategoryName: item.subcategory?.subcategoryName || "Unknown Subcategory",
+            }))
+          );
         } else {
           toast.error("Failed to load items.");
         }
@@ -61,6 +77,18 @@ const FoodItemsList = () => {
   };
 
 
+
+
+  // Filter items based on search term - fixed to use the correct properties
+  const filteredItems = items.filter((item) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      item.item_name.toLowerCase().includes(searchLower) ||
+      (item.categoryName && item.categoryName.toLowerCase().includes(searchLower)) ||
+      (item.subcategoryName && item.subcategoryName.toLowerCase().includes(searchLower))
+    );
+  });
+
   return (
     <React.Fragment>
       <nav aria-label="breadcrumb">
@@ -88,14 +116,24 @@ const FoodItemsList = () => {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <Form.Group className="mb-3">
+        <Form.Control
+          type="text"
+          placeholder="Search by item name, category, or subcategory"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Form.Group>
+
       {loading ? (
         <div className="text-center my-3">
           <Spinner animation="border" />
         </div>
       ) : (
         <Row>
-          {items?.length > 0 ? (
-            items?.map((item) => (
+          {filteredItems?.length > 0 ? (
+            filteredItems?.map((item: any) => (
               <Col md={6} xl={3} className="mb-3" key={item._id}>
                 <Card
                   className="product-box h-100"
@@ -149,14 +187,15 @@ const FoodItemsList = () => {
                       </h5>
                       <h5 className="m-0">
                         <span className="text-muted">
-                          Category: {item?.category?.category || "Unknown Category"}
+                          Category: {item?.categoryName}
                         </span>
                       </h5>
                       <h5 className="m-0">
                         <span className="text-muted">
-                          Subcategory: {item?.subcategory?.subcategoryName || "Unknown Subcategory"}
+                          Subcategory: {item?.subcategoryName}
                         </span>
                       </h5>
+           
                       <h5 className="m-0">
                         <span className="text-muted">
                           Description: {item?.item_description}

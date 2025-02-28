@@ -2,11 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {
-  getAllOrgEmployees,
-  deleteOrgEmployee,
-  toggleOrgEmployeeStatus,
-} from "../../../server/admin/orgEmployeeManagment";
+import { createOrgEmployee } from "../../../server/admin/orgemployeemanagment";
+import { getAllOrgEmployees, deleteOrgEmployee, toggleOrgEmployeeStatus } from "../../../server/admin/orgemployeemanagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface OrgEmployee {
@@ -181,7 +178,7 @@ const OrgEmployeeList = () => {
             Employees
           </h3>
           <Link
-            to='/apps/organizations/employ/add'
+            to='/apps/organizations/employee/add'
             className='btn btn-danger waves-effect waves-light'
           >
             <i className='mdi mdi-plus-circle me-1'></i> Add New Employee

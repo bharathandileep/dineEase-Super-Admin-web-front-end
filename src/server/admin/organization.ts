@@ -69,8 +69,6 @@ export const deleteOrgDetails = async (id: string | undefined) => {
   }
 };
 
-// kitchens category
-
 export const orgCreateCategory = async (data: any) => {
   try {
     const response = await axiosInstance.post(

@@ -60,6 +60,7 @@ const Login2 = () => {
     if (user) {
       // navigate("/");
       navigate("/")
+      
     }
   }, [userLoggedIn, user, navigate]);
 
@@ -94,6 +95,7 @@ const Login2 = () => {
     const response = await authAccessCredentials(formData);
     if (response.status) {
       toast.success(response.message);
+      window.location.href = "/";
       navigate("/")
     } else {
       toast.error(response.message || "Something went wrong.");

@@ -11,7 +11,7 @@ import { FormInput } from "../../../components";
 import {
   getOrgEmployeeById,
   updateOrgEmployee,
-} from "../../../server/admin/orgEmployeeManagment";
+} from "../../../server/admin/orgemployeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 
 const OrgEmployeeEdit = () => {

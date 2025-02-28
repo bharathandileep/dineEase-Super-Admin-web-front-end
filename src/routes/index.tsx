@@ -10,22 +10,33 @@ import MenuCategory from "../pages/apps/menu/MenuCategory";
 import MenuSubCategory from "../pages/apps/menu/MenuSubCategory";
 import KitchensSubCategories from "../pages/apps/kitchen/KitchensSubCategories";
 import KitchensCategories from "../pages/apps/kitchen/KitchensCategories";
-import OrgCategories from "../pages/apps/Organizations/orgCategories";
-import OrgSubCategories from "../pages/apps/Organizations/orgSubCategories";
 import OurMenu from "../pages/apps/kitchen/OurMenu";
 import MenuItems from "../pages/apps/MenuItems/Items";
-import ItemsListing from "../pages/apps/MenuItems/ItemsListing";
+import ItemsListing from "../pages/apps/MenuItems/ListItems";
+import ItemsEditing from "../pages/apps/MenuItems/ItemsEditing";
+import MenuDetails from "../pages/apps/kitchen/MenuDetails";
+import OrgSubCategories from "../pages/apps/Organizations/OrgSubCategories";
 
-import EmployeeManagment from "../pages/apps/Adminemployee/addEmployee";
-import EmployeeList from "../pages/apps/Adminemployee/listEmployee";
-import EmployeeEdit from "../pages/apps/Adminemployee/editEmployee";
-import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addOrgEmployee";
-import OrgEmployeeList from "../pages/apps/Organisationemployee/listOrgEmployee";
-import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editOrgEmployee";
-import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgEmployeeDetails";
+
+
+import OrgCategories from "../pages/apps/Organizations/OrgCategories";
+import ListOrganizations from "../pages/apps/Organizations/ListOrganizations";
+
+import OrganizationDetails from "../pages/apps/Organizations/OrganizationDetails";
+import Designations from "../pages/apps/Designations/listdesignations";
 
 import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
 import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
+import NewOrganizations from "../pages/apps/Organizations/newOrganizations";
+import EditOrganizations from "../pages/apps/Organizations/editOrganizations";
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 
 // import Root from './Root';
 
@@ -260,27 +271,28 @@ const Editkitchens = React.lazy(
   () => import("../pages/apps/kitchen/Editkitchens")
 );
 
+
+
 //Organizations
+// const NewOrganizations = React.lazy(
+//   () => import("../pages/apps/Organizations/newOrganizations")
+// );
+// const ListOrganizations = React.lazy(
+//   () => import("../pages/apps/Organizations/listOrganizations")
+// );
+// const EditOrganizations = React.lazy(
+//   () => import("../pages/apps/Organizations/editOrganizations")
+// );
+// const OrganizationDetails = React.lazy(
+//   () => import("../pages/apps/Organizations/organizationDetails")
+// );
 
-const NewOrganizations = React.lazy(
-  () => import("../pages/apps/Organizations/newOrganizations")
-);
-const ListOrganizations = React.lazy(
-  () => import("../pages/apps/Organizations/listOrganizations")
-);
-const EditOrganizations = React.lazy(
-  () => import("../pages/apps/Organizations/editOrganizations")
-);
-const OrganizationDetails = React.lazy(
-  () => import("../pages/apps/Organizations/organizationDetails")
-);
-
-const Designations = React.lazy(
-  () => import("../pages/apps/Designations/listDesignations")
-);
-const EmployeeDetails = React.lazy(
-  () => import("../pages/apps/Adminemployee/employeeDetails")
-);
+// const Designations = React.lazy(
+//   () => import("../pages/apps/Designations/listDesignations")
+// );
+// const EmployeeDetails = React.lazy(
+//   () => import("../pages/apps/Adminemployee/employeeDetails")
+// );
 
 export interface RoutesProps {
   path: RouteProps["path"];
@@ -496,7 +508,7 @@ const employeeRoutes = {
     {
       path: "/apps/employee/add",
       name: "Add Employee",
-      element: <EmployeeManagment />,
+      element: <EmployeeManagement />,
       route: PrivateRoute,
     },
     {
@@ -508,7 +520,7 @@ const employeeRoutes = {
     {
       path: "/apps/employee/edit/:id",
       name: "Employee edit",
-      element: <EmployeeEdit />,
+      element: <EditEmployee />,
       route: PrivateRoute,
     },
     {

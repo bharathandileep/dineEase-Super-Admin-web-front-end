@@ -42,7 +42,8 @@ export const NavigationBar = () => {
     // if (userLoggedIn && user) {
     if (user) {
       // navigate("/");
-      setIsLoggedIn(true);
+      setIsLoggedIn(true)
+
     }
     setIsLoggedIn(false)
   }, [userLoggedIn, user, navigate]);
@@ -126,7 +127,6 @@ export const NavigationBar = () => {
         toast.error(response.message);
       }
     } catch (error) {
-      console.error("Google sign-in error:", error);
       toast.error("Something went wrong. Please try again later.");
     } finally {
       setShowLoader(false);

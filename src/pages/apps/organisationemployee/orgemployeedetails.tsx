@@ -1,29 +1,45 @@
+
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getOrgEmployeeById, deleteOrgEmployee, toggleOrgEmployeeStatus } from "../../../server/admin/orgEmployeeManagment";
-import { Pencil, Trash, ToggleLeft, ToggleRight, User, Mail, Phone, MapPin, Building } from "lucide-react";
+import {
+  getOrgEmployeeById,
+  deleteOrgEmployee,
+  toggleOrgEmployeeStatus,
+} from "../../../server/admin/orgemployeemanagment";
+import {
+  Pencil,
+  Trash,
+  ToggleLeft,
+  ToggleRight,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Building,
+} from "lucide-react";
 
 interface Employee {
   _id: string;
   username: string;
   email: string;
   phone_number: string;
-  designation: { designation_name: string };
+  designation?: { designation_name: string };
   employee_status: string;
-  profile_picture: string;
+  profile_picture?: string;
   aadhar_number?: string;
   pan_number?: string;
-  aadhar_image: string; 
-  pan_image: string; 
+  aadhar_image: string;
+  pan_image: string;
   address: {
     street_address: string;
     city: string;
     district?: string;
-    state: string;
-    pincode: string;
-    country: string;
+    state?: string;
+    pincode?: string;
+    country?: string;
   };
 }
 
@@ -83,7 +99,8 @@ const OrgEmployeeDetails = () => {
             prev
               ? {
                   ...prev,
-                  employee_status: prev.employee_status === "Active" ? "Inactive" : "Active",
+                  employee_status:
+                    prev.employee_status === "Active" ? "Inactive" : "Active",
                 }
               : null
           );
@@ -115,7 +132,6 @@ const OrgEmployeeDetails = () => {
 
   return (
     <React.Fragment>
-      {/* Breadcrumb Navigation */}
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb m-2">
           <li className="breadcrumb-item">
@@ -127,10 +143,14 @@ const OrgEmployeeDetails = () => {
         </ol>
       </nav>
 
-      {/* Page Header */}
-      <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
         <div className="d-flex align-items-center justify-content-between">
-          <h3 className="page-title m-0" style={{ color: "#fff" }}>Organisation Employee Details</h3>
+          <h3 className="page-title m-0" style={{ color: "#fff" }}>
+            Organisation Employee Details
+          </h3>
           <div className="d-flex gap-2">
             <Button
               variant="light"
@@ -144,22 +164,18 @@ const OrgEmployeeDetails = () => {
           </div>
         </div>
       </div>
-
-      {/* Employee Details */}
       <Row>
         <Col md={4}>
           <Card className="mb-3 shadow-sm">
             <Card.Body className="text-center">
-              {/* Profile Picture */}
               <img
-                src={orgemployee.profile_picture || "https://via.placeholder.com/150"}
+                src={
+                  orgemployee.profile_picture ||
+                  "https://via.placeholder.com/150"
+                }
                 alt={orgemployee.username}
                 className="rounded-circle mb-3"
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  objectFit: "contain",
-                }}
+                style={{ width: "150px", height: "150px", objectFit: "contain" }}
               />
 
              
@@ -188,7 +204,9 @@ const OrgEmployeeDetails = () => {
                 </div>
                 <div className="d-flex align-items-center mb-2">
                   <Building size={16} className="me-2" />
-                  <span>{orgemployee.designation?.designation_name || "Unknown"}</span>
+                  <span>
+                    {orgemployee.designation?.designation_name || "Unknown"}
+                  </span>
                 </div>
               </div>
             </Card.Body>
@@ -196,62 +214,60 @@ const OrgEmployeeDetails = () => {
         </Col>
 
         <Col md={8}>
-           <Card className="mb-3 shadow-sm">
-                     <Card.Body>
-                       <h5 className="card-title mb-3">Identity Documents</h5>
-                       <Row>
-                         <Col md={6}>
-                           <p>
-                             <strong>Aadhaar Number:</strong> {orgemployee.aadhar_number || "N/A"}
-                           </p>
-                           {orgemployee.aadhar_image && (
-                             <div className="mt-2">
-                               <strong>Aadhaar Image:</strong>
-                               <img
-                                 src={orgemployee.aadhar_image}
-                                 alt="Aadhaar Card"
-                                 style={{ maxWidth: "100%", height: "auto", marginTop: "10px" }}
-                               />
-                             </div>
-                           )}
-                         </Col>
-                         <Col md={6}>
-                           <p>
-                             <strong>PAN Number:</strong> {orgemployee.pan_number || "N/A"}
-                           </p>
-                           {orgemployee.pan_image && (
-                             <div className="mt-2">
-                               <strong>PAN Image:</strong>
-                               <img
-                                 src={orgemployee.pan_image}
-                                 alt="PAN Card"
-                                 style={{ maxWidth: "100%", height: "auto", marginTop: "10px" }}
-                               />
-                             </div>
-                           )}
-                         </Col>
-                       </Row>
-                     </Card.Body>
-                   </Card>
+          <Card className="mb-3 shadow-sm">
+            <Card.Body>
+              <h5 className="card-title mb-3">Identity Documents</h5>
+              <Row>
+                <Col md={6}>
+                  <p>
+                    <strong>Aadhaar Number:</strong>{" "}
+                    {orgemployee.aadhar_number || "N/A"}
+                  </p>
+                  {orgemployee.aadhar_image && (
+                    <div className="mt-2">
+                      <strong>Aadhaar Image:</strong>
+                      <img
+                        src={orgemployee.aadhar_image}
+                        alt="Aadhaar Card"
+                        style={{
+                          maxWidth: "100%",
+                          height: "auto",
+                          marginTop: "10px",
+                        }}
+                      />
+                    </div>
+                  )}
+                </Col>
+                <Col md={6}>
+                  <p>
+                    <strong>PAN Number:</strong>{" "}
+                    {orgemployee.pan_number || "N/A"}
+                  </p>
+                  {orgemployee.pan_image && (
+                    <div className="mt-2">
+                      <strong>PAN Image:</strong>
+                      <img
+                        src={orgemployee.pan_image}
+                        alt="PAN Card"
+                        style={{
+                          maxWidth: "100%",
+                          height: "auto",
+                          marginTop: "10px",
+                        }}
+                      />
+                    </div>
+                  )}
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
 
           <Card className="shadow-sm">
             <Card.Body>
               <h5 className="card-title mb-3">Address Details</h5>
-              <div className="d-flex flex-column gap-2">
-                <div className="d-flex align-items-center">
-                  <MapPin size={16} className="me-2" />
-                  <span>{orgemployee.address.street_address}</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <span>{orgemployee.address.city}, {orgemployee.address.district}</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <span>{orgemployee.address.state}, {orgemployee.address.pincode}</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <span>{orgemployee.address.country}</span>
-                </div>
-              </div>
+              <p><MapPin size={16} className="me-2" /> {orgemployee.address?.street_address}</p>
+              <p>{orgemployee.address?.city}, {orgemployee.address?.district}</p>
+              <p>{orgemployee.address?.state}, {orgemployee.address?.pincode}</p>
             </Card.Body>
           </Card>
         </Col>

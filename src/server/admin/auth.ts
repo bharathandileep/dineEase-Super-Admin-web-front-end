@@ -28,6 +28,7 @@ interface UpdatePasswordData {
   confirmPassword: string;
   token: string;
 }
+
 export const AuthAdminCredentials = async (adminCredentials: UserData) => {
   try {
     const response = await axiosInstance.post(
@@ -39,7 +40,6 @@ export const AuthAdminCredentials = async (adminCredentials: UserData) => {
     console.error("Login Error:", error.response?.data || error.message);
   }
 };
-
 export const googleAuth = async () => {
   try {
     const provider = new GoogleAuthProvider();
@@ -61,14 +61,12 @@ export const googleAuth = async () => {
         },
       }
     );
-    console.log(response.data)
     api.setLoggedInUser(response.data.data);
-    return response.data; 
+    return response.data;
   } catch (error: any) {
-    return error.response.data;
+    return error;
   }
 };
-
 export const authUserWithCredentials = async (userCredentials: any) => {
   try {
     const response = await axiosInstance.post(
@@ -80,7 +78,6 @@ export const authUserWithCredentials = async (userCredentials: any) => {
     return error.response.data;
   }
 };
-
 export const authvaliadateOTP = async (userCredentials: any) => {
   try {
     const response = await axiosInstance.post(
@@ -120,15 +117,20 @@ export const loginOTPVerify = async (userCredentials: any) => {
     return error.response.data;
   }
 };
-export const generateForgotPasswordOtp = async (emailData: ForgotPasswordData) => {
+export const generateForgotPasswordOtp = async (
+  emailData: ForgotPasswordData
+) => {
   try {
     const response = await axiosInstance.post(
       `${apiConfig.admin.generateForgotOtp}`,
       emailData
     );
-    return response.data;  
+    return response.data;
   } catch (error: any) {
-    console.error("Forgot Password OTP Error:", error.response?.data || error.message);
+    console.error(
+      "Forgot Password OTP Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -144,8 +146,7 @@ export const verifyForgotPasswordOtp = async (otpData: VerifyOtpData) => {
     console.error("Verify OTP Error:", error.response?.data || error.message);
     throw error;
   }
-}
-
+};
 
 export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
   try {
@@ -155,7 +156,10 @@ export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
     );
     return response.data;
   } catch (error: any) {
-    console.error("Update Password Error:", error.response?.data || error.message);
+    console.error(
+      "Update Password Error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

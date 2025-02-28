@@ -72,7 +72,6 @@ export const toggleOrgEmployeeStatus = async (id: string) => {
   }
 };
 
-// ✅ Soft delete an organization employee
 export const deleteOrgEmployee = async (id: string) => {
   try {
     const response = await axiosInstance.delete(apiConfig.orgemployee.deleteOrgEmployee(id));

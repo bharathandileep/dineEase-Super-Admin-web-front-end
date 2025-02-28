@@ -38,11 +38,11 @@ export interface IOrganizationDetails {
   addresses: Array<{
     _id: string;
     street_address: string;
-    city: string;
-    state: string;
-    district: string;
+    city_name: string;
+    state_name: string;
+    district_name: string;
     pincode: string;
-    country: string;
+    country_name: string;
     landmark: string | null;
     address_type: string;
     is_deleted: boolean;
@@ -127,7 +127,7 @@ function OrganizationDetails() {
     const fetchOrgDetails = async () => {
       try {
         const response = await getOrgDetails(id);
-        setOrgData(response.data[0]);
+        setOrgData(response.data);
       } catch (error) {
         console.error("Error fetching organization details:", error);
       } finally {
@@ -396,11 +396,11 @@ function OrganizationDetails() {
               <h5 className="card-title mb-3 text-bold text-black">Location Details</h5>
               <p className="card-text mb-4">
                 {organization?.addresses[0]?.street_address},{" "}
-                {organization?.addresses[0]?.city},{" "}
-                {organization?.addresses[0]?.district},{" "}
-                {organization?.addresses[0]?.state},{" "}
+                {organization?.addresses[0]?.city_name},{" "}
+                {organization?.addresses[0]?.district_name},{" "}
+                {organization?.addresses[0]?.state_name},{" "}
                 {organization?.addresses[0]?.pincode},
-                {organization?.addresses[0]?.country}
+                {organization?.addresses[0]?.country_name}
               </p>
               <div
                 className="map-container"
