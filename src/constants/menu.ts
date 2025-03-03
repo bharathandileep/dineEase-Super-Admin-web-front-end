@@ -25,7 +25,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-kitchen",
     label: "Kitchens",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "coffee",
     children: [
       {
         key: "kitchen-list",
@@ -40,7 +40,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-Organizations",
     label: "Organizations",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "command",
     children: [
       {
         key: "Organizations-list",
@@ -61,27 +61,26 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-menu",
     label: "Master",
     isTitle: false,
-    icon: "user",
+    icon: "slack",
     children: [
       {
-        key: "Menu-list",
+        key: "menu-list",
         label: "Menu",
         icon: "archive",
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
           {
-            key: "Menu-list",
-            label: "Category",
-            icon: "briefcase",
+            key: "category",
+            label: "• Category",
             url: "/apps/menu/category",
-            parentKey: "apps-menu",
+            parentKey: "menu-list",
           },
           {
-            key: "Menu-add",
+            key: "subcategory",
             label: "• Subcategory",
             url: "/apps/menu/subcategory",
-            parentKey: "apps-menu",
+            parentKey: "menu-list",
           },
         ],
       },
@@ -93,14 +92,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
         parentKey: "apps-menu",
         children: [
           {
-            key: "orgaization-category",
-            label: "Category",
-            icon: "briefcase",
+            key: "category",
+            label: "• Category",
             url: "/apps/organizations/category",
             parentKey: "app-orgaization-category",
           },
           {
-            key: "orgaization-category",
+            key: "sub-category",
             label: "• Subcategory",
             url: "/apps/organizations/subcategory",
             parentKey: "app-orgaization-category",
@@ -110,20 +108,19 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "app-menu-category",
         label: "Kitchens",
-        icon: "trello",
+        icon: "coffee",
         parentKey: "apps-menu",
         children: [
           {
-            key: "Menu-category",
+            key: "category",
             icon: "mdi-circle-medium",
-            label: "Category",
+            label: "• Category",
             url: "/apps/kitchen/category",
             parentKey: "app-menu-category",
           },
           {
-            key: "Menu-subcategory",
-            icon: "mdi-circle-medium",
-            label: "Subcategory",
+            key: "sub-category",
+            label: "• Subcategory",
             url: "/apps/kitchen/subcategory",
             parentKey: "app-menu-category",
           },
@@ -148,7 +145,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-Designations",
     label: "Designations",
     isTitle: false,
-    icon: "user",
+    icon: "trello",
     url: "/apps/designations",
   },
   // {

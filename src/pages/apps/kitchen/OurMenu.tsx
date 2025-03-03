@@ -105,7 +105,7 @@ function OurMenu() {
 
       <Row>
         {kitchenMenuItems?.map((menu) =>
-          menu.items_id.map((item, index) => (
+          menu?.items_id.map((item, index) => (
             <Col
               key={`${menu._id}-${item._id}-${index}`}
               md={6}
@@ -166,7 +166,7 @@ function OurMenu() {
                           <div className="d-flex align-items-center mb-1">
                             <i className="mdi mdi-tag-outline me-1"></i>
                             <span className="text-muted">
-                              {item.item_id.category.category}
+                              {item?.item_id?.category?.category}
                             </span>
                           </div>
                           <h5 className="m-0">

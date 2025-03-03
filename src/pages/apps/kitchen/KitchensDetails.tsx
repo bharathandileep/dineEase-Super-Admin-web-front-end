@@ -238,6 +238,7 @@ function KitchensDetails() {
   if (!kitchenData) {
     return <div>No data found</div>;
   }
+  
   const CheckoutBar = ({ cartItems, onProceed }: any) => {
     if (cartItems?.length === 0) return null;
     return (
@@ -268,6 +269,7 @@ function KitchensDetails() {
       </div>
     );
   };
+
   const handleProceedToCheckout = async () => {
     setLoading(true);
     try {

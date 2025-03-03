@@ -268,28 +268,6 @@ const Editkitchens = React.lazy(
 );
 
 
-
-//Organizations
-// const NewOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/newOrganizations")
-// );
-// const ListOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/listOrganizations")
-// );
-// const EditOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/editOrganizations")
-// );
-// const OrganizationDetails = React.lazy(
-//   () => import("../pages/apps/Organizations/organizationDetails")
-// );
-
-// const Designations = React.lazy(
-//   () => import("../pages/apps/Designations/listDesignations")
-// );
-// const EmployeeDetails = React.lazy(
-//   () => import("../pages/apps/Adminemployee/employeeDetails")
-// );
-
 export interface RoutesProps {
   path: RouteProps["path"];
   name?: string;
@@ -438,6 +416,11 @@ const kitchenAppRoutes = {
       path: "/apps/menu-item/:id",
       name: "Editing",
       element: <ItemDetails />,
+    },
+    {
+      path: "/apps/kitchen/:kitchenId/item-details/:id",
+      name: "Editing",
+      element: <MenuDetails />,
     },
   ],
 };
