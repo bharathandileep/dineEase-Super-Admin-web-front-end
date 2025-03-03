@@ -1,0 +1,350 @@
+.dashboard {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  .dashboard-header {
+    padding: 2rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .header-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .header-tile {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .header-tile h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .header-tile p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0.5rem 0;
+  }
+  
+  .stats {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  
+  .dashboard-hero {
+    padding: 2rem;
+    background: white;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+  }
+  
+  .hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .dashboard-overview {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+  
+  .overview-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 1rem 0;
+  }
+  
+  .trend {
+    font-size: 0.9rem;
+  }
+  
+  .trend.positive {
+    color: #2ecc71;
+  }
+  
+  .trend.neutral {
+    color: #95a5a6;
+  }
+  
+  .dashboard-contact {
+    padding: 3rem;
+    background: #f8f9fa;
+  }
+  
+  .contact-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+  
+  .contact-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  
+  .contact-header h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .contact-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+  }
+  
+  .support-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .form-group {
+    position: relative;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+  
+  .form-group label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 0.5rem;
+    color: #7f8c8d;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .form-group textarea ~ label {
+    top: 1rem;
+    transform: none;
+  }
+  
+  .form-group input:focus ~ label,
+  .form-group textarea:focus ~ label,
+  .form-group input:not(:placeholder-shown) ~ label,
+  .form-group textarea:not(:placeholder-shown) ~ label {
+    top: -0.5rem;
+    font-size: 0.9rem;
+    color: #3498db;
+  }
+  
+  .select-group select {
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .select-group::after {
+    content: '▼';
+    font-size: 0.8rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #7f8c8d;
+  }
+  
+  .submit-btn {
+    background: #3498db;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+  
+  .submit-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .contact-container {
+      padding: 1.5rem;
+    }
+  }
+  
+  .dashboard-details {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .detail-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .stat-item span {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  
+  .stat-item h4 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .dashboard-home {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-hero {
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .hero-content {
+    flex: 1;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .hero-content p {
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .hero-image {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .hero-image img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .overview-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .overview-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+  
+  .overview-card .number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .trend {
+    font-size: 0.9rem;
+    display: block;
+  }
+  
+  .trend.positive {
+    color: #4CAF50;
+  }
+  
+  .trend.neutral {
+    color: #FF9800;
+  }
+  
