@@ -27,12 +27,15 @@ const EditEmployee = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
-  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(null);
+  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(
+    null
+  );
   const [panImage, setPanImage] = useState<File | null>(null);
   const [panImagePreview, setPanImagePreview] = useState<string | null>(null);
   const [designations, setDesignations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
+  const [orgEmpLoading, setOrgEmpLoading] = useState(false);
 
   // Location state management
   const [countries, setCountries] = useState<any[]>([]);
@@ -58,7 +61,6 @@ const EditEmployee = () => {
           const response = await getEmployeeById(id);
           if (response.status) {
             setEmployee(response.data);
-            // Set image preview if exists
             if (response.data.profile_picture) {
               setImagePreview(response.data.profile_picture);
             }
@@ -99,7 +101,8 @@ const EditEmployee = () => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({page:1,limit:100});
+        const response = await getAllDesignations({ page: 1, limit: 100 });
+        console.log(response);
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
@@ -258,32 +261,35 @@ const EditEmployee = () => {
     setValue,
   } = useForm({ resolver: yupResolver(schema) });
 
-  // Set form values when employee data is loaded
   useEffect(() => {
     if (employee) {
-      // Set general information
       setValue("username", employee.username);
       setValue("email", employee.email);
       setValue("phone_number", employee.phone_number);
-      setValue("designation", employee.designation?._id || employee.designation); // Ensure designation ID is set
-  
-      // Ensure address exists before accessing properties
+      setValue(
+        "designation",
+        employee.designation?._id || employee.designation
+      );
       if (employee.address) {
         setValue("street_address", employee.address.street_address || "");
+        setValue("city", employee.address.city || "");
+        setValue("district", employee.address.district || ""); // Fix capitalization
         setValue("pincode", employee.address.pincode || "");
         
         // Address dropdown fields are handled in the separate useEffect above
       }
-  
+
       // Set identification details
       setValue("aadhar_number", employee.aadhar_number || "");
       setValue("pan_number", employee.pan_number || "");
     }
   }, [employee, setValue]);
-  
+
   // Handle form submission
   const onSubmit = async (data: any) => {
     try {
+      setOrgEmpLoading(true); // Start loading
+
       const formData = new FormData();
 
       // Append all form data
@@ -310,7 +316,7 @@ const EditEmployee = () => {
       if (profileImage) {
         formData.append("profile_picture", profileImage);
       }
-      
+
       // Append Aadhaar image if updated
       if (aadharImage) {
         formData.append("aadhar_image", aadharImage);
@@ -335,6 +341,8 @@ const EditEmployee = () => {
     } catch (error) {
       console.error("Error updating employee:", error);
       toast.error("Error updating employee. Please try again.");
+    } finally {
+      setOrgEmpLoading(false); // Stop loading
     }
   };
 
@@ -367,10 +375,10 @@ const EditEmployee = () => {
   };
 
   return (
-    <div className='container py-2'>
-      <Card className='mb-2'>
+    <div className="container py-2">
+      <Card className="mb-2">
         <Card.Body>
-          <h3 className='text-uppercase'>Edit Employee</h3>
+          <h3 className="text-uppercase">Edit Employee</h3>
         </Card.Body>
       </Card>
 
@@ -380,47 +388,47 @@ const EditEmployee = () => {
           <Col lg={6}>
             <Card>
               <Card.Body>
-                <h5 className='text-uppercase mt-0 mb-3'>
+                <h5 className="text-uppercase mt-0 mb-3">
                   General Information
                 </h5>
                 <FormInput
-                  name='username'
-                  label='Employee Name'
-                  placeholder='Enter full name'
-                  containerClass='mb-3'
+                  name="username"
+                  label="Employee Name"
+                  placeholder="Enter full name"
+                  containerClass="mb-3"
                   register={register}
                   errors={errors}
                   control={control}
                 />
                 <FormInput
-                  name='email'
-                  label='Email'
-                  placeholder='Enter email'
-                  containerClass='mb-3'
+                  name="email"
+                  label="Email"
+                  placeholder="Enter email"
+                  containerClass="mb-3"
                   register={register}
                   errors={errors}
                   control={control}
-                  type='email'
+                  type="email"
                 />
                 <FormInput
-                  name='phone_number'
-                  label='Phone Number'
-                  placeholder='Enter phone number'
-                  containerClass='mb-3'
+                  name="phone_number"
+                  label="Phone Number"
+                  placeholder="Enter phone number"
+                  containerClass="mb-3"
                   register={register}
                   errors={errors}
                   control={control}
                 />
                 <FormInput
-                  name='designation'
-                  label='Designation'
-                  containerClass='mb-3'
+                  name="designation"
+                  label="Designation"
+                  containerClass="mb-3"
                   register={register}
                   errors={errors}
                   control={control}
-                  type='select'
+                  type="select"
                 >
-                  <option value=''>Select Designation</option>
+                  <option value="">Select Designation</option>
                   {designations?.map((designation) => (
                     <option
                       key={designation?._id}
@@ -438,13 +446,13 @@ const EditEmployee = () => {
           {/* Right Column - Profile Picture Upload */}
           <Col lg={6}>
             <Card>
-              <Card.Body className='text-center'>
-                <h5 className='text-uppercase mt-0 mb-3'>Profile Picture</h5>
+              <Card.Body className="text-center">
+                <h5 className="text-uppercase mt-0 mb-3">Profile Picture</h5>
                 {imagePreview && (
-                  <div className='mb-3'>
+                  <div className="mb-3">
                     <img
                       src={imagePreview}
-                      alt='Profile Preview'
+                      alt="Profile Preview"
                       style={{
                         maxWidth: "200px",
                         maxHeight: "200px",
@@ -465,18 +473,18 @@ const EditEmployee = () => {
         {/* Address Information */}
         <Row>
           <Col lg={12}>
-            <Card className='mt-3'>
+            <Card className="mt-3">
               <Card.Body>
-                <h5 className='text-uppercase mt-0 mb-3'>
+                <h5 className="text-uppercase mt-0 mb-3">
                   Address Information
                 </h5>
                 <Row>
                   <Col md={6}>
                     <FormInput
-                      name='street_address'
-                      label='Street Address'
-                      placeholder='Enter street address'
-                      containerClass='mb-3'
+                      name="street_address"
+                      label="Street Address"
+                      placeholder="Enter street address"
+                      containerClass="mb-3"
                       register={register}
                       errors={errors}
                       control={control}
@@ -619,19 +627,19 @@ const EditEmployee = () => {
           </Col>
         </Row>
         <Row>
-          <Col lg={12}>            
-           <Card className='mt-3'>
-               <Card.Body>
-              <h5 className='text-uppercase mt-0 mb-3'>
-                 Identification Details
-                 </h5>
-              <Row>
-                   <Col md={6}>
-                     <FormInput
-                      name='aadhar_number'
-                      label='Aadhaar Number'
-                      placeholder='Enter Aadhaar number'
-                      containerClass='mb-3'
+          <Col lg={12}>
+            <Card className="mt-3">
+              <Card.Body>
+                <h5 className="text-uppercase mt-0 mb-3">
+                  Identification Details
+                </h5>
+                <Row>
+                  <Col md={6}>
+                    <FormInput
+                      name="aadhar_number"
+                      label="Aadhaar Number"
+                      placeholder="Enter Aadhaar number"
+                      containerClass="mb-3"
                       register={register}
                       errors={errors}
                       control={control}
@@ -639,10 +647,10 @@ const EditEmployee = () => {
                   </Col>
                   <Col md={6}>
                     <FormInput
-                      name='pan_number'
-                      label='PAN Number'
-                      placeholder='Enter PAN number'
-                      containerClass='mb-3'
+                      name="pan_number"
+                      label="PAN Number"
+                      placeholder="Enter PAN number"
+                      containerClass="mb-3"
                       register={register}
                       errors={errors}
                       control={control}
@@ -652,13 +660,15 @@ const EditEmployee = () => {
                 <Row>
                   <Col lg={6}>
                     <Card>
-                      <Card.Body className='text-center'>
-                        <h5 className='text-uppercase mt-0 mb-3'>Aadhaar Card</h5>
+                      <Card.Body className="text-center">
+                        <h5 className="text-uppercase mt-0 mb-3">
+                          Aadhaar Card
+                        </h5>
                         {aadharImagePreview && (
-                          <div className='mb-3'>
+                          <div className="mb-3">
                             <img
                               src={aadharImagePreview}
-                              alt='Aadhaar Preview'
+                              alt="Aadhaar Preview"
                               style={{
                                 maxWidth: "200px",
                                 maxHeight: "200px",
@@ -669,20 +679,22 @@ const EditEmployee = () => {
                           </div>
                         )}
                         <FileUploader
-                          onFileUpload={(files) => handleAadharFileUpload(Array.from(files))}
+                          onFileUpload={(files) =>
+                            handleAadharFileUpload(Array.from(files))
+                          }
                         />
                       </Card.Body>
                     </Card>
                   </Col>
                   <Col lg={6}>
                     <Card>
-                      <Card.Body className='text-center'>
-                        <h5 className='text-uppercase mt-0 mb-3'>PAN Card</h5>
+                      <Card.Body className="text-center">
+                        <h5 className="text-uppercase mt-0 mb-3">PAN Card</h5>
                         {panImagePreview && (
-                          <div className='mb-3'>
+                          <div className="mb-3">
                             <img
                               src={panImagePreview}
-                              alt='PAN Preview'
+                              alt="PAN Preview"
                               style={{
                                 maxWidth: "200px",
                                 maxHeight: "200px",
@@ -693,7 +705,9 @@ const EditEmployee = () => {
                           </div>
                         )}
                         <FileUploader
-                          onFileUpload={(files) => handlePanFileUpload(Array.from(files))}
+                          onFileUpload={(files) =>
+                            handlePanFileUpload(Array.from(files))
+                          }
                         />
                       </Card.Body>
                     </Card>
@@ -704,18 +718,31 @@ const EditEmployee = () => {
           </Col>
         </Row>
 
-        {/* Submit Button */}
-        <Row>
-          <Col className='text-center'>
+        <Row className="mt-3 mb-4">
+          <Col className="text-end">
             <Button
-              variant='light'
-              className='me-2'
-              onClick={() => navigate("/apps/employee/list")}
+              variant="danger"
+              className="me-2"
+              onClick={() => navigate("/apps/organizations/employ/list")}
             >
               Cancel
             </Button>
-            <Button type='submit' variant='success'>
-              Update
+            <Button type="submit" variant="success" disabled={orgEmpLoading}>
+              {orgEmpLoading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  />
+                  <span
+                    className="spinner-grow spinner-grow-sm"
+                    role="status"
+                  />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </Col>
         </Row>

@@ -269,28 +269,6 @@ const Editkitchens = React.lazy(
 );
 
 
-
-//Organizations
-// const NewOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/newOrganizations")
-// );
-// const ListOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/listOrganizations")
-// );
-// const EditOrganizations = React.lazy(
-//   () => import("../pages/apps/Organizations/editOrganizations")
-// );
-// const OrganizationDetails = React.lazy(
-//   () => import("../pages/apps/Organizations/organizationDetails")
-// );
-
-// const Designations = React.lazy(
-//   () => import("../pages/apps/Designations/listDesignations")
-// );
-// const EmployeeDetails = React.lazy(
-//   () => import("../pages/apps/Adminemployee/employeeDetails")
-// );
-
 export interface RoutesProps {
   path: RouteProps["path"];
   name?: string;
@@ -420,23 +398,23 @@ const kitchenAppRoutes = {
       route: PrivateRoute,
     },
     {
-      path: "/apps/kitchen/menu",
+      path: "/apps/menu-item/new",
       name: "Items",
       element: <MenuItems />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/kitchen/listing",
+      path: "/apps/menu-items/list",
       name: "Listing",
       element: <ItemsListing />,
     },
     {
-      path: "/apps/kitchen/editing/:id",
+      path: "/apps/menu-item/editing/:id",
       name: "Editing",
       element: <EditFoodItem />,
     },
     {
-      path: "/apps/kitchen/item-details/:id",
+      path: "/apps/menu-item/:id",
       name: "Editing",
       element: <ItemDetails />,
     },
@@ -444,6 +422,11 @@ const kitchenAppRoutes = {
       path:"/apps/kitchen/kitchenmenu",
       name:"Kitchen-Menu",
       element:<KitchenMenuPage/>
+    },
+    {
+      path: "/apps/kitchen/:kitchenId/item-details/:id",
+      name: "Editing",
+      element: <MenuDetails />,
     },
   ],
 };

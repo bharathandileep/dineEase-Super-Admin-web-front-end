@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Button } from "react-bootstrap";
@@ -11,20 +9,28 @@ import { toast } from "react-toastify";
 import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components";
 import { createItem } from "../../../server/admin/items";
-import { getAllCategories, getSubcategoriesByCategory } from "../../../server/admin/menu";
+import {
+  getAllCategories,
+  getSubcategoriesByCategory,
+} from "../../../server/admin/menu";
 
 const AddFoodItem = () => {
   const [itemImage, setItemImage] = useState<File | null>(null);
-  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
-  const [subcategories, setSubcategories] = useState<{ _id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
+    []
+  );
+  const [subcategories, setSubcategories] = useState<
+    { _id: string; name: string }[]
+  >([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [addMenulaoder, setMenuLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await getAllCategories( { page: 1, limit: 100 });
+        const response = await getAllCategories({ page: 1, limit: 100 });
         if (response.status) {
           setCategories(response.data.categories);
         } else {
@@ -62,7 +68,6 @@ const AddFoodItem = () => {
     }
   }, [selectedCategoryId]);
 
-  // Removed status field from validation; it will default to true in your schema.
   const schemaResolver = yupResolver(
     yup.object().shape({
       item_name: yup.string().required("Item name is required"),
@@ -72,31 +77,43 @@ const AddFoodItem = () => {
     })
   );
 
-  const { handleSubmit, register, control, formState: { errors } } = useForm({
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { errors },
+  } = useForm({
     resolver: schemaResolver,
   });
 
   const onSubmit = async (data: any) => {
     try {
+      setMenuLoading(true); // Start loading
+
       const formData = new FormData();
       formData.append("item_name", data.item_name);
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
       formData.append("item_description", data.item_description);
-      // Note: No "status" field is appended here.
+
+      // Append image if selected
       if (itemImage) {
         formData.append("item_image", itemImage);
       }
+
       const response = await createItem(formData);
+
       if (response.status) {
         toast.success("Item created successfully!");
-        navigate("/apps/kitchen/listing");
+        navigate("/apps/menu-items/list");
       } else {
         toast.error("Failed to create item.");
       }
     } catch (error) {
       console.error("Error creating item:", error);
       toast.error("Error creating item. Please try again.");
+    } finally {
+      setMenuLoading(false);
     }
   };
 
@@ -181,23 +198,39 @@ const AddFoodItem = () => {
             <Card>
               <Card.Body>
                 <h5 className="text-uppercase mt-0 mb-3">Product Images</h5>
-                <FileUploader onFileUpload={(files) => handleFileUpload(Array.from(files))} />
+                <FileUploader
+                  onFileUpload={(files) => handleFileUpload(Array.from(files))}
+                />
               </Card.Body>
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Card>
-              <Card.Body className="text-center">
-                <Button variant="light" className="me-2" onClick={() => navigate("/apps/kitchen/listing")}>
-                  Cancel
-                </Button>
-                <Button type="submit" variant="success">
-                  Save
-                </Button>
-              </Card.Body>
-            </Card>
+        <Row className="mt-3 mb-4">
+          <Col className="text-end">
+            <Button
+              variant="light"
+              className="me-2"
+              onClick={() => navigate("/apps/menu-items/list")}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="success" disabled={addMenulaoder}>
+              {addMenulaoder ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  />
+                  <span
+                    className="spinner-grow spinner-grow-sm"
+                    role="status"
+                  />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
           </Col>
         </Row>
       </form>

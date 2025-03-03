@@ -68,6 +68,17 @@ export const deleteOrgDetails = async (id: string | undefined) => {
     return error.response?.data
   }
 };
+export const toggleOrganizationStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.organization.toggleOrgStatus(id)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export const orgCreateCategory = async (data: any) => {
   try {
@@ -128,7 +139,6 @@ export const orgToggleCategoryStatus = async (id: string | undefined) => {
 };
 
 export const orgCreateSubcategory = async (data: any | undefined) => {
-  console.log(data);
   try {
     const response = await axiosInstance.post(
       apiConfig.organization.createSubcategory,

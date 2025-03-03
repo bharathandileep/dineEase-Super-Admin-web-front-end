@@ -66,7 +66,6 @@ function ListOrganizations() {
         toast.error("Failed to load organizations.");
       }
     } catch (error) {
-      console.error("Error fetching organizations:", error);
       toast.error("An error occurred while fetching organizations.");
     } finally {
       setLoading(false);
@@ -74,10 +73,6 @@ function ListOrganizations() {
       isLoadingRef.current = false;
     }
   };
-
-  useEffect(() => {
-    fetchOrganizations(1, true, searchTerm);
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -125,17 +120,6 @@ function ListOrganizations() {
           </Link>
         </div>
       </div>
-
-      {/* <div className="mb-3">
-        <Form.Group controlId="searchOrganizations">
-          <Form.Control
-            type="text"
-            placeholder="Search by name, email, contact, address, or employee count..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Form.Group>
-      </div> */}
             <Row>
               <Col>
                 <Card>

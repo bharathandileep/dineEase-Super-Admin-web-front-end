@@ -82,10 +82,6 @@ function ListKitchens() {
   };
 
   useEffect(() => {
-    fetchKitchens(1, true, searchTerm);
-  }, []);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
       fetchKitchens(1, true, searchTerm);

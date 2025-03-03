@@ -1,9 +1,12 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { listItems, deleteItem, changeItemStatus } from "../../../server/admin/items";
+import {
+  listItems,
+  deleteItem,
+  changeItemStatus,
+} from "../../../server/admin/items";
 import { Pencil, Trash } from "lucide-react";
 
 interface Item {
@@ -12,13 +15,13 @@ interface Item {
   item_name: string;
   item_description: string;
   status: boolean;
-  category?: { 
+  category?: {
     name: string;
-    category: string;  // Added to match the actual data structure
+    category: string; // Added to match the actual data structure
   };
-  subcategory?: { 
+  subcategory?: {
     name: string;
-    subcategoryName: string;  // Added to match the actual data structure
+    subcategoryName: string; // Added to match the actual data structure
   };
   categoryName?: string;
   subcategoryName?: string;
@@ -39,7 +42,8 @@ const FoodItemsList = () => {
             response.data.map((item: Item) => ({
               ...item,
               categoryName: item.category?.category || "Unknown Category",
-              subcategoryName: item.subcategory?.subcategoryName || "Unknown Subcategory",
+              subcategoryName:
+                item.subcategory?.subcategoryName || "Unknown Subcategory",
             }))
           );
         } else {
@@ -56,27 +60,8 @@ const FoodItemsList = () => {
   }, []);
 
   const handleEdit = (id: string) => {
-    navigate(`/apps/kitchen/editing/${id}`);
+    navigate(`/apps/menu-item/editing/${id}`);
   };
-
-  // const handleStatusToggle = async (id: string) => {
-  //   try {
-  //     const response = await changeItemStatus(id);
-  //     if (response.status) {
-  //       setItems((prevItems) =>
-  //         prevItems.map((item) =>
-  //           item._id === id ? { ...item, status: response.data.status } : item
-  //         )
-  //       );
-  //       toast.success("Item status updated successfully!");
-  //     } else {
-  //       toast.error("Failed to update status.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating status:", error);
-  //     toast.error("An error occurred while updating status.");
-  //   }
-  // };
 
   const handleDelete = async (id: any) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
@@ -94,14 +79,14 @@ const FoodItemsList = () => {
       }
     }
   };
-
-  // Filter items based on search term - fixed to use the correct properties
   const filteredItems = items.filter((item) => {
     const searchLower = searchTerm.toLowerCase();
     return (
       item.item_name.toLowerCase().includes(searchLower) ||
-      (item.categoryName && item.categoryName.toLowerCase().includes(searchLower)) ||
-      (item.subcategoryName && item.subcategoryName.toLowerCase().includes(searchLower))
+      (item.categoryName &&
+        item.categoryName.toLowerCase().includes(searchLower)) ||
+      (item.subcategoryName &&
+        item.subcategoryName.toLowerCase().includes(searchLower))
     );
   });
 
@@ -110,7 +95,7 @@ const FoodItemsList = () => {
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb m-2">
           <li className="breadcrumb-item">
-            <Link to="/apps/kitchen/menu">Kitchen</Link>
+            <Link to="/apps/menu-item/new">Kitchen</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             Food Items
@@ -118,29 +103,49 @@ const FoodItemsList = () => {
         </ol>
       </nav>
 
-      <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
         <div className="d-flex align-items-center justify-content-between">
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
             Food Items
           </h3>
           <Link
-            to="/apps/kitchen/add"
+            to="/apps/menu-item/new"
             className="btn btn-danger waves-effect waves-light"
           >
             <i className="mdi mdi-plus-circle me-1"></i> Add New Item
           </Link>
         </div>
       </div>
-
-      {/* Search Bar */}
-      <Form.Group className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Search by item name, category, or subcategory"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Form.Group>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Body>
+              <Row className="justify-content-between">
+                <Col className="col-auto">
+                  <form className="d-flex align-items-center">
+                    <label htmlFor="inputPassword2" className="visually-hidden">
+                      Search
+                    </label>
+                    <div>
+                      <input
+                        type="search"
+                        className="form-control my-1 my-lg-0"
+                        id="inputPassword2"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </form>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {loading ? (
         <div className="text-center my-3">
@@ -157,7 +162,7 @@ const FoodItemsList = () => {
                     transition: "all 0.3s ease-in-out",
                     cursor: "pointer",
                   }}
-                  onClick={() => navigate(`/apps/kitchen/item-details/${item._id}`)}
+                  onClick={() => navigate(`/apps/menu-item/${item._id}`)}
                 >
                   <Card.Body className="d-flex flex-column">
                     <div className="product-action">
@@ -189,13 +194,13 @@ const FoodItemsList = () => {
                         alt={item?.item_name}
                         className="img-fluid"
                         style={{
-                          width: "150px",
-                          height: "150px",
+                          width: "100%",
+                          height: "200px",
                           objectFit: "cover",
                         }}
                       />
                     </div>
-                    <div className="product-info mt-auto">
+                    <div className="product-info">
                       <h5 className="font-16 mt-0 sp-line-1">
                         <Link to="#" className="text-dark">
                           {item?.item_name}
@@ -211,16 +216,6 @@ const FoodItemsList = () => {
                           Subcategory: {item?.subcategoryName}
                         </span>
                       </h5>
-                      {/* <Button
-                        variant={item?.status ? "success" : "secondary"}
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStatusToggle(item._id);
-                        }}
-                      >
-                        {item.status ? "Active" : "Inactive"}
-                      </Button> */}
                       <h5 className="m-0">
                         <span className="text-muted">
                           Description: {item?.item_description}

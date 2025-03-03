@@ -148,7 +148,7 @@ function MenuCategory() {
   const StatusColumn = ({ row }: { row: any }) => {
     return (
       <button
-        className={`badge border-0 text-white ${
+        className={`badge border-0 text-white  ${
           row.original.status ? "bg-success" : "bg-secondary"
         }`}
         onClick={() => handleToggleStatus(row?.original?._id)}
@@ -288,7 +288,7 @@ function MenuCategory() {
               <Table
                 columns={columns}
                 data={filteredMenuItems}
-                isSearchable={false} // Keep custom search above table
+                isSearchable={false} 
                 pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}

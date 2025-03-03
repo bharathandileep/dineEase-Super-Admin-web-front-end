@@ -32,6 +32,7 @@ export const apiConfig = {
       `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`, 
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
+    toggleKitchenStatus:(id: string | undefined)=>`/kitchens/status/${id}`,
 
     createCategory: "/kitchens/categories",
     getAllCategories:(query:any)=> `/kitchens/categories/all?page=${query.page}&limit=${query.limit}`,    
@@ -67,6 +68,7 @@ export const apiConfig = {
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
+    toggleOrgStatus:(id: string | undefined)=>`/organization/status/${id}`,
 
     createCategory: "/organization/categories",
     getAllCategories:(query:any)=> `/organization/categories/all?page=${query.page}&limit=${query.limit}`,    
