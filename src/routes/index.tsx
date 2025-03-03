@@ -33,6 +33,7 @@ import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
 
 import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
 import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
+import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
 
 // import Root from './Root';
 
@@ -438,6 +439,11 @@ const kitchenAppRoutes = {
       path: "/apps/kitchen/item-details/:id",
       name: "Editing",
       element: <ItemDetails />,
+    },
+    {
+      path:"/apps/kitchen/kitchenmenu",
+      name:"Kitchen-Menu",
+      element:<KitchenMenuPage/>
     },
   ],
 };
