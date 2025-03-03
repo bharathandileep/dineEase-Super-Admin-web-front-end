@@ -1,5 +1,5 @@
 // Designations.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Row, Col, Button, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -10,11 +10,13 @@ import {
   deleteDesignation,
   toggleDesignationStatus,
 } from "../../../server/admin/designations";
-import DesignationModal from "./modal/DesignationModal";
+
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
+import DesignationModal from "./modal/DesignationModal";
 
 function Designations() {
+  const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [show, setShow] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +34,12 @@ function Designations() {
     const fetchAllDesignations = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({ page: currentPage, limit: pageSize });
+        const response = await getAllDesignations({ 
+          page: currentPage, 
+          limit: pageSize,
+          search: searchTerm,
+          status: statusFilter
+        });
         if (response.status) {
           setDesignations(response.data.designations);
           setTotalPages(response.data.pagination.totalPages);
@@ -48,10 +55,10 @@ function Designations() {
       }
     };
     fetchAllDesignations();
-  }, [currentPage, pageSize, isDeleted, show]);
+  }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-    setSearchTerm(searchValue.toLowerCase());
+    setSearchTerm(searchValue);
     setCurrentPage(1);
   };
 
@@ -59,11 +66,38 @@ function Designations() {
     try {
       const response = await toggleDesignationStatus(id);
       if (response.status) {
-        setDesignations((prevItems) =>
-          prevItems.map((item) =>
-            item._id === id ? { ...item, status: !item.status } : item
-          )
-        );
+        const item = designations.find((d) => d._id === id);
+        const newStatus = !item.status;
+        
+        toast.success(`Designation status changed to ${newStatus ? 'Active' : 'Inactive'}`);
+
+        if (statusFilter !== "all") {
+          if (
+            (statusFilter === "active" && !newStatus) || 
+            (statusFilter === "inactive" && newStatus)
+          ) {
+            setDesignations((prevItems) => prevItems.filter((item) => item._id !== id));
+            setTotalItems((prev) => prev - 1);
+            const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
+            setTotalPages(newTotalPages);
+            
+            if (designations.length === 1 && currentPage > 1) {
+              setCurrentPage(currentPage - 1);
+            }
+          } else {
+            setDesignations((prevItems) =>
+              prevItems.map((item) =>
+                item._id === id ? { ...item, status: newStatus } : item
+              )
+            );
+          }
+        } else {
+          setDesignations((prevItems) =>
+            prevItems.map((item) =>
+              item._id === id ? { ...item, status: newStatus } : item
+            )
+          );
+        }
       } else {
         toast.error("Failed to toggle status.");
       }
@@ -87,7 +121,18 @@ function Designations() {
       const response = await deleteDesignation(id);
       if (response.status) {
         toast.success(response.message);
-        setIsDeleted((prev) => !prev);
+        
+        const remainingItems = totalItems - 1;
+        const newTotalPages = Math.ceil(remainingItems / pageSize);
+        
+        if (designations.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          setIsDeleted((prev) => !prev);
+        }
+        
+        setTotalItems(remainingItems);
+        setTotalPages(newTotalPages);
       } else {
         toast.error(response.message || "Delete failed. Please try again.");
       }
@@ -108,31 +153,16 @@ function Designations() {
     setCurrentPage(1);
   };
 
-  const filteredDesignations = useMemo(() => {
-    return designations?.filter((value) => {
-      const designationMatch = value.designation_name
-        .toLowerCase()
-        .includes(searchTerm);
-      const createdAtString =
-        value.createdAt && !isNaN(new Date(value.createdAt).getTime())
-          ? new Date(value.createdAt).toLocaleDateString()
-          : "";
-      const createdAtMatch = createdAtString.toLowerCase().includes(searchTerm);
-      const statusMatch =
-        statusFilter === "all" ||
-        (statusFilter === "active" && value.status) ||
-        (statusFilter === "inactive" && !value.status);
-      return (designationMatch || createdAtMatch) && statusMatch;
-    });
-  }, [searchTerm, statusFilter, designations]);
-
   /* Column render functions */
   const DesignationColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.designation_name}</span>;
   };
+
   const NumberColumn = ({ row }: { row: any }) => {
-    return <span className="fw-bold">{row.index + 1}</span>;
+    const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
+    return <span className="fw-bold">{rowNumber}</span>;
   };
+
   const CreatedAtColumn = ({ row }: { row: any }) => {
     return <span>{new Date(row?.original?.createdAt).toLocaleString()}</span>;
   };
@@ -249,6 +279,7 @@ function Designations() {
                           className="form-control my-1 my-lg-0"
                           id="inputPassword2"
                           placeholder="Search..."
+                          value={searchTerm}
                           onChange={(e) => onSearchData(e.target.value)}
                         />
                       </div>
@@ -289,22 +320,17 @@ function Designations() {
               <div className="text-center my-4">
                 <p>No Designations Found</p>
               </div>
-            ) : filteredDesignations.length === 0 ? (
-              <div className="text-center my-4">
-                <p>No results found for "{searchTerm}"</p>
-              </div>
             ) : (
               <Table
                 columns={columns}
-                data={filteredDesignations}
-                isSearchable={false} // Disable the built-in search box
+                data={designations}
+                isSearchable={false}
                 pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}
                 pagination={true}
                 isSelectable={false}
                 theadClass="table-light"
-                // Remove searchBoxClass prop entirely
                 onPageChange={handlePageChange}
                 onSizePerPageChange={handleSizePerPageChange}
                 totalPages={totalPages}

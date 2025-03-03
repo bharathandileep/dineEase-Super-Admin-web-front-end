@@ -68,8 +68,8 @@ const EditEmployee = () => {
     const fetchDesignations = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({ page: 1, limit: 100 });
-        console.log(response);
+        const response = await getAllDesignations({page:1,limit:100});
+     
         if (response.status) {
           setDesignations(response.data.designations);
         } else {

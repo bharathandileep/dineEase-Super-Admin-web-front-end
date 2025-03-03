@@ -13,6 +13,7 @@ export const getAllDesignations = async (query: any) => {
   }
 };
 
+
 // ✅ Get a single designation by ID
 export const getDesignationById = async (id: string) => {
   try {
