@@ -45,7 +45,7 @@ const AddkitchenCategory = ({
 
   const fetchAllCategories = async () => {
     try {
-      const response = await kitchensGetAllCategories( {page: 1, limit: 100} );
+      const response = await kitchensGetAllCategories({ page: 1, limit: 100 });
       if (response.status) {
         setMenuItems(response.data.categories);
       }
@@ -56,7 +56,7 @@ const AddkitchenCategory = ({
 
   useEffect(() => {
     if (selectedItem && isSubCategory && action === "edit") {
-      setSelectedCategory(selectedItem.category);
+      setSelectedCategory(selectedItem.category._id);
       fetchAllCategories();
     } else {
       setSelectedCategory("");
@@ -148,7 +148,9 @@ const AddkitchenCategory = ({
             placeholder="Enter category"
             containerClass="mb-3"
             defaultValue={
-              isSubCategory
+              action === "add"
+                ? ""
+                : isSubCategory
                 ? selectedItem?.subcategoryName
                 : selectedItem?.category || ""
             }
@@ -157,7 +159,6 @@ const AddkitchenCategory = ({
             <Button variant="success" type="submit" className="me-1">
               {action === "edit" ? "Update" : "Add"}
             </Button>
-           
           </div>
         </VerticalForm>
       </Modal.Body>

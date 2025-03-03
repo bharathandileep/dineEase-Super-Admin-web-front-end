@@ -37,6 +37,7 @@ import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
 
 // import Root from './Root';
 
@@ -420,6 +421,11 @@ const kitchenAppRoutes = {
       path: "/apps/menu-item/:id",
       name: "Editing",
       element: <ItemDetails />,
+    },
+    {
+      path:"/apps/kitchen/kitchen-menu",
+      name:"Kitchen-Menu",
+      element:<KitchenMenuPage/>
     },
     {
       path: "/apps/kitchen/:kitchenId/item-details/:id",

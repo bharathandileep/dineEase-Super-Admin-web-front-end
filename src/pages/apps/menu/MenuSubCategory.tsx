@@ -325,7 +325,6 @@ function MenuSubCategory() {
           </div>
         </div>
       </div>
-
       <AddCategory
         show={show}
         onHide={() => setShow(false)}

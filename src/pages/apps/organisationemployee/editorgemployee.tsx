@@ -13,6 +13,12 @@ import {
   updateOrgEmployee,
 } from "../../../server/admin/orgemployeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
+import { 
+  getAllCountries, 
+  getStatesByCountry, 
+  getCitiesByState, 
+  getDistrictsByState 
+} from "../../../server/admin/addressDetails";
 
 const OrgEmployeeEdit = () => {
   const navigate = useNavigate();
@@ -28,6 +34,23 @@ const OrgEmployeeEdit = () => {
   const [designations, setDesignations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [orgemployee, setEmployee] = useState<any>(null);
+
+  // Location state management
+  const [countries, setCountries] = useState<any[]>([]);
+  const [states, setStates] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    country: "",
+    state: "",
+    city: "",
+    district: ""
+  });
+  
+  // Add this flag to track initial loading of address data
+  const [addressDataLoaded, setAddressDataLoaded] = useState(false);
+
+  // Fetch employee data
   const [orgEmpLoading, setOrgEmpLoading] = useState(false);
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -47,6 +70,16 @@ const OrgEmployeeEdit = () => {
             if (response.data.pan_image) {
               setPanImagePreview(response.data.pan_image);
             }
+            
+            // Set formData for address dropdowns
+            if (response.data.address) {
+              setFormData({
+                country: response.data.address.country || "",
+                state: response.data.address.state || "",
+                city: response.data.address.city || "",
+                district: response.data.address.district || ""
+              });
+            }
           } else {
             toast.error("Failed to load employee data.");
           }
@@ -63,9 +96,9 @@ const OrgEmployeeEdit = () => {
     fetchEmployeeData();
   }, [id]);
 
-  // Fetch designations
+  // Fetch designations and countries on component mount
   useEffect(() => {
-    const fetchDesignations = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
       try {
         const response = await getAllDesignations({ page: 1, limit: 100 });
@@ -75,15 +108,134 @@ const OrgEmployeeEdit = () => {
         } else {
           toast.error("Failed to load designations.");
         }
+        
+        // Fetch countries
+        await fetchCountries();
       } catch (error) {
-        console.error("Error fetching designations:", error);
-        toast.error("An error occurred while fetching designations.");
+        console.error("Error fetching initial data:", error);
+        toast.error("An error occurred while loading initial data.");
       } finally {
         setLoading(false);
       }
     };
-    fetchDesignations();
-  }, [id]);
+    
+    fetchInitialData();
+  }, []);
+
+  // Load address data when employee data is available
+  useEffect(() => {
+    const loadAddressData = async () => {
+      if (orgemployee && orgemployee.address && !addressDataLoaded) {
+        // Set the flag to prevent multiple loads
+        setAddressDataLoaded(true);
+        
+        try {
+          // Load country data first
+          await fetchCountries();
+          
+          // Then load state data based on country
+          if (orgemployee.address.country) {
+            await fetchStates(orgemployee.address.country);
+          }
+          
+          // Then load city and district data based on state
+          if (orgemployee.address.state) {
+            await fetchCities(orgemployee.address.state);
+            await fetchDistricts(orgemployee.address.state);
+          }
+          
+          // Update formData with saved address values
+          setFormData({
+            country: orgemployee.address.country || "",
+            state: orgemployee.address.state || "",
+            city: orgemployee.address.city || "",
+            district: orgemployee.address.district || ""
+          });
+          
+          // Also set the form values
+          setValue("country", orgemployee.address.country || "");
+          setValue("state", orgemployee.address.state || "");
+          setValue("city", orgemployee.address.city || "");
+          setValue("district", orgemployee.address.district || "");
+        } catch (error) {
+          console.error("Error loading address data:", error);
+          toast.error("Failed to load address details.");
+        }
+      }
+    };
+    
+    loadAddressData();
+  }, [orgemployee, addressDataLoaded]);
+
+  // Location data fetching functions
+  const fetchCountries = async () => {
+    try {
+      const data = await getAllCountries(); 
+      if (data?.success) {
+        setCountries(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+  };
+  
+  const fetchStates = async (countryName: string) => {
+    try {
+      const data = await getStatesByCountry(countryName); 
+      if (data?.success) {
+        setStates(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+  
+  const fetchCities = async (stateName: string) => {
+    try {
+      const data = await getCitiesByState(stateName);
+      if (data?.success) {
+        setCities(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+  
+  const fetchDistricts = async (stateId: string) => {
+    try {
+      const data = await getDistrictsByState(stateId);
+      if (data?.success) {
+        setDistricts(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  };
+
+  // Handle location selection changes
+  const handleChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Also update the form value
+    setValue(name, value);
+
+    if (name === "country") {
+      await fetchStates(value);
+      setFormData((prev) => ({ ...prev, state: "", city: "", district: "" }));
+      setValue("state", "");
+      setValue("city", "");
+      setValue("district", "");
+    } else if (name === "state") {
+      await fetchCities(value);
+      await fetchDistricts(value);
+      setFormData((prev) => ({ ...prev, city: "", district: "" }));
+      setValue("city", "");
+      setValue("district", "");
+    }
+  };
 
   // Validation Schema
   const schema = yup.object().shape({
@@ -125,8 +277,8 @@ const OrgEmployeeEdit = () => {
         setValue("city", orgemployee.address.city || "");
         setValue("district", orgemployee.address.district || ""); // Fix capitalization
         setValue("pincode", orgemployee.address.pincode || "");
-        setValue("state", orgemployee.address.state || "");
-        setValue("country", orgemployee.address.country || "");
+        
+        // Address dropdown fields are handled in the separate useEffect above
       }
 
       // Set identification details
@@ -160,6 +312,8 @@ const OrgEmployeeEdit = () => {
       if (profileImage) {
         formData.append("profile_picture", profileImage);
       }
+      
+      // Append Aadhaar image if updated
       if (aadharImage) {
         formData.append("aadhar_image", aadharImage);
       }
@@ -192,6 +346,7 @@ const OrgEmployeeEdit = () => {
       setImagePreview(previewUrl);
     }
   };
+
   const handleAadharFileUpload = (files: File[]) => {
     if (files.length > 0) {
       const file = files[0];
@@ -325,55 +480,131 @@ const OrgEmployeeEdit = () => {
                       control={control}
                     />
                   </Col>
-                  <Col md={4}>
-                    <FormInput
-                      name="city"
-                      label="City"
-                      placeholder="Enter city"
-                      containerClass="mb-3"
-                      register={register}
-                      errors={errors}
-                      control={control}
-                    />
+                  
+                  {/* Country Selection */}
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">Country</label>
+                      <select
+                        {...register("country")}
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.country ? "is-invalid" : ""
+                        }`}
+                      >
+                        <option value="">Select Country</option>
+                        {countries.map((country) => (
+                          <option 
+                            key={country._id} 
+                            value={country.id}
+                          >
+                            {country.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.country && (
+                        <div className="invalid-feedback">{errors.country.message}</div>
+                      )}
+                    </div>
                   </Col>
-                  <Col md={4}>
+                  
+                  {/* State Selection */}
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <select
+                        {...register("state")}
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.state ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.country}
+                      >
+                        <option value="">Select State</option>
+                        {states.map((state) => (
+                          <option 
+                            key={state._id} 
+                            value={state.id}
+                          >
+                            {state.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.state && (
+                        <div className="invalid-feedback">{errors.state.message}</div>
+                      )}
+                    </div>
+                  </Col>
+                  
+                  {/* City Selection */}
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <select
+                        {...register("city")}
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.city ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city) => (
+                          <option 
+                            key={city._id} 
+                            value={city.id}
+                          >
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city && (
+                        <div className="invalid-feedback">{errors.city.message}</div>
+                      )}
+                    </div>
+                  </Col>
+                  
+                  {/* District Selection */}
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">District</label>
+                      <select
+                        {...register("district")}
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.district ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select District</option>
+                        {districts.map((district) => (
+                          <option 
+                            key={district._id} 
+                            value={district.id}
+                          >
+                            {district.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.district && (
+                        <div className="invalid-feedback">{errors.district.message}</div>
+                      )}
+                    </div>
+                  </Col>
+                  
+                  <Col md={6}>
                     <FormInput
                       name="pincode"
                       label="Pincode"
                       placeholder="Enter pincode"
-                      containerClass="mb-3"
-                      register={register}
-                      errors={errors}
-                      control={control}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <FormInput
-                      name="district"
-                      label="district"
-                      placeholder="Enter District"
-                      containerClass="mb-3"
-                      register={register}
-                      errors={errors}
-                      control={control}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <FormInput
-                      name="state"
-                      label="State"
-                      placeholder="Enter state"
-                      containerClass="mb-3"
-                      register={register}
-                      errors={errors}
-                      control={control}
-                    />
-                  </Col>
-                  <Col md={12}>
-                    <FormInput
-                      name="country"
-                      label="Country"
-                      placeholder="Enter country"
                       containerClass="mb-3"
                       register={register}
                       errors={errors}

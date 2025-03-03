@@ -322,7 +322,6 @@ function MenuCategory() {
           </div>
         </div>
       </div>
-
       <AddCategory
         show={show}
         onHide={() => setShow(false)}
