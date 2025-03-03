@@ -1158,11 +1158,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
           numberOfEmployees: orgData?.no_of_employees.toString() || "",
           addressType: orgData?.addresses[0]?.address_type || "Office",
           streetAddress: orgData?.addresses[0]?.street_address || "",
-          district: orgData?.addresses[0]?.district || "",
-          city: orgData?.addresses[0]?.city || "",
-          state: orgData?.addresses[0]?.state || "",
+          district: orgData?.addresses[0]?.district_id || "",
+          city: orgData?.addresses[0]?.city_id || "",
+          state: orgData?.addresses[0]?.state_id || "",
           pincode: orgData?.addresses[0]?.pincode || "",
-          country: orgData?.addresses[0]?.country || "",
+          country: orgData?.addresses[0]?.country_id || "",
           panNumber: orgData?.panDetails[0]?.pan_card_number || "",
           panCardUserName: orgData?.panDetails[0]?.pan_card_user_name || "",
           gstNumber: orgData?.gstDetails[0]?.gst_number || "",
@@ -1171,6 +1171,14 @@ export function WizardForm({ initialData }: WizardFormProps) {
             orgData?.gstDetails[0]?.gst_certificate_image || "",
           panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
         }));
+ if (response.data.addresses?.[0]?.country_id) {
+          await fetchStates( orgData?.addresses[0]?.country_id);
+        }
+        if (orgData?.addresses[0]?.state_id) {
+          await fetchCities(orgData?.addresses[0]?.state_id);
+          await fetchDistricts(orgData?.addresses[0]?.state_id);
+        }
+        
       } catch (error) {
         console.error("Error fetching organization details:", error);
       } finally {
