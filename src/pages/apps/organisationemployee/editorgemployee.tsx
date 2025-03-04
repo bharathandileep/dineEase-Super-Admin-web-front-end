@@ -34,6 +34,7 @@ const OrgEmployeeEdit = () => {
   const [designations, setDesignations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [orgemployee, setEmployee] = useState<any>(null);
+  const [orgnzEmpLoading, setOrgnzEmpLoading] = useState(false);
 
   // Location state management
   const [countries, setCountries] = useState<any[]>([]);

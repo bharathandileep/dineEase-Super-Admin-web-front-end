@@ -1,0 +1,38 @@
+.hover-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+}
+
+.hover-button {
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #3498db, #2ecc71);
+  border: none;
+}
+
+.hover-button:hover {
+  background: linear-gradient(45deg, #2ecc71, #3498db);
+  transform: scale(1.02);
+}
+
+.bg-soft-primary {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+/* Organization-specific styles */
+.card-img-top {
+  filter: grayscale(0);
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover .card-img-top {
+  filter: grayscale(0);
+  transform: scale(1.05);
+}

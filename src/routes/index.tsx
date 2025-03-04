@@ -30,14 +30,18 @@ import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
 import NewOrganizations from "../pages/apps/Organizations/editOrganizations";
 
 import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
+import SigninForm from "../pages/landing/LoginandRegistation/SigninForm";
+import Dashboard from "../pages/landing/Dashboard/Dashboard";
+import OrganizationList from "../pages/landing/OrganizationList/OrganizationList";
+import KitchenList from "../pages/landing/KitchenList/KitchenList";
 import EditOrganizations from "../pages/apps/Organizations/editOrganizations";
 import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
 import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
-import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
-import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
 import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 
 // import Root from './Root';
@@ -1305,13 +1309,6 @@ const uiRoutes = {
           element: <FormValidation />,
           route: PrivateRoute,
         },
-        // issues::change
-        // {
-        //   path: "/ui/forms/wizard",
-        //   name: "Form Wizard",
-        //   element: <FormWizard />,
-        //   route: PrivateRoute,
-        // },
         {
           path: "/ui/forms/upload",
           name: "File Upload",
@@ -1336,12 +1333,6 @@ const uiRoutes = {
           element: <BasicTables />,
           route: PrivateRoute,
         },
-        // {
-        //   path: "/ui/tables/advanced",
-        //   name: "Advanced",
-        //   element: <AdvancedTables />,
-        //   route: PrivateRoute,
-        // },
       ],
     },
     {
@@ -1398,9 +1389,15 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/register",
+    path: "/auth/signin-signup",
     name: "Register",
-    element: <Register />,
+    element: <SigninForm />,
+    route: Route,
+  },
+  {
+    path: "/auth/dashboard",
+    name: "Register",
+    element: <Dashboard />,
     route: Route,
   },
   {
@@ -1416,7 +1413,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/signin-signup",
+    path: "/auth/account",
     name: "SignIn-SignUp",
     element: <SignInSignUp />,
     route: Route,
@@ -1473,6 +1470,18 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/lock-screen2",
     name: "Lock Screen2",
     element: <LockScreen2 />,
+    route: Route,
+  },
+  {
+    path: "/dashboard/organization-list",
+    name: "Organization List",
+    element: <OrganizationList/>,
+    route: Route,
+  },
+  {
+    path: "/dashboard/kitchen-list",
+    name: "Kitchen List",
+    element: <KitchenList/>,
     route: Route,
   },
 ];
@@ -1545,8 +1554,8 @@ const authProtectedRoutes = [
   extrapagesRoutes,
   uiRoutes,
 ];
-const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 
+const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 const authProtectedFlattenRoutes = flattenRoutes([...authProtectedRoutes]);
 const publicProtectedFlattenRoutes = flattenRoutes([...publicRoutes]);
 

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -33,7 +34,10 @@ type FoodItem = {
   description: string;
   image: string;
   status: boolean;
+  price: number;
   itemId?: string | undefined;
+  reviews?: { comment: string; rating: number }[];
+  ingredients?: string[];
 };
 
 type TransformedData = Record<string, Record<string, FoodItem[]>>;
@@ -48,6 +52,7 @@ export interface IKitchenDetails {
   restaurant_type: string;
   kitchen_type: string;
   kitchen_image: string;
+  status: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
   addresses: Array<{
@@ -128,7 +133,7 @@ function KitchensDetails() {
       setLoading(false);
     }
   };
-  // the fun to cover the menu items data for show on the chooee menu accordien
+  // the function to process the menu items data for showing in the choose menu accordion
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
       const categoryName = item.category?.category;
@@ -150,15 +155,26 @@ function KitchensDetails() {
         acc[categoryName][subcategoryName] = [];
       }
 
+      // Process ingredients - ensure it's an array
+      const ingredientsArray = item.ingredients 
+        ? (Array.isArray(item.ingredients) 
+           ? item.ingredients 
+           : typeof item.ingredients === 'string'
+             ? item.ingredients.split(',').map((ing: string) => ing.trim())
+             : [])
+        : [];
+
       acc[categoryName][subcategoryName].push({
         name: item.item_name,
         description: item.item_description,
         image: item.item_image,
         status: item.status,
         itemId: item._id,
+        price: item.price,
+        ingredients: ingredientsArray,
+        reviews: item.reviews || []
       });
 
-      console.log("inside transformFoodData:", acc);
       return acc;
     }, {} as TransformedData);
 
@@ -168,12 +184,14 @@ function KitchensDetails() {
 
   useEffect(() => {
     const fetchKitchenDetails = async () => {
+      setLoading(true);
       try {
         const response = await getkitchenDetails(id);
         setKitchenData(response.data);
         setStatus(response.data.status);
       } catch (error) {
         console.error("Error fetching kitchen details:", error);
+        toast.error("Failed to load kitchen details");
       } finally {
         setLoading(false);
       }
@@ -183,14 +201,17 @@ function KitchensDetails() {
 
   useEffect(() => {
     const fetchItemDetails = async () => {
+      setLoading(true);
       try {
-        const response = await listItems();
+        const response = await listItems( { search: id } );
         let transformedData;
         try {
           transformedData = transformFoodData(response.data);
           console.log("Transformed Data inside try:", transformedData);
         } catch (error) {
           console.error("Error transforming data:", error);
+          toast.error("Error processing menu items");
+          setLoading(false);
           return;
         }
 
@@ -202,12 +223,15 @@ function KitchensDetails() {
           setActiveKey(firstCategory);
         }
       } catch (error) {
-        console.error("Error fetching kitchen details:", error);
+        console.error("Error fetching menu items:", error);
+        toast.error("Failed to load menu items");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchItemDetails();
-  }, [loading]);
+  }, []);
 
   const handleAddToCart = (item: FoodItem) => {
     setCartItems((prevCart) => {
@@ -224,19 +248,26 @@ function KitchensDetails() {
         return [...prevCart, { ...item, quantity: 1 }];
       }
     });
+    toast.success(`${item.name} added to cart`);
   };
 
   const handleRemoveFromCart = (item: { name: string }) => {
     setCartItems((prevCart) =>
       prevCart.filter((cartItem) => cartItem.name !== item.name)
     );
+    toast.info(`${item.name} removed from cart`);
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
   }
+  
   if (!kitchenData) {
-    return <div>No data found</div>;
+    return <div className="alert alert-warning">No kitchen data found</div>;
   }
   
   const CheckoutBar = ({ cartItems, onProceed }: any) => {
@@ -276,6 +307,7 @@ function KitchensDetails() {
       const response = await createNewkitchenMenu(id, cartItems);
       if (response && response.status) {
         toast.success(response.message);
+        setCartItems([]); // Clear cart after successful checkout
       } else {
         toast.error(response?.message || "An unexpected error occurred");
       }
@@ -488,22 +520,22 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>Certificate Number:</strong>{" "}
+                  <strong>Certificate Number:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Licence owner:</strong>{" "}
+                  <strong>Licence owner:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}
+                  <strong>Expiry Date:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.expiry_date}
                 </p>
               </div>
               {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
                 <img
                   src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
-                  alt="FSSAI Dashboard"
+                  alt="FSSAI Certificate"
                   className="img-fluid rounded"
                   style={{
                     maxHeight: "150px",
@@ -525,11 +557,11 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>PAN Number:</strong>{" "}
+                  <strong>PAN Number:</strong>{" "}
                   {kitchenData?.panDetails[0]?.pan_card_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Card Holder:</strong>{" "}
+                  <strong>Card Holder:</strong>{" "}
                   {kitchenData?.panDetails[0]?.pan_card_user_name}
                 </p>
               </div>
@@ -556,12 +588,12 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>GST Number:</strong>{" "}
-                  {kitchenData?.gstDetails[0].gst_number}
+                  <strong>GST Number:</strong>{" "}
+                  {kitchenData?.gstDetails[0]?.gst_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}
-                  {kitchenData?.gstDetails[0].expiry_date}
+                  <strong>Expiry Date:</strong>{" "}
+                  {kitchenData?.gstDetails[0]?.expiry_date}
                 </p>
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
@@ -643,56 +675,107 @@ function KitchensDetails() {
                     <Accordion.Item key={subcategory} eventKey={subcategory}>
                       <Accordion.Header>{subcategory}</Accordion.Header>
                       <Accordion.Body>
-                        {items.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="d-flex align-items-center mb-3 p-2 border-bottom"
-                            style={{ gap: "15px" }}
-                          >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "15px",
+                          }}
+                        >
+                          {items.map((item, idx) => (
                             <div
-                              className="flex-shrink-0"
-                              style={{ width: "80px", height: "80px" }}
+                              key={idx}
+                              style={{
+                                flex: "1 1 300px",
+                                maxWidth: "300px",
+                                border: "1px solid #ddd",
+                                borderRadius: "8px",
+                                padding: "15px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                backgroundColor: "#fff",
+                              }}
                             >
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="rounded"
+                              <div
                                 style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
+                                  width: "150px",
+                                  height: "150px",
+                                  marginBottom: "10px",
                                 }}
-                              />
-                            </div>
-                            <div className="flex-grow-1">
-                              <h6 className="mb-1">{item.name}</h6>
-                              <small className="text-muted">
+                              >
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                  }}
+                                />
+                              </div>
+                              <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>{item.name}</h6>
+                              <small style={{ color: "#666", marginBottom: "10px" }}>
                                 {item.description}
                               </small>
+                              <div style={{ marginBottom: "10px" }}>
+                                <strong>Price:</strong> ${item.price?.toFixed(2) || "N/A"}
+                              </div>
+                              <div style={{ marginBottom: "10px", width: "100%" }}>
+                                <strong>Ingredients:</strong>
+                                {item.ingredients && item.ingredients.length > 0 ? (
+                                  <ul style={{ listStyleType: "none", padding: 0, textAlign: "center" }}>
+                                    {item.ingredients.map((ingredient, i) => (
+                                      <li key={i} style={{ marginBottom: "2px" }}>{ingredient}</li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <div className="text-muted">No ingredients available</div>
+                                )}
+                              </div>
+                              <div style={{ marginBottom: "10px", width: "100%" }}>
+                                <strong>Reviews:</strong>
+                                {(item.reviews && item.reviews.length > 0) ? (
+                                  item.reviews.map((review, i) => (
+                                    <div key={i} style={{ textAlign: "left", fontSize: "0.85rem", marginTop: "5px" }}>
+                                      <div>"{review.comment}"</div>
+                                      <div className="text-warning">
+                                        {Array(review.rating).fill("★").join("")}
+                                        {Array(5 - review.rating).fill("☆").join("")}
+                                      </div>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-muted">No reviews yet.</div>
+                                )}
+                              </div>
+                              <div style={{ width: "100%" }}>
+                                {cartItems.some((cartItem) => cartItem.name === item.name) ? (
+                                  <Button
+                                    variant="outline-danger"
+                                    size="sm"
+                                    onClick={() => handleRemoveFromCart(item)}
+                                    style={{ width: "100%" }}
+                                  >
+                                    Remove
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => handleAddToCart(item)}
+                                    style={{ width: "100%" }}
+                                  >
+                                    Add
+                                  </Button>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-end">
-                              {cartItems.some(
-                                (cartItem) => cartItem.name === item.name
-                              ) ? (
-                                <Button
-                                  variant="outline-danger"
-                                  size="sm"
-                                  onClick={() => handleRemoveFromCart(item)}
-                                >
-                                  Remove
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="outline-primary"
-                                  size="sm"
-                                  onClick={() => handleAddToCart(item)}
-                                >
-                                  Add
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </Accordion.Body>
                     </Accordion.Item>
                   ))}
