@@ -56,8 +56,6 @@ const KitchenList = () => {
       specialty: "Tacos"
     },
   ];
-
-
   return (
     <>
     <DashboardNavbar/>

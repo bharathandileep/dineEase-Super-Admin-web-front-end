@@ -1382,7 +1382,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/",
+    path: "/auth/login",
     name: "Login",
     element: <Landing />,
     route: Route,
