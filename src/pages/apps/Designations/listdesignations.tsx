@@ -13,7 +13,7 @@ import {
 
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
-import DesignationModal from "./modal/DesignationModal";
+import DesignationModal from "./modal/designationModal";
 
 function Designations() {
   const navigate = useNavigate();

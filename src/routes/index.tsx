@@ -27,17 +27,18 @@ import Designations from "../pages/apps/Designations/listdesignations";
 
 import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
 import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
-import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
-import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import NewOrganizations from "../pages/apps/Organizations/editOrganizations";
+
 import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
+import EditOrganizations from "../pages/apps/Organizations/editOrganizations";
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 
 // import Root from './Root';
 
