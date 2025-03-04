@@ -15,7 +15,7 @@ export const apiConfig = {
     verifyOtp: "/verify-otp",
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
-    accessAccount:"/user/access/login"
+    accessAccount: "/user/access/login",
   },
   users: {
     getUser: "/users/:id",
@@ -29,19 +29,32 @@ export const apiConfig = {
     deletekitchens: (kitchenId: string | undefined) =>
       `/kitchens/delete/${kitchenId}`,
     getAllkitchens: (query: any) =>
-      `/kitchens/all?page=${query.page}&limit=${query.limit}`,
+      `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${
+        query.search || ""
+      }`,
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
+    toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
 
     createCategory: "/kitchens/categories",
-    getAllCategories: "/kitchens/categories/all",
+    getAllCategories: (query: any) =>
+      `/kitchens/categories/all?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     updateCategory: (id: string | undefined) => `/kitchens/categories/${id}`,
     deleteCategory: (id: string | undefined) => `/kitchens/categories/${id}`,
     toggleCategoryStatus: (id: string | undefined) =>
       `/kitchens/categories/${id}/toggle-status`,
 
     createSubcategory: "/kitchens/subcategories",
-    getAllSubCategories: "/kitchens/subcategories/all",
+    getAllSubCategories: (query: any) =>
+      `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/kitchens/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -59,13 +72,22 @@ export const apiConfig = {
       `/organization/update/${orgId}`,
     deleteOrganization: (orgId: string | undefined) =>
       `/organization/delete/${orgId}`,
-    getAllOrganization:(query:any)=> `/organization/all?page=${query.page}&limit=${query.limit}`,    
+    getAllOrganization: (query: any) =>
+      `/organization/all?page=${query.page}&limit=${query.limit}&search=${
+        query.search || ""
+      }`,
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
+    toggleOrgStatus: (id: string | undefined) => `/organization/status/${id}`,
 
     createCategory: "/organization/categories",
-    getAllCategories: "/organization/categories/all",
+    getAllCategories: (query: any) =>
+      `/organization/categories/all?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     updateCategory: (id: string | undefined) =>
       `/organization/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -74,7 +96,12 @@ export const apiConfig = {
       `/organization/categories/${id}/toggle-status`,
 
     createSubcategory: "/organization/subcategories",
-    getAllSubCategories: "/organization/subcategories/all",
+    getAllSubCategories: (query: any) =>
+      `/organization/subcategories/all?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/organization/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -88,7 +115,12 @@ export const apiConfig = {
   },
   menu: {
     createCategory: "/menu-category/categories",
-    getAllCategories: "/menu-category/categories",      
+    getAllCategories: (query: any) =>
+      `/menu-category/categories?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     updateCategory: (id: string | undefined) =>
       `/menu-category/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -98,7 +130,13 @@ export const apiConfig = {
 
     createSubcategory: "/sub-menu-category/subcategories",
     getAllCategoriesByStatus: "/sub-menu-category/category/status",
-    getAllSubCategories: "/sub-menu-category/subcategories",
+    getAllSubCategories: (query: any) =>
+      `/sub-menu-category/subcategories?page=${query.page}&limit=${
+        query.limit
+      }${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
+
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/sub-menu-category/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -120,7 +158,12 @@ export const apiConfig = {
   },
   designation: {
     createDesignation: "/designation/designations",
-    getAllDesignations: "/designation/designations/all",
+    getAllDesignations: (query: any) =>
+      `/designation/designations/all?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${query.search}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     getDesignationById: (id: string | undefined) =>
       `/designation/designations/${id}`,
     updateDesignation: (id: string | undefined) =>
@@ -132,7 +175,10 @@ export const apiConfig = {
   },
   employee: {
     createEmployee: "/employee/employees",
-    getAllEmployees: "/employee/employees/all",
+    getAllEmployees: (query: any) =>
+      `/employee/employees/all?page=${query.page}&limit=${query.limit}&search=${
+        query.search || ""
+      }`,
     getEmployeeById: (id: string | undefined) => `/employee/employees/${id}`,
     updateEmployee: (id: string | undefined) => `/employee/employees/${id}`,
     deleteEmployee: (id: string | undefined) => `/employee/employees/${id}`,
@@ -141,7 +187,10 @@ export const apiConfig = {
   },
   orgemployee: {
     createOrgEmployee: "/org-employee/orgemployee",
-    getAllOrgEmployees: "/org-employee/orgemployee/all",
+    getAllOrgEmployees: (query: any) =>
+      `/org-employee/orgemployee/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
     getOrgEmployeeById: (id: string | undefined) =>
       `/org-employee/orgemployee/${id}`,
     updateOrgEmployee: (id: string | undefined) =>
@@ -164,5 +213,22 @@ export const apiConfig = {
       kitchenId: string | undefined,
       itemId: string | undefined
     ) => `/kitchens-menu/${kitchenId}/menu-item/${itemId}`,
+  },
+
+  // kitchenMenu: {
+  //   getKitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
+  //   removekitchenMenu: (item: string | undefined, kitchenId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${item}`,
+  //   createkitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
+  //   kitchenMenuItemChange: (kitchenId: string | undefined, itemId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${itemId}`,
+  // },
+
+  addressDetails: {
+    getAllCountries: "/addressDetails/allcountries",
+    getStatesByCountry: (countryName: string | undefined) =>
+      `/addressDetails/states/${countryName}`,
+    getCitiesByState: (stateName: string | undefined) =>
+      `/addressDetails/cities/${stateName}`,
+    getDistrictsByState: (stateId: string | undefined) =>
+      `/addressDetails/districts/${stateId}`,
   },
 };

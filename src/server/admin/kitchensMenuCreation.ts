@@ -11,7 +11,6 @@ export const getKitchenMenus = async (id: string | undefined) => {
     console.error("Login Error:", error.response?.data || error.message);
   }
 };
-
 export const removeKitchenMenus = async (
   item: string | undefined,
   kitchenId: string | undefined
@@ -25,7 +24,6 @@ export const removeKitchenMenus = async (
     console.error("Login Error:", error.response?.data || error.message);
   }
 };
-
 export const createNewkitchenMenu = async (
   id: string | undefined,
   kitchenData: any

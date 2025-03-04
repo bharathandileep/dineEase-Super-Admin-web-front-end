@@ -3,22 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   deleteOrgDetails,
   getOrgDetails,
+  toggleOrganizationStatus,
 } from "../../../server/admin/organization";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
-
-// Sample product images (replace with actual images)
-// import productImg1 from "../../../assets/images/products/product-1.png";
-// import productImg2 from "../../../assets/images/products/product-2.png";
-// import productImg3 from "../../../assets/images/products/product-3.png";
-// import productImg4 from "../../../assets/images/products/product-4.png";
-
-// Add this import for profile image
-import defaultProfile from "../../../assets/images/products/product-10.jpg";
-
-// Add these imports for card images
-import dashboardUI from "../../../assets/images/macbook.png";
-import cakeImage from "../../../assets/images/products/product-5.png";
 import { toast } from "react-toastify";
 
 export interface IOrganizationDetails {
@@ -38,11 +26,11 @@ export interface IOrganizationDetails {
   addresses: Array<{
     _id: string;
     street_address: string;
-    city: string;
-    state: string;
-    district: string;
+    city_name: string;
+    state_name: string;
+    district_name: string;
     pincode: string;
-    country: string;
+    country_name: string;
     landmark: string | null;
     address_type: string;
     is_deleted: boolean;
@@ -76,7 +64,7 @@ export interface IOrganizationDetails {
   onEdit?: () => void;
   onDelete?: () => void;
 }
-// Add this verification button component
+
 const VerificationButton = () => (
   <Button
     variant="danger"
@@ -122,12 +110,14 @@ function OrganizationDetails() {
   );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [status, setStatus] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchOrgDetails = async () => {
       try {
         const response = await getOrgDetails(id);
-        setOrgData(response.data[0]);
+        setOrgData(response.data);
+        setStatus(response.data.status);
       } catch (error) {
         console.error("Error fetching organization details:", error);
       } finally {
@@ -139,14 +129,13 @@ function OrganizationDetails() {
 
   const onEdit = () => navigate(`/apps/organizations/edit/${id}`);
   const onDelete = async () => {
-    window.confirm("Are your sure delete this organisation")
+    window.confirm("Are your sure delete this organisation");
     setLoading(true);
     try {
       const response = await deleteOrgDetails(id);
       if (response.status) {
         toast.success(response.message);
-      } else {
-        toast.error(response.message);
+        navigate("/apps/organizations/list")
       }
     } catch (error) {
       console.error("Error deleting  details:", error);
@@ -156,12 +145,27 @@ function OrganizationDetails() {
     }
   };
 
+  const handleStatusToggle = async () => {
+    try {
+      const response = await toggleOrganizationStatus(id);
+      if (response.status) {
+        setStatus((prev) => !prev);
+        toast.success(response.message);
+      } else {
+        toast.error(response.message || "Failed to toggle kitchen status.");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Error toggling kitchen status."
+      );
+    }
+  };
+
   if (loading || !organization) {
     return <div>Loading...</div>;
   }
-  return (
+  return (       
     <div className="container-fluid px-4 py-3">
-      {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="breadcrumb m-0">
           <li className="breadcrumb-item">
@@ -172,8 +176,6 @@ function OrganizationDetails() {
           </li>
         </ol>
       </nav>
-
-      {/* Profile Section */}
       <div
         className="mb-4 position-relative overflow-hidden"
         style={{
@@ -184,7 +186,6 @@ function OrganizationDetails() {
         }}
       >
         <Row className="align-items-start">
-          {/* Column 1: Profile Image */}
           <Col xs={12} md={3} className="text-center text-md-start">
             <div className="position-relative bg-white rounded-circle d-inline-block">
               <img
@@ -219,15 +220,12 @@ function OrganizationDetails() {
               </div>
             </div>
           </Col>
-
-          {/* Column 2: Profile Details */}
           <Col
             xs={12}
             md={6}
             className="text-center text-md-start mt-4 mt-md-0"
           >
             <div className="d-flex flex-column h-100">
-              {/* Business Name */}
               <h2
                 className="text-white mb-3"
                 style={{
@@ -238,8 +236,6 @@ function OrganizationDetails() {
               >
                 {organization?.organizationName}
               </h2>
-
-              {/* Contact Information */}
               <div
                 className="mb-3"
                 style={{ display: "flex", flexDirection: "column" }}
@@ -262,36 +258,31 @@ function OrganizationDetails() {
                   </div>
                 ))}
               </div>
-
-              {/* Badges */}
               <div className="d-flex gap-2">
-                {["Active"].map((badge, index) => (
-                  <Badge
-                    key={index}
-                    className="rounded-pill px-2 py-1"
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.9)",
-                      fontSize: "0.75rem",
-                      fontWeight: "500",
-                    }}
-                  >
-                    <i
-                      className={`mdi mdi-${
-                        badge === "Active"
-                          ? "check-circle"
-                          : badge === "Organic"
-                          ? "leaf"
-                          : "food-apple"
-                      } text-success me-1`}
-                    ></i>
-                    {badge}
-                  </Badge>
-                ))}
+                <Badge
+                  className="rounded-pill px-2 py-1"
+                  style={{
+                    backgroundColor: status
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(200, 200, 200, 0.9)",
+                    fontSize: "0.75rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                  }}
+                  onClick={handleStatusToggle}
+                >
+                  <i
+                    className={`mdi mdi-${
+                      status
+                        ? "check-circle text-success"
+                        : "close-circle text-secondary"
+                    } me-1`}
+                  ></i>
+                  {status ? "Active" : "Inactive"}
+                </Badge>
               </div>
             </div>
           </Col>
-
-          {/* Column 3: Action Buttons */}
           <Col
             xs={12}
             md={3}
@@ -330,8 +321,6 @@ function OrganizationDetails() {
           </Col>
         </Row>
       </div>
-
-      {/* Information Cards */}
       <Row className="mb-4 g-3">
         <Col md={6}>
           <Card className="h-100 shadow-sm">
@@ -364,7 +353,9 @@ function OrganizationDetails() {
           <Card className="h-100 shadow-sm">
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">GST Registration</h5>
+                <h5 className="card-title text-bold text-black">
+                  GST Registration
+                </h5>
                 <VerificationButton />
               </div>
               <div className="mb-3">
@@ -393,14 +384,16 @@ function OrganizationDetails() {
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-              <h5 className="card-title mb-3 text-bold text-black">Location Details</h5>
+              <h5 className="card-title mb-3 text-bold text-black">
+                Location Details
+              </h5>
               <p className="card-text mb-4">
                 {organization?.addresses[0]?.street_address},{" "}
-                {organization?.addresses[0]?.city},{" "}
-                {organization?.addresses[0]?.district},{" "}
-                {organization?.addresses[0]?.state},{" "}
+                {organization?.addresses[0]?.city_name},{" "}
+                {organization?.addresses[0]?.district_name},{" "}
+                {organization?.addresses[0]?.state_name},{" "}
                 {organization?.addresses[0]?.pincode},
-                {organization?.addresses[0]?.country}
+                {organization?.addresses[0]?.country_name}
               </p>
               <div
                 className="map-container"
@@ -420,61 +413,6 @@ function OrganizationDetails() {
           </Card>
         </Col>
       </Row>
-
-      {/* Product Details Card
-    <Card className="shadow-sm">
-      <Card.Body className="p-4">
-        <Row className="g-4">
-          <Col
-            md={6}
-            className="d-flex align-items-center justify-content-center">
-            <img
-              src={productImg1}
-              alt={product.name}
-              className="img-fluid rounded"
-              style={{ maxHeight: "400px", objectFit: "contain" }}
-            />
-          </Col>
-
-          <Col md={6}>
-            <div className="ps-md-4">
-              <h2 className="mb-3">{product.name}</h2>
-              <h5 className="text-muted mb-3">by {product.brand}</h5>
-              <Badge bg="success" className="mb-4 px-3 py-2">
-                {product.status}
-              </Badge>
-              <h3 className="mb-4">
-                <del className="text-muted me-3">
-                  ${product.price.toFixed(2)}
-                </del>
-                <span className="text-danger">
-                  ${discountedPrice.toFixed(2)}
-                </span>
-              </h3>
-
-              <p className="mb-4">{product.description}</p>
-
-              <ul className="list-unstyled mb-4">
-                {product.features.map((feature, index) => (
-                  <li key={index} className="mb-2 d-flex align-items-center">
-                    <span className="me-2">✅</span> {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="d-flex gap-3">
-                <Button variant="primary" size="lg" className="px-4">
-                  Add to Cart
-                </Button>
-                <Button variant="outline-danger" size="lg" className="px-4">
-                  ❤️ Wishlist
-                </Button>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card> */}
     </div>
   );
 }

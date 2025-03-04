@@ -131,9 +131,7 @@ export const fetchCompanyApi = async (page: number, limit: number): Promise<{
   const data = await response.json();
   return data;
 };
-// console.log(fetchCompanyApi);
 
-// delete company
 
 export const deleteCompanyApi = async (company_id: string): Promise<Company[]> => {
   const response = await fetch(`${baseURL}/company/${company_id}`, {

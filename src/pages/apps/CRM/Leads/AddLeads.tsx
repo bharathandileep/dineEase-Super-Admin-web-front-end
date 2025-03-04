@@ -31,7 +31,7 @@ const AddLeads = ({
   
   const fetchAllCategories = async () => {
     try {
-      const response = await getAllCategories();
+      const response = await getAllCategories({ page: 1, limit: 100 });
       setMenuItems(response.data);
       if (response.status) {
       } else {

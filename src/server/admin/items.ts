@@ -42,15 +42,15 @@ export const getItemById =  async(id:string | undefined)=>{
 export const updateItem = async (id: string | undefined, data: any) => {
     try {
       const response = await axiosInstance.put(
-        `${apiConfig.menu.updateItem(id)}`, // Ensure correct endpoint formatting
-        data // Send `data` directly instead of `{ menu: data }`
+        `${apiConfig.menu.updateItem(id)}`, 
+        data 
       );
       return response.data;
     } catch (error: any) {
       console.error("Error updating item:", error.response?.data || error.message);
       return error.response?.data || { success: false, message: "Failed to update item" };
     }
-  };
+};
 
 export const deleteItem = async(id:string | undefined)=>{
     try{

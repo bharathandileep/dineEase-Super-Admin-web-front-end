@@ -25,38 +25,39 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-kitchen",
     label: "Kitchens",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "coffee",
     children: [
       {
         key: "kitchen-list",
-        label: "List of Kitchens",
+        label: "• List of Kitchens",
         url: "/apps/kitchen/list",
         parentKey: "apps-kitchen",
       },
+      {
+        key:"Kitchen-menu",
+        label:"• Kitchen Menus",
+        url:"/apps/kitchen/kitchen-menu",
+        parentKey:"apps-kitchen",
+      },
     ],
   },
+  
   {
     key: "apps-Organizations",
     label: "Organizations",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "command",
     children: [
       {
         key: "Organizations-list",
-        label: "List of Organizations",
+        label: "• List of Organizations",
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
-      // {
-      //   key: "Organization-employadd",
-      //   label: "Organizations employ list",
-      //   url: "/apps/organizations/employ/add",
-      //   parentKey: "apps-Organizations",
-      // },
       {
         key: "Organization-employadd",
-        label: "Organizations employ-list",
-        url: "/apps/organizations/employ/list",
+        label: "• employ-list",
+        url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
     ],
@@ -66,44 +67,46 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-menu",
     label: "Master",
     isTitle: false,
-    icon: "user",
+    icon: "slack",
     children: [
       {
-        key: "Menu-list",
+        key: "menu-list",
         label: "Menu",
+        icon: "archive",
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
           {
-            key: "Menu-list",
-            label: "Category",
+            key: "category",
+            label: "• Category",
             url: "/apps/menu/category",
-            parentKey: "apps-menu",
+            parentKey: "menu-list",
           },
           {
-            key: "Menu-add",
-            label: "Subcategory",
+            key: "subcategory",
+            label: "• Subcategory",
             url: "/apps/menu/subcategory",
-            parentKey: "apps-menu",
+            parentKey: "menu-list",
           },
         ],
       },
       {
         key: "app-orgaization-category",
-        label: "Organiztion",
+        label: "Organization",
+        icon: "briefcase",
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
           {
-            key: "orgaization-category",
-            label: "Category",
-            url: "/apps/org/category",
+            key: "category",
+            label: "• Category",
+            url: "/apps/organizations/category",
             parentKey: "app-orgaization-category",
           },
           {
-            key: "orgaization-category",
-            label: "Subcategory",
-            url: "/apps/org/subcategory",
+            key: "sub-category",
+            label: "• Subcategory",
+            url: "/apps/organizations/subcategory",
             parentKey: "app-orgaization-category",
           },
         ],
@@ -111,17 +114,19 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "app-menu-category",
         label: "Kitchens",
+        icon: "coffee",
         parentKey: "apps-menu",
         children: [
           {
-            key: "Menu-category",
-            label: "Category",
+            key: "category",
+            icon: "mdi-circle-medium",
+            label: "• Category",
             url: "/apps/kitchen/category",
             parentKey: "app-menu-category",
           },
           {
-            key: "Menu-subcategory",
-            label: "Subcategory",
+            key: "sub-category",
+            label: "• Subcategory",
             url: "/apps/kitchen/subcategory",
             parentKey: "app-menu-category",
           },
@@ -129,36 +134,24 @@ const MENU_ITEMS: MenuItemTypes[] = [
       },
       {
         key:"apps-menu-items",
-        label:"Menuitems",
+        label:"Menu items",
+        icon: "shopping-bag",
         parentKey:"apps-menu",
-        children:[
-          {
-            key:"Menu-items",
-            label:"Menuitems adding",
-            url:"/apps/kitchen/menu",
-            parentKey:"app-menu-items",
-          },
-          {
-            key:"apps-item",
-            label:"Menuitems Listing",
-            url:"/apps/kitchen/listing",
-            parentKey:"app-menu-items"
-
-          },
-          {
-            key:"apps-itemmenu",
-            label:"Item Editing",
-            url:"/apps/kitchen/editing/:id"
-          }
-        ]
-      }
+        url:"/apps/menu-items/list",
+      },
+      {
+        key: "apps-employee",
+        label: "Employee list",
+        icon: "user",
+        url: "/apps/employee/list",
+      },
     ],
   },
   {
     key: "apps-Designations",
     label: "Designations",
     isTitle: false,
-    icon: "user",
+    icon: "trello",
     url: "/apps/designations",
   },
   // {
@@ -168,13 +161,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
   //   icon: "user",
   //   url: "/apps/employee/add",
   // },
-  {
-    key: "apps-employee",
-    label: "Employee-list",
-    isTitle: false,
-    icon: "user",
-    url: "/apps/employee/list",
-  },
+ 
 ];
 
 const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [

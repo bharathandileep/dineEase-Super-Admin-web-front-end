@@ -375,7 +375,7 @@ export default function MenuDetails() {
                       )}
                     </div>
                   </div>
-
+                      
                   <div>
                     <h2 className="fs-5 fw-semibold mb-2">Reviews</h2>
                     <div className="d-flex flex-column gap-3">

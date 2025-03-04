@@ -1,16 +1,18 @@
 import {axiosInstance} from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
 
-
-export const getAllDesignations = async () => {
+export const getAllDesignations = async (query: any) => {
   try {
-    const response = await axiosInstance.get(apiConfig.designation.getAllDesignations);
+    const response = await axiosInstance.get(
+      `${apiConfig.designation.getAllDesignations(query)}`
+    );
     return response.data;
   } catch (error: any) {
     console.error("Error fetching designations:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };
+
 
 // ✅ Get a single designation by ID
 export const getDesignationById = async (id: string) => {
@@ -55,8 +57,6 @@ export const toggleDesignationStatus = async (id: string | undefined) => {
     throw error.response?.data || error;
   }
 };
-
-
 
 // ✅ Delete a designation
 export const deleteDesignation = async (id: string) => {

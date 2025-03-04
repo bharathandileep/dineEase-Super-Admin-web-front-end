@@ -8,10 +8,11 @@ export const getAllOrg = async (query:any) => {
     );
     return response.data;
   } catch (error: any) {
-    console.error("Login Error:", error.response?.data || error.message);
+    console.error("Error fetching organizations:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export const createNewOrg = async (orgData: any) => {
   try {
@@ -67,8 +68,17 @@ export const deleteOrgDetails = async (id: string | undefined) => {
     return error.response?.data
   }
 };
-
-// kitchens category
+export const toggleOrganizationStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.organization.toggleOrgStatus(id)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export const orgCreateCategory = async (data: any) => {
   try {
@@ -82,19 +92,22 @@ export const orgCreateCategory = async (data: any) => {
   }
 };
 
-export const orgGetAllCategories = async () => {
+export const orgGetAllCategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      apiConfig.organization.getAllCategories
-    );
+    console.log("Sending API Query:", query);
+    const url = apiConfig.organization.getAllCategories(query);
+    console.log("Constructed URL:", url);
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error fetching categories:", error.response?.data || error.message);
+    throw error.response?.data || error;
   }
 };
 
 export const orgUpdateCategory = async (id: string | undefined, data: any) => {
-
+  console.log(id, data);
   try {
     const response = await axiosInstance.put(
       apiConfig.organization.updateCategory(id),
@@ -129,7 +142,6 @@ export const orgToggleCategoryStatus = async (id: string | undefined) => {
 };
 
 export const orgCreateSubcategory = async (data: any | undefined) => {
-
   try {
     const response = await axiosInstance.post(
       apiConfig.organization.createSubcategory,
@@ -154,16 +166,21 @@ export const orgGetSubcategoriesByCategory = async (
   }
 };
 
-export const orgGetSubcategories = async () => {
+export const orgGetSubcategories = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      apiConfig.organization.getAllSubCategories
-    );
+
+    const url = `${apiConfig.organization.getAllSubCategories(query)}`;
+  
+    const response = await axiosInstance.get(url);
+
     return response.data;
   } catch (error: any) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error fetching subcategories:", error.response?.data || error.message);
+    throw error.response?.data || error;
   }
 };
+
+
 
 export const orgGetSubcategoryById = async (id: string | undefined) => {
   try {

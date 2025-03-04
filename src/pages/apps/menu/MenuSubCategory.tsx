@@ -1,77 +1,118 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Spinner, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
+import AddCategory from "./modal/AddCategory";
 import {
   deleteSubcategory,
   getSubcategories,
   toggleSubcategoryStatus,
 } from "../../../server/admin/menu";
-import { toast } from "react-toastify";
-import AddCategory from "./modal/AddCategory";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
-import ContactsDetails from "../CRM/Contacts/ContactsDetails";
 
 function MenuSubCategory() {
+  const navigate = useNavigate();
   const isSubCategory = true;
-  const [show, setShow] = useState<boolean>(false);
   const [action, setAction] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [menuItems, setMenuItems] = useState<any[]>([]);
-  const [isDeleted, setIsDeleted] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [show, setShow] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  useEffect(() => {
+    const fetchAllSubCategories = async () => {
+      setLoading(true);
+      try {
+        const query = {
+          page: currentPage,
+          limit: pageSize,
+          search: searchTerm,
+          status: statusFilter,
+        };
+       
+        const response = await getSubcategories(query);
+        if (response.status) {
+          setMenuItems(response.data.categories);
+          setTotalPages(response.data.pagination.totalPages);
+          setTotalItems(response.data.pagination.totalItems);
+        } else {
+          toast.error("Failed to load subcategories.");
+        }
+      } catch (error: any) {
+        console.error("Fetch Error:", error.response?.data || error.message);
+        toast.error("An error occurred while fetching subcategories.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllSubCategories();
+  }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
+
+  const onSearchData = (searchValue: string) => {
+
+    setSearchTerm(searchValue);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (filterValue: string) => {
+    console.log("Updating Status Filter:", filterValue);
+    setStatusFilter(filterValue);
+    setCurrentPage(1);
+  };
 
   const handleToggleStatus = async (id: string) => {
     try {
       const response = await toggleSubcategoryStatus(id);
       if (response.status) {
-        setMenuItems((prevItems) =>
-          prevItems.map((item) =>
-            item._id === id ? { ...item, status: !item.status } : item
-          )
-        );
+        const item = menuItems.find((d) => d._id === id);
+        const newStatus = !item.status;
+
+        toast.success(`Subcategory status changed to ${newStatus ? "Active" : "Inactive"}`);
+
+        if (statusFilter !== "all") {
+          if (
+            (statusFilter === "active" && !newStatus) ||
+            (statusFilter === "inactive" && newStatus)
+          ) {
+            setMenuItems((prevItems) => prevItems.filter((item) => item._id !== id));
+            setTotalItems((prev) => prev - 1);
+            const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
+            setTotalPages(newTotalPages);
+
+            if (menuItems.length === 1 && currentPage > 1) {
+              setCurrentPage(currentPage - 1);
+            }
+          } else {
+            setMenuItems((prevItems) =>
+              prevItems.map((item) =>
+                item._id === id ? { ...item, status: newStatus } : item
+              )
+            );
+          }
+        } else {
+          setMenuItems((prevItems) =>
+            prevItems.map((item) =>
+              item._id === id ? { ...item, status: newStatus } : item
+            )
+          );
+        }
       } else {
-        toast.error(response);
+        toast.error(response.message || "Failed to toggle status.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error(error);
+      console.error("Toggle Error:", error.response?.data || error.message);
+      toast.error("Error toggling status.");
     }
   };
 
-  const onSearchData = (searchValue: string) => {
-    setSearchTerm(searchValue.toLowerCase());
-  };
-
-  const filteredMenuItems = useMemo(() => {
-    return menuItems.filter((value) => {
-      const searchLower = searchTerm.toLowerCase();
-
-      // Ensure subcategory name search works properly
-      const subcategoryName = value.subcategoryName?.toLowerCase() || "";
-      const categoryMatch = subcategoryName.includes(searchLower);
-
-      // Handle date conversion safely
-      const createdAtString = value.createdAt
-        ? new Date(value.createdAt).toLocaleDateString()
-        : "";
-      const createdAtMatch = createdAtString
-        .toLowerCase()
-        .includes(searchLower);
-
-      // **Fix status filtering logic**
-      let statusMatch = true;
-      if (statusFilter === "active") statusMatch = value.status === true;
-      if (statusFilter === "inactive") statusMatch = value.status === false;
-
-      return (categoryMatch || createdAtMatch) && statusMatch;
-    });
-  }, [searchTerm, statusFilter, menuItems]);
-
-  // Handle edit
   const handleEdit = (id: string) => {
     const item = menuItems.find((menu) => menu._id === id);
     setAction("edit");
@@ -79,48 +120,53 @@ function MenuSubCategory() {
     setShow(true);
   };
 
-  // Handle delete
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this subcategory?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this subcategory?")) return;
     try {
       const response = await deleteSubcategory(id);
       if (response.status) {
         toast.success(response.message);
-        setIsDeleted((prev) => !prev);
+        const remainingItems = totalItems - 1;
+        const newTotalPages = Math.ceil(remainingItems / pageSize);
+
+        if (menuItems.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          setIsDeleted((prev) => !prev);
+        }
+
+        setTotalItems(remainingItems);
+        setTotalPages(newTotalPages);
       } else {
         toast.error(response.message || "Delete failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
+      console.error("Delete Error:", error.response?.data || error.message);
       toast.error("Delete failed. Please try again.");
     }
   };
 
-  // Fetch subcategories
-  useEffect(() => {
-    const fetchAllCategories = async () => {
-      setLoading(true);
-      try {
-        const response = await getSubcategories();
-        if (response.status) {
-          setMenuItems(response.data);
-        } else {
-          toast.error("Failed to load subcategories.");
-        }
-      } catch (error: any) {
-        console.error("Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching subcategories.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllCategories();
-  }, [isDeleted, show]);
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleSizePerPageChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  /* Column render functions */
+  const NumberColumn = ({ row }: { row: any }) => {
+    const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
+    return <span className="fw-bold">{rowNumber}</span>;
+  };
 
   const SubCategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row.original.subcategoryName}</span>;
   };
+
   const CategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.category?.category}</span>;
   };
@@ -162,31 +208,12 @@ function MenuSubCategory() {
   };
 
   const columns = [
-    {
-      Header: "Sub Category",
-      accessor: "subcategoryName",
-      Cell: SubCategoryColumn,
-    },
-    {
-      Header: "Category",
-      accessor: "Category",
-      Cell: CategoryColumn,
-    },
-    {
-      Header: "Created At",
-      accessor: "createdAt",
-      Cell: CreatedAtColumn,
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: StatusColumn,
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: ActionColumn,
-    },
+    { Header: "No.", accessor: "number", Cell: NumberColumn },
+    { Header: "Sub Category", accessor: "subcategoryName", Cell: SubCategoryColumn },
+    { Header: "Category", accessor: "category", Cell: CategoryColumn },
+    { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
+    { Header: "Status", accessor: "status", Cell: StatusColumn },
+    { Header: "Action", accessor: "action", Cell: ActionColumn },
   ];
 
   const sizePerPageList = [
@@ -201,26 +228,22 @@ function MenuSubCategory() {
         <PageTitle
           breadCrumbItems={[
             { label: "Menu", path: "/apps/menu/subcategory" },
-            {
-              label: "Sub Category",
-              path: "/apps/menu/subcategory",
-              active: true,
-            },
+            { label: "Sub Category", path: "/apps/menu/subcategory", active: true },
           ]}
           title={"Customers"}
         />
-        <div
-          className="mb-3"
-          style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
-        >
+        <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
           <div className="d-flex align-items-center justify-content-between">
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
-              Menu Category
+              Menu Sub Category
             </h3>
             <Link
               to="#"
               className="btn btn-danger waves-effect waves-light"
-              onClick={() => setShow(true)}
+              onClick={() => {
+                setAction("add");
+                setShow(true);
+              }}
             >
               <i className="mdi mdi-plus-circle me-1"></i> Add New
             </Link>
@@ -233,10 +256,7 @@ function MenuSubCategory() {
                 <Row className="justify-content-between">
                   <Col className="col-auto">
                     <form className="d-flex align-items-center">
-                      <label
-                        htmlFor="inputPassword2"
-                        className="visually-hidden"
-                      >
+                      <label htmlFor="inputPassword2" className="visually-hidden">
                         Search
                       </label>
                       <div>
@@ -245,6 +265,7 @@ function MenuSubCategory() {
                           className="form-control my-1 my-lg-0"
                           id="inputPassword2"
                           placeholder="Search..."
+                          value={searchTerm}
                           onChange={(e) => onSearchData(e.target.value)}
                         />
                       </div>
@@ -253,13 +274,13 @@ function MenuSubCategory() {
                   <Col className="col-auto">
                     <div className="d-flex align-items-center">
                       <label htmlFor="status-select" className="me-2 mb-0">
-                        Sort By
+                        Filter By
                       </label>
                       <div>
                         <Form.Select
                           className="w-auto"
                           value={statusFilter}
-                          onChange={(e: any) => setStatusFilter(e.target.value)}
+                          onChange={(e) => handleStatusFilterChange((e.target as HTMLSelectElement).value)}
                         >
                           <option value="all">All</option>
                           <option value="active">Active</option>
@@ -284,28 +305,26 @@ function MenuSubCategory() {
               <div className="text-center my-4">
                 <p>No Subcategories Found</p>
               </div>
-            ) : filteredMenuItems.length === 0 ? (
-              <div className="text-center my-4">
-                <p>No results found for "{searchTerm}"</p>
-              </div>
             ) : (
               <Table
                 columns={columns}
-                data={filteredMenuItems}
+                data={menuItems}
                 isSearchable={false}
-                pageSize={10}
+                pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}
-                pagination={false}
+                pagination={true}
                 isSelectable={false}
                 theadClass="table-light"
-                searchBoxClass="mb-2"
+                onPageChange={handlePageChange}
+                onSizePerPageChange={handleSizePerPageChange}
+                totalPages={totalPages}
+                currentPage={currentPage}
               />
             )}
           </div>
         </div>
       </div>
-
       <AddCategory
         show={show}
         onHide={() => setShow(false)}

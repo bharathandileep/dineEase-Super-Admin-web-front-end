@@ -1,18 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-import AddkitchenCategory from "./modal/AddkitchenCategory";
 import {
   orgDeleteCategory,
   orgGetAllCategories,
   orgToggleCategoryStatus,
 } from "../../../server/admin/organization";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
+import AddkitchenCategory from "./modal/AddkitchenCategory";
 
 function OrgCategories() {
+  const navigate = useNavigate();
   const isSubCategory = false;
   const [action, setAction] = useState("");
   const [show, setShow] = useState<boolean>(false);
@@ -22,99 +23,151 @@ function OrgCategories() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [orderList, setOrderList] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const fetchAllCategories = async () => {
       setLoading(true);
       try {
-        const response = await orgGetAllCategories();
+        const query = {
+          page: currentPage,
+          limit: pageSize,
+          search: searchTerm,
+          status: statusFilter,
+        };
+        console.log("Fetching with Query:", query);
+        const response = await orgGetAllCategories(query);
         if (response.status) {
-          setMenuItems(response.data);
-          setOrderList(response.data);
+          setMenuItems(response.data.categories);
+          setTotalPages(response.data.pagination.totalPages);
+          setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load menu categories.");
+          toast.error("Failed to load organization categories.");
         }
       } catch (error: any) {
-        console.error("Error:", error.response?.data || error.message);
+        console.error("Fetch Error:", error.response?.data || error.message);
         toast.error("An error occurred while fetching categories.");
       } finally {
         setLoading(false);
       }
     };
     fetchAllCategories();
-  }, [isDeleted, show]);
+  }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-    setSearchTerm(searchValue.toLowerCase());
+    console.log("Updating Search Term:", searchValue);
+    setSearchTerm(searchValue);
+    setCurrentPage(1);
   };
+
+  const handleStatusFilterChange = (filterValue: string) => {
+    console.log("Updating Status Filter:", filterValue);
+    setStatusFilter(filterValue);
+    setCurrentPage(1);
+  };
+
   const handleToggleStatus = async (id: string) => {
     try {
       const response = await orgToggleCategoryStatus(id);
       if (response.status) {
-        setMenuItems((prevItems) =>
-          prevItems.map((item) =>
-            item._id === id ? { ...item, status: !item.status } : item
-          )
-        );
+        const item = menuItems.find((d) => d._id === id);
+        const newStatus = !item.status;
+
+        toast.success(`Category status changed to ${newStatus ? "Active" : "Inactive"}`);
+
+        if (statusFilter !== "all") {
+          if (
+            (statusFilter === "active" && !newStatus) ||
+            (statusFilter === "inactive" && newStatus)
+          ) {
+            setMenuItems((prevItems) => prevItems.filter((item) => item._id !== id));
+            setTotalItems((prev) => prev - 1);
+            const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
+            setTotalPages(newTotalPages);
+
+            if (menuItems.length === 1 && currentPage > 1) {
+              setCurrentPage(currentPage - 1);
+            }
+          } else {
+            setMenuItems((prevItems) =>
+              prevItems.map((item) =>
+                item._id === id ? { ...item, status: newStatus } : item
+              )
+            );
+          }
+        } else {
+          setMenuItems((prevItems) =>
+            prevItems.map((item) =>
+              item._id === id ? { ...item, status: newStatus } : item
+            )
+          );
+        }
       } else {
-        toast.error("Failed to toggle status.");
+        toast.error(response.message || "Failed to toggle status.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error("Error toggling status.");
+      console.error("Toggle Error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Error toggling status.");
     }
   };
+
   const handleEdit = (id: string) => {
     const item = menuItems.find((menu) => menu._id === id);
-    setAction("edit");
-    setSelectedItem(item);
-    setShow(true);
+    if (item) {
+      setAction("edit");
+      setSelectedItem(item);
+      setShow(true);
+    } else {
+      toast.error("Category not found for editing.");
+    }
   };
 
-  const filteredMenuItems = useMemo(() => {
-    return menuItems.filter((value) => {
-      const categoryName = value.category?.toLowerCase() || "";
-      const searchLower = searchTerm.toLowerCase();
-
-      // Ensure category name search works properly
-      const categoryMatch = categoryName.includes(searchLower);
-
-      // Handle date conversion safely
-      const createdAtString = value.createdAt
-        ? new Date(value.createdAt).toLocaleDateString()
-        : "";
-      const createdAtMatch = createdAtString
-        .toLowerCase()
-        .includes(searchLower);
-
-      // **Fix status filtering logic**
-      let statusMatch = true;
-      if (statusFilter === "active") statusMatch = value.status === true;
-      if (statusFilter === "inactive") statusMatch = value.status === false;
-
-      return (categoryMatch || createdAtMatch) && statusMatch;
-    });
-  }, [searchTerm, statusFilter, menuItems]);
-
   const handleDelete = async (id: any) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
     try {
       const response = await orgDeleteCategory(id);
       if (response.status) {
         toast.success(response.message);
-        setIsDeleted((prev) => !prev);
+        const remainingItems = totalItems - 1;
+        const newTotalPages = Math.ceil(remainingItems / pageSize);
+
+        if (menuItems.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          setIsDeleted((prev) => !prev);
+        }
+
+        setTotalItems(remainingItems);
+        setTotalPages(newTotalPages);
       } else {
         toast.error(response.message || "Delete failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
+      console.error("Delete Error:", error.response?.data || error.message);
       toast.error("Delete failed. Please try again.");
     }
   };
 
-  /* order column render */
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleSizePerPageChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  /* Column render functions */
+  const NumberColumn = ({ row }: { row: any }) => {
+    const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
+    return <span className="fw-bold">{rowNumber}</span>;
+  };
+
   const CategoryColumn = ({ row }: { row: any }) => {
     return <span className="fw-bold">{row?.original?.category}</span>;
   };
@@ -123,7 +176,7 @@ function OrgCategories() {
     return <span>{new Date(row?.original?.createdAt).toLocaleString()}</span>;
   };
 
-  const StatusColumn = ({ row }: { row: any }) => {
+  const StatusColumn = ({ row }: { row: any }) => { 
     return (
       <button
         className={`badge border-0 text-white ${
@@ -155,28 +208,12 @@ function OrgCategories() {
     );
   };
 
-  // Define columns
   const columns = [
-    {
-      Header: "Category",
-      accessor: "category",
-      Cell: CategoryColumn,
-    },
-    {
-      Header: "Created At",
-      accessor: "createdAt",
-      Cell: CreatedAtColumn,
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: StatusColumn,
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: ActionColumn,
-    },
+    { Header: "No.", accessor: "number", Cell: NumberColumn },
+    { Header: "Category", accessor: "category", Cell: CategoryColumn },
+    { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
+    { Header: "Status", accessor: "status", Cell: StatusColumn },
+    { Header: "Action", accessor: "action", Cell: ActionColumn },
   ];
 
   const sizePerPageList = [
@@ -190,27 +227,23 @@ function OrgCategories() {
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
-            { label: "Organizations", path: "/apps/org/category" },
-            {
-              label: "Category",
-              path: "/apps/crm/customers",
-              active: true,
-            },
+            { label: "Organizations", path: "/apps/organizations/category" },
+            { label: "Category", path: "/apps/organizations/category", active: true },
           ]}
-          title={"Customers"}
+          title={"Organization Categories"}
         />
-        <div
-          className="mb-3"
-          style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
-        >
+        <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
           <div className="d-flex align-items-center justify-content-between">
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
-              Organizations Category
+              Organization Categories
             </h3>
             <Link
               to="#"
               className="btn btn-danger waves-effect waves-light"
-              onClick={() => setShow(true)}
+              onClick={() => {
+                setAction("add");
+                setShow(true);
+              }}
             >
               <i className="mdi mdi-plus-circle me-1"></i> Add New
             </Link>
@@ -223,10 +256,7 @@ function OrgCategories() {
                 <Row className="justify-content-between">
                   <Col className="col-auto">
                     <form className="d-flex align-items-center">
-                      <label
-                        htmlFor="inputPassword2"
-                        className="visually-hidden"
-                      >
+                      <label htmlFor="inputPassword2" className="visually-hidden">
                         Search
                       </label>
                       <div>
@@ -235,6 +265,7 @@ function OrgCategories() {
                           className="form-control my-1 my-lg-0"
                           id="inputPassword2"
                           placeholder="Search..."
+                          value={searchTerm}
                           onChange={(e) => onSearchData(e.target.value)}
                         />
                       </div>
@@ -243,13 +274,13 @@ function OrgCategories() {
                   <Col className="col-auto">
                     <div className="d-flex align-items-center">
                       <label htmlFor="status-select" className="me-2 mb-0">
-                        Sort By
+                        Filter By
                       </label>
                       <div>
                         <Form.Select
                           className="w-auto"
                           value={statusFilter}
-                          onChange={(e: any) => setStatusFilter(e.target.value)}
+                          onChange={(e) => handleStatusFilterChange((e.target as HTMLSelectElement).value)}
                         >
                           <option value="all">All</option>
                           <option value="active">Active</option>
@@ -263,41 +294,39 @@ function OrgCategories() {
             </Card>
           </Col>
         </Row>
-
         <div className="card shadow">
           <div className="table-responsive">
             {loading ? (
               <div className="text-center my-4">
                 <Spinner animation="border" />
-                <p>Loading menu categories...</p>
+                <p>Loading organization categories...</p>
               </div>
             ) : menuItems.length === 0 ? (
               <div className="text-center my-4">
-                <p>No Menu Category Found</p>
-              </div>
-            ) : filteredMenuItems.length === 0 ? (
-              <div className="text-center my-4">
-                <p>No results found for "{searchTerm}"</p>
+                <p>No Organization Categories Found</p>
               </div>
             ) : (
               <Table
                 columns={columns}
-                data={filteredMenuItems}
+                data={menuItems}
                 isSearchable={false}
-                pageSize={10}
+                pageSize={pageSize}
                 sizePerPageList={sizePerPageList}
                 isSortable={true}
-                pagination={false}
+                pagination={true}
                 isSelectable={false}
                 theadClass="table-light"
-                searchBoxClass="mb-2"
+                onPageChange={handlePageChange}
+                onSizePerPageChange={handleSizePerPageChange}
+                totalPages={totalPages}
+                currentPage={currentPage}
               />
             )}
           </div>
         </div>
       </div>
 
-      <AddkitchenCategory
+      <AddkitchenCategory 
         show={show}
         onHide={() => setShow(false)}
         action={action}
