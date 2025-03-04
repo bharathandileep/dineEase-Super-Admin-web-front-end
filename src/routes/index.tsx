@@ -307,7 +307,7 @@ const organizationsAppRoutes = {
       element: <ListOrganizations />,
       route: PrivateRoute,
     },
-    {
+    { 
       path: "/apps/organizations/edit/:id",
       name: "Edit Organizations",
       element: <EditOrganizations />,
