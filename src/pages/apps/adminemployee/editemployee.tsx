@@ -35,7 +35,7 @@ const EditEmployee = () => {
   const [designations, setDesignations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
-  const [orgEmpLoading, setOrgEmpLoading] = useState(false);
+  const [adminEmpLoading, setAdminEmpLoading] = useState(false);
 
   // Location state management
   const [countries, setCountries] = useState<any[]>([]);
@@ -51,7 +51,7 @@ const EditEmployee = () => {
   
   // Add this flag to track initial loading of address data
   const [addressDataLoaded, setAddressDataLoaded] = useState(false);
-
+const [EmpLoading, setEmpLoading] = useState(false);
   // Fetch employee data
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -288,7 +288,7 @@ const EditEmployee = () => {
   // Handle form submission
   const onSubmit = async (data: any) => {
     try {
-      setOrgEmpLoading(true); // Start loading
+      setAdminEmpLoading(true); // Start loading
 
       const formData = new FormData();
 
@@ -342,7 +342,7 @@ const EditEmployee = () => {
       console.error("Error updating employee:", error);
       toast.error("Error updating employee. Please try again.");
     } finally {
-      setOrgEmpLoading(false); // Stop loading
+      setAdminEmpLoading(false); // Stop loading
     }
   };
 
@@ -727,8 +727,8 @@ const EditEmployee = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" variant="success" disabled={orgEmpLoading}>
-              {orgEmpLoading ? (
+            <Button type="submit" variant="success" disabled={adminEmpLoading}>
+              {adminEmpLoading ? (
                 <>
                   <span
                     className="spinner-border spinner-border-sm me-2"
