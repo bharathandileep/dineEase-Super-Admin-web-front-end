@@ -3,6 +3,7 @@
 // import {
 //   deletekitchenDetails,
 //   getkitchenDetails,
+//   toggleKitchenStatus,
 // } from "../../../server/admin/kitchens";
 // import {
 //   Row,
@@ -32,7 +33,10 @@
 //   description: string;
 //   image: string;
 //   status: boolean;
+//   price: number;
 //   itemId?: string | undefined;
+//   reviews?: { comment: string; rating: number }[];
+//   ingredients?: string[];
 // };
 
 // type TransformedData = Record<string, Record<string, FoodItem[]>>;
@@ -95,7 +99,8 @@
 //   const { id } = useParams();
 //   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
 //   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
-//   const [loading, setLoading] = useState(false);
+//   const [loading, setLoading] = useState<boolean>(false);
+//   const [status, setStatus] = useState<boolean>(true);
 //   const navigate = useNavigate();
 //   const [cartItems, setCartItems] = useState<any[]>([]);
 //   const [activeKey, setActiveKey] = useState<string>("");
@@ -104,15 +109,16 @@
 //     navigate(`/apps/kitchen/edit/${id}`);
 //   };
 //   const onDelete = async () => {
-//     const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
-    
-    
+//     const confirmDelete = window.confirm(
+//       "Are you sure you want to delete this kitchen?"
+//     );
+
 //     if (!confirmDelete) return;
-  
+
 //     setLoading(true);
 //     try {
 //       const response = await deletekitchenDetails(id);
-      
+
 //       if (response?.status) {
 //         toast.success(response.message);
 //         navigate("/apps/kitchen/list");
@@ -125,48 +131,51 @@
 //       setLoading(false);
 //     }
 //   };
-  
-
+//   // the fun to cover the menu items data for show on the chooee menu accordien
 //   const transformFoodData = (items: any[]): TransformedData => {
 //     const transformed = items.reduce((acc: TransformedData, item) => {
 //       const categoryName = item.category?.category;
 //       const subcategoryName = item.subcategory?.subcategoryName;
-  
+
 //       if (!categoryName || !subcategoryName) {
-//         console.warn("Skipping item due to missing category/subcategory:", item);
+//         console.warn(
+//           "Skipping item due to missing category/subcategory:",
+//           item
+//         );
 //         return acc;
 //       }
-  
+
 //       if (!acc[categoryName]) {
 //         acc[categoryName] = {};
 //       }
-  
+
 //       if (!acc[categoryName][subcategoryName]) {
 //         acc[categoryName][subcategoryName] = [];
 //       }
-  
+
 //       acc[categoryName][subcategoryName].push({
 //         name: item.item_name,
 //         description: item.item_description,
 //         image: item.item_image,
 //         status: item.status,
 //         itemId: item._id,
+//         price: item.price,
 //       });
-  
+
 //       console.log("inside transformFoodData:", acc);
 //       return acc;
 //     }, {} as TransformedData);
-  
+
 //     console.log("Final transformed data before return:", transformed);
 //     return transformed;
 //   };
-  
 
 //   useEffect(() => {
 //     const fetchKitchenDetails = async () => {
 //       try {
 //         const response = await getkitchenDetails(id);
 //         setKitchenData(response.data);
+//         setStatus(response.data.status);
 //       } catch (error) {
 //         console.error("Error fetching kitchen details:", error);
 //       } finally {
@@ -180,8 +189,6 @@
 //     const fetchItemDetails = async () => {
 //       try {
 //         const response = await listItems();
-//         console.log("API Response:", response.data); // Ensure data exists
-  
 //         let transformedData;
 //         try {
 //           transformedData = transformFoodData(response.data);
@@ -190,10 +197,10 @@
 //           console.error("Error transforming data:", error);
 //           return;
 //         }
-  
+
 //         setGroupedItems(transformedData);
 //         console.log("Transformed Data after setGroupedItems:", transformedData);
-  
+
 //         const firstCategory = Object.keys(transformedData)[0];
 //         if (firstCategory) {
 //           setActiveKey(firstCategory);
@@ -202,10 +209,9 @@
 //         console.error("Error fetching kitchen details:", error);
 //       }
 //     };
-  
+
 //     fetchItemDetails();
 //   }, [loading]);
-  
 
 //   const handleAddToCart = (item: FoodItem) => {
 //     setCartItems((prevCart) => {
@@ -236,10 +242,9 @@
 //   if (!kitchenData) {
 //     return <div>No data found</div>;
 //   }
-
+  
 //   const CheckoutBar = ({ cartItems, onProceed }: any) => {
 //     if (cartItems?.length === 0) return null;
-
 //     return (
 //       <div
 //         style={{
@@ -268,6 +273,7 @@
 //       </div>
 //     );
 //   };
+
 //   const handleProceedToCheckout = async () => {
 //     setLoading(true);
 //     try {
@@ -281,6 +287,22 @@
 //       toast.error(error.message || "An unexpected error occurred");
 //     } finally {
 //       setLoading(false);
+//     }
+//   };
+
+//   const handleStatusToggle = async () => {
+//     try {
+//       const response = await toggleKitchenStatus(id);
+//       if (response.status) {
+//         setStatus((prev) => !prev);
+//         toast.success(response.message);
+//       } else {
+//         toast.error(response.message || "Failed to toggle kitchen status.");
+//       }
+//     } catch (error: any) {
+//       toast.error(
+//         error.response?.data?.message || "Error toggling kitchen status."
+//       );
 //     }
 //   };
 
@@ -379,28 +401,44 @@
 //                 ))}
 //               </div>
 //               <div className="d-flex gap-2">
-//                 {["Active", "Organic", "Veg"].map((badge, index) => (
-//                   <Badge
-//                     key={index}
-//                     className="rounded-pill px-2 py-1"
-//                     style={{
-//                       backgroundColor: "rgba(255, 255, 255, 0.9)",
-//                       fontSize: "0.75rem",
-//                       fontWeight: "500",
-//                     }}
-//                   >
-//                     <i
-//                       className={`mdi mdi-${
-//                         badge === "Active"
-//                           ? "check-circle"
-//                           : badge === "Organic"
-//                           ? "leaf"
-//                           : "food-apple"
-//                       } text-success me-1`}
-//                     ></i>
-//                     {badge}
-//                   </Badge>
-//                 ))}
+//                 {[status ? "Active" : "Inactive", "Organic", "Veg"].map(
+//                   (badge, index) => ( 
+//                     <Badge
+//                       key={index}
+//                       className="rounded-pill px-2 py-1"
+//                       style={{
+//                         backgroundColor:
+//                           badge === "Inactive"
+//                             ? "rgba(200, 200, 200, 0.9)"
+//                             : "rgba(255, 255, 255, 0.9)",
+//                         fontSize: "0.75rem",
+//                         fontWeight: "500",
+//                         cursor:
+//                           badge === "Active" || badge === "Inactive"
+//                             ? "pointer"
+//                             : "default",
+//                       }}
+//                       onClick={
+//                         badge === "Active" || badge === "Inactive"
+//                           ? () => handleStatusToggle()
+//                           : undefined
+//                       }
+//                     >
+//                       <i
+//                         className={`mdi mdi-${
+//                           badge === "Active"
+//                             ? "check-circle text-success"
+//                             : badge === "Inactive"
+//                             ? "close-circle text-secondary"
+//                             : badge === "Organic"
+//                             ? "leaf text-success"
+//                             : "food-apple text-success"
+//                         } me-1`}
+//                       ></i>
+//                       {badge}
+//                     </Badge>
+//                   )
+//                 )}
 //               </div>
 //             </div>
 //           </Col>
@@ -609,57 +647,101 @@
 //                     <Accordion.Item key={subcategory} eventKey={subcategory}>
 //                       <Accordion.Header>{subcategory}</Accordion.Header>
 //                       <Accordion.Body>
-//                         {items.map((item, idx) => (
-//                           <div
-//                             key={idx}
-//                             className="d-flex align-items-center mb-3 p-2 border-bottom"
-//                             style={{ gap: "15px" }}
-//                           >
-//                             <div
-//                               className="flex-shrink-0"
-//                               style={{ width: "80px", height: "80px" }}
-//                             >
-//                               <img
-//                                 src={item.image}
-//                                 alt={item.name}
-//                                 className="rounded"
-//                                 style={{
-//                                   width: "100%",
-//                                   height: "100%",
-//                                   objectFit: "cover",
-//                                 }}
-//                               />
-//                             </div>
-//                             <div className="flex-grow-1">
-//                               <h6 className="mb-1">{item.name}</h6>
-//                               <small className="text-muted">
-//                                 {item.description}
-//                               </small>
-//                             </div>
-//                             <div className="text-end">
-//                               {cartItems.some(
-//                                 (cartItem) => cartItem.name === item.name
-//                               ) ? (
-//                                 <Button
-//                                   variant="outline-danger"
-//                                   size="sm"
-//                                   onClick={() => handleRemoveFromCart(item)}
-//                                 >
-//                                   Remove
-//                                 </Button>
-//                               ) : (
-//                                 <Button
-//                                   variant="outline-primary"
-//                                   size="sm"
-//                                   onClick={() => handleAddToCart(item)}
-//                                 >
-//                                   Add
-//                                 </Button>
-//                               )}
-//                             </div>
-//                           </div>
-//                         ))}
-//                       </Accordion.Body>
+//   <div
+//     style={{
+//       display: "flex",
+//       flexWrap: "wrap",
+//       gap: "15px",
+//     }}
+//   >
+//     {items.map((item, idx) => (
+//       <div
+//         key={idx}
+//         style={{
+//           flex: "1 1 300px", // Increase the flex basis to make cards larger
+//           maxWidth: "300px", // Increase maxWidth for larger cards
+//           border: "1px solid #ddd",
+//           borderRadius: "8px",
+//           padding: "15px",
+//           display: "flex",
+//           flexDirection: "column",
+//           alignItems: "center",
+//           textAlign: "center",
+//           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+//           backgroundColor: "#fff",
+//         }}
+//       >
+//         <div
+//           style={{
+//             width: "150px", // Increase image size
+//             height: "150px", // Increase image size
+//             marginBottom: "10px",
+//           }}
+//         >
+//           <img
+//             src={item.image}
+//             alt={item.name}
+//             style={{
+//               width: "100%",
+//               height: "100%",
+//               objectFit: "cover",
+//               borderRadius: "8px",
+//             }}
+//           />
+//         </div>
+//         <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>{item.name}</h6>
+//         <small style={{ color: "#666", marginBottom: "10px" }}>
+//           {item.description}
+//         </small>
+//         <div style={{ marginBottom: "10px" }}>
+//           <strong>Price:</strong> ${item.price?.toFixed(2) || "N/A"}
+//         </div>
+//         <div style={{ marginBottom: "10px" }}>
+//           <strong>Ingredients:</strong>
+//           <ul style={{ listStyleType: "none", padding: 0 }}>
+//             {item.ingredients?.map((ingredient, i) => (
+//               <li key={i}>{ingredient}</li>
+//             ))}
+//           </ul>
+//         </div>
+//         <div style={{ marginBottom: "10px" }}>
+//           <strong>Reviews:</strong>
+//           {(item.reviews ?? []).length > 0 ? (
+//             item.reviews?.map((review, i) => (
+//               <div key={i}>
+//                 <div>{review?.comment}</div>
+//                 <div>{review?.rating} stars</div>
+//               </div>
+//             ))
+//           ) : (
+//             <div>No reviews yet.</div>
+//           )}
+//         </div>
+//         <div>
+//           {cartItems.some((cartItem) => cartItem.name === item.name) ? (
+//             <Button
+//               variant="outline-danger"
+//               size="sm"
+//               onClick={() => handleRemoveFromCart(item)}
+//               style={{ width: "100%" }}
+//             >
+//               Remove
+//             </Button>
+//           ) : (
+//             <Button
+//               variant="outline-primary"
+//               size="sm"
+//               onClick={() => handleAddToCart(item)}
+//               style={{ width: "100%" }}
+//             >
+//               Add
+//             </Button>
+//           )}
+//         </div>
+//       </div>
+//     ))}
+//   </div>
+// </Accordion.Body>
 //                     </Accordion.Item>
 //                   ))}
 //                 </Accordion>
@@ -678,15 +760,43 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   deletekitchenDetails,
   getkitchenDetails,
+  toggleKitchenStatus,
 } from "../../../server/admin/kitchens";
 import {
   Row,
   Col,
   Card,
   Button,
+  Accordion,
+  Tab,
+  Tabs,
   Badge,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { listItems } from "../../../server/admin/items";
+import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
+
+interface MenuItem {
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+}
+interface CartItem extends MenuItem {
+  quantity: number;
+}
+type FoodItem = {
+  name: string;
+  description: string;
+  image: string;
+  status: boolean;
+  price: number;
+  itemId?: string | undefined;
+  reviews?: { comment: string; rating: number }[];
+  ingredients?: string[];
+};
+
+type TransformedData = Record<string, Record<string, FoodItem[]>>;
 
 export interface IKitchenDetails {
   _id: string;
@@ -698,6 +808,7 @@ export interface IKitchenDetails {
   restaurant_type: string;
   kitchen_type: string;
   kitchen_image: string;
+  status: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
   addresses: Array<{
@@ -742,26 +853,30 @@ const VerificationButton = () => (
     Not Verified
   </Button>
 );
-
 function KitchensDetails() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [groupedItems, setGroupedItems] = useState<TransformedData>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [activeKey, setActiveKey] = useState<string>("");
 
   const onEdit = () => {
     navigate(`/apps/kitchen/edit/${id}`);
   };
-  
   const onDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
-    
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this kitchen?"
+    );
+
     if (!confirmDelete) return;
-  
+
     setLoading(true);
     try {
       const response = await deletekitchenDetails(id);
-      
+
       if (response?.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
@@ -774,14 +889,65 @@ function KitchensDetails() {
       setLoading(false);
     }
   };
+  // the function to process the menu items data for showing in the choose menu accordion
+  const transformFoodData = (items: any[]): TransformedData => {
+    const transformed = items.reduce((acc: TransformedData, item) => {
+      const categoryName = item.category?.category;
+      const subcategoryName = item.subcategory?.subcategoryName;
+
+      if (!categoryName || !subcategoryName) {
+        console.warn(
+          "Skipping item due to missing category/subcategory:",
+          item
+        );
+        return acc;
+      }
+
+      if (!acc[categoryName]) {
+        acc[categoryName] = {};
+      }
+
+      if (!acc[categoryName][subcategoryName]) {
+        acc[categoryName][subcategoryName] = [];
+      }
+
+      // Process ingredients - ensure it's an array
+      const ingredientsArray = item.ingredients 
+        ? (Array.isArray(item.ingredients) 
+           ? item.ingredients 
+           : typeof item.ingredients === 'string'
+             ? item.ingredients.split(',').map((ing: string) => ing.trim())
+             : [])
+        : [];
+
+      acc[categoryName][subcategoryName].push({
+        name: item.item_name,
+        description: item.item_description,
+        image: item.item_image,
+        status: item.status,
+        itemId: item._id,
+        price: item.price,
+        ingredients: ingredientsArray,
+        reviews: item.reviews || []
+      });
+
+      return acc;
+    }, {} as TransformedData);
+
+    console.log("Final transformed data before return:", transformed);
+    return transformed;
+  };
 
   useEffect(() => {
     const fetchKitchenDetails = async () => {
+      setLoading(true);
       try {
         const response = await getkitchenDetails(id);
         setKitchenData(response.data);
+        setStatus(response.data.status);
       } catch (error) {
         console.error("Error fetching kitchen details:", error);
+        toast.error("Failed to load kitchen details");
       } finally {
         setLoading(false);
       }
@@ -789,12 +955,140 @@ function KitchensDetails() {
     fetchKitchenDetails();
   }, [id]);
 
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      setLoading(true);
+      try {
+        const response = await listItems();
+        let transformedData;
+        try {
+          transformedData = transformFoodData(response.data);
+          console.log("Transformed Data inside try:", transformedData);
+        } catch (error) {
+          console.error("Error transforming data:", error);
+          toast.error("Error processing menu items");
+          setLoading(false);
+          return;
+        }
+
+        setGroupedItems(transformedData);
+        console.log("Transformed Data after setGroupedItems:", transformedData);
+
+        const firstCategory = Object.keys(transformedData)[0];
+        if (firstCategory) {
+          setActiveKey(firstCategory);
+        }
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+        toast.error("Failed to load menu items");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItemDetails();
+  }, []);
+
+  const handleAddToCart = (item: FoodItem) => {
+    setCartItems((prevCart) => {
+      const existingItem = prevCart.find(
+        (cartItem) => cartItem.name === item.name
+      );
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.name === item.name
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
+    toast.success(`${item.name} added to cart`);
+  };
+
+  const handleRemoveFromCart = (item: { name: string }) => {
+    setCartItems((prevCart) =>
+      prevCart.filter((cartItem) => cartItem.name !== item.name)
+    );
+    toast.info(`${item.name} removed from cart`);
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
   }
+  
   if (!kitchenData) {
-    return <div>No data found</div>;
+    return <div className="alert alert-warning">No kitchen data found</div>;
   }
+  
+  const CheckoutBar = ({ cartItems, onProceed }: any) => {
+    if (cartItems?.length === 0) return null;
+    return (
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "white",
+          padding: "1rem",
+          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+          zIndex: 1000,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div>
+          <span className="fw-bold">
+            {cartItems.reduce((sum: any, item: any) => sum + item.quantity, 0)}{" "}
+            items
+          </span>
+        </div>
+        <Button variant="primary" onClick={onProceed}>
+          Proceed to Checkout
+        </Button>
+      </div>
+    );
+  };
+
+  const handleProceedToCheckout = async () => {
+    setLoading(true);
+    try {
+      const response = await createNewkitchenMenu(id, cartItems);
+      if (response && response.status) {
+        toast.success(response.message);
+        setCartItems([]); // Clear cart after successful checkout
+      } else {
+        toast.error(response?.message || "An unexpected error occurred");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusToggle = async () => {
+    try {
+      const response = await toggleKitchenStatus(id);
+      if (response.status) {
+        setStatus((prev) => !prev);
+        toast.success(response.message);
+      } else {
+        toast.error(response.message || "Failed to toggle kitchen status.");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Error toggling kitchen status."
+      );
+    }
+  };
 
   return (
     <div className="container-fluid px-4 py-3">
@@ -891,28 +1185,44 @@ function KitchensDetails() {
                 ))}
               </div>
               <div className="d-flex gap-2">
-                {["Active", "Organic", "Veg"].map((badge, index) => (
-                  <Badge
-                    key={index}
-                    className="rounded-pill px-2 py-1"
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.9)",
-                      fontSize: "0.75rem",
-                      fontWeight: "500",
-                    }}
-                  >
-                    <i
-                      className={`mdi mdi-${
-                        badge === "Active"
-                          ? "check-circle"
-                          : badge === "Organic"
-                          ? "leaf"
-                          : "food-apple"
-                      } text-success me-1`}
-                    ></i>
-                    {badge}
-                  </Badge>
-                ))}
+                {[status ? "Active" : "Inactive", "Organic", "Veg"].map(
+                  (badge, index) => ( 
+                    <Badge
+                      key={index}
+                      className="rounded-pill px-2 py-1"
+                      style={{
+                        backgroundColor:
+                          badge === "Inactive"
+                            ? "rgba(200, 200, 200, 0.9)"
+                            : "rgba(255, 255, 255, 0.9)",
+                        fontSize: "0.75rem",
+                        fontWeight: "500",
+                        cursor:
+                          badge === "Active" || badge === "Inactive"
+                            ? "pointer"
+                            : "default",
+                      }}
+                      onClick={
+                        badge === "Active" || badge === "Inactive"
+                          ? () => handleStatusToggle()
+                          : undefined
+                      }
+                    >
+                      <i
+                        className={`mdi mdi-${
+                          badge === "Active"
+                            ? "check-circle text-success"
+                            : badge === "Inactive"
+                            ? "close-circle text-secondary"
+                            : badge === "Organic"
+                            ? "leaf text-success"
+                            : "food-apple text-success"
+                        } me-1`}
+                      ></i>
+                      {badge}
+                    </Badge>
+                  )
+                )}
               </div>
             </div>
           </Col>
@@ -966,22 +1276,22 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>Certificate Number:</strong>{" "}
+                  <strong>Certificate Number:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Licence owner:</strong>{" "}
+                  <strong>Licence owner:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}
+                  <strong>Expiry Date:</strong>{" "}
                   {kitchenData?.fssaiDetails[0]?.expiry_date}
                 </p>
               </div>
               {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
                 <img
                   src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
-                  alt="FSSAI Dashboard"
+                  alt="FSSAI Certificate"
                   className="img-fluid rounded"
                   style={{
                     maxHeight: "150px",
@@ -1003,11 +1313,11 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>PAN Number:</strong>{" "}
+                  <strong>PAN Number:</strong>{" "}
                   {kitchenData?.panDetails[0]?.pan_card_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Card Holder:</strong>{" "}
+                  <strong>Card Holder:</strong>{" "}
                   {kitchenData?.panDetails[0]?.pan_card_user_name}
                 </p>
               </div>
@@ -1034,12 +1344,12 @@ function KitchensDetails() {
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong text-xl>GST Number:</strong>{" "}
-                  {kitchenData?.gstDetails[0].gst_number}
+                  <strong>GST Number:</strong>{" "}
+                  {kitchenData?.gstDetails[0]?.gst_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}
-                  {kitchenData?.gstDetails[0].expiry_date}
+                  <strong>Expiry Date:</strong>{" "}
+                  {kitchenData?.gstDetails[0]?.expiry_date}
                 </p>
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
@@ -1094,33 +1404,144 @@ function KitchensDetails() {
           </Card>
         </Col>
       </Row>
-      
+
       <Card className="shadow-sm mb-4">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h4 className="mb-0">Menu Management</h4>
-            <div className="d-flex gap-2">
-              <Button
-                variant="primary"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                onClick={() => navigate(`/apps/kitchen/kitchenmenu`)}
-              >
-                <i className="mdi mdi-plus"></i> Add to Menu
-              </Button>
-              <Button
-                variant="info"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                onClick={() => navigate(`/apps/kitchen/${id}/our-menu`)}
-              >
-                View Our Menu
-              </Button>
-            </div>
+            <h4 className="mb-0">Choose Menu</h4>
+            <Button
+              variant="light"
+              className="d-flex align-items-center gap-1 px-3 py-1"
+              style={{
+                backgroundColor: "bg-success",
+                border: "none",
+                fontSize: "0.9rem",
+                height: "35px",
+              }}
+              onClick={() => navigate(`/apps/kitchen/${id}/our-menu`)}
+            >
+              Our menu
+            </Button>
           </div>
-          <p className="text-muted">
-            Manage your kitchen's menu items. Add new items or view your current menu offerings.
-          </p>
+          <Tabs activeKey={activeKey} onSelect={(k: any) => setActiveKey(k)}>
+            {Object.entries(groupedItems).map(([category, subcategories]) => (
+              <Tab eventKey={category} title={category} key={category}>
+                <Accordion>
+                  {Object.entries(subcategories).map(([subcategory, items]) => (
+                    <Accordion.Item key={subcategory} eventKey={subcategory}>
+                      <Accordion.Header>{subcategory}</Accordion.Header>
+                      <Accordion.Body>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "15px",
+                          }}
+                        >
+                          {items.map((item, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                flex: "1 1 300px",
+                                maxWidth: "300px",
+                                border: "1px solid #ddd",
+                                borderRadius: "8px",
+                                padding: "15px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: "150px",
+                                  height: "150px",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                  }}
+                                />
+                              </div>
+                              <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>{item.name}</h6>
+                              <small style={{ color: "#666", marginBottom: "10px" }}>
+                                {item.description}
+                              </small>
+                              <div style={{ marginBottom: "10px" }}>
+                                <strong>Price:</strong> ${item.price?.toFixed(2) || "N/A"}
+                              </div>
+                              <div style={{ marginBottom: "10px", width: "100%" }}>
+                                <strong>Ingredients:</strong>
+                                {item.ingredients && item.ingredients.length > 0 ? (
+                                  <ul style={{ listStyleType: "none", padding: 0, textAlign: "center" }}>
+                                    {item.ingredients.map((ingredient, i) => (
+                                      <li key={i} style={{ marginBottom: "2px" }}>{ingredient}</li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <div className="text-muted">No ingredients available</div>
+                                )}
+                              </div>
+                              <div style={{ marginBottom: "10px", width: "100%" }}>
+                                <strong>Reviews:</strong>
+                                {(item.reviews && item.reviews.length > 0) ? (
+                                  item.reviews.map((review, i) => (
+                                    <div key={i} style={{ textAlign: "left", fontSize: "0.85rem", marginTop: "5px" }}>
+                                      <div>"{review.comment}"</div>
+                                      <div className="text-warning">
+                                        {Array(review.rating).fill("★").join("")}
+                                        {Array(5 - review.rating).fill("☆").join("")}
+                                      </div>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-muted">No reviews yet.</div>
+                                )}
+                              </div>
+                              <div style={{ width: "100%" }}>
+                                {cartItems.some((cartItem) => cartItem.name === item.name) ? (
+                                  <Button
+                                    variant="outline-danger"
+                                    size="sm"
+                                    onClick={() => handleRemoveFromCart(item)}
+                                    style={{ width: "100%" }}
+                                  >
+                                    Remove
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => handleAddToCart(item)}
+                                    style={{ width: "100%" }}
+                                  >
+                                    Add
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+                </Accordion>
+              </Tab>
+            ))}
+          </Tabs>
         </Card.Body>
       </Card>
+      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </div>
   );
 }

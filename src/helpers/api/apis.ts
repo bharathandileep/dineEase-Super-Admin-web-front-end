@@ -35,14 +35,14 @@ export const apiConfig = {
     toggleKitchenStatus:(id: string | undefined)=>`/kitchens/status/${id}`,
 
     createCategory: "/kitchens/categories",
-    getAllCategories:(query:any)=> `/kitchens/categories/all?page=${query.page}&limit=${query.limit}`,    
+    getAllCategories: (query: any) => `/kitchens/categories/all?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,  
     updateCategory: (id: string | undefined) => `/kitchens/categories/${id}`,
     deleteCategory: (id: string | undefined) => `/kitchens/categories/${id}`,
     toggleCategoryStatus: (id: string | undefined) =>
       `/kitchens/categories/${id}/toggle-status`,
 
     createSubcategory: "/kitchens/subcategories",
-    getAllSubCategories:(query:any)=> `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}`,  
+    getAllSubCategories: (query: any) => `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/kitchens/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -71,7 +71,7 @@ export const apiConfig = {
     toggleOrgStatus:(id: string | undefined)=>`/organization/status/${id}`,
 
     createCategory: "/organization/categories",
-    getAllCategories:(query:any)=> `/organization/categories/all?page=${query.page}&limit=${query.limit}`,    
+    getAllCategories: (query: any) => `/organization/categories/all?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,   
     updateCategory: (id: string | undefined) =>
       `/organization/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -80,7 +80,7 @@ export const apiConfig = {
       `/organization/categories/${id}/toggle-status`,
 
     createSubcategory: "/organization/subcategories",
-    getAllSubCategories:(query:any)=> `/organization/subcategories/all?page=${query.page}&limit=${query.limit}`,    
+    getAllSubCategories: (query: any) => `/organization/subcategories/all?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`, 
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/organization/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -94,7 +94,7 @@ export const apiConfig = {
   },
   menu: {
     createCategory: "/menu-category/categories",
-    getAllCategories:(query:any)=> `/menu-category/categories?page=${query.page}&limit=${query.limit}`,       
+ getAllCategories: (query: any) => `/menu-category/categories?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,      
     updateCategory: (id: string | undefined) =>
       `/menu-category/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -104,7 +104,7 @@ export const apiConfig = {
 
     createSubcategory: "/sub-menu-category/subcategories",
     getAllCategoriesByStatus: "/sub-menu-category/category/status",
-    getAllSubCategories:(query:any)=> `/sub-menu-category/subcategories?page=${query.page}&limit=${query.limit}`,       
+    getAllSubCategories: (query: any) => `/sub-menu-category/subcategories?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,  
 
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/sub-menu-category/categories/${categoryId}/subcategories`,
@@ -127,15 +127,11 @@ export const apiConfig = {
   },
   designation: {
     createDesignation: "/designation/designations",
-   getAllDesignations:(query:any)=> `/designation/designations/all?page=${query.page}&limit=${query.limit}`,  
-    getDesignationById: (id: string | undefined) =>
-      `/designation/designations/${id}`,
-    updateDesignation: (id: string | undefined) =>
-      `/designation/designations/${id}`,
-    deleteDesignation: (id: string | undefined) =>
-      `/designation/designations/${id}`,
-    toggleDesignationStatus: (id: string | undefined) =>
-      `/designation/designations/${id}/toggle-status`,
+    getAllDesignations: (query: any) => `/designation/designations/all?page=${query.page}&limit=${query.limit}${query.search ? `&search=${query.search}` : ''}${query.status && query.status !== 'all' ? `&status=${query.status}` : ''}`,
+    getDesignationById: (id: string | undefined) => `/designation/designations/${id}`,
+    updateDesignation: (id: string | undefined) => `/designation/designations/${id}`,
+    deleteDesignation: (id: string | undefined) => `/designation/designations/${id}`,
+    toggleDesignationStatus: (id: string | undefined) => `/designation/designations/${id}/toggle-status`,
   },
   employee: {
     createEmployee: "/employee/employees",

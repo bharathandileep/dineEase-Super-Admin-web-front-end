@@ -16,23 +16,27 @@ import ItemsListing from "../pages/apps/MenuItems/ListItems";
 import ItemsEditing from "../pages/apps/MenuItems/ItemsEditing";
 import MenuDetails from "../pages/apps/kitchen/MenuDetails";
 import OrgSubCategories from "../pages/apps/Organizations/OrgSubCategories";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+
+
+
 import OrgCategories from "../pages/apps/Organizations/OrgCategories";
 import ListOrganizations from "../pages/apps/Organizations/ListOrganizations";
-import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
+
 import OrganizationDetails from "../pages/apps/Organizations/OrganizationDetails";
 import Designations from "../pages/apps/Designations/listdesignations";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
 
 import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
 import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
+import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
+import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
+import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
+import EmployeeList from "../pages/apps/adminemployee/listemployee";
+import EditEmployee from "../pages/apps/adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
 import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
 
 // import Root from './Root';
@@ -299,7 +303,7 @@ const organizationsAppRoutes = {
       element: <ListOrganizations />,
       route: PrivateRoute,
     },
-    {
+    { 
       path: "/apps/organizations/edit/:id",
       name: "Edit Organizations",
       element: <EditOrganizations />,
@@ -419,7 +423,7 @@ const kitchenAppRoutes = {
       element: <ItemDetails />,
     },
     {
-      path:"/apps/kitchen/kitchenmenu",
+      path:"/apps/kitchen/kitchen-menu",
       name:"Kitchen-Menu",
       element:<KitchenMenuPage/>
     },

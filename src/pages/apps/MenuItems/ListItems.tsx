@@ -63,7 +63,7 @@ const FoodItemsList = () => {
     navigate(`/apps/menu-item/editing/${id}`);
   };
 
-  const handleDelete = async (id: any) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         const response = await deleteItem(id);

@@ -6,7 +6,6 @@ import { VerticalForm, FormInput } from "../../../../components";
 import {
   createCategory,
   createSubcategory,
-  getAllCategories,
   getAllCategoriesByStatus,
   updateCategory,
   updateSubcategory,
@@ -21,10 +20,9 @@ interface AddCategory {
   isSubCategory?: boolean;
   selectedItem?: any;
 }
-
 const AddCategory = ({
   show,
-onHide,
+  onHide,
   action,
   isSubCategory,
   selectedItem,
@@ -50,7 +48,7 @@ onHide,
 
   useEffect(() => {
     if (selectedItem && isSubCategory && action === "edit") {
-      setSelectedCategory(selectedItem.category);
+      setSelectedCategory(selectedItem.category?._id);
       fetchAllCategories();
     } else {
       setSelectedCategory("");
@@ -87,7 +85,6 @@ onHide,
         toast.error(response.message || "Operation failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
       toast.error("Operation failed. Please try again.");
     }
   };
@@ -136,7 +133,9 @@ onHide,
             placeholder="Enter category"
             containerClass="mb-3"
             defaultValue={
-              isSubCategory
+              action === "add"
+                ? ""
+                : isSubCategory
                 ? selectedItem?.subcategoryName
                 : selectedItem?.category || ""
             }
@@ -145,9 +144,6 @@ onHide,
             <Button variant="success" type="submit" className="me-1">
               {action === "edit" ? "Update" : "Add"}
             </Button>
-            {/* <Button variant="danger" onClick={onHide}>
-              Cancel
-            </Button> */}
           </div>
         </VerticalForm>
       </Modal.Body>
