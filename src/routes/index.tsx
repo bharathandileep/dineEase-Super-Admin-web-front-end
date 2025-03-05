@@ -43,6 +43,8 @@ import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
 import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
+import RequestOrganization from "../pages/landing/OrganizationList/RequestOrganization";
+import RequestKitchen from "../pages/landing/KitchenList/RequestKitchen";
 
 // import Root from './Root';
 
@@ -1416,6 +1418,18 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/account",
     name: "SignIn-SignUp",
     element: <SignInSignUp />,
+    route: Route,
+  },
+  {
+    path: "/request/organization",
+    name: "SignIn-SignUp",
+    element: <RequestOrganization />,
+    route: Route,
+  },
+  {
+    path: "/request/kitchen",
+    name: "SignIn-SignUp",
+    element: <RequestKitchen />,
     route: Route,
   },
   {

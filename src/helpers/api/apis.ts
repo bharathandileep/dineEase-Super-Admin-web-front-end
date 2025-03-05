@@ -35,6 +35,7 @@ export const apiConfig = {
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
     toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
+    getUserApprovedKitchens: "/kitchens/user/approved",
 
     createCategory: "/kitchens/categories",
     getAllCategories: (query: any) =>
@@ -65,6 +66,7 @@ export const apiConfig = {
       `/kitchens/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/kitchens/subcategories/${id}/toggle-status`,
+
   },
   organization: {
     newOrganization: "/organization/new",
@@ -80,6 +82,7 @@ export const apiConfig = {
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
     toggleOrgStatus: (id: string | undefined) => `/organization/status/${id}`,
+    getUserApprovedOrganizations: "/organization/org/approved",
 
     createCategory: "/organization/categories",
     getAllCategories: (query: any) =>
