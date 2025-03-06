@@ -27,21 +27,24 @@ import Designations from "../pages/apps/Designations/listdesignations";
 
 import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
 import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
-import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
-import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import NewOrganizations from "../pages/apps/Organizations/editOrganizations";
+
 import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
 import SigninForm from "../pages/landing/LoginandRegistation/SigninForm";
 import Dashboard from "../pages/landing/Dashboard/Dashboard";
 import OrganizationList from "../pages/landing/OrganizationList/OrganizationList";
 import KitchenList from "../pages/landing/KitchenList/KitchenList";
+import EditOrganizations from "../pages/apps/Organizations/editOrganizations";
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
+import RequestOrganization from "../pages/landing/OrganizationList/RequestOrganization";
+import RequestKitchen from "../pages/landing/KitchenList/RequestKitchen";
 
 // import Root from './Root';
 
@@ -1415,6 +1418,18 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/account",
     name: "SignIn-SignUp",
     element: <SignInSignUp />,
+    route: Route,
+  },
+  {
+    path: "/request/organization",
+    name: "SignIn-SignUp",
+    element: <RequestOrganization />,
+    route: Route,
+  },
+  {
+    path: "/request/kitchen",
+    name: "SignIn-SignUp",
+    element: <RequestKitchen />,
     route: Route,
   },
   {

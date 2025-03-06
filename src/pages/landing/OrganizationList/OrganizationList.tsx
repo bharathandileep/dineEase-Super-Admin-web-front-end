@@ -1,66 +1,46 @@
-import React, { useState } from "react";
-import airbnb from "../../../assets/images/companies/airbnb.png";
-import cisco from "../../../assets/images/companies/cisco.png";
-import fb from "../../../assets/images/companies/facebook.png";
-import apple from "../../../assets/images/companies/apple.png";
-import google from "../../../assets/images/companies/google.png";
+import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
+import { useNavigate } from "react-router-dom";
+import { getUserApprovedOrganizations } from "../../../server/admin/organization"; 
+
+interface Organization {
+  id: number;
+  profilePic?: string;
+  name: string;
+  yearFounded?: number;
+  address: string;
+  industry?: string[];
+  employees?: number;
+}
 
 const OrganizationList = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  
 
-  const organizations = [
-    {
-      id: 1,
-      name: "Air BnB",
-      address: "123 Main St, New York, NY 10001",
-      profilePic: airbnb,
-      rating: 4.9,
-      employees: "10,000+",
-      industry: ["Travel", "Technology"],
-      yearFounded: 2008,
-    },
-    {
-      id: 2,
-      name: "Cisco",
-      address: "456 Park Ave, Los Angeles, CA 90012",
-      profilePic: cisco,
-      rating: 4.7,
-      employees: "77,500+",
-      industry: ["Networking", "Software"],
-      yearFounded: 1984,
-    },
-    {
-      id: 3,
-      name: "Facebook",
-      address: "789 Oak Rd, Chicago, IL 60601",
-      profilePic: fb,
-      rating: 4.8,
-      employees: "58,604",
-      industry: ["Social Media", "Technology"],
-      yearFounded: 2004,
-    },
-    {
-      id: 4,
-      name: "Apple",
-      address: "789 Oak Rd, Chicago, IL 60601",
-      profilePic: apple,
-      rating: 4.9,
-      employees: "147,000",
-      industry: ["Technology", "Consumer Electronics"],
-      yearFounded: 1976,
-    },
-    {
-      id: 5,
-      name: "Google",
-      address: "789 Oak Rd, Chicago, IL 60601",
-      profilePic: google,
-      rating: 4.8,
-      employees: "135,301",
-      industry: ["Technology", "Internet Services"],
-      yearFounded: 1998,
-    },
-  ];
+  useEffect(() => {
+    const fetchUserOrganizations = async () => {
+      try {
+        const response = await getUserApprovedOrganizations();
+        setOrganizations(response.data.organizations); // Adjust based on your response structure
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching organizations:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserOrganizations();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <h3>Loading organizations...</h3>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -85,7 +65,7 @@ const OrganizationList = () => {
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
-                    src={org.profilePic}
+                    src={org.profilePic || "https://via.placeholder.com/220"} // Fallback image
                     className="card-img-top"
                     alt={org.name}
                     style={{
@@ -99,7 +79,7 @@ const OrganizationList = () => {
                   <div className="position-absolute top-0 end-0 m-3">
                     <span className="badge bg-light text-dark shadow-sm px-3 py-2">
                       <i className="bi bi-building-fill text-primary me-1"></i>
-                      Est. {org.yearFounded}
+                      Est. {org.yearFounded || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -118,7 +98,7 @@ const OrganizationList = () => {
                     {org.address}
                   </p>
                   <div className="mb-3">
-                    {org.industry.map((type, index) => (
+                    {(org.industry || []).map((type, index) => (
                       <span
                         key={index}
                         className="badge bg-soft-primary me-2 mb-1"
@@ -130,7 +110,7 @@ const OrganizationList = () => {
                   </div>
                   <p className="small text-muted mb-3">
                     <i className="bi bi-people-fill me-2 text-success"></i>
-                    Employees: {org.employees}
+                    Employees: {org.employees || "Not specified"}
                   </p>
                   <button className="btn btn-primary w-100 rounded-pill hover-button">
                     View Organization
@@ -150,7 +130,7 @@ const OrganizationList = () => {
               fontSize: "1.1rem",
               boxShadow: "0 4px 6px rgba(50, 50, 93, 0.11)",
             }}
-            onClick={() => setShowForm(true)}
+            onClick={() => navigate("/request/organization")}
           >
             <i className="bi bi-building-add me-2"></i>
             Add Your Organization
