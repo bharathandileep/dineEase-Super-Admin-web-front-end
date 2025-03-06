@@ -12,7 +12,7 @@ import { FormInput } from "../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import { 
   getAllCountries, 
@@ -32,7 +32,9 @@ const EditEmployee = () => {
   );
   const [panImage, setPanImage] = useState<File | null>(null);
   const [panImagePreview, setPanImagePreview] = useState<string | null>(null);
-  const [designations, setDesignations] = useState<any[]>([]);
+  const [designations, setDesignations] = useState<
+    { _id: string; designation_name: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
   const [adminEmpLoading, setAdminEmpLoading] = useState(false);
