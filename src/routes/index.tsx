@@ -42,6 +42,8 @@ import SigninForm from "../pages/landing/LoginandRegistation/SigninForm";
 import Dashboard from "../pages/landing/Dashboard/Dashboard";
 import OrganizationList from "../pages/landing/OrganizationList/OrganizationList";
 import KitchenList from "../pages/landing/KitchenList/KitchenList";
+import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
+import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
 
 // import Root from './Root';
 
@@ -355,6 +357,12 @@ const organizationsAppRoutes = {
       element: <OrgEmployeeDetails />,
       route: PrivateRoute,
     },
+     {
+      path: "/apps/organizations/requested-organizations",
+      name: "Organisation request",
+      element: <RequestedOrganization/>,
+      route: PrivateRoute,
+    },
   ],
 };
 const kitchenAppRoutes = {
@@ -435,6 +443,11 @@ const kitchenAppRoutes = {
       path: "/apps/kitchen/:kitchenId/item-details/:id",
       name: "Editing",
       element: <MenuDetails />,
+    },
+    {
+      path:"/apps/kitchen/requested-kitchens",
+      name:"Requested Kitchens",
+      element:<RequestedKitchen/>
     },
   ],
 };

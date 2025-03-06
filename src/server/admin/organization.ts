@@ -1,5 +1,6 @@
 import {axiosInstance} from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
+import axios from 'axios';
 
 export const getAllOrg = async (query:any) => {
   try {
@@ -240,3 +241,43 @@ export const getAllCategoriesByStatus = async () => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
+
+// Add this to your existing organization API file (likely organization.ts or similar)
+
+// export const getUnapprovedOrganizations = async (query: any) => {
+//   try {
+//     const response = await axiosInstance.get(
+//       `/organization/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`
+//     );
+//     return response.data;
+//   } catch (error: any) {
+//     console.error("Error fetching unapproved organizations:", error.response?.data || error.message);
+//     throw error;
+//   }
+// };
+export const getUnapprovedOrganizations = async (query: any) => {
+  console.log("zxczxzxxz");
+  
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.organization.getUnapprovedOrganizations(query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching unapproved organizations:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+
+// export const approveOrganization = async (id: string) => {
+//   try {
+//     const response = await axiosInstance.patch(
+//       `${apiConfig.organization.approveOrganization(id)}`
+//     );
+//     return response.data;
+//   } catch (error: any) {
+//     console.error("Error approving organization:", error.response?.data || error.message);
+//     throw error;
+//   }
+// };

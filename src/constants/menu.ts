@@ -39,6 +39,12 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url:"/apps/kitchen/kitchen-menu",
         parentKey:"apps-kitchen",
       },
+      {
+        key:"requested-kitchen",
+        label:"• Requested Kitchens",
+        url:"/apps/kitchen/requested-kitchens",
+        parentKey:"apps-kitchen",
+      },
     ],
   },
   
@@ -60,6 +66,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
+      {
+        key:"requested-organization",
+        label:"• Requested Organizations",
+        url:"/apps/organizations/requested-organizations",
+        parentKey:"apps-Organizations",
+      },
+
+      
     ],
   },
  
