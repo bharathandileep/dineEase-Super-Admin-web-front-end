@@ -45,7 +45,7 @@ function ListKitchens() {
     try {
       const params = {
         page: currentPage,
-        limit: 4,
+        limit: 10,
         search: searchQuery,
       };
 

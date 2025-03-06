@@ -1,16 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
- // Adjust import path as needed
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import { getUnapprovedKitchens } from "../../../server/admin/kitchens";
+import { getUnapprovedKitchens, approveKitchens } from "../../../server/admin/kitchens";
 
 interface UnapprovedKitchen {
   _id: string;
   kitchen_name: string;
   kitchen_owner_name: string;
-  // owner_phone_number: string;
   owner_email: string;
   kitchen_image: string;
   addresses: { 
@@ -51,13 +49,9 @@ function RequestedKitchen() {
         search: searchQuery,
       };
   
-      console.log("Fetching organizations with params:", params); // Debugging statement
-  
       const response = await getUnapprovedKitchens(params);
       if (response.status) {
         const { kitchens, totalPages, totalKitchens } = response.data;
-  
-        console.log("Received organizations:", kitchens); // Debugging statement
   
         if (isNewSearch) {
           setKitchens(kitchens);
@@ -73,10 +67,10 @@ function RequestedKitchen() {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load unapproved organizations.");
+        toast.error("Failed to load unapproved kitchens.");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching unapproved organizations.");
+      toast.error("An error occurred while fetching unapproved kitchens.");
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -110,16 +104,33 @@ function RequestedKitchen() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasMore, page, searchTerm]);
 
-  const handleApproveKitchen = async (orgId: string) => {
-    // TODO: Implement organization approval logic
-    toast.info("Approval functionality to be implemented");
+  const handleApproveKitchen = async (kitchenId: string) => {
+    try {
+      setLoading(true);
+      const response = await approveKitchens(kitchenId);
+      
+      if (response.status) {
+        toast.success("Kitchen approved successfully");
+        // Remove approved kitchen from the list
+        setKitchens((prevKitchens) => 
+          prevKitchens.filter((kitchen) => kitchen._id !== kitchenId)
+        );
+        setTotalItems((prev) => prev - 1);
+      } else {
+        toast.error(response.message || "Failed to approve kitchen");
+      }
+    } catch (error) {
+      toast.error("An error occurred while approving the kitchen");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <PageTitle
         breadCrumbItems={[
-          { label: "Unapproved Organizations", path: "/apps/kitchen/requested-kitchens" },
+          { label: "Unapproved Kitchens", path: "/apps/kitchen/requested-kitchens" },
           { label: "List", path: "/apps/kitchen/unapproved", active: true },
         ]}
         title={"Unapproved Kitchens"}
@@ -144,7 +155,7 @@ function RequestedKitchen() {
                       <input
                         type='search'
                         className='form-control my-1 my-lg-0'
-                        placeholder='Search Unapproved Organizations...'
+                        placeholder='Search Unapproved Kitchens...'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -153,7 +164,7 @@ function RequestedKitchen() {
                 </Col>
                 <Col className='col-auto'>
                   <p className="text-muted mt-2">
-                    Total Unapproved Organizations: {totalItems}
+                    Total Unapproved Kitchens: {totalItems}
                   </p>
                 </Col>
               </Row>
@@ -167,7 +178,7 @@ function RequestedKitchen() {
           <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
-          <p className="mt-2">Loading unapproved organizations...</p>
+          <p className="mt-2">Loading unapproved kitchens...</p>
         </div>
       ) : (
         <Row>
@@ -197,19 +208,15 @@ function RequestedKitchen() {
                         {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name}, 
                         {item.addresses[0]?.state_name}, {item.addresses[0]?.country_name}
                       </p>
-                      {/* <p className="text-muted">
-                        <i className="mdi mdi-phone-classic me-1"></i>
-                        {item.owner_phone_number}
-                      </p> */}
                       <p className="text-muted">
                         <i className="mdi mdi-email me-1"></i>
                         {item.owner_email}
                       </p>
                      
-                      <p className="text-muted">
+                      {/* <p className="text-muted">
                         <i className="mdi mdi-domain me-1"></i>
                         {item.categoryDetails[0]?.name || 'Uncategorized'}
-                      </p>
+                      </p> */}
                       <div className="d-flex justify-content-between mt-3">
                         <Button 
                           variant="outline-info" 
@@ -234,7 +241,7 @@ function RequestedKitchen() {
               <Card>
                 <Card.Body className="text-center">
                   <i className="mdi mdi-domain-off text-muted" style={{ fontSize: "48px" }}></i>
-                  <h4 className="mt-3">No Unapproved Organizations Found</h4>
+                  <h4 className="mt-3">No Unapproved Kitchens Found</h4>
                   <p className="text-muted">
                     {searchTerm
                       ? `No unapproved kitchens match your search criteria "${searchTerm}".`

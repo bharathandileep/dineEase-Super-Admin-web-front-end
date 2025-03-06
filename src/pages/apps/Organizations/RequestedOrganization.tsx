@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
- // Adjust import path as needed
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import { getUnapprovedOrganizations } from "../../../server/admin/organization";
+import { getUnapprovedOrganizations, approveorganizations } from "../../../server/admin/organization"; // Import the new function
 
 interface UnapprovedOrganization {
   _id: string;
@@ -113,8 +112,25 @@ function RequestedOrganization() {
   }, [hasMore, page, searchTerm]);
 
   const handleApproveOrganization = async (orgId: string) => {
-    // TODO: Implement organization approval logic
-    toast.info("Approval functionality to be implemented");
+    try {
+      setLoading(true);
+      const response = await approveorganizations(orgId);
+      
+      if (response.status) {
+        toast.success("Organization approved successfully");
+        // Remove approved organization from the list
+        setOrganizations((prevOrganizations) => 
+          prevOrganizations.filter((org) => org._id !== orgId)
+        );
+        setTotalItems((prev) => prev - 1);
+      } else {
+        toast.error(response.message || "Failed to approve organization");
+      }
+    } catch (error) {
+      toast.error("An error occurred while approving the organization");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -211,10 +227,10 @@ function RequestedOrganization() {
                         <i className="mdi mdi-account-group me-1"></i>
                         {item.no_of_employees} Employees
                       </p>
-                      <p className="text-muted">
+                      {/* <p className="text-muted">
                         <i className="mdi mdi-domain me-1"></i>
                         {item.categoryDetails[0]?.name || 'Uncategorized'}
-                      </p>
+                      </p> */}
                       <div className="d-flex justify-content-between mt-3">
                         <Button 
                           variant="outline-info" 

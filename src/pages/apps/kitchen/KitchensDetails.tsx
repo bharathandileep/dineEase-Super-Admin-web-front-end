@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -62,6 +61,7 @@ export interface IKitchenDetails {
   kitchen_type: string;
   kitchen_image: string;
   status: boolean;
+  isapproved: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
   addresses: Array<{
@@ -176,7 +176,15 @@ function KitchensDetails() {
   
     return transformed;
   };
-  
+  const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
+    <Button
+      variant={isVerified ? "success" : "danger"}
+      className="d-flex align-items-center gap-2 px-3 py-2"
+    >
+      <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
+      {isVerified ? "Verified" : "Not Verified"}
+    </Button>
+  );
   useEffect(() => {
     const fetchMenuItems = async () => {
       setLoading(true);
@@ -534,82 +542,82 @@ function KitchensDetails() {
       </div>
       <Row className="mb-4 g-3">
         <Col md={6}>
+        <Card className="h-100 shadow-sm">
+  <Card.Body>
+    <div className="d-flex justify-content-between align-items-start mb-3">
+      <h5 className="card-title text-bold text-black">
+        FSSAI License
+      </h5>
+      <VerificationButton isVerified={kitchenData?.isapproved || false} />
+    </div>
+    <div className="mb-3">
+      <p className="mb-2">
+        <strong>Certificate Number:</strong>{" "}
+        {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
+      </p>
+      <p className="mb-2">
+        <strong>Licence owner:</strong>{" "}
+        {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
+      </p>
+      <p className="mb-2">
+        <strong>Expiry Date:</strong>{" "}
+        {kitchenData?.fssaiDetails[0]?.expiry_date}
+      </p>
+    </div>
+    {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
+      <img
+        src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
+        alt="FSSAI Certificate"
+        className="img-fluid rounded"
+        style={{
+          maxHeight: "150px",
+          objectFit: "cover",
+          width: "100%",
+        }}
+      />
+    )}
+  </Card.Body>
+</Card>
+        </Col>
+
+        <Col md={6}>
           <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  FSSAI License
-                </h5>
-                <VerificationButton />
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>Certificate Number:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Licence owner:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
-                </p>
-                <p className="mb-2">
-                  <strong>Expiry Date:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.expiry_date}
-                </p>
-              </div>
-              {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
-                <img
-                  src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
-                  alt="FSSAI Certificate"
-                  className="img-fluid rounded"
-                  style={{
-                    maxHeight: "150px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                />
-              )}
-            </Card.Body>
-          </Card>
+  <Card.Body>
+    <div className="d-flex justify-content-between align-items-start mb-3">
+      <h5 className="card-title text-bold text-black">PAN Details</h5>
+      <VerificationButton isVerified={kitchenData?.isapproved || false} />
+    </div>
+    <div className="mb-3">
+      <p className="mb-2">
+        <strong>PAN Number:</strong>{" "}
+        {kitchenData?.panDetails[0]?.pan_card_number}
+      </p>
+      <p className="mb-2">
+        <strong>Card Holder:</strong>{" "}
+        {kitchenData?.panDetails[0]?.pan_card_user_name}
+      </p>
+    </div>
+    {kitchenData?.panDetails?.[0]?.pan_card_image && (
+      <img
+        src={kitchenData.panDetails[0].pan_card_image}
+        alt="PAN Card"
+        className="img-fluid rounded"
+        style={{ maxHeight: "150px", objectFit: "cover" }}
+      />
+    )}
+  </Card.Body>
+</Card>
         </Col>
 
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">PAN Details</h5>
-                <VerificationButton />
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>PAN Number:</strong>{" "}
-                  {kitchenData?.panDetails[0]?.pan_card_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Card Holder:</strong>{" "}
-                  {kitchenData?.panDetails[0]?.pan_card_user_name}
-                </p>
-              </div>
-              {kitchenData?.panDetails?.[0]?.pan_card_image && (
-                <img
-                  src={kitchenData.panDetails[0].pan_card_image}
-                  alt="PAN Card"
-                  className="img-fluid rounded"
-                  style={{ maxHeight: "150px", objectFit: "cover" }}
-                />
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  GST Registration
-                </h5>
-                <VerificationButton />
-              </div>
+            <div className="d-flex justify-content-between align-items-start mb-3">
+  <h5 className="card-title text-bold text-black">
+    GST Registration
+  </h5>
+  <VerificationButton isVerified={kitchenData?.isapproved || false} />
+</div>
               <div className="mb-3">
                 <p className="mb-2">
                   <strong>GST Number:</strong>{" "}

@@ -248,7 +248,6 @@ export const kitchensToggleSubcategoryStatus = async (
 
 export const getUnapprovedKitchens = async (query: any) => {
   console.log("zxczxzxxz");
-  
   try {
     const response = await axiosInstance.get(
       `${apiConfig.kitchens. getUnapprovedKitchens(query)}`
@@ -257,5 +256,18 @@ export const getUnapprovedKitchens = async (query: any) => {
   } catch (error: any) {
     console.error("Error fetching unapproved kitchens:", error.response?.data || error.message);
     throw error;
+  }
+}
+
+export const approveKitchens = async(id:string | undefined)=>{
+  try{
+    const response = await axiosInstance.patch(
+      apiConfig.kitchens.approveKitchens(id)
+    );
+    return response.data;
+
+  }
+  catch(error:any){
+    console.log("Error:",error.response?.data || error.message);
   }
 }

@@ -69,6 +69,7 @@ export const apiConfig = {
       `/kitchens/subcategories/${id}/toggle-status`,
     getUnapprovedKitchens: (query: any) => 
       `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`,
+      approveKitchens:(id: string | undefined)=>`/kitchens/approve/${id}`,
   },
   organization: {
     newOrganization: "/organization/new",
@@ -123,8 +124,10 @@ export const apiConfig = {
       getUnapprovedOrganizations: (query: any) => 
         `/organization/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`,
       
-      approveOrganization: (orgId: string | undefined) => 
-        `/organization/approve/${orgId}`,
+      // approveOrganization: (orgId: string | undefined) => 
+      //   `/organization/approve/${orgId}`,
+      approveorganizations:(id: string | undefined)=>`/organization/approve/${id}`,
+
     },
     
     

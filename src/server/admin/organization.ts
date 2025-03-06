@@ -251,19 +251,7 @@ export const getAllCategoriesByStatus = async () => {
   }
 };
 
-// Add this to your existing organization API file (likely organization.ts or similar)
 
-// export const getUnapprovedOrganizations = async (query: any) => {
-//   try {
-//     const response = await axiosInstance.get(
-//       `/organization/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`
-//     );
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error fetching unapproved organizations:", error.response?.data || error.message);
-//     throw error;
-//   }
-// };
 export const getUnapprovedOrganizations = async (query: any) => {
   console.log("zxczxzxxz");
   
@@ -279,14 +267,17 @@ export const getUnapprovedOrganizations = async (query: any) => {
 }
 
 
-// export const approveOrganization = async (id: string) => {
-//   try {
-//     const response = await axiosInstance.patch(
-//       `${apiConfig.organization.approveOrganization(id)}`
-//     );
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error approving organization:", error.response?.data || error.message);
-//     throw error;
-//   }
-// };
+
+
+export const approveorganizations = async(id:string | undefined)=>{
+  try{
+    const response = await axiosInstance.patch(
+      apiConfig.organization.approveorganizations(id)
+    );
+    return response.data;
+
+  }
+  catch(error:any){
+    console.log("Error:",error.response?.data || error.message);
+  }
+}
