@@ -12,7 +12,8 @@ export interface AuthActionType {
     | AuthActionTypes.RESET
     | AuthActionTypes.SIGNUP_USER
     | AuthActionTypes.VERIFY_OTP
-    | AuthActionTypes.RESET_PASSWORD;
+    | AuthActionTypes.RESET_PASSWORD
+    | AuthActionTypes.GOOGLE_LOGIN_USER;
   payload: {} | string;
 }
 
@@ -82,4 +83,8 @@ payload: { otp },
 export const resetPassword = (otp: string): AuthActionType => ({
 type: AuthActionTypes.RESET_PASSWORD,
 payload: { otp },
+});
+export const googleLoginUser = (): AuthActionType => ({
+  type: AuthActionTypes.GOOGLE_LOGIN_USER,
+  payload: {},
 });

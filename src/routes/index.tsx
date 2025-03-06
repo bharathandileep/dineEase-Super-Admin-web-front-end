@@ -13,7 +13,6 @@ import KitchensCategories from "../pages/apps/kitchen/KitchensCategories";
 import OurMenu from "../pages/apps/kitchen/OurMenu";
 import MenuItems from "../pages/apps/MenuItems/Items";
 import ItemsListing from "../pages/apps/MenuItems/ListItems";
-import ItemsEditing from "../pages/apps/MenuItems/ItemsEditing";
 import MenuDetails from "../pages/apps/kitchen/MenuDetails";
 import OrgSubCategories from "../pages/apps/Organizations/OrgSubCategories";
 

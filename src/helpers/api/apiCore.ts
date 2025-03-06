@@ -14,7 +14,6 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Token management
 const setAuthorization = (token: string | null) => {
   if (token) {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -53,8 +52,8 @@ const refreshTokenLogic = async (): Promise<string> => {
 axiosInstance.interceptors.request.use(
   async (config) => {
     const session = getUserFromCookie();
-    if (session?.token) {
-      config.headers["Authorization"] = `Bearer ${session.token}`;
+    if (session) {
+      config.headers["Authorization"] = `Bearer ${session}`;
     }
     return config;
   },
@@ -140,8 +139,9 @@ class APICore {
   };
 
   setLoggedInUser = (session: any) => {
+    console.log(session, "haii");
     if (session) {
-      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session.token));
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session?.token));
     } else {
       localStorage.removeItem(AUTH_SESSION_KEY);
     }
