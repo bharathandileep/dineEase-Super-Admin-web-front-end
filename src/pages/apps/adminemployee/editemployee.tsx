@@ -12,7 +12,7 @@ import { FormInput } from "../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../server/admin/employeeManagment";
+} from "../../../server/admin/employeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import { 
   getAllCountries, 
