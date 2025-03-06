@@ -11,6 +11,9 @@ import {
   loginUserWithPhone,
   verifyPhoneOTP,
 } from "../../../server/admin/auth";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../redux/store";
+import { googleLoginUser } from "../../../redux/actions";
 
 interface AuthResponse {
   status: boolean;
@@ -20,6 +23,7 @@ interface AuthResponse {
 type AuthMethod = "email" | "phone";
 
 const SigninForm: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isActive, setIsActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [fullName, setFullName] = useState("");
@@ -77,17 +81,8 @@ const SigninForm: React.FC = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    setShowLoader(true);
-    try {
-      const response = await googleAuth();
-      response.status
-        ? toast.success(response.message)
-        : toast.error(response.message);
-    } catch (error) {
-      toast.error("Google authentication failed. Please try again.");
-    } finally {
-      setShowLoader(false);
-    }
+    console.log("Dispatching GOOGLE_LOGIN_USER...");
+    dispatch(googleLoginUser());
   };
 
   const handleAuthWithIdentifier = async (method: AuthMethod) => {

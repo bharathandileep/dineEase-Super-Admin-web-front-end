@@ -17,6 +17,7 @@ import { authApiResponseSuccess, authApiResponseError } from "./actions";
 
 // constants
 import { AuthActionTypes } from "./constants";
+import { googleAuth } from "../../server/admin/auth";
 
 interface UserData {
   payload: {
@@ -34,6 +35,7 @@ const api = new APICore();
  * Login the user
  * @param {*} payload - username and password
  */
+
 function* login({
   payload: { username, password },
   type,
@@ -63,6 +65,20 @@ function* logout(): SagaIterator {
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.LOGOUT_USER, error));
   }
+}
+function* googleLogin(): SagaIterator {
+  try {
+    const response = yield call(googleAuth);
+    const user = response.data;
+    api.setLoggedInUser(user);
+    setAuthorization(user['token']);
+    yield put(authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, response));
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.GOOGLE_LOGIN_USER, error));
+  }
+}
+export function* watchGoogleLogin() {
+  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
 }
 
 function* signup({
@@ -113,7 +129,8 @@ function* authSaga() {
     fork(watchLogout),
     fork(watchSignup),
     fork(watchForgotPassword),
+    fork(watchGoogleLogin),
   ]);
 }
-
+ 
 export default authSaga;
