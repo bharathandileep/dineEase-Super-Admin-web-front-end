@@ -35,9 +35,17 @@ const KitchenList = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <h3>Loading kitchens...</h3>
-      </div>
+      <div
+      className="text-center py-5"
+      style={{
+        backgroundColor: 'white',
+        height: '100vh', 
+        margin: 0,
+      }}
+    >
+      <h3>Loading kitchens...</h3>
+    </div>
+    
     );
   }
 
