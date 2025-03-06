@@ -179,7 +179,7 @@ const KitchenMenu = () => {
             </h3>
             <Button 
               variant="danger"
-              onClick={() => navigate(`/apps/kitchen/${id}/our-menu`)}
+              onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
             >
               View Current Menu
             </Button>

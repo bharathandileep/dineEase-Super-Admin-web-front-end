@@ -19,25 +19,34 @@ import {
 import { toast } from "react-toastify";
 import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
+import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 
+// Define interface for menu items
 interface MenuItem {
-  name: string;
-  price: number;
-  description: string;
-  image: string;
+  _id: string;
+  item_id: {
+    _id: string;
+    item_name: string;
+    item_price: number;
+    description: string;
+    ingredients: string[];
+    isAvailable: boolean;
+    custom_image: string;
+    reviews_id: any[];
+  };
 }
+
 interface CartItem extends MenuItem {
   quantity: number;
 }
+
 type FoodItem = {
-  name: string;
+  item_name: string;
   description: string;
-  image: string;
-  status: boolean;
-  price: number;
-  itemId?: string | undefined;
-  reviews?: { comment: string; rating: number }[];
-  ingredients?: string[];
+  custom_image: string;
+  item_price: number;
+  ingredients: string[];
+  reviews_id: { comment: string; rating: number }[];
 };
 
 type TransformedData = Record<string, Record<string, FoodItem[]>>;
@@ -97,6 +106,7 @@ const VerificationButton = () => (
     Not Verified
   </Button>
 );
+
 function KitchensDetails() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
@@ -110,6 +120,7 @@ function KitchensDetails() {
   const onEdit = () => {
     navigate(`/apps/kitchen/edit/${id}`);
   };
+
   const onDelete = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this kitchen?"
@@ -133,56 +144,64 @@ function KitchensDetails() {
       setLoading(false);
     }
   };
-  // the function to process the menu items data for showing in the choose menu accordion
+
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
-      const categoryName = item.category?.category;
-      const subcategoryName = item.subcategory?.subcategoryName;
-
-      if (!categoryName || !subcategoryName) {
-        console.warn(
-          "Skipping item due to missing category/subcategory:",
-          item
-        );
-        return acc;
-      }
-
+      // Use category and subcategory, or default to 'Uncategorized'
+      const categoryName = item.category?.category || "Allitems";
+      const subcategoryName = item.subcategory?.subcategoryName || "Allitems";
+  
+      // Initialize category if not exists
       if (!acc[categoryName]) {
         acc[categoryName] = {};
       }
-
+  
+      // Initialize subcategory if not exists
       if (!acc[categoryName][subcategoryName]) {
         acc[categoryName][subcategoryName] = [];
       }
-
-      // Process ingredients - ensure it's an array
-      const ingredientsArray = item.ingredients 
-        ? (Array.isArray(item.ingredients) 
-           ? item.ingredients 
-           : typeof item.ingredients === 'string'
-             ? item.ingredients.split(',').map((ing: string) => ing.trim())
-             : [])
-        : [];
-
+  
+      // Add item to the specific category and subcategory
       acc[categoryName][subcategoryName].push({
-        name: item.item_name,
-        description: item.item_description,
-        image: item.item_image,
-        status: item.status,
-        itemId: item._id,
-        price: item.price,
-        ingredients: ingredientsArray,
-        reviews: item.reviews || []
+        item_name: item.item_name,
+        description: item.description,
+        custom_image: item.custom_image,
+        item_price: item.item_price || 0,
+        ingredients: item.ingredients || [],
+        reviews_id: item.reviews_id || [],
       });
-
+  
       return acc;
     }, {} as TransformedData);
-
-    console.log("Final transformed data before return:", transformed);
+  
     return transformed;
   };
-
+  
   useEffect(() => {
+    const fetchMenuItems = async () => {
+      setLoading(true);
+      try {
+        const response = await getMenuItemsByKitchen(id);
+        if (response.data && response.data.items_id) {
+          const items = response.data.items_id;
+          const transformedData = transformFoodData(items);
+          setGroupedItems(transformedData);
+  
+          const firstCategory = Object.keys(transformedData)[0];
+          if (firstCategory) {
+            setActiveKey(firstCategory);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+        toast.error("Failed to load menu items");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchMenuItems();
+  }, [id]);  useEffect(() => {
     const fetchKitchenDetails = async () => {
       setLoading(true);
       try {
@@ -236,11 +255,11 @@ function KitchensDetails() {
   const handleAddToCart = (item: FoodItem) => {
     setCartItems((prevCart) => {
       const existingItem = prevCart.find(
-        (cartItem) => cartItem.name === item.name
+        (cartItem) => cartItem.item_name === item.item_name
       );
       if (existingItem) {
         return prevCart.map((cartItem) =>
-          cartItem.name === item.name
+          cartItem.item_name === item.item_name
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -248,28 +267,33 @@ function KitchensDetails() {
         return [...prevCart, { ...item, quantity: 1 }];
       }
     });
-    toast.success(`${item.name} added to cart`);
+    toast.success(`${item.item_name} added to cart`);
   };
 
-  const handleRemoveFromCart = (item: { name: string }) => {
+  const handleRemoveFromCart = (item: { item_name: string }) => {
     setCartItems((prevCart) =>
-      prevCart.filter((cartItem) => cartItem.name !== item.name)
+      prevCart.filter((cartItem) => cartItem.item_name !== item.item_name)
     );
-    toast.info(`${item.name} removed from cart`);
+    toast.info(`${item.item_name} removed from cart`);
   };
 
   if (loading) {
-    return <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>;
+    );
   }
-  
+
   if (!kitchenData) {
     return <div className="alert alert-warning">No kitchen data found</div>;
   }
-  
+
   const CheckoutBar = ({ cartItems, onProceed }: any) => {
     if (cartItems?.length === 0) return null;
     return (
@@ -430,7 +454,7 @@ function KitchensDetails() {
               </div>
               <div className="d-flex gap-2">
                 {[status ? "Active" : "Inactive", "Organic", "Veg"].map(
-                  (badge, index) => ( 
+                  (badge, index) => (
                     <Badge
                       key={index}
                       className="rounded-pill px-2 py-1"
@@ -662,131 +686,140 @@ function KitchensDetails() {
                 fontSize: "0.9rem",
                 height: "35px",
               }}
-              onClick={() => navigate(`/apps/kitchen/${id}/our-menu`)}
+              onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
             >
               Our menu
             </Button>
           </div>
-          <Tabs activeKey={activeKey} onSelect={(k: any) => setActiveKey(k)}>
-            {Object.entries(groupedItems).map(([category, subcategories]) => (
-              <Tab eventKey={category} title={category} key={category}>
-                <Accordion>
-                  {Object.entries(subcategories).map(([subcategory, items]) => (
-                    <Accordion.Item key={subcategory} eventKey={subcategory}>
-                      <Accordion.Header>{subcategory}</Accordion.Header>
-                      <Accordion.Body>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "15px",
-                          }}
-                        >
-                          {items.map((item, idx) => (
-                            <div
-                              key={idx}
-                              style={{
-                                flex: "1 1 300px",
-                                maxWidth: "300px",
-                                border: "1px solid #ddd",
-                                borderRadius: "8px",
-                                padding: "15px",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                textAlign: "center",
-                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                                backgroundColor: "#fff",
-                              }}
-                            >
+          {loading ? (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "100px" }}
+            >
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            <Tabs activeKey={activeKey} onSelect={(k: any) => setActiveKey(k)}>
+              {Object.entries(groupedItems).map(([category, subcategories]) => (
+                <Tab eventKey={category} title={category} key={category}>
+                  <Accordion>
+                    {Object.entries(subcategories).map(([subcategory, items]) => (
+                      <Accordion.Item key={subcategory} eventKey={subcategory}>
+                        <Accordion.Header>{subcategory}</Accordion.Header>
+                        <Accordion.Body>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                            {items.map((item, idx) => (
                               <div
+                                key={idx}
                                 style={{
-                                  width: "150px",
-                                  height: "150px",
-                                  marginBottom: "10px",
+                                  flex: "1 1 300px",
+                                  maxWidth: "300px",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "8px",
+                                  padding: "15px",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  textAlign: "center",
+                                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                  backgroundColor: "#fff",
                                 }}
                               >
-                                <img
-                                  src={item.image}
-                                  alt={item.name}
+                                <div
                                   style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                    borderRadius: "8px",
+                                    width: "150px",
+                                    height: "150px",
+                                    marginBottom: "10px",
                                   }}
-                                />
-                              </div>
-                              <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>{item.name}</h6>
-                              <small style={{ color: "#666", marginBottom: "10px" }}>
-                                {item.description}
-                              </small>
-                              <div style={{ marginBottom: "10px" }}>
-                                <strong>Price:</strong> ${item.price?.toFixed(2) || "N/A"}
-                              </div>
-                              <div style={{ marginBottom: "10px", width: "100%" }}>
-                                <strong>Ingredients:</strong>
-                                {item.ingredients && item.ingredients.length > 0 ? (
-                                  <ul style={{ listStyleType: "none", padding: 0, textAlign: "center" }}>
-                                    {item.ingredients.map((ingredient, i) => (
-                                      <li key={i} style={{ marginBottom: "2px" }}>{ingredient}</li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <div className="text-muted">No ingredients available</div>
-                                )}
-                              </div>
-                              <div style={{ marginBottom: "10px", width: "100%" }}>
-                                <strong>Reviews:</strong>
-                                {(item.reviews && item.reviews.length > 0) ? (
-                                  item.reviews.map((review, i) => (
-                                    <div key={i} style={{ textAlign: "left", fontSize: "0.85rem", marginTop: "5px" }}>
-                                      <div>"{review.comment}"</div>
-                                      <div className="text-warning">
-                                        {Array(review.rating).fill("★").join("")}
-                                        {Array(5 - review.rating).fill("☆").join("")}
-                                      </div>
+                                >
+                                  <img
+                                    src={item.custom_image || "https://via.placeholder.com/150"}
+                                    alt={item.item_name}
+                                    style={{
+                                      width: "100%",
+                                      height: "100%",
+                                      objectFit: "cover",
+                                      borderRadius: "8px",
+                                    }}
+                                  />
+                                </div>
+                                <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>
+                                  {item.item_name}
+                                </h6>
+                                <small style={{ color: "#666", marginBottom: "10px" }}>
+                                  {item.description}
+                                </small>
+                                <div style={{ marginBottom: "10px" }}>
+                                  <strong>Price:</strong> ${item.item_price?.toFixed(2) || "N/A"}
+                                </div>
+                                <div style={{ marginBottom: "10px", width: "100%" }}>
+                                <strong>Ingredients:</strong>  
+                                 {item.ingredients && item.ingredients.length > 0 ? (
+                                 <span style={{ textAlign: "center" }}>
+                                  {item.ingredients.join(", ")}
+                                  </span>
+                                   ) : (
+                               <span className="text-muted">No ingredients available</span>
+                                 )}
                                     </div>
-                                  ))
-                                ) : (
-                                  <div className="text-muted">No reviews yet.</div>
-                                )}
+
+                                    <div style={{ marginBottom: "10px", width: "100%" }}>
+  <strong>Reviews:</strong>
+  {item.reviews_id && item.reviews_id.length > 0 ? (
+    <span style={{ textAlign: "center", fontSize: "0.85rem" }}>
+      {item.reviews_id
+        .map(
+          (review) =>
+            `"${review.comment}" (${Array(review.rating).fill("★").join("")}${Array(5 - review.rating).fill("☆").join("")})`
+        )
+        .join(", ")}
+    </span>
+  ) : (
+    <span className="text-muted">No reviews yet.</span>
+  )}
+</div>
+
+                                <div style={{ width: "100%" }}>
+                                  {cartItems.some(
+                                    (cartItem) => cartItem.item_name === item.item_name
+                                  ) ? (
+                                    <Button
+                                      variant="outline-danger"
+                                      size="sm"
+                                      onClick={() => handleRemoveFromCart(item)}
+                                      style={{ width: "100%" }}
+                                    >
+                                      Remove
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="outline-primary"
+                                      size="sm"
+                                      onClick={() => handleAddToCart(item)}
+                                      style={{ width: "100%" }}
+                                    >
+                                      Add
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
-                              <div style={{ width: "100%" }}>
-                                {cartItems.some((cartItem) => cartItem.name === item.name) ? (
-                                  <Button
-                                    variant="outline-danger"
-                                    size="sm"
-                                    onClick={() => handleRemoveFromCart(item)}
-                                    style={{ width: "100%" }}
-                                  >
-                                    Remove
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="outline-primary"
-                                    size="sm"
-                                    onClick={() => handleAddToCart(item)}
-                                    style={{ width: "100%" }}
-                                  >
-                                    Add
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Accordion.Body>
-                    </Accordion.Item>
-                  ))}
-                </Accordion>
-              </Tab>
-            ))}
-          </Tabs>
+                            ))}
+                          </div>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    ))}
+                  </Accordion>
+                </Tab>
+              ))}
+            </Tabs>
+          )}
         </Card.Body>
       </Card>
       <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </div>
   );
 }
+
 export default KitchensDetails;

@@ -245,3 +245,17 @@ export const kitchensToggleSubcategoryStatus = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
+
+export const getUnapprovedKitchens = async (query: any) => {
+  console.log("zxczxzxxz");
+  
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens. getUnapprovedKitchens(query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching unapproved kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+}
