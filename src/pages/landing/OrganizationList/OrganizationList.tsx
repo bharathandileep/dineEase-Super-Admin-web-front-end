@@ -23,7 +23,7 @@ const OrganizationList = () => {
     const fetchUserOrganizations = async () => {
       try {
         const response = await getUserApprovedOrganizations();
-        setOrganizations(response.data.organizations); // Adjust based on your response structure
+        setOrganizations(response.data.organizations); 
         setLoading(false);
       } catch (error) {
         console.error("Error fetching organizations:", error);
@@ -36,9 +36,17 @@ const OrganizationList = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <h3>Loading organizations...</h3>
-      </div>
+      <div
+      className="text-center py-5"
+      style={{
+        backgroundColor: 'white',
+        height: '100vh', 
+        margin: 0,
+      }}
+    >
+      <h3>Loading organizations...</h3>
+    </div>
+    
     );
   }
 
@@ -52,7 +60,7 @@ const OrganizationList = () => {
             className="w-25 mx-auto mt-2"
             style={{
               height: "3px",
-              background: "linear-gradient(to right, #3498db, #2ecc71)",
+              background: "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
             }}
           ></div>
         </h2>
@@ -65,7 +73,7 @@ const OrganizationList = () => {
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
-                    src={org.profilePic || "https://via.placeholder.com/220"} // Fallback image
+                    src={org.profilePic || "https://via.placeholder.com/220"} 
                     className="card-img-top"
                     alt={org.name}
                     style={{
