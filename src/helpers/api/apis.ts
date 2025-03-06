@@ -1,3 +1,4 @@
+
 export const apiConfig = {
   token: {
     getAccessToken: "/api/refresh-token",
@@ -66,7 +67,8 @@ export const apiConfig = {
       `/kitchens/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/kitchens/subcategories/${id}/toggle-status`,
-
+    getUnapprovedKitchens: (query: any) => 
+      `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`,
   },
   organization: {
     newOrganization: "/organization/new",
@@ -112,10 +114,21 @@ export const apiConfig = {
     updateSubcategory: (id: string | undefined) =>
       `/organization/subcategories/${id}`,
     deleteSubcategory: (id: string | undefined) =>
-      `/organization/subcategories/${id}`,
+      `/organization/subcategories/${id}`,  
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/organization/subcategories/${id}/toggle-status`,
-  },
+
+
+    
+      getUnapprovedOrganizations: (query: any) => 
+        `/organization/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`,
+      
+      approveOrganization: (orgId: string | undefined) => 
+        `/organization/approve/${orgId}`,
+    },
+    
+    
+
   menu: {
     createCategory: "/menu-category/categories",
     getAllCategories: (query: any) =>
@@ -158,7 +171,10 @@ export const apiConfig = {
     deleteItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     changeItemStatus: (id: string | undefined) =>
       `/menu-items/allmenuitems/${id}/status`,
+
+    getMenuItemsByKitchen:(id:string | undefined)=>`menu-items/menu-items/kitchen/${id}`,
   },
+
   designation: {
     createDesignation: "/designation/designations",
     getAllDesignations: (query: any) =>
@@ -176,6 +192,7 @@ export const apiConfig = {
     toggleDesignationStatus: (id: string | undefined) =>
       `/designation/designations/${id}/toggle-status`,
   },
+
   employee: {
     createEmployee: "/employee/employees",
     getAllEmployees: (query: any) =>

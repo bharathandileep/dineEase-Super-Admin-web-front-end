@@ -160,3 +160,14 @@ export const toggleSubcategoryStatus = async (id: string | undefined) => {
     return error;
   }
 };
+
+export const getMenuItemsByKitchen = async(id:string | undefined)=>{
+  try{
+    const response = await axiosInstance.get(
+      apiConfig.menu.getMenuItemsByKitchen(id)
+    );
+    return response.data;
+  }catch(error:any){
+    console.log("Error:",error.response?.data || error.message);
+  }
+} ;

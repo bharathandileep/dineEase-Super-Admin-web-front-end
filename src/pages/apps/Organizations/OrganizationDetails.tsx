@@ -104,6 +104,7 @@ function OrganizationDetails() {
       "Fast Charging Support",
     ],
   });
+  
   const { id } = useParams();
   const [organization, setOrgData] = useState<IOrganizationDetails | null>(
     null

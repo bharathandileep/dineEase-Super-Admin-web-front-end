@@ -42,15 +42,15 @@ import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgempl
 import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
 import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
 import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
+import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
+
 import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
 
-// import Root from './Root';
 
-// lazy load all the views
-// auth
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -338,7 +338,7 @@ const organizationsAppRoutes = {
     {
       path: "/apps/organizations/employee/add",
       name: "Organizations employ add",
-      element: <OrgEmployeeManagement />,
+      element: <OrgEmployeeManagement/>,
       route: PrivateRoute,
     },
     {
@@ -357,6 +357,12 @@ const organizationsAppRoutes = {
       path: "/apps/organizations/employee/details/:id",
       name: "Organisation Employee details",
       element: <OrgEmployeeDetails />,
+      route: PrivateRoute,
+    },
+     {
+      path: "/apps/organizations/requested-organizations",
+      name: "Organisation request",
+      element: <RequestedOrganization/>,
       route: PrivateRoute,
     },
   ],
@@ -439,6 +445,11 @@ const kitchenAppRoutes = {
       path: "/apps/kitchen/:kitchenId/item-details/:id",
       name: "Editing",
       element: <MenuDetails />,
+    },
+    {
+      path:"/apps/kitchen/requested-kitchens",
+      name:"Requested Kitchens",
+      element:<RequestedKitchen/>
     },
   ],
 };
