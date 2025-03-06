@@ -60,7 +60,7 @@ const KitchenMenu = () => {
   const fetchItemDetails = async () => {
     setLoading(true);
     try {
-      const response = await listItems();
+      const response = await listItems( { page: 1, limit: 1000 } );
       const transformedData = transformFoodData(response.data);
       setGroupedItems(transformedData);
 

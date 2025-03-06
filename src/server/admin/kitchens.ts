@@ -75,7 +75,15 @@ export const toggleKitchenStatus = async (id: string | undefined) => {
   }
 };
 
-
+export const getUserApprovedKitchens = async () => {
+  try {
+    const response = await axiosInstance.get(`${apiConfig.kitchens.getUserApprovedKitchens}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching user's approved kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 
 

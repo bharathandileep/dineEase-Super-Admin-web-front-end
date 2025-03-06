@@ -51,24 +51,24 @@ const Dashboard = () => {
             </div>
             <form className="support-form">
               <div className="form-row">
-                <div className="form-group">
+                <div className="home-form-group">
                   <input type="text" id="name" required />
                   <label htmlFor="name">Your Name</label>
                 </div>
-                <div className="form-group">
+                <div className="home-form-group">
                   <input type="email" id="email" required />
                   <label htmlFor="email">Email Address</label>
                 </div>
               </div>
-              <div className="form-group">
+              <div className="home-form-group">
                 <input type="text" id="subject" required />
                 <label htmlFor="subject">Subject</label>
               </div>
-              <div className="form-group">
+              <div className="home-form-group">
                 <textarea id="message" rows={5} required></textarea>
                 <label htmlFor="message">Your Message</label>
               </div>
-              <div className="form-group select-group">
+              <div className="home-form-group select-group">
                 <select id="priority" required>
                   <option value="">Select Priority</option>
                   <option value="low">Low Priority</option>

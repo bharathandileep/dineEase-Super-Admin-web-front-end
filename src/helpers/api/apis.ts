@@ -36,6 +36,7 @@ export const apiConfig = {
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
     toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
+    getUserApprovedKitchens: "/kitchens/user/approved",
 
     createCategory: "/kitchens/categories",
     getAllCategories: (query: any) =>
@@ -66,8 +67,6 @@ export const apiConfig = {
       `/kitchens/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/kitchens/subcategories/${id}/toggle-status`,
-
-
     getUnapprovedKitchens: (query: any) => 
       `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${query.search || ''}`,
   },
@@ -85,6 +84,7 @@ export const apiConfig = {
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
     toggleOrgStatus: (id: string | undefined) => `/organization/status/${id}`,
+    getUserApprovedOrganizations: "/organization/org/approved",
 
     createCategory: "/organization/categories",
     getAllCategories: (query: any) =>
@@ -165,7 +165,7 @@ export const apiConfig = {
       `/sub-menu-category/subcategories/${id}/toggle-status`,
 
     createItem: "/menu-items/allmenuitems",
-    listItems: "/menu-items/allmenuitems",
+    listItems: (query: any) => `/menu-items/allmenuitems?page=${query.page}&limit=${query.limit}${query.search ? `&search=${encodeURIComponent(query.search)}` : ''}`,
     getItemById: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     updateItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     deleteItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,

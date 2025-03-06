@@ -7,8 +7,6 @@ function login(params: { username: string; password: string }) {
   return AuthAdminCredentials(params);
 }
 
-
-
 function logout() {
   localStorage.removeItem("Session_token");
   const baseUrl = "/logout/";

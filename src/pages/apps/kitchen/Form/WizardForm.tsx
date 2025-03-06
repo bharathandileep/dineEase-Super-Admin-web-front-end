@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FileUpload } from "../../../../components/FileUpload";
@@ -27,6 +26,7 @@ interface WizardFormProps {
 
 interface FormData {
   kitchen_name: string;
+  role: string;
   user_id: string;
   kitchen_status: string;
   kitchen_owner_name: string;
@@ -55,6 +55,7 @@ interface FormData {
   ffsai_expiry_date: string;
   category: string;
   subcategoryName: string;
+  isapproved?: boolean; // Added isapproved field
 }
 
 const initialFormData: FormData = {
@@ -87,6 +88,8 @@ const initialFormData: FormData = {
   ffsai_certificate_image: "",
   category: "",
   subcategoryName: "",
+  role: "User",
+  isapproved: false, // Default to false for new kitchens
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {
@@ -94,18 +97,18 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
+  const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [CategoryId, setCategoryId] = useState("");
-
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const steps = [
     { number: 1, title: "Personal Info" },
@@ -114,7 +117,6 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
 
   const validateStep1 = () => {
     const newErrors: Partial<FormData> = {};
-
     if (!formData.kitchen_name) newErrors.kitchen_name = "Required";
     if (!formData.kitchen_owner_name) newErrors.kitchen_owner_name = "Required";
     if (!formData.owner_email) {
@@ -148,45 +150,30 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
 
   const validateStep2 = () => {
     const newErrors: Partial<FormData> = {};
-
     if (!formData.pan_card_number) {
-      newErrors.pan_card_number = "Invalid PAN number(must be 10 elements)";
+      newErrors.pan_card_number = "Invalid PAN number (must be 10 elements)";
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan_card_number)) {
-      newErrors.pan_card_number = "Invalid PAN number(must be 10 elements)";
+      newErrors.pan_card_number = "Invalid PAN number (must be 10 elements)";
     }
-
     if (!formData.pan_card_user_name) newErrors.pan_card_user_name = "Required";
-
     if (!formData.gst_number) {
-      newErrors.gst_number = "Invalid GST number(must be 15 elements)";
+      newErrors.gst_number = "Invalid GST number (must be 15 elements)";
     } else if (
       !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/.test(
         formData.gst_number
       )
     ) {
-      newErrors.gst_number = "Invalid GST number(must be 15 elements)";
+      newErrors.gst_number = "Invalid GST number (must be 15 elements)";
     }
-
-    if (!formData.gst_certificate_image)
-      newErrors.gst_certificate_image = "Required";
-
+    if (!formData.gst_certificate_image) newErrors.gst_certificate_image = "Required";
     if (!formData.gst_expiry_date) newErrors.gst_expiry_date = "Required";
-
     if (!formData.ffsai_certificate_number) {
-      newErrors.ffsai_certificate_number =
-        "Invalid FSSAI number (must be 14 digits and start with '1')";
+      newErrors.ffsai_certificate_number = "Invalid FSSAI number (must be 14 digits and start with '1')";
     } else if (!/^1\d{13}$/.test(formData.ffsai_certificate_number)) {
-      newErrors.ffsai_certificate_number =
-        "Invalid FSSAI number (must be 14 digits and start with '1')";
+      newErrors.ffsai_certificate_number = "Invalid FSSAI number (must be 14 digits and start with '1')";
     }
-
-    if (!formData.ffsai_card_owner_name) {
-      newErrors.ffsai_card_owner_name = "Required";
-    }
-
-    if (!formData.ffsai_certificate_image) {
-      newErrors.ffsai_certificate_image = "Required";
-    }
+    if (!formData.ffsai_card_owner_name) newErrors.ffsai_card_owner_name = "Required";
+    if (!formData.ffsai_certificate_image) newErrors.ffsai_certificate_image = "Required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -195,9 +182,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
-      if (data?.success) {
-        setCountries(data.data);
-      }
+      if (data?.success) setCountries(data.data);
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
@@ -206,9 +191,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const fetchStates = async (countryName: string) => {
     try {
       const data = await getStatesByCountry(countryName);
-      if (data?.success) {
-        setStates(data.data);
-      }
+      if (data?.success) setStates(data.data);
     } catch (error) {
       console.error("Error fetching states:", error);
     }
@@ -217,9 +200,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const fetchCities = async (stateName: string) => {
     try {
       const data = await getCitiesByState(stateName);
-      if (data?.success) {
-        setCities(data.data);
-      }
+      if (data?.success) setCities(data.data);
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
@@ -228,9 +209,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
-      if (data?.success) {
-        setDistricts(data.data);
-      }
+      if (data?.success) setDistricts(data.data);
     } catch (error) {
       console.error("Error fetching districts:", error);
     }
@@ -249,7 +228,6 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
       await fetchDistricts(value);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
     }
-
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -276,7 +254,6 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
     try {
       const kitchesFormData = appendToFormData(formData);
       const response = await updatekitchenDetails(id, kitchesFormData);
-
       if (response.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
@@ -296,7 +273,6 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
     try {
       const kitchesFormData = appendToFormData(formData);
       const response = await createNewkitchen(kitchesFormData);
-
       if (response.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
@@ -314,15 +290,9 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await kitchensGetAllCategories({
-          page: 1,
-          limit: 100,
-        });
-        if (response.status) {
-          setCategories(response.data.categories);
-        } else {
-          toast.error("Failed to load categories.");
-        }
+        const response = await kitchensGetAllCategories({ page: 1, limit: 100 });
+        if (response.status) setCategories(response.data.categories);
+        else toast.error("Failed to load categories.");
       } catch (error) {
         console.error("Error fetching categories:", error);
         toast.error("An error occurred while fetching categories.");
@@ -338,11 +308,8 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
       const fetchSubcategories = async () => {
         try {
           const response = await kitchensGetSubcategoriesByCategory(CategoryId);
-          if (response.status) {
-            setSubcategories(response.data);
-          } else {
-            toast.error("Failed to load subcategories.");
-          }
+          if (response.status) setSubcategories(response.data);
+          else toast.error("Failed to load subcategories.");
         } catch (error) {
           console.error("Error fetching subcategories:", error);
           toast.error("An error occurred while fetching subcategories.");
@@ -380,32 +347,23 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
           pincode: response.data.addresses?.[0]?.pincode || "",
           country: response.data.addresses?.[0]?.country_id || "",
           pan_card_number: response.data.panDetails?.[0]?.pan_card_number || "",
-          pan_card_user_name:
-            response.data.panDetails?.[0]?.pan_card_user_name || "",
+          pan_card_user_name: response.data.panDetails?.[0]?.pan_card_user_name || "",
           pan_card_image: response.data.panDetails?.[0]?.pan_card_image || "",
           gst_number: response.data.gstDetails?.[0]?.gst_number || "",
           gst_expiry_date: response.data.gstDetails?.[0]?.expiry_date
-            ? new Date(response.data.gstDetails[0].expiry_date)
-                .toISOString()
-                .split("T")[0]
+            ? new Date(response.data.gstDetails[0].expiry_date).toISOString().split("T")[0]
             : "",
-          gst_certificate_image:
-            response.data.gstDetails?.[0]?.gst_certificate_image || "",
-          ffsai_certificate_number:
-            response.data.fssaiDetails?.[0]?.ffsai_certificate_number || "",
-          ffsai_card_owner_name:
-            response.data.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
+          gst_certificate_image: response.data.gstDetails?.[0]?.gst_certificate_image || "",
+          ffsai_certificate_number: response.data.fssaiDetails?.[0]?.ffsai_certificate_number || "",
+          ffsai_card_owner_name: response.data.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
           ffsai_expiry_date: response.data.fssaiDetails?.[0]?.expiry_date
-            ? new Date(response.data.fssaiDetails[0].expiry_date)
-                .toISOString()
-                .split("T")[0]
+            ? new Date(response.data.fssaiDetails[0].expiry_date).toISOString().split("T")[0]
             : "",
-          ffsai_certificate_image:
-            response.data.fssaiDetails?.[0]?.ffsai_certificate_image || "",
+          ffsai_certificate_image: response.data.fssaiDetails?.[0]?.ffsai_certificate_image || "",
           kitchen_image: response.data.kitchen_image || "",
+          isapproved: response.data.isapproved || false, // Fetch isapproved status
         }));
 
-        // Fetch states, cities, and districts based on the fetched country, state, and district IDs
         if (response.data.addresses?.[0]?.country_id) {
           await fetchStates(response.data.addresses[0].country_id);
         }
@@ -436,6 +394,21 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                   <div>
                     <h2 className="card-title mb-4">Kitchen Details</h2>
                     <div className="row g-3">
+                      {/* Approval Status Display */}
+                      {id && (
+                        <div className="col-12 mb-3">
+                          <div className="form-group">
+                            <label className="form-label">Approval Status</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={formData.isapproved ? "Approved" : "Pending Approval"}
+                              readOnly
+                            />
+                          </div>
+                        </div>
+                      )}
+
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Name</label>
@@ -444,36 +417,26 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="kitchen_name"
                             value={formData.kitchen_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_name ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_name && (
-                            <div className="invalid-feedback">
-                              {errors.kitchen_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_name}</div>
                           )}
                         </div>
                       </div>
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            Kitchen Owner Name
-                          </label>
+                          <label className="form-label">Kitchen Owner Name</label>
                           <input
                             type="text"
                             name="kitchen_owner_name"
                             value={formData.kitchen_owner_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_owner_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_owner_name ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_owner_name && (
-                            <div className="invalid-feedback">
-                              {errors.kitchen_owner_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_owner_name}</div>
                           )}
                         </div>
                       </div>
@@ -486,36 +449,26 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="owner_email"
                             value={formData.owner_email}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.owner_email ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.owner_email ? "is-invalid" : ""}`}
                           />
                           {errors.owner_email && (
-                            <div className="invalid-feedback">
-                              {errors.owner_email}
-                            </div>
+                            <div className="invalid-feedback">{errors.owner_email}</div>
                           )}
                         </div>
                       </div>
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            Owner Phone Number
-                          </label>
+                          <label className="form-label">Owner Phone Number</label>
                           <input
                             type="tel"
                             name="owner_phone_number"
                             value={formData.owner_phone_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.owner_phone_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.owner_phone_number ? "is-invalid" : ""}`}
                           />
                           {errors.owner_phone_number && (
-                            <div className="invalid-feedback">
-                              {errors.owner_phone_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.owner_phone_number}</div>
                           )}
                         </div>
                       </div>
@@ -528,17 +481,14 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="restaurant_type"
                             value={formData.restaurant_type}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.restaurant_type ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.restaurant_type ? "is-invalid" : ""}`}
                           />
                           {errors.restaurant_type && (
-                            <div className="invalid-feedback">
-                              {errors.restaurant_type}
-                            </div>
+                            <div className="invalid-feedback">{errors.restaurant_type}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Type</label>
@@ -548,6 +498,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             onChange={handleChange}
                             className="form-select"
                           >
+                            <option value="">Select Kitchen Type</option>
                             <option value="Veg">Veg</option>
                             <option value="Non-Veg">Non-Veg</option>
                             <option value="Both">Both</option>
@@ -557,22 +508,16 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            Kitchen Phone Number
-                          </label>
+                          <label className="form-label">Kitchen Phone Number</label>
                           <input
                             type="tel"
                             name="kitchen_phone_number"
                             value={formData.kitchen_phone_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_phone_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_phone_number ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_phone_number && (
-                            <div className="invalid-feedback">
-                              {errors.kitchen_phone_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_phone_number}</div>
                           )}
                         </div>
                       </div>
@@ -582,21 +527,17 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                           <label className="form-label">Kitchen Logo</label>
                           <FileUpload
                             onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                kitchen_image: file,
-                              }))
+                              setFormData((prev) => ({ ...prev, kitchen_image: file }))
                             }
                             value={formData.kitchen_image}
                             error={errors.kitchen_image}
                           />
                           {errors.kitchen_image && (
-                            <div className="invalid-feedback">
-                              {errors.kitchen_image}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_image}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="row g-3">
                         <div className="col-md-6">
                           <div className="form-group">
@@ -623,9 +564,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                               ))}
                             </select>
                             {!categories.length && (
-                              <div className="text-muted mt-1">
-                                Loading categories...
-                              </div>
+                              <div className="text-muted mt-1">Loading categories...</div>
                             )}
                           </div>
                         </div>
@@ -664,14 +603,10 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="street_address"
                             value={formData.street_address}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.street_address ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.street_address ? "is-invalid" : ""}`}
                           />
                           {errors.street_address && (
-                            <div className="invalid-feedback">
-                              {errors.street_address}
-                            </div>
+                            <div className="invalid-feedback">{errors.street_address}</div>
                           )}
                         </div>
                       </div>
@@ -683,9 +618,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="country"
                             value={formData.country}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.country ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.country ? "is-invalid" : ""}`}
                           >
                             <option value="">Select Country</option>
                             {countries.map((country) => (
@@ -695,9 +628,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             ))}
                           </select>
                           {errors.country && (
-                            <div className="invalid-feedback">
-                              {errors.country}
-                            </div>
+                            <div className="invalid-feedback">{errors.country}</div>
                           )}
                         </div>
                       </div>
@@ -709,9 +640,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.state ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.state ? "is-invalid" : ""}`}
                             disabled={!formData.country}
                           >
                             <option value="">Select State</option>
@@ -722,9 +651,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             ))}
                           </select>
                           {errors.state && (
-                            <div className="invalid-feedback">
-                              {errors.state}
-                            </div>
+                            <div className="invalid-feedback">{errors.state}</div>
                           )}
                         </div>
                       </div>
@@ -736,9 +663,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="city"
                             value={formData.city || ""}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.city ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.city ? "is-invalid" : ""}`}
                             disabled={!formData.state}
                           >
                             <option value="">Select City</option>
@@ -749,9 +674,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             ))}
                           </select>
                           {errors.city && (
-                            <div className="invalid-feedback">
-                              {errors.city}
-                            </div>
+                            <div className="invalid-feedback">{errors.city}</div>
                           )}
                         </div>
                       </div>
@@ -763,9 +686,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="district"
                             value={formData.district}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.district ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.district ? "is-invalid" : ""}`}
                             disabled={!formData.state}
                           >
                             <option value="">Select District</option>
@@ -776,9 +697,7 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             ))}
                           </select>
                           {errors.district && (
-                            <div className="invalid-feedback">
-                              {errors.district}
-                            </div>
+                            <div className="invalid-feedback">{errors.district}</div>
                           )}
                         </div>
                       </div>
@@ -791,24 +710,20 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="pincode"
                             value={formData.pincode}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.pincode ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.pincode ? "is-invalid" : ""}`}
                           />
                           {errors.pincode && (
-                            <div className="invalid-feedback">
-                              {errors.pincode}
-                            </div>
+                            <div className="invalid-feedback">{errors.pincode}</div>
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
+
                 {currentStep === 2 && (
                   <div>
                     <h2 className="card-title mb-4">Documents</h2>
-
                     <div className="row g-3">
                       <div className="col-md-6">
                         <div className="form-group">
@@ -818,36 +733,26 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="pan_card_number"
                             value={formData.pan_card_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.pan_card_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.pan_card_number ? "is-invalid" : ""}`}
                           />
                           {errors.pan_card_number && (
-                            <div className="invalid-feedback">
-                              {errors.pan_card_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.pan_card_number}</div>
                           )}
                         </div>
                       </div>
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            PAN Card User Name
-                          </label>
+                          <label className="form-label">PAN Card User Name</label>
                           <input
                             type="text"
                             name="pan_card_user_name"
                             value={formData.pan_card_user_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.pan_card_user_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.pan_card_user_name ? "is-invalid" : ""}`}
                           />
                           {errors.pan_card_user_name && (
-                            <div className="invalid-feedback">
-                              {errors.pan_card_user_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.pan_card_user_name}</div>
                           )}
                         </div>
                       </div>
@@ -857,19 +762,11 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                           <label className="form-label">PAN Card Image</label>
                           <FileUpload
                             onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                pan_card_image: file,
-                              }))
+                              setFormData((prev) => ({ ...prev, pan_card_image: file }))
                             }
                             value={formData.pan_card_image}
                             error={errors.pan_card_image}
                           />
-                          {errors.pan_card_user_name && (
-                            <div className="invalid-feedback">
-                              {errors.pan_card_user_name}
-                            </div>
-                          )}
                         </div>
                       </div>
 
@@ -881,17 +778,14 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="gst_number"
                             value={formData.gst_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.gst_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.gst_number ? "is-invalid" : ""}`}
                           />
                           {errors.gst_number && (
-                            <div className="invalid-feedback">
-                              {errors.gst_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.gst_number}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Expiry Date</label>
@@ -900,85 +794,62 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="gst_expiry_date"
                             value={formData.gst_expiry_date}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.gst_expiry_date ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.gst_expiry_date ? "is-invalid" : ""}`}
                           />
                           {errors.gst_expiry_date && (
-                            <div className="invalid-feedback">
-                              {errors.gst_expiry_date}
-                            </div>
+                            <div className="invalid-feedback">{errors.gst_expiry_date}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="col-md-12">
                         <div className="form-group">
-                          <label className="form-label">
-                            GST Certificate Image
-                          </label>
+                          <label className="form-label">GST Certificate Image</label>
                           <FileUpload
                             onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                gst_certificate_image: file,
-                              }))
+                              setFormData((prev) => ({ ...prev, gst_certificate_image: file }))
                             }
                             value={formData.gst_certificate_image}
                             error={errors.gst_certificate_image}
                           />
                           {errors.gst_certificate_image && (
-                            <div className="invalid-feedback">
-                              {errors.gst_certificate_image}
-                            </div>
+                            <div className="invalid-feedback">{errors.gst_certificate_image}</div>
                           )}
                         </div>
                       </div>
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            FSSAI Certificate Number
-                          </label>
+                          <label className="form-label">FSSAI Certificate Number</label>
                           <input
                             type="text"
                             name="ffsai_certificate_number"
                             value={formData.ffsai_certificate_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.ffsai_certificate_number
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className={`form-control ${errors.ffsai_certificate_number ? "is-invalid" : ""}`}
                           />
                           {errors.ffsai_certificate_number && (
-                            <div className="invalid-feedback">
-                              {errors.ffsai_certificate_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.ffsai_certificate_number}</div>
                           )}
                         </div>
                       </div>
 
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            FSSAI Card Owner Name
-                          </label>
+                          <label className="form-label">FSSAI Card Owner Name</label>
                           <input
                             type="text"
                             name="ffsai_card_owner_name"
                             value={formData.ffsai_card_owner_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.ffsai_card_owner_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.ffsai_card_owner_name ? "is-invalid" : ""}`}
                           />
                           {errors.ffsai_card_owner_name && (
-                            <div className="invalid-feedback">
-                              {errors.ffsai_card_owner_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.ffsai_card_owner_name}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Expiry Date</label>
@@ -987,42 +858,33 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                             name="ffsai_expiry_date"
                             value={formData.ffsai_expiry_date}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.ffsai_expiry_date ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.ffsai_expiry_date ? "is-invalid" : ""}`}
                           />
                           {errors.ffsai_expiry_date && (
-                            <div className="invalid-feedback">
-                              {errors.ffsai_expiry_date}
-                            </div>
+                            <div className="invalid-feedback">{errors.ffsai_expiry_date}</div>
                           )}
                         </div>
                       </div>
+
                       <div className="col-md-12">
                         <div className="form-group">
-                          <label className="form-label">
-                            FSSAI Certificate Image
-                          </label>
+                          <label className="form-label">FSSAI Certificate Image</label>
                           <FileUpload
                             onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                ffsai_certificate_image: file,
-                              }))
+                              setFormData((prev) => ({ ...prev, ffsai_certificate_image: file }))
                             }
                             value={formData.ffsai_certificate_image}
                             error={errors.ffsai_certificate_image}
                           />
                           {errors.ffsai_certificate_image && (
-                            <div className="invalid-feedback">
-                              {errors.ffsai_certificate_image}
-                            </div>
+                            <div className="invalid-feedback">{errors.ffsai_certificate_image}</div>
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
+
                 <div className="d-flex justify-content-between mt-4">
                   {currentStep > 1 && (
                     <button
@@ -1042,14 +904,8 @@ const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
                   >
                     {loading ? (
                       <>
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                        />
-                        <span
-                          className="spinner-grow spinner-grow-sm"
-                          role="status"
-                        />
+                        <span className="spinner-border spinner-border-sm me-2" role="status" />
+                        <span className="spinner-grow spinner-grow-sm" role="status" />
                       </>
                     ) : (
                       <>

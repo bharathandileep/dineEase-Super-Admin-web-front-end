@@ -160,7 +160,6 @@ class APICore {
   };
 }
 
-// Initialize
 const initializeAxios = () => {
   const session = getUserFromCookie();
   if (session?.token) {

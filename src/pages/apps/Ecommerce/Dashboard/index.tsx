@@ -9,7 +9,6 @@ import SalesChart from "./SalesChart";
 import RevenueDetails from "./RevenueDetails";
 import Transactions from "./Transactions";
 import ProductsDetails from "./ProductsDetails";
-
 // dummy data
 import { transactions, products } from "./data";
 

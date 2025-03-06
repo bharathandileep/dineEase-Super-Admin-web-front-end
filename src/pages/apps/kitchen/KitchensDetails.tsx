@@ -1,5 +1,4 @@
 
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -218,6 +217,40 @@ function KitchensDetails() {
     };
     fetchKitchenDetails();
   }, [id]);
+
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      setLoading(true);
+      try {
+        const response = await listItems( { search: id } );
+        let transformedData;
+        try {
+          transformedData = transformFoodData(response.data);
+          console.log("Transformed Data inside try:", transformedData);
+        } catch (error) {
+          console.error("Error transforming data:", error);
+          toast.error("Error processing menu items");
+          setLoading(false);
+          return;
+        }
+
+        setGroupedItems(transformedData);
+        console.log("Transformed Data after setGroupedItems:", transformedData);
+
+        const firstCategory = Object.keys(transformedData)[0];
+        if (firstCategory) {
+          setActiveKey(firstCategory);
+        }
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+        toast.error("Failed to load menu items");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItemDetails();
+  }, []);
 
   const handleAddToCart = (item: FoodItem) => {
     setCartItems((prevCart) => {
