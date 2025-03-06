@@ -5,7 +5,6 @@ import dashlogo from "../../../assets/images/logo-dark.png";
 
 const DashboardNavbar = () => {
   const location = useLocation();
-
   return (
     <nav className="dashboard-navbar">
       <div className="dashboard-navbar-logo">
