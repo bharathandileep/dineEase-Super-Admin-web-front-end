@@ -11,9 +11,10 @@ import {
   loginUserWithPhone,
   verifyPhoneOTP,
 } from "../../../server/admin/auth";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../redux/store";
 import { googleLoginUser } from "../../../redux/actions";
+import { useNavigate } from "react-router-dom";
 
 interface AuthResponse {
   status: boolean;
@@ -23,6 +24,7 @@ interface AuthResponse {
 type AuthMethod = "email" | "phone";
 
 const SigninForm: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [isActive, setIsActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -35,6 +37,9 @@ const SigninForm: React.FC = () => {
   const [otpTimer, setOTPTimer] = useState(30);
   const [canResendOTP, setCanResendOTP] = useState(false);
   const otpTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { userLoggedIn, user, loading } = useSelector(
+    (state: RootState) => state.Auth
+  );
 
   const loginFormRef = useRef<HTMLFormElement>(null);
   const registerFormRef = useRef<HTMLFormElement>(null);
@@ -79,9 +84,13 @@ const SigninForm: React.FC = () => {
     setOTPTimer(30);
     setCanResendOTP(false);
   };
+  useEffect(() => {
+    if (userLoggedIn && user) {
+      navigate("/auth/dashboard");
+    }
+  }, [userLoggedIn, user, navigate]);
 
   const handleGoogleSignIn = async () => {
-    console.log("Dispatching GOOGLE_LOGIN_USER...");
     dispatch(googleLoginUser());
   };
 

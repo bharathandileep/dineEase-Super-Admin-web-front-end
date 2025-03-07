@@ -18,6 +18,7 @@ import { authApiResponseSuccess, authApiResponseError } from "./actions";
 // constants
 import { AuthActionTypes } from "./constants";
 import { googleAuth } from "../../server/admin/auth";
+import jwtDecode from "jwt-decode";
 
 interface UserData {
   payload: {
@@ -71,14 +72,15 @@ function* googleLogin(): SagaIterator {
     const response = yield call(googleAuth);
     const user = response.data;
     api.setLoggedInUser(user);
-    setAuthorization(user['token']);
-    yield put(authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, response));
+    setAuthorization(user["token"]);
+    const loginUser = api.getLoggedInUserInfo()
+    yield put(
+      authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, loginUser)
+    );
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.GOOGLE_LOGIN_USER, error));
+    setAuthorization(null);
   }
-}
-export function* watchGoogleLogin() {
-  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
 }
 
 function* signup({
@@ -88,15 +90,14 @@ function* signup({
     const response = yield call(signupApi, { fullname, email, password });
     const user = response.data;
     api.setLoggedInUser(user);
-    setAuthorization(user['token']);
-    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
+    setAuthorization(user["token"]);
+    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, api.getLoggedInUserInfo));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error));
     api.setLoggedInUser(null);
     setAuthorization(null);
   }
 }
-
 function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
   try {
     const response = yield call(forgotPasswordApi, { username });
@@ -106,6 +107,10 @@ function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
   }
+}
+
+export function* watchGoogleLogin() {
+  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
 }
 export function* watchLoginUser() {
   yield takeEvery(AuthActionTypes.LOGIN_USER, login);
@@ -132,5 +137,5 @@ function* authSaga() {
     fork(watchGoogleLogin),
   ]);
 }
- 
+
 export default authSaga;
