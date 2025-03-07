@@ -155,18 +155,18 @@ function RequestedKitchen() {
                       <input
                         type='search'
                         className='form-control my-1 my-lg-0'
-                        placeholder='Search Unapproved Kitchens...'
+                        placeholder='Search '
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
                   </form>
                 </Col>
-                <Col className='col-auto'>
+                {/* <Col className='col-auto'>
                   <p className="text-muted mt-2">
                     Total Unapproved Kitchens: {totalItems}
                   </p>
-                </Col>
+                </Col> */}
               </Row>
             </Card.Body>
           </Card>
