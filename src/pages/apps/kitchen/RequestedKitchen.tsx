@@ -51,7 +51,6 @@ function RequestedKitchen() {
         search: searchQuery,
       };
   
-      console.log("Fetching organizations with params:", params); // Debugging statement
   
       const response = await getUnapprovedKitchens(params);
       if (response.status) {

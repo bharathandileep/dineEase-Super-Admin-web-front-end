@@ -85,7 +85,18 @@ export const getUserApprovedKitchens = async () => {
   }
 };
 
-
+export const getUserApprovedOrganizations = async () => {
+  const token = localStorage.getItem("token"); 
+  try {
+    const response = await axiosInstance.get(`${apiConfig.organization.getUserApprovedOrganizations}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching user's approved organizations:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 
 

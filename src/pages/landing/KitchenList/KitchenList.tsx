@@ -8,7 +8,6 @@ const KitchenList = () => {
     id: string;
     profilePic?: string;
     name: string;
-    rating?: number;
     address: string;
     cuisine?: string[];
     specialty?: string;
@@ -78,12 +77,7 @@ const KitchenList = () => {
                       borderRadius: "12px 12px 0 0",
                     }}
                   />
-                  <div className="position-absolute top-0 end-0 m-3">
-                    <span className="badge bg-light text-dark shadow-sm px-3 py-2">
-                      <i className="bi bi-star-fill text-warning me-1"></i>
-                      {kitchen.rating || "N/A"}
-                    </span>
-                  </div>
+             
                 </div>
                 <div
                   className="card-body"
