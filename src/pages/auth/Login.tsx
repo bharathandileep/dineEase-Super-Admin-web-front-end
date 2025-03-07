@@ -7,10 +7,7 @@ import { useTranslation } from "react-i18next";
 
 // components
 import { VerticalForm, FormInput } from "../../components/";
-
 import AuthLayout from "./AuthLayout";
-import { AuthAdminCredentials } from "../../server/admin/auth";
-import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { loginUser } from "../../redux/actions";
