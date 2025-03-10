@@ -46,7 +46,7 @@ const ProfileDropdown = (props: ProfileDropdownProps) => {
       <Dropdown.Menu className="dropdown-menu dropdown-menu-end profile-dropdown">
         <div onClick={toggleDropdown}>
           <div className="dropdown-header noti-title">
-            <h6 className="text-overflow m-0">Welcome !</h6>
+            <h6 className="text-overflow m-0">Welcome !!</h6>
           </div>
           {(props.menuItems || []).map((item, i) => {
             return (

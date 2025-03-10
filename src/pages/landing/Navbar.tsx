@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
               <li className="nav-item ms-2">
                 <button
                   className="btn btn-primary"
-                  onClick={() => navigate("/auth/dashboard")}
+                  onClick={() => navigate("/user/dashboard")}
                 >
                   Dashboard
                 </button>

@@ -75,7 +75,7 @@ const initialFormData: FormData = {
   panCardImage: "",
   category: "",
   subcategoryName: "",
-  isapproved: false, // Default to false for new organizations
+  isapproved: false, 
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {

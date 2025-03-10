@@ -31,7 +31,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
         (role) => role.toLowerCase() === loggedInUser?.role.toLowerCase()
       )
     ) {
-      console.log("User does not have required role. Redirecting to /");
       return <Navigate to="/" replace />;
     }
   }

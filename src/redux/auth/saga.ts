@@ -91,7 +91,7 @@ function* signup({
     const user = response.data;
     api.setLoggedInUser(user);
     setAuthorization(user["token"]);
-    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, api.getLoggedInUserInfo));
+    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, api.getLoggedInUserInfo()));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error));
     api.setLoggedInUser(null);

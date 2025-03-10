@@ -90,6 +90,7 @@ const AllRoutes = (props: IRoutesProps) => {
                     }}
                   />
                 ) : (
+                  route.layout === false ?route.element:
                   <PrivateRoute roles={route.roles}>
                     <Layout {...props}>{route.element}</Layout>
                   </PrivateRoute>

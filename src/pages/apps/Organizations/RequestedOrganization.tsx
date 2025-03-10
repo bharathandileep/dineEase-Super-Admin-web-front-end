@@ -53,14 +53,9 @@ function RequestedOrganization() {
         search: searchQuery,
       };
   
-      console.log("Fetching organizations with params:", params); // Debugging statement
-  
       const response = await getUnapprovedOrganizations(params);
       if (response.status) {
         const { organizations, totalPages, totalOrganizations } = response.data;
-  
-        console.log("Received organizations:", organizations); // Debugging statement
-  
         if (isNewSearch) {
           setOrganizations(organizations);
         } else {
@@ -91,14 +86,11 @@ function RequestedOrganization() {
       setPage(1);
       fetchUnapprovedOrganizations(1, true, searchTerm);
     }, 500);
-
-    return () => clearTimeout(timer);
   }, [searchTerm]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (isLoadingRef.current || !hasMore) return;
-
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollHeight = document.documentElement.scrollHeight;
       const clientHeight = document.documentElement.clientHeight;
@@ -113,7 +105,6 @@ function RequestedOrganization() {
   }, [hasMore, page, searchTerm]);
 
   const handleApproveOrganization = async (orgId: string) => {
-    // TODO: Implement organization approval logic
     toast.info("Approval functionality to be implemented");
   };
 
@@ -145,8 +136,8 @@ function RequestedOrganization() {
                     <div>
                       <input
                         type='search'
-                        className='form-control my-1 my-lg-0'
-                        placeholder='Search Unapproved Organizations...'
+                        className='form-control'
+                        placeholder='Search'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -173,7 +164,7 @@ function RequestedOrganization() {
         </div>
       ) : (
         <Row>
-          {organizations.length > 0 ? (
+          {organizations?.length > 0 ? (
             organizations.map((item) => (
               <Col key={item._id} md={6} xl={3} className="mb-3">
                 <Card className="product-box h-100 shadow-sm">
@@ -251,7 +242,6 @@ function RequestedOrganization() {
           )}
         </Row>
       )}
-
       {loadingMore && (
         <div className="text-center my-4">
           <Spinner animation="border" size="sm" /> Loading more...
