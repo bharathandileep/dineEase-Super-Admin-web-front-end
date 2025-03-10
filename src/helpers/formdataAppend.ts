@@ -1,5 +1,4 @@
 export function appendToFormData(data: any) {
-  console.log(data)
   const formData = new FormData();
 
   for (const key in data) {

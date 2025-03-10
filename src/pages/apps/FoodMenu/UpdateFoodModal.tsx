@@ -35,8 +35,7 @@ const UpdateFoodModal: React.FC<UpdateFoodModalProps> = ({ show, onHide, foodIte
           name: kitchen.f_name,
         }));
 
-        console.log('Fetched companies:', adaptedCompanies);
-        console.log('Fetched kitchens:', adaptedKitchens);
+
 
         setOrganizations(adaptedCompanies);
         setKitchens(adaptedKitchens);

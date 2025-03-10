@@ -20,7 +20,7 @@ const PageTitle = (props: PageTitleProps) => {
     <Row>
       <Col>
         <div className="page-title-box">
-          <div className="page-title-right">
+          <div className="page-title-left">
             <Breadcrumb className="m-0">
               <Breadcrumb.Item href="/">DineEas</Breadcrumb.Item>
 

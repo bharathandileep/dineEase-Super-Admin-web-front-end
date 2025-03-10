@@ -1,46 +1,32 @@
-
-import { createStore, compose, applyMiddleware, Store } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import {rootReducer, RootStates} from './reducers'; // Adjust path as necessary
-import rootSaga from './sagas'; // Adjust path as necessary
-// import { DataActionTypes } from './actions';
+import { createStore, compose, applyMiddleware } from "redux";
+import createSagaMiddleware from "redux-saga";
+import reducers from "./reducers";
+import rootSaga from "./sagas";
 
 declare global {
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
   }
 }
-
 const sagaMiddleware = createSagaMiddleware();
 const middlewares = [sagaMiddleware];
+let store: any;
 
-let store: Store;
+export function configureStore(initialState: {}) {
+  const composeEnhancers =
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export function configureStore(initialState: {} = {}) {
-  console.log("inside configStore")
-  // const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-  const localStore: Store<RootStates>  = createStore(
-    rootReducer,
+  const localstore = createStore(
+    reducers,
     initialState,
-    applyMiddleware(...middlewares)
+    composeEnhancers(applyMiddleware(...middlewares))
   );
-
-  // Run sagas
   sagaMiddleware.run(rootSaga);
-
-  store = localStore;
-
-  return localStore;
+  store = localstore;
+  return localstore;  
 }
 
-// Infer the `RootState` type from the store itself
+// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 
-// Exporting `AppDispatch` type
 export type AppDispatch = typeof store.dispatch;
-
-// Exporting the store instance for external usage
-export function getStore() {
-  return store;
-}

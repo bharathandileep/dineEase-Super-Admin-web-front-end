@@ -28,26 +28,25 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
 
   const onSearchData = (value: string) => {
     if (value.trim() === "") {
-      setCompanyInfo(props.companyInfo); // Reset if empty
+      setCompanyInfo(props.companyInfo);
       return;
     }
-  
+
     const searchTerm = value.toLowerCase();
-    
+
     const filteredResults = props.companyInfo.filter((item) => {
       return (
         item.kitchen_name.toLowerCase().includes(searchTerm) ||
         item.owner_email.toLowerCase().includes(searchTerm) ||
         item.kitchen_phone_number.includes(searchTerm) ||
-        item.addresses.some((address:any) =>
+        item.addresses.some((address: any) =>
           address.street_address.toLowerCase().includes(searchTerm)
         )
       );
     });
-  
+
     setCompanyInfo(filteredResults);
   };
-  
 
   /*
    * change order status group
@@ -64,9 +63,34 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
 
   const onOpenModal = () => navigate("/apps/kitchen/new");
 
-
   return (
     <>
+      <nav aria-label="breadcrumb">
+        <ol className="breadcrumb m-2">
+          <li className="breadcrumb-item">
+            <Link to="/apps/ecommerce/products">Ecommerce</Link>
+          </li>
+          <li className="breadcrumb-item active" aria-current="page">
+            Products
+          </li>
+        </ol>
+      </nav>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
+        <div className="d-flex align-items-center justify-content-between" onClick={onOpenModal}>
+          <h3 className="page-title m-0" style={{ color: "#fff" }}>
+            Products
+          </h3>
+          <Link
+            to="#"
+            className="btn btn-danger waves-effect waves-light"
+          >
+            <i className="mdi mdi-plus-circle me-1" ></i> Add New
+          </Link>
+        </div>
+      </div>
       <Card className="mb-2">
         <Card.Body>
           <Row className="justify-content-between">
@@ -102,7 +126,7 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
                 </div>
               </form>
             </Col>
-            <Col lg={4}>
+            {/* <Col lg={4}>
               <div className="text-lg-end mt-3 mt-lg-0">
                 <Button
                   variant="danger"
@@ -112,7 +136,7 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
                   <i className="mdi mdi-plus-circle me-1"></i> Add New
                 </Button>
               </div>
-            </Col>
+            </Col> */}
           </Row>
         </Card.Body>
       </Card>

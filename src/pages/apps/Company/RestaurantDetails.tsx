@@ -33,7 +33,6 @@ const RestaurantDetails = (props: RestaurantDetailsProps) => {
   const handleShow = () => setShowAddModal(true);
 
   const handleSubmit = (formData: Details) => {
-    console.log("Form Data Submitted:", formData);
     setShowAddModal(false);
   };
 

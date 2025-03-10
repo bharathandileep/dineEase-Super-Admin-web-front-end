@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { Company } from "./data";
-import AddCompanyModal from "./AddCompannyModal";
 
 interface CompanyDetailsProps {
   companyInfo: any[];
@@ -10,29 +8,42 @@ interface CompanyDetailsProps {
 
 const CompanyDetails = (props: CompanyDetailsProps) => {
   const [companyInfo, setCompanyInfo] = useState<any[]>(props.companyInfo);
-  const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const navigate = useNavigate();
-
-
-  const handleHide = () => setShowAddModal(false);
   const handleShow = () => {
     navigate("/apps/organizations/new");
   };
 
   const onSearchData = (value: string) => {
-    if (value === "") setCompanyInfo(props.companyInfo);
-    else {
-      const modifiedProducts = props.companyInfo.filter(
-        (item) =>
-          item.name.toLowerCase().includes(value.toLowerCase()) ||
-          item.location.toLowerCase().includes(value.toLowerCase())
-      );
-      setCompanyInfo(modifiedProducts);
+    if (value === "") {
+      setCompanyInfo(props.companyInfo);
+      return;
     }
+
+    const searchTerm = value.toLowerCase().trim();
+    const filteredCompanies = props.companyInfo.filter((item) => {
+      const employeeCount = item.no_of_employees.toString();
+
+      return (
+        item.contact_number.toLowerCase().includes(searchTerm) ||
+        item.email.toLowerCase().includes(searchTerm) ||
+        item.managerName.toLowerCase().includes(searchTerm) ||
+        employeeCount.includes(searchTerm) ||
+        item.organizationName.toLowerCase().includes(searchTerm) ||
+        item.register_number.toLowerCase().includes(searchTerm) ||
+        item.addresses.some((address: any) =>
+          address.street_address.toLowerCase().includes(searchTerm)
+        )
+      );
+    });
+
+    setCompanyInfo(filteredCompanies);
   };
+  useEffect(() => {
+    setCompanyInfo(props.companyInfo);
+  }, [props.companyInfo]);
 
   return (
-    <>
+    <>  
       <Row>
         <Col>
           <Card>
@@ -84,11 +95,10 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
           </Card>
         </Col>
       </Row>
-
       <Row>
-        {props.companyInfo?.map((item, index) => (
+        {companyInfo?.map((item, index) => (
           <Col key={index} lg={4}>
-          <Link to={`/apps/organizations/${item._id}`}>
+            <Link to={`/apps/organizations/${item._id}`}>
               <Card className="bg-pattern">
                 <Card.Body>
                   <div className="text-center">
@@ -131,8 +141,8 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
                   </div>
                 </Card.Body>
               </Card>
-          </Link>
-            </Col>
+            </Link>
+          </Col>
         ))}
       </Row>
       {/* <div className="text-center my-4">

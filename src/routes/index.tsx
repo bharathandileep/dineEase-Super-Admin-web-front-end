@@ -6,11 +6,46 @@ import PrivateRoute from "./PrivateRoute";
 import { Details, detailsInfo } from "../pages/apps/Restaurant/Staffdata";
 import PaginatedTable from "../pages/apps/Restaurant/StaffDetails";
 import List from "../pages/apps/Restaurant/List/";
+import MenuCategory from "../pages/apps/menu/MenuCategory";
+import MenuSubCategory from "../pages/apps/menu/MenuSubCategory";
+import KitchensSubCategories from "../pages/apps/kitchen/KitchensSubCategories";
+import KitchensCategories from "../pages/apps/kitchen/KitchensCategories";
+import OurMenu from "../pages/apps/kitchen/OurMenu";
+import MenuItems from "../pages/apps/MenuItems/Items";
+import ItemsListing from "../pages/apps/MenuItems/ListItems";
+import MenuDetails from "../pages/apps/kitchen/MenuDetails";
+import OrgSubCategories from "../pages/apps/Organizations/OrgSubCategories";
 
-// import Root from './Root';
+import OrgCategories from "../pages/apps/Organizations/OrgCategories";
+import ListOrganizations from "../pages/apps/Organizations/ListOrganizations";
 
-// lazy load all the views
-// auth
+import OrganizationDetails from "../pages/apps/Organizations/OrganizationDetails";
+import Designations from "../pages/apps/Designations/listdesignations";
+
+import EditFoodItem from "../pages/apps/MenuItems/ItemsEditing";
+import ItemDetails from "../pages/apps/MenuItems/ItemDetails";
+
+import KitchenMenuPage from "../pages/apps/kitchen/KitchenMenu";
+import SigninForm from "../pages/landing/LoginandRegistation/SigninForm";
+import Dashboard from "../pages/landing/Dashboard/Dashboard";
+import OrganizationList from "../pages/landing/OrganizationList/OrganizationList";
+import KitchenList from "../pages/landing/KitchenList/KitchenList";
+import RequestOrganization from "../pages/landing/OrganizationList/RequestOrganization";
+import RequestKitchen from "../pages/landing/KitchenList/RequestKitchen";
+import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
+import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
+import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
+import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
+
+import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
+import EmployeeList from "../pages/apps/adminemployee/listemployee";
+import EditEmployee from "../pages/apps/adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
 const Confirm = React.lazy(() => import("../pages/auth/Confirm"));
@@ -31,7 +66,7 @@ const LockScreen2 = React.lazy(() => import("../pages/auth2/LockScreen2"));
 const SignInSignUp2 = React.lazy(() => import("../pages/auth2/SignInSignUp2"));
 
 // landing
-const Landing = React.lazy(() => import("../pages/landing/"));
+const Landing = React.lazy(() => import("../pages/landing"));
 
 // dashboard
 // const Dashboard1 = React.lazy(() => import("../pages/dashboard/Dashboard1/"));
@@ -239,19 +274,6 @@ const Editkitchens = React.lazy(
   () => import("../pages/apps/kitchen/Editkitchens")
 );
 
-//Organizations
-
-const NewOrganizations = React.lazy(
-  () => import("../pages/apps/Organizations/NewOrganizations")
-);
-const ListOrganizations = React.lazy(
-  () => import("../pages/apps/Organizations/ListOrganizations")
-);
-const EditOrganizations = React.lazy(() => import("../pages/apps/Organizations/EditOrganizations"));
-const OrganizationDetails = React.lazy(() => import("../pages/apps/Organizations/OrganizationDetails"));
-
-
-
 export interface RoutesProps {
   path: RouteProps["path"];
   name?: string;
@@ -262,16 +284,282 @@ export interface RoutesProps {
   header?: string;
   roles?: string[];
   children?: RoutesProps[];
+  layout?:boolean
 }
+
+const organizationsAppRoutes = {
+  path: "/apps/organizations",
+  name: "Organizations",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  children: [
+    {
+      path: "/apps/organizations/new",
+      name: "Add New Organizations",
+      element: <NewOrganizations />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/list",
+      name: "List of Organizations",
+      element: <ListOrganizations />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/edit/:id",
+      name: "Edit Organizations",
+      element: <EditOrganizations />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/:id",
+      name: "Edit Organizations",
+      element: <OrganizationDetails />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/category",
+      name: "Edit Organizations",
+      element: <OrgCategories />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/subcategory",
+      name: "Edit Organizations",
+      element: <OrgSubCategories />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/employee/add",
+      name: "Organizations employ add",
+      element: <OrgEmployeeManagement />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/employee/list",
+      name: "Organisation Employee List",
+      element: <OrgEmployeeList />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/employee/edit/:id",
+      name: "Organisation Employee edit",
+      element: <OrgEmployeeEdit />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/employee/details/:id",
+      name: "Organisation Employee details",
+      element: <OrgEmployeeDetails />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/requested-organizations",
+      name: "Organisation request",
+      element: <RequestedOrganization />,
+      route: PrivateRoute,
+    },
+  ],
+};
+const kitchenAppRoutes = {
+  path: "/apps/kitchen",
+  name: "Kitchens",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  children: [
+    {
+      path: "/apps/kitchen/new",
+      name: "Add New Kitchen",
+      element: <NewKitchen />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/list",
+      name: "List of Kitchens",
+      element: <ListKitchens />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/edit/:id",
+      name: "edit Kitchens",
+      element: <Editkitchens />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/:id",
+      name: "details Kitchens",
+      element: <KitchensDetails />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/category",
+      name: "details Kitchens",
+      element: <KitchensCategories />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/subcategory",
+      name: "details Kitchens",
+      element: <KitchensSubCategories />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/:id/our-menu",
+      name: "details Kitchens",
+      element: <OurMenu />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/menu-item/new",
+      name: "Items",
+      element: <MenuItems />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/menu-items/list",
+      name: "Listing",
+      element: <ItemsListing />,
+    },
+    {
+      path: "/apps/menu-item/editing/:id",
+      name: "Editing",
+      element: <EditFoodItem />,
+    },
+    {
+      path: "/apps/menu-item/:id",
+      name: "Editing",
+      element: <ItemDetails />,
+    },
+    {
+      path: "/apps/kitchen/kitchen-menu",
+      name: "Kitchen-Menu",
+      element: <KitchenMenuPage />,
+    },
+    {
+      path: "/apps/kitchen/:kitchenId/item-details/:id",
+      name: "Editing",
+      element: <MenuDetails />,
+    },
+    {
+      path: "/apps/kitchen/requested-kitchens",
+      name: "Requested Kitchens",
+      element: <RequestedKitchen />,
+    },
+  ],
+};
+const itemAppRoutes = {
+  path: "/apps/items",
+  name: "items",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  Children: [
+    {
+      path: "/apps/items/menu",
+      name: "Items",
+      element: <MenuItems />,
+      route: PrivateRoute,
+    },
+  ],
+};
+
+const menuAppRoutes = {
+  path: "/apps/menu",
+  name: "Organizations",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  children: [
+    {
+      path: "/apps/menu/category",
+      name: "Menu Category",
+      element: <MenuCategory />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/menu/subcategory",
+      name: "Menu Sub Category",
+      element: <MenuSubCategory />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/edit/:id",
+      name: "Edit Organizations",
+      element: <EditOrganizations />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/:id",
+      name: "Edit Organizations",
+      element: <OrganizationDetails />,
+      route: PrivateRoute,
+    },
+  ],
+};
+const designationRoutes = {
+  path: "/apps/designations",
+  name: "List designations",
+  element: <Designations />,
+  route: PrivateRoute,
+};
+
+const employeeRoutes = {
+  path: "/apps/employee",
+  name: "Employee",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  children: [
+    {
+      path: "/apps/employee/add",
+      name: "Add Employee",
+      element: <EmployeeManagement />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/employee/list",
+      name: "Employee List",
+      element: <EmployeeList />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/employee/edit/:id",
+      name: "Employee edit",
+      element: <EditEmployee />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/employee/details/:id",
+      name: "Employee details",
+      element: <EmployeeDetails />,
+      route: PrivateRoute,
+    },
+  ],
+};
 
 const dashboardRoutes = {
   path: "/",
   name: "Dashboard",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin", "User"],
   icon: "airplay",
-  element: <Dashboard3 />,
+  element: <EcommerceDashboard />,
 };
+
+const protectedNoLayoutRoutes = {
+  path: "/user",
+  name: "Employee",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  children: [
+    {
+      path: "/user/dashboard",
+      name: "userDashboard",
+      element: <Dashboard />,
+      roles: ["Admin", "User"],
+      layout:false,
+      route: PrivateRoute,
+    },
+  ],
+};
+
 
 const calendarAppRoutes: RoutesProps = {
   path: "/apps/calendar",
@@ -356,71 +644,6 @@ const ecommerceAppRoutes = {
       path: "/apps/ecommerce/checkout",
       name: "Checkout",
       element: <Checkout />,
-      route: PrivateRoute,
-    },
-  ],
-};
-const organizationsAppRoutes = {
-  path: "/apps/organizations",
-  name: "Organizations",
-  route: PrivateRoute,
-  roles: ["Admin"],
-  children: [
-    {
-      path: "/apps/organizations/new",
-      name: "Add New Organizations",
-      element: <NewOrganizations />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/organizations/list",
-      name: "List of Organizations",
-      element: <ListOrganizations />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/organizations/edit/:id",
-      name: "Edit Organizations",
-      element: <EditOrganizations />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/organizations/:id",
-      name: "Edit Organizations",
-      element: <OrganizationDetails />,
-      route: PrivateRoute,
-    },
-  ],
-};
-
-const kitchenAppRoutes = {
-  path: "/apps/kitchen",
-  name: "Kitchens",
-  route: PrivateRoute,
-  roles: ["Admin"],
-  children: [
-    {
-      path: "/apps/kitchen/new",
-      name: "Add New Kitchen",
-      element: <NewKitchen />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/kitchen/list",
-      name: "List of Kitchens",
-      element: <ListKitchens />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/kitchen/edit/:id",
-      name: "edit Kitchens",
-      element: <Editkitchens />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/kitchen/:id",
-      name: "details Kitchens",
-      element: <KitchensDetails />,
       route: PrivateRoute,
     },
   ],
@@ -725,12 +948,6 @@ const ticketsRoutes = {
   roles: ["Admin"],
   icon: "aperture",
   children: [
-    // {
-    //   path: "/apps/tickets/list",
-    //   name: "List",
-    //   element: <TicketsList />,
-    //   route: PrivateRoute,
-    // },
     {
       path: "/apps/tickets/details",
       name: "Details",
@@ -749,37 +966,7 @@ const fileAppRoutes = {
   element: <FileManager />,
 };
 
-const appRoutes = [
-  calendarAppRoutes,
-  chatAppRoutes,
-  ecommerceAppRoutes,
-  organizationsAppRoutes,
-  kitchenAppRoutes,
-  crmAppRoutes,
-  emailAppRoutes,
-  socialAppRoutes,
-  companiesAppRoutes,
-  projectAppRoutes,
-  taskAppRoutes,
-  contactsRoutes,
-  ticketsRoutes,
-  fileAppRoutes,
-  restaurantDetailsAppRoute,
-  restaurantsAppRoutes,
-  usersAppRoutes,
-  companyDetailsAppRoutes,
-  ListAppRouts,
-  totalRestaurantsAppRoutes,
-  totalCompanyAppRoute,
-  userProfileAppRoutes,
-  sttingsAppRoutes,
-  customerAppRoute,
-  foodAppRoutes,
-  foodCartAppRoute,
-  foodCheckoutAppRoute,
-  ordersAppRoutes,
-  CustomerProfileAppRoutes,
-];
+
 
 // pages
 const extrapagesRoutes = {
@@ -1114,13 +1301,6 @@ const uiRoutes = {
           element: <FormValidation />,
           route: PrivateRoute,
         },
-        // issues::change
-        // {
-        //   path: "/ui/forms/wizard",
-        //   name: "Form Wizard",
-        //   element: <FormWizard />,
-        //   route: PrivateRoute,
-        // },
         {
           path: "/ui/forms/upload",
           name: "File Upload",
@@ -1145,12 +1325,6 @@ const uiRoutes = {
           element: <BasicTables />,
           route: PrivateRoute,
         },
-        // {
-        //   path: "/ui/tables/advanced",
-        //   name: "Advanced",
-        //   element: <AdvancedTables />,
-        //   route: PrivateRoute,
-        // },
       ],
     },
     {
@@ -1195,15 +1369,21 @@ const uiRoutes = {
 // auth
 const authRoutes: RoutesProps[] = [
   {
-    path: "/auth/login",
+    path: "/auth/admin/login",
     name: "Login",
     element: <Login />,
     route: Route,
   },
   {
-    path: "/auth/register",
+    path: "/auth/login",
+    name: "Login",
+    element: <Landing />,
+    route: Route,
+  },
+  {
+    path: "/auth/signin-signup",
     name: "Register",
-    element: <Register />,
+    element: <SigninForm />,
     route: Route,
   },
   {
@@ -1219,9 +1399,21 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/signin-signup",
+    path: "/auth/account",
     name: "SignIn-SignUp",
     element: <SignInSignUp />,
+    route: Route,
+  },
+  {
+    path: "/request/organization",
+    name: "SignIn-SignUp",
+    element: <RequestOrganization />,
+    route: Route,
+  },
+  {
+    path: "/request/kitchen",
+    name: "SignIn-SignUp",
+    element: <RequestKitchen />,
     route: Route,
   },
   {
@@ -1237,7 +1429,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/login2",
+    path: "/auth/access/login",
     name: "Login2",
     element: <Login2 />,
     route: Route,
@@ -1276,6 +1468,18 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/lock-screen2",
     name: "Lock Screen2",
     element: <LockScreen2 />,
+    route: Route,
+  },
+  {
+    path: "/dashboard/organization-list",
+    name: "Organization List",
+    element: <OrganizationList />,
+    route: Route,
+  },
+  {
+    path: "/dashboard/kitchen-list",
+    name: "Kitchen List",
+    element: <KitchenList />,
     route: Route,
   },
 ];
@@ -1341,17 +1545,55 @@ const flattenRoutes = (routes: RoutesProps[]) => {
   return flatRoutes;
 };
 
+const appRoutes = [
+  calendarAppRoutes,
+  chatAppRoutes,
+  ecommerceAppRoutes,
+  organizationsAppRoutes,
+  kitchenAppRoutes,
+  itemAppRoutes,
+  designationRoutes,
+  employeeRoutes,
+  menuAppRoutes,
+  crmAppRoutes,
+  emailAppRoutes,
+  socialAppRoutes,
+  companiesAppRoutes,
+  projectAppRoutes,
+  taskAppRoutes,
+  contactsRoutes,
+  ticketsRoutes,
+  fileAppRoutes,
+  restaurantDetailsAppRoute,
+  restaurantsAppRoutes,
+  usersAppRoutes,
+  companyDetailsAppRoutes,
+  ListAppRouts,
+  totalRestaurantsAppRoutes,
+  totalCompanyAppRoute,
+  userProfileAppRoutes,
+  sttingsAppRoutes,
+  customerAppRoute,
+  foodAppRoutes,
+  foodCartAppRoute,
+  foodCheckoutAppRoute,
+  ordersAppRoutes,
+  CustomerProfileAppRoutes,
+];
+
 // All routes
 const authProtectedRoutes = [
+  protectedNoLayoutRoutes,
   dashboardRoutes,
   ...appRoutes,
   extrapagesRoutes,
   uiRoutes,
 ];
-const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 
+const publicRoutes = [...authRoutes, ...otherPublicRoutes];
 const authProtectedFlattenRoutes = flattenRoutes([...authProtectedRoutes]);
 const publicProtectedFlattenRoutes = flattenRoutes([...publicRoutes]);
+
 export {
   publicRoutes,
   authProtectedRoutes,

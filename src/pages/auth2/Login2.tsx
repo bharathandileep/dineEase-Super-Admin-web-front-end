@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button, Alert } from "react-bootstrap";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,9 @@ import { RootState, AppDispatch } from "../../redux/store";
 import { VerticalForm, FormInput } from "../../components/";
 
 import AuthLayout from "./AuthLayout";
+import { authAccessCredentials } from "../../server/admin/login";
+import { toast } from "react-toastify";
+
 
 interface UserData {
   username: string;
@@ -40,67 +43,40 @@ const BottomLink = () => {
   );
 };
 
-/* social links */
-const SocialLinks = () => {
-  const socialLinks = [
-    {
-      variant: "primary",
-      icon: "facebook",
-    },
-    {
-      variant: "danger",
-      icon: "google",
-    },
-    {
-      variant: "info",
-      icon: "twitter",
-    },
-    {
-      variant: "secondary",
-      icon: "github",
-    },
-  ];
-  return (
-    <>
-      <ul className="social-list list-inline mt-3 mb-0">
-        {(socialLinks || []).map((item, index) => {
-          return (
-            <li key={index} className="list-inline-item">
-              <Link
-                to="#"
-                className={classNames(
-                  "social-list-item",
-                  "border-" + item.variant,
-                  "text-" + item.variant
-                )}
-              >
-                <i className={classNames("mdi", "mdi-" + item.icon)}></i>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  );
-};
+
 
 const Login2 = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+
+  const { userLoggedIn, user, loading } = useSelector(
+     (state: RootState) => state.Auth
+   );
+
+  useEffect(() => {
+    // if (userLoggedIn && user) {
+    if (user) {
+      // navigate("/");
+      navigate("/")
+      
+    }
+  }, [userLoggedIn, user, navigate]);
 
 
   useEffect(() => {
     dispatch(resetAuth());
   }, [dispatch]);
 
-  const { loading, userLoggedIn, user, error } = useSelector(
-    (state: RootState) => ({
-      loading: state.Auth.loading,
-      user: state.Auth.user,
-      error: state.Auth.error,
-      userLoggedIn: state.Auth.userLoggedIn,
-    })
-  );
+  // const { loading, userLoggedIn, user, error } = useSelector(
+  //   (state: RootState) => ({
+  //     loading: state.Auth.loading,
+  //     user: state.Auth.user,
+  //     error: state.Auth.error,
+  //     userLoggedIn: state.Auth.userLoggedIn,
+  //   })
+  // );
 
   /*
    * form validation schema
@@ -112,31 +88,39 @@ const Login2 = () => {
     })
   );
 
-  /*
-   * handle form submission
-   */
-  const onSubmit = (formData: UserData) => {
-    dispatch(loginUser(formData["username"], formData["password"]));
-  };
+
+
+  const onSubmit = async (formData: UserData) => {
+  try {
+    const response = await authAccessCredentials(formData);
+    if (response.status) {
+      toast.success(response.message);
+      window.location.href = "/";
+      navigate("/")
+    } else {
+      toast.error(response.message || "Something went wrong.");
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
+    toast.error(errorMessage);
+    console.error("Error:", error);
+  }
+};
+
 
   return (
     <>
       <AuthLayout bottomLinks={<BottomLink />}>
         <h4 className="mt-0">{t("Sign In")}</h4>
         <p className="text-muted mb-4">
-          {t("Enter your email address and password to access account.")}
+          {t("Enter your User name and password to access account.")}
         </p>
 
-        {error && (
-          <Alert variant="danger" className="my-2">
-            {error}
-          </Alert>
-        )}
 
         <VerticalForm
           onSubmit={onSubmit}
           resolver={schemaResolver}
-          defaultValues={{ username: "test", password: "test" }}
+          defaultValues={{ username: "", password: "" }}
         >
           <FormInput
             label={t("Username")}
@@ -152,28 +136,15 @@ const Login2 = () => {
             placeholder={t("Enter your password")}
             containerClass={"mb-3"}
           >
-            <Link to="/auth/forget-password2" className="text-muted float-end">
+            <Link to="/auth/login" className="text-muted float-end">
               <small>{t("Forgot your password?")}</small>
             </Link>
           </FormInput>
-
-          <FormInput
-            label="Remember me"
-            type="checkbox"
-            name="checkbox"
-            containerClass={"mb-3"}
-          />
 
           <div className="d-grid mb-0 text-center">
             <Button variant="primary" type="submit" disabled={loading}>
               {t("Log In")}
             </Button>
-          </div>
-
-          {/* social links */}
-          <div className="text-center mt-4">
-            <p className="text-muted font-16">{t("Sign in with")}</p>
-            <SocialLinks />
           </div>
         </VerticalForm>
       </AuthLayout>

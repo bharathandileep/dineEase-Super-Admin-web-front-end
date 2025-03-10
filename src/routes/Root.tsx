@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { APICore } from "../helpers/api/apiCore";
 
-// import { APICore } from '../helpers/api/apiCore';
 
 const Root = () => {
-  // const api = new APICore();
+  const api = new APICore();
 
   const getRootUrl = () => {
     let url: string = "/dashboard-1";

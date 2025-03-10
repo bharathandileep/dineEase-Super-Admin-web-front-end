@@ -62,7 +62,6 @@ const List: React.FC = () => {
   const onAddMember = async (newCustomer: Customer) => {
     setIsAdding(true);
     try {
-      console.log('New Customer:', newCustomer); // Add this line to verify the structure
 
       setCustomers((prevCustomer) => [...prevCustomer, newCustomer]);
       setToastMessage(`${newCustomer.cust_name??'Unknown Customer'}  has been added successfully!`);    } catch (error) {

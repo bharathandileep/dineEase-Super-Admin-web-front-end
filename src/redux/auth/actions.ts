@@ -10,13 +10,12 @@ export interface AuthActionType {
     | AuthActionTypes.LOGIN_USER
     | AuthActionTypes.LOGOUT_USER
     | AuthActionTypes.RESET
-    | AuthActionTypes.SIGNUP_USER;
+    | AuthActionTypes.SIGNUP_USER
+    | AuthActionTypes.VERIFY_OTP
+    | AuthActionTypes.RESET_PASSWORD
+    | AuthActionTypes.GOOGLE_LOGIN_USER;
   payload: {} | string;
 }
-export const FETCH_CUSTOMERS_REQUEST = 'FETCH_CUSTOMERS_REQUEST';
-export const FETCH_CUSTOMERS_SUCCESS = 'FETCH_CUSTOMERS_SUCCESS';
-export const FETCH_CUSTOMERS_FAILURE = 'FETCH_CUSTOMERS_FAILURE';
-
 
 interface UserData {
   id: number;
@@ -27,12 +26,11 @@ interface UserData {
   role: string;
   token: string;
 }
-// -customer fetch
 
 // common success
-export const authApiResponseSuccess = (
+export const authApiResponseSuccess = ( 
   actionType: string,
-  data: UserData | {}
+  data: any
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
   payload: { actionType, data },
@@ -75,5 +73,18 @@ export const forgotPassword = (username: string): AuthActionType => ({
 
 export const resetAuth = (): AuthActionType => ({
   type: AuthActionTypes.RESET,
+  payload: {},
+});
+ 
+export const verifyOtp = (otp: string): AuthActionType => ({
+type: AuthActionTypes.VERIFY_OTP,
+payload: { otp },
+});
+export const resetPassword = (otp: string): AuthActionType => ({
+type: AuthActionTypes.RESET_PASSWORD,
+payload: { otp },
+});
+export const googleLoginUser = (): AuthActionType => ({
+  type: AuthActionTypes.GOOGLE_LOGIN_USER,
   payload: {},
 });

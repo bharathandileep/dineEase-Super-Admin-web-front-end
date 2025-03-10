@@ -84,14 +84,12 @@ const OrdersPage: React.FC = () => {
   const fetchOrders = async (page: number, limit: number) => {
     try {
       const response = await getOrders(page, limit);
-      console.log('API Response:', response);
+
   
       if (response && response.data && response.pagination) {
         const { data, pagination } = response;
         setOrders(data || []);
         setTotalPages(pagination.totalPages || 0);
-        console.log('Fetched Oders:', data);
-        console.log('Pagination Info:', pagination);
       } else {
         console.error('Unexpected API Response Structure:', response);
       }
@@ -101,7 +99,6 @@ const OrdersPage: React.FC = () => {
   };
   
   useEffect(() => {
-    console.log(`Fetching data for page ${currentPage}`);
     fetchOrders(currentPage, ordersPerPage);
   }, [currentPage, ordersPerPage]);  
 

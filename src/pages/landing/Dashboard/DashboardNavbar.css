@@ -1,0 +1,40 @@
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-navbar-logo img {
+  height: 40px;
+}
+
+.dashboard-navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.dashboard-navbar-links a {
+  text-decoration: none;
+  color: #333;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-navbar-links a:hover {
+  color: #007bff;
+}
+
+.active-link {
+  color: #007bff;
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+}
+
+.dashboard-navbar-links .active {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}

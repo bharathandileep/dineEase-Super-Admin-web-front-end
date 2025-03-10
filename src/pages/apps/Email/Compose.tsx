@@ -55,7 +55,6 @@ const Compose = () => {
    */
   const handleEmailSave = (event: any, values: any) => {
     const body = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-    console.log({ ...values, body });
   };
 
   /**

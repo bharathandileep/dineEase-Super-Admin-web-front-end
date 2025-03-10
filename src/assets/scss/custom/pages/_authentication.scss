@@ -12,12 +12,11 @@
 // authentication pages background
 body {
     &.authentication-bg {
-        background-color: #00acc1;
         background-size: cover;
         background-position: center;
-
+        background-color: #00acc1;
         footer{
-            background-color: transparent !important;
+            background-color: black !important;
         }
     }
 

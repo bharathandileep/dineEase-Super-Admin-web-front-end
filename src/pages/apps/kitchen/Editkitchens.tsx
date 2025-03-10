@@ -13,5 +13,4 @@ function Editkitchens() {
     </div>
   );
 }
-
 export default Editkitchens;

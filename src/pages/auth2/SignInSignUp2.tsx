@@ -26,20 +26,20 @@ interface UserData {
 }
 
 /* bottom link */
-const BottomLink = () => {
-  const { t } = useTranslation();
+// const BottomLink = () => {
+//   const { t } = useTranslation();
 
-  return (
-    <footer className="footer footer-alt">
-      <p className="text-muted">
-        {t("2018 - " + new Date().getFullYear() + " © DineEas theme by")}{" "}
-        <Link to="#" className="text-muted">
-          {t("Coderthemes")}
-        </Link>
-      </p>
-    </footer>
-  );
-};
+//   return (
+//     <footer className="footer footer-alt">
+//       <p className="text-muted">
+//         {t("2018 - " + new Date().getFullYear() + " © DineEas theme by")}{" "}
+//         <Link to="#" className="text-muted">
+//           {t("Coderthemes")}
+//         </Link>
+//       </p>
+//     </footer>
+//   );
+// };
 
 /* social links */
 const SocialLinks = () => {
@@ -142,7 +142,7 @@ const SignInSignUp2 = () => {
 
       {userSignUp ? <Navigate to={"/auth/confirm2"}></Navigate> : null}
 
-      <AuthLayout isCombineForm={true} bottomLinks={<BottomLink />}>
+      <AuthLayout isCombineForm={true} >
         <Tab.Container id="left-tabs-example" defaultActiveKey="login">
           <Nav variant="tabs" className="nav-bordered">
             <Nav.Item as="li">

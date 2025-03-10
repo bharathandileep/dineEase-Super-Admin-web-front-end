@@ -1,14 +1,17 @@
-import axiosInstance from "../../helpers/api/apiCore";
+import {axiosInstance} from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
 
-export const getAllKitches = async () => {
+
+
+export const getAllKitches = async (query:any) => {
   try {
     const response = await axiosInstance.get(
-      `${apiConfig.kitchens.getAllkitchens}`
+      `${apiConfig.kitchens.getAllkitchens(query)}`
     );
     return response.data;
   } catch (error: any) {
-    console.error("Login Error:", error.response?.data || error.message);
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
   }
 };
 
@@ -60,3 +63,199 @@ export const deletekitchenDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
+export const toggleKitchenStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens.toggleKitchenStatus(id)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getUserApprovedKitchens = async () => {
+  try {
+    const response = await axiosInstance.get(`${apiConfig.kitchens.getUserApprovedKitchens}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching user's approved kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
+
+
+//categories status
+export const kitchenCreateCategory = async (data: any) => {
+  try {
+    const response = await axiosInstance.post(
+      apiConfig.kitchens.createCategory,
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensGetAllCategories = async (query: any) => {
+  try {
+    console.log("Sending API Query:", query);
+    const url = `${apiConfig.kitchens.getAllCategories(query)}`;
+    console.log("Constructed URL:", url);
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchen categories:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+
+export const kitchensUpdateCategory = async (
+  id: string | undefined,
+  data: any
+) => {
+
+  try {
+    const response = await axiosInstance.put(
+      apiConfig.kitchens.updateCategory(id),
+      { category: data }
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensDeleteCategory = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiConfig.kitchens.deleteCategory(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensToggleCategoryStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiConfig.kitchens.toggleCategoryStatus(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensCreateSubcategory = async (data: any | undefined) => {
+
+  try {
+    const response = await axiosInstance.post(
+      apiConfig.kitchens.createSubcategory,
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensGetSubcategoriesByCategory = async (
+  categoryId: string | undefined
+) => {
+  try {
+
+    const response = await axiosInstance.get(
+      apiConfig.kitchens.getSubcategoriesByCategory(categoryId)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensGetSubcategories = async (query: any) => {
+  try {
+
+    const url = `${apiConfig.kitchens.getAllSubCategories(query)}`;
+
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchen subcategories:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const kitchensGetSubcategoryById = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.menu.getSubcategoryById(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensUpdateSubcategory = async (
+  id: string | undefined,
+  data: any
+) => {
+  try {
+    const response = await axiosInstance.put(
+      apiConfig.kitchens.updateSubcategory(id),
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensDeleteSubcategory = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiConfig.kitchens.deleteSubcategory(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const kitchensToggleSubcategoryStatus = async (
+  id: string | undefined
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiConfig.kitchens.toggleSubcategoryStatus(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const getUnapprovedKitchens = async (query: any) => {
+  console.log("zxczxzxxz");
+  
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens. getUnapprovedKitchens(query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching unapproved kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+}

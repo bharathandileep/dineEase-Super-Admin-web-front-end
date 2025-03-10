@@ -5,12 +5,14 @@ import React from "react";
 
 // dummy data
 import { chatMessages } from "./data";
+import Statistics from "../../apps/Restaurant/List/Statistics";
+import PageTitle from "../../../components/PageTitle";
+import { Col, Row } from "react-bootstrap";
 
 const Dashboard3 = () => { 
   return (
     <>
-      sdfsdfsd
-      {/* <PageTitle
+      <PageTitle
         breadCrumbItems={[
           { label: "Dashboards", path: "/dashboard" },
           { label: "Dashboard", path: "/dashboard", active: true },
@@ -18,27 +20,27 @@ const Dashboard3 = () => {
         title={"Dashboard"}
       />
 
-      <Statistics />
+      {/* <Statistics /> */}
 
       <Row>
         <Col xl={6}>
-          <RevenueChart />
+          {/* <RevenueChart /> */}
         </Col>
         <Col xl={6}>
-          <PerformanceChart />
+          {/* <PerformanceChart /> */}
         </Col>
       </Row>
       <Row>
         <Col lg={6} xl={4}>
-          <Messages />
+          {/* <Messages /> */}
         </Col>
         <Col lg={6} xl={4}>
-          <TodoList addTodo={true} height={"310px"} />
+          {/* <TodoList addTodo={true} height={"310px"} /> */}
         </Col>
         <Col lg={12} xl={4}>
-          <ChatList messages={chatMessages} />
+          {/* <ChatList messages={chatMessages} /> */}
         </Col>
-      </Row> */}
+      </Row>
     </>
   );
 };

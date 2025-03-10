@@ -25,85 +25,157 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-kitchen",
     label: "Kitchens",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "coffee",
     children: [
       {
         key: "kitchen-list",
-        label: "List of Kitchens",
+        label: "• List of Kitchens",
         url: "/apps/kitchen/list",
         parentKey: "apps-kitchen",
       },
       {
-        key: "kitchen-add",
-        label: "Add New Kitchen",
-        url: "/apps/kitchen/new",
-        parentKey: "apps-kitchen",
+        key:"Kitchen-menu",
+        label:"• Kitchen Menus",
+        url:"/apps/kitchen/kitchen-menu",
+        parentKey:"apps-kitchen",
       },
-      
+      {
+        key:"requested-kitchen",
+        label:"• Requested Kitchens",
+        url:"/apps/kitchen/requested-kitchens",
+        parentKey:"apps-kitchen",
+      },
     ],
   },
+  
   {
     key: "apps-Organizations",
     label: "Organizations",
     isTitle: false,
-    icon: "shopping-cart",
+    icon: "command",
     children: [
       {
         key: "Organizations-list",
-        label: "List of Organizations",
+        label: "• List of Organizations",
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
       {
-        key: "Organizations-add",
-        label: "Add New Organizations",
-        url: "/apps/organizations/new",
+        key: "Organization-employadd",
+        label: "• employ-list",
+        url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
+      },
+      {
+        key:"requested-organization",
+        label:"• Requested Organizations",
+        url:"/apps/organizations/requested-organizations",
+        parentKey:"apps-Organizations",
+      },
+
+      
+    ],
+  },
+ 
+  {
+    key: "apps-menu",
+    label: "Master",
+    isTitle: false,
+    icon: "slack",
+    children: [
+      {
+        key: "menu-list",
+        label: "Menu",
+        icon: "archive",
+        url: "/apps/menu/category",
+        parentKey: "apps-menu",
+        children: [
+          {
+            key: "category",
+            label: "• Category",
+            url: "/apps/menu/category",
+            parentKey: "menu-list",
+          },
+          {
+            key: "subcategory",
+            label: "• Subcategory",
+            url: "/apps/menu/subcategory",
+            parentKey: "menu-list",
+          },
+        ],
+      },
+      {
+        key: "app-orgaization-category",
+        label: "Organization",
+        icon: "briefcase",
+        url: "/apps/menu/category",
+        parentKey: "apps-menu",
+        children: [
+          {
+            key: "category",
+            label: "• Category",
+            url: "/apps/organizations/category",
+            parentKey: "app-orgaization-category",
+          },
+          {
+            key: "sub-category",
+            label: "• Subcategory",
+            url: "/apps/organizations/subcategory",
+            parentKey: "app-orgaization-category",
+          },
+        ],
+      },
+      {
+        key: "app-menu-category",
+        label: "Kitchens",
+        icon: "coffee",
+        parentKey: "apps-menu",
+        children: [
+          {
+            key: "category",
+            icon: "mdi-circle-medium",
+            label: "• Category",
+            url: "/apps/kitchen/category",
+            parentKey: "app-menu-category",
+          },
+          {
+            key: "sub-category",
+            label: "• Subcategory",
+            url: "/apps/kitchen/subcategory",
+            parentKey: "app-menu-category",
+          },
+        ],
+      },
+      {
+        key:"apps-menu-items",
+        label:"Menu items",
+        icon: "shopping-bag",
+        parentKey:"apps-menu",
+        url:"/apps/menu-items/list",
+      },
+      {
+        key: "apps-employee",
+        label: "Employee list",
+        icon: "user",
+        url: "/apps/employee/list",
       },
     ],
   },
+  {
+    key: "apps-Designations",
+    label: "Designations",
+    isTitle: false,
+    icon: "trello",
+    url: "/apps/designations",
+  },
   // {
-  //   key: "apps-companies",
-  //   label: "Companies",
+  //   key: "apps-employee",
+  //   label: "Employee",
   //   isTitle: false,
-  //   icon: "activity",
-  //   url: "/apps/companies",
+  //   icon: "user",
+  //   url: "/apps/employee/add",
   // },
-  // // {
-  // //   key: "kitchens",
-  // //   label: "Kitchens",
-  // //   isTitle: false,
-  // //   icon: "slack",
-  // //   url: "/apps/restaurants",
-  // // },
-  // {
-  //   key: "apps-foodMenu",
-  //   label: "Food Menu",
-  //   isTitle: false,
-  //   icon: "aperture",
-  //   url: "/apps/food",
-  // },
-  // {
-  //   key: "apps-ordrs",
-  //   label: "Orders",
-  //   isTitle: false,
-  //   icon: "clipboard",
-  //   url: "/apps/orders",
-  // },
-  // {
-  //   key: "Staffs",
-  //   label: "Staffs",
-  //   isTitle: false,
-  //   icon: "users",
-  //   url: "/apps/users",
-  // },
-  // {
-  //   key: "Customers",
-  //   label: "Customers",
-  //   isTitle: false,
-  //   icon: "users",
-  //   url: "/apps/customer",
-  // },
+ 
 ];
 
 const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [

@@ -1,17 +1,16 @@
 import React, { useState, InputHTMLAttributes } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import classNames from "classnames";
-
-import { FieldErrors, Control } from "react-hook-form";
+import { FieldErrors, Control, RegisterOptions } from "react-hook-form";
 
 interface PasswordInputProps {
   name: string;
   placeholder?: string;
   refCallback?: any;
   errors: FieldErrors;
-  control?: Control<any>;
   register?: any;
   className?: string;
+  validation?: RegisterOptions; // Add validation prop
 }
 
 /* Password Input */
@@ -20,9 +19,9 @@ const PasswordInput = ({
   placeholder,
   refCallback,
   errors,
-  control,
   register,
   className,
+  validation, // Pass validation prop
 }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -40,7 +39,7 @@ const PasswordInput = ({
           }}
           className={className}
           isInvalid={errors && errors[name] ? true : false}
-          {...(register ? register(name) : {})}
+          {...(register ? register(name, validation) : {})} // Pass validation rules
           autoComplete={name}
         />
         <div
@@ -75,6 +74,7 @@ interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   refCallback?: any;
   children?: any;
   rows?: string;
+  validation?: RegisterOptions; // Add validation prop
 }
 
 const FormInput = ({
@@ -91,6 +91,7 @@ const FormInput = ({
   refCallback,
   children,
   rows,
+  validation, // Add validation prop
   ...otherProps
 }: FormInputProps) => {
   // handle input type
@@ -103,7 +104,7 @@ const FormInput = ({
         <input
           type={type}
           name={name}
-          {...(register ? register(name) : {})}
+          {...(register ? register(name, validation) : {})} // Pass validation rules
           {...otherProps}
         />
       ) : (
@@ -127,11 +128,12 @@ const FormInput = ({
                   errors={errors!}
                   register={register}
                   className={className}
+                  validation={validation} // Pass validation rules
                 />
 
                 {errors && errors[name] ? (
                   <Form.Control.Feedback type="invalid" className="d-block">
-                    {/* {errors[name]["message"]} */}
+                    {errors[name]?.message} {/* Display error message */}
                   </Form.Control.Feedback>
                 ) : null}
               </Form.Group>
@@ -151,13 +153,13 @@ const FormInput = ({
                       }}
                       className={className}
                       isInvalid={errors && errors[name] ? true : false}
-                      {...(register ? register(name) : {})}
+                      {...(register ? register(name, validation) : {})} // Pass validation rules
                       {...otherProps}
                     />
 
                     {errors && errors[name] ? (
                       <Form.Control.Feedback type="invalid">
-                        {/* {errors[name]["message"]} */}
+                        {errors[name]?.message} {/* Display error message */}
                       </Form.Control.Feedback>
                     ) : null}
                   </Form.Group>
@@ -179,7 +181,7 @@ const FormInput = ({
                     }}
                     className={className}
                     isInvalid={errors && errors[name] ? true : false}
-                    {...(register ? register(name) : {})}
+                    {...(register ? register(name, validation) : {})} // Pass validation rules
                     rows={rows}
                     {...otherProps}
                     autoComplete={name}
@@ -189,7 +191,7 @@ const FormInput = ({
 
                   {errors && errors[name] ? (
                     <Form.Control.Feedback type="invalid">
-                      {/* {errors[name]["message"]} */}
+                      {errors[name]?.message} {/* Display error message */}
                     </Form.Control.Feedback>
                   ) : null}
                 </Form.Group>

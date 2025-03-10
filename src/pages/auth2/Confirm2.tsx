@@ -8,27 +8,27 @@ import AuthLayout from "./AuthLayout";
 import mailSent from "../../assets/images/mail_sent.png";
 
 /* bottom link */
-const BottomLink = () => {
-  const { t } = useTranslation();
+// const BottomLink = () => {
+//   const { t } = useTranslation();
 
-  return (
-    <footer className="footer footer-alt">
-      <p className="text-muted">
-        {t("2018 - " + new Date().getFullYear() + " © DineEas theme by")}{" "}
-        <Link to="#" className="text-muted">
-          {t("Coderthemes")}
-        </Link>
-      </p>
-    </footer>
-  );
-};
+//   return (
+//     <footer className="footer footer-alt">
+//       <p className="text-muted">
+//         {t("2018 - " + new Date().getFullYear() + " © DineEas theme by")}{" "}
+//         <Link to="#" className="text-muted">
+//           {t("Coderthemes")}
+//         </Link>        
+//       </p>
+//     </footer>
+//   );
+// };
 
 const Confirm2 = () => {
   const { t } = useTranslation();
 
   return (
     <>
-      <AuthLayout bottomLinks={<BottomLink />}>
+      <AuthLayout >
         <div className="text-center">
           <img src={mailSent} alt="mail sent" height="64" />
           <h3>{t("Success !")}</h3>

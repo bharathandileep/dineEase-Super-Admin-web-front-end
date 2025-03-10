@@ -25,11 +25,11 @@ const TopbarSearch = (props: TopbarSearchProps) => {
 
   return (
     <>
-      <form>
+      {/* <form>
         <input
           type="search"
           className="form-control rounded-pill"
-          placeholder="Search..."
+          placeholder="Search...eee"
           id="top-search"
           onFocus={showSearchOptions}
           onBlur={hideSearchOptions}
@@ -95,7 +95,7 @@ const TopbarSearch = (props: TopbarSearchProps) => {
             </div>
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* <Select
         {...props}
