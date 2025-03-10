@@ -10,7 +10,10 @@ import { configureStore } from "./redux/store";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+<<<<<<< HEAD
+=======
 
+>>>>>>> 333cf02b85072ed6f3a4acb4b2a08840f6bce36e
 
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
@@ -30,6 +33,18 @@ root.render(
           pauseOnHover
         />
       </BrowserRouter>
+      <ToastContainer
+      position='top-right'
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme='colored'
+    />
     </React.Fragment>
   </Provider>
 );
