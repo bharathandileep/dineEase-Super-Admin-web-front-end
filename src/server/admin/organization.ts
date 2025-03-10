@@ -1,7 +1,8 @@
+
 import {axiosInstance} from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
 import axios from 'axios';
-
+ 
 export const getAllOrg = async (query:any) => {
   try {
     const response = await axiosInstance.get(
@@ -13,8 +14,8 @@ export const getAllOrg = async (query:any) => {
     throw error;
   }
 };
-
-
+ 
+ 
 export const createNewOrg = async (orgData: any) => {
   try {
     const response = await axiosInstance.post(
@@ -31,7 +32,7 @@ export const createNewOrg = async (orgData: any) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const getOrgDetails = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -42,7 +43,7 @@ export const getOrgDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const updateOrgDetails = async (
   id: string | undefined,
   orgDetails: any
@@ -81,18 +82,15 @@ export const toggleOrganizationStatus = async (id: string | undefined) => {
   }
 };
 export const getUserApprovedOrganizations = async () => {
-  const token = localStorage.getItem("token"); 
   try {
-    const response = await axiosInstance.get(`${apiConfig.organization.getUserApprovedOrganizations}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axiosInstance.get(`${apiConfig.organization.getUserApprovedOrganizations}`);
     return response.data;
   } catch (error: any) {
     console.error("Error fetching user's approved organizations:", error.response?.data || error.message);
     throw error;
   }
 };
-
+ 
 export const orgCreateCategory = async (data: any) => {
   try {
     const response = await axiosInstance.post(
@@ -104,7 +102,7 @@ export const orgCreateCategory = async (data: any) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgGetAllCategories = async (query: any) => {
   try {
     console.log("Sending API Query:", query);
@@ -118,7 +116,7 @@ export const orgGetAllCategories = async (query: any) => {
     throw error.response?.data || error;
   }
 };
-
+ 
 export const orgUpdateCategory = async (id: string | undefined, data: any) => {
   console.log(id, data);
   try {
@@ -131,7 +129,7 @@ export const orgUpdateCategory = async (id: string | undefined, data: any) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgDeleteCategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -142,7 +140,7 @@ export const orgDeleteCategory = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgToggleCategoryStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.patch(
@@ -153,7 +151,7 @@ export const orgToggleCategoryStatus = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgCreateSubcategory = async (data: any | undefined) => {
   try {
     const response = await axiosInstance.post(
@@ -165,7 +163,7 @@ export const orgCreateSubcategory = async (data: any | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgGetSubcategoriesByCategory = async (
   categoryId: string | undefined
 ) => {
@@ -178,23 +176,23 @@ export const orgGetSubcategoriesByCategory = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgGetSubcategories = async (query: any) => {
   try {
-
+ 
     const url = `${apiConfig.organization.getAllSubCategories(query)}`;
-  
+ 
     const response = await axiosInstance.get(url);
-
+ 
     return response.data;
   } catch (error: any) {
     console.error("Error fetching subcategories:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };
-
-
-
+ 
+ 
+ 
 export const orgGetSubcategoryById = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -205,7 +203,7 @@ export const orgGetSubcategoryById = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgUpdateSubcategory = async (
   id: string | undefined,
   data: any
@@ -220,7 +218,7 @@ export const orgUpdateSubcategory = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgDeleteSubcategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -231,7 +229,7 @@ export const orgDeleteSubcategory = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const orgToggleSubcategoryStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.patch(
@@ -242,7 +240,7 @@ export const orgToggleSubcategoryStatus = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const getAllCategoriesByStatus = async () => {
   try {
     const response = await axiosInstance.get(
@@ -253,9 +251,9 @@ export const getAllCategoriesByStatus = async () => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 // Add this to your existing organization API file (likely organization.ts or similar)
-
+ 
 // export const getUnapprovedOrganizations = async (query: any) => {
 //   try {
 //     const response = await axiosInstance.get(
@@ -269,7 +267,7 @@ export const getAllCategoriesByStatus = async () => {
 // };
 export const getUnapprovedOrganizations = async (query: any) => {
   console.log("zxczxzxxz");
-  
+ 
   try {
     const response = await axiosInstance.get(
       `${apiConfig.organization.getUnapprovedOrganizations(query)}`
@@ -280,8 +278,8 @@ export const getUnapprovedOrganizations = async (query: any) => {
     throw error;
   }
 }
-
-
+ 
+ 
 // export const approveOrganization = async (id: string) => {
 //   try {
 //     const response = await axiosInstance.patch(
@@ -293,3 +291,4 @@ export const getUnapprovedOrganizations = async (query: any) => {
 //     throw error;
 //   }
 // };
+ 

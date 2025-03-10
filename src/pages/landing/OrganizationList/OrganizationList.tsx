@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedOrganizations } from "../../../server/admin/organization"; // Ensure correct path
+import { getUserApprovedOrganizations } from "../../../server/admin/organization";
 
 interface Organization {
-  id: string; // Changed to string to match MongoDB _id
+  id: number;
   profilePic?: string;
   name: string;
   yearFounded?: number;
   address: string;
   industry?: string[];
-  employees?: number | string; // Adjusted to handle string or number from backend
+  employees?: number;
 }
 
 const OrganizationList = () => {
@@ -22,7 +22,7 @@ const OrganizationList = () => {
     const fetchUserOrganizations = async () => {
       try {
         const response = await getUserApprovedOrganizations();
-        setOrganizations(response.data.organizations); // Matches sendSuccessResponse structure
+        setOrganizations(response.data.organizations);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching organizations:", error);
@@ -36,7 +36,7 @@ const OrganizationList = () => {
   if (loading) {
     return (
       <div
-        className="text-center py-5"
+        className='text-center py-5'
         style={{
           backgroundColor: "white",
           height: "100vh",
@@ -51,28 +51,29 @@ const OrganizationList = () => {
   return (
     <>
       <DashboardNavbar />
-      <div className="py-5 bg-white">
-        <h2 className="text-center mb-5 fw-bold" style={{ color: "#2c3e50" }}>
+      <div className='py-5 bg-white'>
+        <h2 className='text-center mb-5 fw-bold' style={{ color: "#2c3e50" }}>
           Partner Organizations
           <div
-            className="w-25 mx-auto mt-2"
+            className='w-25 mx-auto mt-2'
             style={{
               height: "3px",
-              background: "linear-gradient(to right, rgb(253, 253, 253), rgb(254, 255, 255))",
+              background:
+                "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
             }}
           ></div>
         </h2>
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5">
+        <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5'>
           {organizations.map((org) => (
-            <div key={org.id} className="col">
-              <div className="card h-100 border-0 shadow-sm hover-card">
+            <div key={org.id} className='col'>
+              <div className='card h-100 border-0 shadow-sm hover-card'>
                 <div
-                  className="position-relative"
+                  className='position-relative'
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
-                    src={org.profilePic || "https://via.placeholder.com/220"} // Fallback image
-                    className="card-img-top"
+                    src={org.profilePic || "https://via.placeholder.com/220"}
+                    className='card-img-top'
                     alt={org.name}
                     style={{
                       height: "220px",
@@ -82,43 +83,43 @@ const OrganizationList = () => {
                       background: "#f8f9fa",
                     }}
                   />
-                  <div className="position-absolute top-0 end-0 m-3">
-                    <span className="badge bg-light text-dark shadow-sm px-3 py-2">
-                      <i className="bi bi-building-fill text-primary me-1"></i>
+                  <div className='position-absolute top-0 end-0 m-3'>
+                    <span className='badge bg-light text-dark shadow-sm px-3 py-2'>
+                      <i className='bi bi-building-fill text-primary me-1'></i>
                       Est. {org.yearFounded || "N/A"}
                     </span>
                   </div>
                 </div>
                 <div
-                  className="card-body"
+                  className='card-body'
                   style={{
                     background: "linear-gradient(to bottom, #ffffff, #f8f9fa)",
                   }}
                 >
-                  <h5 className="card-title fw-bold mb-3">{org.name}</h5>
+                  <h5 className='card-title fw-bold mb-3'>{org.name}</h5>
                   <p
-                    className="card-text text-muted mb-2"
+                    className='card-text text-muted mb-2'
                     style={{ fontSize: "0.9rem" }}
                   >
-                    <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
+                    <i className='bi bi-geo-alt-fill me-2 text-primary'></i>
                     {org.address}
                   </p>
-                  <div className="mb-3">
+                  <div className='mb-3'>
                     {(org.industry || []).map((type, index) => (
                       <span
                         key={index}
-                        className="badge bg-soft-primary me-2 mb-1"
+                        className='badge bg-soft-primary me-2 mb-1'
                         style={{ color: "#9e9e9e" }}
                       >
                         {type}
                       </span>
                     ))}
                   </div>
-                  <p className="small text-muted mb-3">
-                    <i className="bi bi-people-fill me-2 text-success"></i>
+                  <p className='small text-muted mb-3'>
+                    <i className='bi bi-people-fill me-2 text-success'></i>
                     Employees: {org.employees || "Not specified"}
                   </p>
-                  <button className="btn btn-primary w-100 rounded-pill hover-button">
+                  <button className='btn btn-primary w-100 rounded-pill hover-button'>
                     View Organization
                   </button>
                 </div>
@@ -128,9 +129,9 @@ const OrganizationList = () => {
         </div>
 
         {/* Add Organization button section */}
-        <div className="text-center mt-5">
+        <div className='text-center mt-5'>
           <button
-            className="btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button"
+            className='btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button'
             style={{
               borderWidth: "2px",
               fontSize: "1.1rem",
@@ -138,10 +139,10 @@ const OrganizationList = () => {
             }}
             onClick={() => navigate("/request/organization")}
           >
-            <i className="bi bi-building-add me-2"></i>
+            <i className='bi bi-building-add me-2'></i>
             Add Your Organization
           </button>
-          <p className="text-muted mt-3">
+          <p className='text-muted mt-3'>
             Join our network of partner organizations
           </p>
         </div>

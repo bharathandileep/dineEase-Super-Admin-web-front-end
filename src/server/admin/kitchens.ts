@@ -1,8 +1,8 @@
 import {axiosInstance} from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
-
-
-
+ 
+ 
+ 
 export const getAllKitches = async (query:any) => {
   try {
     const response = await axiosInstance.get(
@@ -14,7 +14,7 @@ export const getAllKitches = async (query:any) => {
     throw error;
   }
 };
-
+ 
 export const createNewkitchen = async (kitchenData: any) => {
   try {
     const response = await axiosInstance.post(
@@ -26,7 +26,7 @@ export const createNewkitchen = async (kitchenData: any) => {
     console.error("Login Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const getkitchenDetails = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -37,7 +37,7 @@ export const getkitchenDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const updatekitchenDetails = async (
   id: string | undefined,
   kitchenDetails: any
@@ -52,7 +52,7 @@ export const updatekitchenDetails = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const deletekitchenDetails = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -74,7 +74,7 @@ export const toggleKitchenStatus = async (id: string | undefined) => {
     throw error;
   }
 };
-
+ 
 export const getUserApprovedKitchens = async () => {
   try {
     const response = await axiosInstance.get(`${apiConfig.kitchens.getUserApprovedKitchens}`);
@@ -84,22 +84,11 @@ export const getUserApprovedKitchens = async () => {
     throw error;
   }
 };
-
-export const getUserApprovedOrganizations = async () => {
-  const token = localStorage.getItem("token"); 
-  try {
-    const response = await axiosInstance.get(`${apiConfig.organization.getUserApprovedOrganizations}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching user's approved organizations:", error.response?.data || error.message);
-    throw error;
-  }
-};
-
-
-
+ 
+ 
+ 
+ 
+ 
 //categories status
 export const kitchenCreateCategory = async (data: any) => {
   try {
@@ -112,7 +101,7 @@ export const kitchenCreateCategory = async (data: any) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensGetAllCategories = async (query: any) => {
   try {
     console.log("Sending API Query:", query);
@@ -126,13 +115,13 @@ export const kitchensGetAllCategories = async (query: any) => {
     throw error.response?.data || error;
   }
 };
-
-
+ 
+ 
 export const kitchensUpdateCategory = async (
   id: string | undefined,
   data: any
 ) => {
-
+ 
   try {
     const response = await axiosInstance.put(
       apiConfig.kitchens.updateCategory(id),
@@ -143,7 +132,7 @@ export const kitchensUpdateCategory = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensDeleteCategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -154,7 +143,7 @@ export const kitchensDeleteCategory = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensToggleCategoryStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.patch(
@@ -165,9 +154,9 @@ export const kitchensToggleCategoryStatus = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensCreateSubcategory = async (data: any | undefined) => {
-
+ 
   try {
     const response = await axiosInstance.post(
       apiConfig.kitchens.createSubcategory,
@@ -178,12 +167,12 @@ export const kitchensCreateSubcategory = async (data: any | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensGetSubcategoriesByCategory = async (
   categoryId: string | undefined
 ) => {
   try {
-
+ 
     const response = await axiosInstance.get(
       apiConfig.kitchens.getSubcategoriesByCategory(categoryId)
     );
@@ -192,12 +181,12 @@ export const kitchensGetSubcategoriesByCategory = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensGetSubcategories = async (query: any) => {
   try {
-
+ 
     const url = `${apiConfig.kitchens.getAllSubCategories(query)}`;
-
+ 
     const response = await axiosInstance.get(url);
     console.log("API Response:", response.data);
     return response.data;
@@ -206,7 +195,7 @@ export const kitchensGetSubcategories = async (query: any) => {
     throw error.response?.data || error;
   }
 };
-
+ 
 export const kitchensGetSubcategoryById = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -217,7 +206,7 @@ export const kitchensGetSubcategoryById = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensUpdateSubcategory = async (
   id: string | undefined,
   data: any
@@ -232,7 +221,7 @@ export const kitchensUpdateSubcategory = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensDeleteSubcategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -243,7 +232,7 @@ export const kitchensDeleteSubcategory = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const kitchensToggleSubcategoryStatus = async (
   id: string | undefined
 ) => {
@@ -256,10 +245,10 @@ export const kitchensToggleSubcategoryStatus = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
+ 
 export const getUnapprovedKitchens = async (query: any) => {
   console.log("zxczxzxxz");
-  
+ 
   try {
     const response = await axiosInstance.get(
       `${apiConfig.kitchens. getUnapprovedKitchens(query)}`
@@ -270,3 +259,5 @@ export const getUnapprovedKitchens = async (query: any) => {
     throw error;
   }
 }
+ 
+ 

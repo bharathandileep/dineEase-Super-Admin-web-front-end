@@ -17,6 +17,8 @@ import { authApiResponseSuccess, authApiResponseError } from "./actions";
 
 // constants
 import { AuthActionTypes } from "./constants";
+import { googleAuth } from "../../server/admin/auth";
+import jwtDecode from "jwt-decode";
 
 interface UserData {
   payload: {
@@ -34,6 +36,7 @@ const api = new APICore();
  * Login the user
  * @param {*} payload - username and password
  */
+
 function* login({
   payload: { username, password },
   type,
@@ -64,6 +67,21 @@ function* logout(): SagaIterator {
     yield put(authApiResponseError(AuthActionTypes.LOGOUT_USER, error));
   }
 }
+function* googleLogin(): SagaIterator {
+  try {
+    const response = yield call(googleAuth);
+    const user = response.data;
+    api.setLoggedInUser(user);
+    setAuthorization(user["token"]);
+    const loginUser = api.getLoggedInUserInfo()
+    yield put(
+      authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, loginUser)
+    );
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.GOOGLE_LOGIN_USER, error));
+    setAuthorization(null);
+  }
+}
 
 function* signup({
   payload: { fullname, email, password },
@@ -72,15 +90,14 @@ function* signup({
     const response = yield call(signupApi, { fullname, email, password });
     const user = response.data;
     api.setLoggedInUser(user);
-    setAuthorization(user['token']);
-    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
+    setAuthorization(user["token"]);
+    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, api.getLoggedInUserInfo));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error));
     api.setLoggedInUser(null);
     setAuthorization(null);
   }
 }
-
 function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
   try {
     const response = yield call(forgotPasswordApi, { username });
@@ -90,6 +107,10 @@ function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
   }
+}
+
+export function* watchGoogleLogin() {
+  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
 }
 export function* watchLoginUser() {
   yield takeEvery(AuthActionTypes.LOGIN_USER, login);
@@ -113,6 +134,7 @@ function* authSaga() {
     fork(watchLogout),
     fork(watchSignup),
     fork(watchForgotPassword),
+    fork(watchGoogleLogin),
   ]);
 }
 

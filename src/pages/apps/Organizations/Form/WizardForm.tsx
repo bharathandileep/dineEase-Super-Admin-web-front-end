@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Check, CheckCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FileUpload } from "../../../../components/FileUpload";
 import {
   createNewOrg,
@@ -11,8 +11,6 @@ import {
 import { toast } from "react-toastify";
 import { appendToFormData } from "../../../../helpers/formdataAppend";
 import { useNavigate, useParams } from "react-router-dom";
-import { Col, ProgressBar, Row } from "react-bootstrap";
-import "./FormWizard.scss";
 import { Stepper } from "../../../../components/Stepper";
 import {
   getAllCountries,
@@ -201,6 +199,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching states:", error);
     }
   };
+
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -260,7 +259,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         user
           ? navigate("/apps/organizations/list")
           : navigate("dashboard/organization-list");
-        navigate("/apps/organizations/list");
+        navigate("/dashboard/organization-list");
       } else {
         toast.error(response.message || "Creation failed. Please try again.");
       }
@@ -398,26 +397,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                   <div>
                     <h2 className='card-title mb-4'>Organisation Details</h2>
                     <div className='row g-3'>
-                      {/* Approval Status Display */}
-                      {id && (
-                        <div className='col-12 mb-3'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              Approval Status
-                            </label>
-                            <input
-                              type='text'
-                              className='form-control'
-                              value={
-                                formData.isapproved
-                                  ? "Approved"
-                                  : "Pending Approval"
-                              }
-                              readOnly
-                            />
-                          </div>
-                        </div>
-                      )}
+                     
 
                       <div className='col-md-6'>
                         <div className='form-group'>

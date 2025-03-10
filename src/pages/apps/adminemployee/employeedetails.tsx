@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, Mail, Phone, MapPin, Building } from "lucide-react";
 
+
 interface Employee {
   _id: string;
   username: string;
@@ -175,14 +176,11 @@ const EmployeeDetails = () => {
                 }
                 className='mb-3'
                 onClick={handleToggleStatus}
-                style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
+                style={{ cursor: "pointer" }}
               >
                 {employee.employee_status}
               </Badge>
 
-              {/* Toggle Status Button */}
-
-              {/* Contact Information */}
               <div className='text-start'>
                 <div className='d-flex align-items-center mb-2'>
                   <Mail size={16} className='me-2' />

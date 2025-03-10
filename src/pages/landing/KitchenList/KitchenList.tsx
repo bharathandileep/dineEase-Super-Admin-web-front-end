@@ -2,52 +2,53 @@ import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
-
+ 
 const KitchenList = () => {
   interface Kitchen {
     id: string;
     profilePic?: string;
     name: string;
+    rating?: number;
     address: string;
     cuisine?: string[];
     specialty?: string;
   }
-  
+ 
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
     const fetchUserKitchens = async () => {
       try {
         const response = await getUserApprovedKitchens();
-        setKitchens(response.data.kitchens); // Adjust based on your backend response structure
+        setKitchens(response.data.kitchens); 
         setLoading(false);
       } catch (error) {
         console.error("Error fetching kitchens:", error);
         setLoading(false);
       }
     };
-
+ 
     fetchUserKitchens();
   }, []);
-
+ 
   if (loading) {
     return (
       <div
       className="text-center py-5"
       style={{
         backgroundColor: 'white',
-        height: '100vh', 
+        height: '100vh',
         margin: 0,
       }}
     >
       <h3>Loading kitchens...</h3>
     </div>
-    
+   
     );
   }
-
+ 
   return (
     <>
       <DashboardNavbar />
@@ -77,7 +78,12 @@ const KitchenList = () => {
                       borderRadius: "12px 12px 0 0",
                     }}
                   />
-             
+                  <div className="position-absolute top-0 end-0 m-3">
+                    <span className="badge bg-light text-dark shadow-sm px-3 py-2">
+                      <i className="bi bi-star-fill text-warning me-1"></i>
+                      {kitchen.rating || "N/A"}
+                    </span>
+                  </div>
                 </div>
                 <div
                   className="card-body"
@@ -114,7 +120,7 @@ const KitchenList = () => {
             </div>
           ))}
         </div>
-
+ 
         {/* Add Your Kitchen button section */}
         <div className="text-center mt-5">
           <button
@@ -135,5 +141,6 @@ const KitchenList = () => {
     </>
   );
 };
-
+ 
 export default KitchenList;
+ 

@@ -1,19 +1,20 @@
-export function appendToFormData(data: any) {
+// helpers/formdataAppend.ts
+export const appendToFormData = (data: any): FormData => {
   const formData = new FormData();
 
   for (const key in data) {
-    if (data[key] instanceof File || data[key] instanceof Blob) {
-      formData.append(key, data[key]);
-    } else if (Array.isArray(data[key])) {
-      data[key].forEach((item:any, index:number) => {
-        formData.append(`${key}[${index}]`, item);
-      });
-    } else if (typeof data[key] === "object" && data[key] !== null) {
-      formData.append(key, JSON.stringify(data[key]));
-    } else {
-      formData.append(key, data[key]);
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      const value = data[key];
+      if (Array.isArray(value)) {
+        // Stringify arrays to ensure proper JSON format
+        formData.append(key, JSON.stringify(value));
+      } else if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
     }
   }
 
   return formData;
-} 
+};

@@ -1,4 +1,3 @@
-import React from "react";
 import { Row, Col } from "react-bootstrap";
 
 // components
@@ -11,6 +10,7 @@ import Transactions from "./Transactions";
 import ProductsDetails from "./ProductsDetails";
 // dummy data
 import { transactions, products } from "./data";
+
 
 const Dashboard = () => {
   return (

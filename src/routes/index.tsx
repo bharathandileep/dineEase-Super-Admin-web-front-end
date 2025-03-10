@@ -13,7 +13,6 @@ import KitchensCategories from "../pages/apps/kitchen/KitchensCategories";
 import OurMenu from "../pages/apps/kitchen/OurMenu";
 import MenuItems from "../pages/apps/MenuItems/Items";
 import ItemsListing from "../pages/apps/MenuItems/ListItems";
-import ItemsEditing from "../pages/apps/MenuItems/ItemsEditing";
 import MenuDetails from "../pages/apps/kitchen/MenuDetails";
 import OrgSubCategories from "../pages/apps/Organizations/OrgSubCategories";
 
@@ -34,9 +33,6 @@ import SigninForm from "../pages/landing/LoginandRegistation/SigninForm";
 import Dashboard from "../pages/landing/Dashboard/Dashboard";
 import OrganizationList from "../pages/landing/OrganizationList/OrganizationList";
 import KitchenList from "../pages/landing/KitchenList/KitchenList";
-import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
-import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
-
 import RequestOrganization from "../pages/landing/OrganizationList/RequestOrganization";
 import RequestKitchen from "../pages/landing/KitchenList/RequestKitchen";
 import NewOrganizations from "../pages/apps/Organizations/newOrganizations";
@@ -49,6 +45,9 @@ import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
 import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
+import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
+import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
+import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
 
 
 
@@ -449,7 +448,12 @@ const kitchenAppRoutes = {
     {
       path:"/apps/kitchen/requested-kitchens",
       name:"Requested Kitchens",
-      element:<RequestedKitchen/>
+      element:<RequestedKitchen />
+    },
+    {
+      path:"/apps/kitchen/editt-kitchens",
+      name:"Edit Kitchens",
+      element:<KitchenEdit />
     },
   ],
 };
