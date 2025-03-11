@@ -62,7 +62,7 @@ interface FormData {
     close_time: string;
   }>;
   pre_ordering_options: Array<{
-    day: any; 
+    day: any;
     meal_type: string;
     pre_order_start_time: string;
     pre_order_close_time: string;
@@ -102,11 +102,7 @@ const initialFormData: FormData = {
   subcategoryName: "",
   role: "User",
   isapproved: true,
-  working_days: [
-    
-      { day: "", is_open: false, open_time: "", close_time: "" },
-    
-  ],
+  working_days: [{ day: "", is_open: false, open_time: "", close_time: "" }],
   pre_ordering_options: [
     {
       meal_type: "",
@@ -114,7 +110,7 @@ const initialFormData: FormData = {
       pre_order_close_time: "",
       delivery_time: "",
       status: false,
-      day: ""
+      day: "",
     },
   ],
 };
@@ -131,6 +127,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [progress, setProgress] = useState(0); // Progress state
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -140,6 +137,60 @@ export function WizardForm({ initialData }: WizardFormProps) {
     { number: 2, title: "Documents" },
     { number: 3, title: "Timings" },
   ];
+
+  // Define all required fields across all steps
+  const requiredFields = [
+    // Step 1
+    "kitchen_name",
+    "kitchen_owner_name",
+    "owner_email",
+    "owner_phone_number",
+    "restaurant_type",
+    "kitchen_type",
+    "kitchen_phone_number",
+    "kitchen_image",
+    "address_type",
+    "street_address",
+    "district",
+    "city",
+    "state",
+    "pincode",
+    "country",
+    "category",
+    "subcategoryName",
+    // Step 2
+    "pan_card_number",
+    "pan_card_user_name",
+    "pan_card_image",
+    "gst_number",
+    "gst_certificate_image",
+    "gst_expiry_date",
+    "ffsai_certificate_number",
+    "ffsai_card_owner_name",
+    "ffsai_certificate_image",
+    "ffsai_expiry_date",
+  ];
+
+  // Calculate progress
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof FormData];
+      return value !== "" && value !== undefined && value !== null;
+    }).length;
+
+    // Check working_days (Step 3)
+    const workingDaysFilled =
+      formData.working_days.length > 0 &&
+      formData.working_days.some((day) => day.day && day.is_open !== undefined)
+        ? 1
+        : 0;
+
+    const totalFields = requiredFields.length + 1; // 27 + 1 for working_days
+    const totalFilled = filledFields + workingDaysFilled;
+    const progressPercentage = Math.round((totalFilled / totalFields) * 100);
+
+    setProgress(progressPercentage);
+  }, [formData]);
 
   const validateStep1 = () => {
     const newErrors: Partial<FormData & { working_days: string }> = {};
@@ -230,32 +281,35 @@ export function WizardForm({ initialData }: WizardFormProps) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const validateStep3 = () => {
-    // Use a custom error type instead of Partial<FormData>
     const newErrors: { [key: string]: string | undefined } = {};
-  
     if (formData.working_days.length === 0) {
       newErrors.working_days = "At least one working day is required";
     } else {
       formData.working_days.forEach((day, index) => {
         if (!day.day) newErrors[`working_days.${index}.day`] = "Day is required";
         if (day.is_open) {
-          if (!day.open_time) newErrors[`working_days.${index}.open_time`] = "Open time is required";
-          if (!day.close_time) newErrors[`working_days.${index}.close_time`] = "Close time is required";
+          if (!day.open_time)
+            newErrors[`working_days.${index}.open_time`] = "Open time is required";
+          if (!day.close_time)
+            newErrors[`working_days.${index}.close_time`] = "Close time is required";
           if (day.open_time >= day.close_time)
-            newErrors[`working_days.${index}.close_time`] = "Close time must be after open time";
+            newErrors[`working_days.${index}.close_time`] =
+              "Close time must be after open time";
         }
       });
     }
-  
+
     formData.pre_ordering_options.forEach((option, index) => {
       // Optional: Add validation if day is required
       // if (!option.day) newErrors[`pre_ordering_options.${index}.day`] = "Day is required";
     });
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -304,7 +358,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
       else toast.error("Please complete all required fields in Step 3 correctly.");
     }
   };
-
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
@@ -535,184 +588,170 @@ export function WizardForm({ initialData }: WizardFormProps) {
   }, [id]);
 
   return (
-    <div className='container py-2'>
-      <div className='row justify-content-center'>
-        <div className='col-lg-12'>
-          <div className='card d-flex flex-column align-items-center'>
-            <div className='col-lg-8 justify-content-center'>
+    <div className="container py-2">
+      <div className="row justify-content-center">
+        <div className="col-lg-12">
+          <div className="card d-flex flex-column align-items-center" style={{ position: "relative" }}>
+            {/* Progress Bar */}
+            <div
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                width: "200px",
+              }}
+            >
+              <div className="progress" style={{ height: "20px" }}>
+                <div
+                  className="progress-bar bg-success"
+                  role="progressbar"
+                  style={{ width: `${progress}%` }}
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  {progress}%
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-8 justify-content-center">
               <Stepper steps={steps} currentStep={currentStep} />
             </div>
-            <div className='card-body p-4'>
+            <div className="card-body p-4">
               <form onSubmit={(e) => e.preventDefault()}>
                 {currentStep === 1 && (
                   <div>
-                    <h2 className='card-title mb-4'>Kitchen Details</h2>
-                    <div className='row g-3'>
-                      {id && <div className='col-12 mb-3'></div>}
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Kitchen Name</label>
+                    <h2 className="card-title mb-4">Kitchen Details</h2>
+                    <div className="row g-3">
+                      {id && <div className="col-12 mb-3"></div>}
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Kitchen Name</label>
                           <input
-                            type='text'
-                            name='kitchen_name'
+                            type="text"
+                            name="kitchen_name"
                             value={formData.kitchen_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_name ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_name && (
-                            <div className='invalid-feedback'>
-                              {errors.kitchen_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_name}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Kitchen Owner Name
-                          </label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Kitchen Owner Name</label>
                           <input
-                            type='text'
-                            name='kitchen_owner_name'
+                            type="text"
+                            name="kitchen_owner_name"
                             value={formData.kitchen_owner_name}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_owner_name ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_owner_name ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_owner_name && (
-                            <div className='invalid-feedback'>
-                              {errors.kitchen_owner_name}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_owner_name}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Owner Email</label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Owner Email</label>
                           <input
-                            type='email'
-                            name='owner_email'
+                            type="email"
+                            name="owner_email"
                             value={formData.owner_email}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.owner_email ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.owner_email ? "is-invalid" : ""}`}
                           />
                           {errors.owner_email && (
-                            <div className='invalid-feedback'>
-                              {errors.owner_email}
-                            </div>
+                            <div className="invalid-feedback">{errors.owner_email}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Owner Phone Number
-                          </label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Owner Phone Number</label>
                           <input
-                            type='tel'
-                            name='owner_phone_number'
+                            type="tel"
+                            name="owner_phone_number"
                             value={formData.owner_phone_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.owner_phone_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.owner_phone_number ? "is-invalid" : ""}`}
                           />
                           {errors.owner_phone_number && (
-                            <div className='invalid-feedback'>
-                              {errors.owner_phone_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.owner_phone_number}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Restaurant Type</label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Restaurant Type</label>
                           <input
-                            type='text'
-                            name='restaurant_type'
+                            type="text"
+                            name="restaurant_type"
                             value={formData.restaurant_type}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.restaurant_type ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.restaurant_type ? "is-invalid" : ""}`}
                           />
                           {errors.restaurant_type && (
-                            <div className='invalid-feedback'>
-                              {errors.restaurant_type}
-                            </div>
+                            <div className="invalid-feedback">{errors.restaurant_type}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Kitchen Type</label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Kitchen Type</label>
                           <select
-                            name='kitchen_type'
+                            name="kitchen_type"
                             value={formData.kitchen_type}
                             onChange={handleChange}
-                            className={`form-select ${
-                              errors.kitchen_type ? "is-invalid" : ""
-                            }`}
+                            className={`form-select ${errors.kitchen_type ? "is-invalid" : ""}`}
                           >
-                            <option value=''>Select Kitchen Type</option>
-                            <option value='Veg'>Veg</option>
-                            <option value='Non-Veg'>Non-Veg</option>
-                            <option value='Both'>Both</option>
+                            <option value="">Select Kitchen Type</option>
+                            <option value="Veg">Veg</option>
+                            <option value="Non-Veg">Non-Veg</option>
+                            <option value="Both">Both</option>
                           </select>
                           {errors.kitchen_type && (
-                            <div className='invalid-feedback'>
-                              {errors.kitchen_type}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_type}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Kitchen Phone Number
-                          </label>
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">Kitchen Phone Number</label>
                           <input
-                            type='tel'
-                            name='kitchen_phone_number'
+                            type="tel"
+                            name="kitchen_phone_number"
                             value={formData.kitchen_phone_number}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.kitchen_phone_number ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.kitchen_phone_number ? "is-invalid" : ""}`}
                           />
                           {errors.kitchen_phone_number && (
-                            <div className='invalid-feedback'>
-                              {errors.kitchen_phone_number}
-                            </div>
+                            <div className="invalid-feedback">{errors.kitchen_phone_number}</div>
                           )}
                         </div>
                       </div>
-                      <div className='col-12'>
-                        <div className='form-group'>
-                          <label className='form-label'>Kitchen Image</label>
+                      <div className="col-12">
+                        <div className="form-group">
+                          <label className="form-label">Kitchen Image</label>
                           <FileUpload
                             onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                kitchen_image: file,
-                              }))
+                              setFormData((prev) => ({ ...prev, kitchen_image: file }))
                             }
                             value={formData.kitchen_image}
                             error={errors.kitchen_image}
                           />
                         </div>
                       </div>
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>Category</label>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">Category</label>
                             <select
-                              name='category'
+                              name="category"
                               value={formData.category}
                               onChange={(e) => {
                                 const selectedCategory = e.target.value;
@@ -723,11 +762,9 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 }));
                                 setCategoryId(selectedCategory);
                               }}
-                              className={`form-select ${
-                                errors.category ? "is-invalid" : ""
-                              }`}
+                              className={`form-select ${errors.category ? "is-invalid" : ""}`}
                             >
-                              <option value=''>Select Category</option>
+                              <option value="">Select Category</option>
                               {categories?.map((cat) => (
                                 <option key={cat._id} value={cat._id}>
                                   {cat?.category}
@@ -735,30 +772,24 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               ))}
                             </select>
                             {errors.category && (
-                              <div className='invalid-feedback'>
-                                {errors.category}
-                              </div>
+                              <div className="invalid-feedback">{errors.category}</div>
                             )}
                             {!categories.length && (
-                              <div className='text-muted mt-1'>
-                                Loading categories...
-                              </div>
+                              <div className="text-muted mt-1">Loading categories...</div>
                             )}
                           </div>
                         </div>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>Subcategory</label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">Subcategory</label>
                             <select
-                              name='subcategoryName'
+                              name="subcategoryName"
                               value={formData.subcategoryName}
                               onChange={handleChange}
-                              className={`form-select ${
-                                errors.subcategoryName ? "is-invalid" : ""
-                              }`}
+                              className={`form-select ${errors.subcategoryName ? "is-invalid" : ""}`}
                               disabled={!formData.category}
                             >
-                              <option value=''>Select Subcategory</option>
+                              <option value="">Select Subcategory</option>
                               {subcategories.map((sub) => (
                                 <option key={sub._id} value={sub._id}>
                                   {sub?.subcategoryName}
@@ -766,72 +797,58 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               ))}
                             </select>
                             {errors.subcategoryName && (
-                              <div className='invalid-feedback'>
-                                {errors.subcategoryName}
-                              </div>
+                              <div className="invalid-feedback">{errors.subcategoryName}</div>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className='col-12 mt-4'>
-                        <h3 className='h5 mb-3'>Address Details</h3>
-                        <div className='row g-3'>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Address Type</label>
+                      <div className="col-12 mt-4">
+                        <h3 className="h5 mb-3">Address Details</h3>
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Address Type</label>
                               <select
-                                name='address_type'
+                                name="address_type"
                                 value={formData.address_type}
                                 onChange={handleChange}
-                                className={`form-select ${
-                                  errors.address_type ? "is-invalid" : ""
-                                }`}
+                                className={`form-select ${errors.address_type ? "is-invalid" : ""}`}
                               >
-                                <option value=''>Select</option>
-                                <option value='Home'>Home</option>
-                                <option value='Office'>Office</option>
-                                <option value='Other'>Other</option>
+                                <option value="">Select</option>
+                                <option value="Home">Home</option>
+                                <option value="Office">Office</option>
+                                <option value="Other">Other</option>
                               </select>
                               {errors.address_type && (
-                                <div className='invalid-feedback'>
-                                  {errors.address_type}
-                                </div>
+                                <div className="invalid-feedback">{errors.address_type}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-12'>
-                            <div className='form-group'>
-                              <label className='form-label'>
-                                Street Address
-                              </label>
+                          <div className="col-12">
+                            <div className="form-group">
+                              <label className="form-label">Street Address</label>
                               <input
-                                type='text'
-                                name='street_address'
+                                type="text"
+                                name="street_address"
                                 value={formData.street_address}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.street_address ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.street_address ? "is-invalid" : ""}`}
                               />
                               {errors.street_address && (
-                                <div className='invalid-feedback'>
-                                  {errors.street_address}
-                                </div>
+                                <div className="invalid-feedback">{errors.street_address}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Country</label>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Country</label>
                               <select
-                                name='country'
+                                name="country"
                                 value={formData.country}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.country ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.country ? "is-invalid" : ""}`}
                               >
-                                <option value=''>Select Country</option>
+                                <option value="">Select Country</option>
                                 {countries.map((country) => (
                                   <option key={country._id} value={country.id}>
                                     {country.name}
@@ -839,25 +856,21 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 ))}
                               </select>
                               {errors.country && (
-                                <div className='invalid-feedback'>
-                                  {errors.country}
-                                </div>
+                                <div className="invalid-feedback">{errors.country}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>State</label>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">State</label>
                               <select
-                                name='state'
+                                name="state"
                                 value={formData.state}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.state ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.state ? "is-invalid" : ""}`}
                                 disabled={!formData.country}
                               >
-                                <option value=''>Select State</option>
+                                <option value="">Select State</option>
                                 {states.map((state) => (
                                   <option key={state._id} value={state.id}>
                                     {state.name}
@@ -865,54 +878,43 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 ))}
                               </select>
                               {errors.state && (
-                                <div className='invalid-feedback'>
-                                  {errors.state}
-                                </div>
+                                <div className="invalid-feedback">{errors.state}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>District</label>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">District</label>
                               <select
-                                name='district'
+                                name="district"
                                 value={formData.district}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.district ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.district ? "is-invalid" : ""}`}
                                 disabled={!formData.state}
                               >
-                                <option value=''>Select District</option>
+                                <option value="">Select District</option>
                                 {districts.map((district) => (
-                                  <option
-                                    key={district._id}
-                                    value={district.id}
-                                  >
+                                  <option key={district._id} value={district.id}>
                                     {district.name}
                                   </option>
                                 ))}
                               </select>
                               {errors.district && (
-                                <div className='invalid-feedback'>
-                                  {errors.district}
-                                </div>
+                                <div className="invalid-feedback">{errors.district}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>City</label>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">City</label>
                               <select
-                                name='city'
+                                name="city"
                                 value={formData.city}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.city ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.city ? "is-invalid" : ""}`}
                                 disabled={!formData.state}
                               >
-                                <option value=''>Select City</option>
+                                <option value="">Select City</option>
                                 {cities.map((city) => (
                                   <option key={city._id} value={city.id}>
                                     {city.name}
@@ -920,28 +922,22 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 ))}
                               </select>
                               {errors.city && (
-                                <div className='invalid-feedback'>
-                                  {errors.city}
-                                </div>
+                                <div className="invalid-feedback">{errors.city}</div>
                               )}
                             </div>
                           </div>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Pincode</label>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Pincode</label>
                               <input
-                                type='text'
-                                name='pincode'
+                                type=" wczesmd-text"
+                                name="pincode"
                                 value={formData.pincode}
                                 onChange={handleChange}
-                                className={`form-control ${
-                                  errors.pincode ? "is-invalid" : ""
-                                }`}
+                                className={`form-control ${errors.pincode ? "is-invalid" : ""}`}
                               />
                               {errors.pincode && (
-                                <div className='invalid-feedback'>
-                                  {errors.pincode}
-                                </div>
+                                <div className="invalid-feedback">{errors.pincode}</div>
                               )}
                             </div>
                           </div>
@@ -953,66 +949,47 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
                 {currentStep === 2 && (
                   <div>
-                    <h2 className='card-title mb-4'>
-                      PAN, GST & FSSAI Details
-                    </h2>
-                    <div className='mb-4'>
-                      <h3 className='h5 mb-3'>PAN Details</h3>
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              PAN Card Number
-                            </label>
+                    <h2 className="card-title mb-4">PAN, GST & FSSAI Details</h2>
+                    <div className="mb-4">
+                      <h3 className="h5 mb-3">PAN Details</h3>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">PAN Card Number</label>
                             <input
-                              type='text'
-                              name='pan_card_number'
+                              type="text"
+                              name="pan_card_number"
                               value={formData.pan_card_number}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.pan_card_number ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.pan_card_number ? "is-invalid" : ""}`}
                             />
                             {errors.pan_card_number && (
-                              <div className='invalid-feedback'>
-                                {errors.pan_card_number}
-                              </div>
+                              <div className="invalid-feedback">{errors.pan_card_number}</div>
                             )}
-                            <small className='form-text text-muted'>
-                              Example: ABCDE1234F
-                            </small>
+                            <small className="form-text text-muted">Example: ABCDE1234F</small>
                           </div>
                         </div>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              PAN Card User Name
-                            </label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">PAN Card User Name</label>
                             <input
-                              type='text'
-                              name='pan_card_user_name'
+                              type="text"
+                              name="pan_card_user_name"
                               value={formData.pan_card_user_name}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.pan_card_user_name ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.pan_card_user_name ? "is-invalid" : ""}`}
                             />
                             {errors.pan_card_user_name && (
-                              <div className='invalid-feedback'>
-                                {errors.pan_card_user_name}
-                              </div>
+                              <div className="invalid-feedback">{errors.pan_card_user_name}</div>
                             )}
                           </div>
                         </div>
-                        <div className='col-12'>
-                          <div className='form-group'>
-                            <label className='form-label'>PAN Card Image</label>
+                        <div className="col-12">
+                          <div className="form-group">
+                            <label className="form-label">PAN Card Image</label>
                             <FileUpload
                               onFileSelect={(file) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  pan_card_image: file,
-                                }))
+                                setFormData((prev) => ({ ...prev, pan_card_image: file }))
                               }
                               value={formData.pan_card_image}
                               error={errors.pan_card_image}
@@ -1021,63 +998,46 @@ export function WizardForm({ initialData }: WizardFormProps) {
                         </div>
                       </div>
                     </div>
-                    <div className='mb-4'>
-                      <h3 className='h5 mb-3'>GST Details</h3>
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>GST Number</label>
+                    <div className="mb-4">
+                      <h3 className="h5 mb-3">GST Details</h3>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">GST Number</label>
                             <input
-                              type='text'
-                              name='gst_number'
+                              type="text"
+                              name="gst_number"
                               value={formData.gst_number}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.gst_number ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.gst_number ? "is-invalid" : ""}`}
                             />
                             {errors.gst_number && (
-                              <div className='invalid-feedback'>
-                                {errors.gst_number}
-                              </div>
+                              <div className="invalid-feedback">{errors.gst_number}</div>
                             )}
-                            <small className='form-text text-muted'>
-                              Example: 22AAAAA0000A1Z5
-                            </small>
+                            <small className="form-text text-muted">Example: 22AAAAA0000A1Z5</small>
                           </div>
                         </div>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              GST Expiry Date
-                            </label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">GST Expiry Date</label>
                             <input
-                              type='date'
-                              name='gst_expiry_date'
+                              type="date"
+                              name="gst_expiry_date"
                               value={formData.gst_expiry_date}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.gst_expiry_date ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.gst_expiry_date ? "is-invalid" : ""}`}
                             />
                             {errors.gst_expiry_date && (
-                              <div className='invalid-feedback'>
-                                {errors.gst_expiry_date}
-                              </div>
+                              <div className="invalid-feedback">{errors.gst_expiry_date}</div>
                             )}
                           </div>
                         </div>
-                        <div className='col-12'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              GST Certificate Image
-                            </label>
+                        <div className="col-12">
+                          <div className="form-group">
+                            <label className="form-label">GST Certificate Image</label>
                             <FileUpload
                               onFileSelect={(file) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  gst_certificate_image: file,
-                                }))
+                                setFormData((prev) => ({ ...prev, gst_certificate_image: file }))
                               }
                               value={formData.gst_certificate_image}
                               error={errors.gst_certificate_image}
@@ -1087,87 +1047,60 @@ export function WizardForm({ initialData }: WizardFormProps) {
                       </div>
                     </div>
                     <div>
-                      <h3 className='h5 mb-3'>FSSAI Details</h3>
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              FSSAI Certificate Number
-                            </label>
+                      <h3 className="h5 mb-3">FSSAI Details</h3>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">FSSAI Certificate Number</label>
                             <input
-                              type='text'
-                              name='ffsai_certificate_number'
+                              type="text"
+                              name="ffsai_certificate_number"
                               value={formData.ffsai_certificate_number}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.ffsai_certificate_number
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
+                              className={`form-control ${errors.ffsai_certificate_number ? "is-invalid" : ""}`}
                             />
                             {errors.ffsai_certificate_number && (
-                              <div className='invalid-feedback'>
-                                {errors.ffsai_certificate_number}
-                              </div>
+                              <div className="invalid-feedback">{errors.ffsai_certificate_number}</div>
                             )}
-                            <small className='form-text text-muted'>
-                              Example: 12345678901234
-                            </small>
+                            <small className="form-text text-muted">Example: 12345678901234</small>
                           </div>
                         </div>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              FSSAI Card Owner Name
-                            </label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">FSSAI Card Owner Name</label>
                             <input
-                              type='text'
-                              name='ffsai_card_owner_name'
+                              type="text"
+                              name="ffsai_card_owner_name"
                               value={formData.ffsai_card_owner_name}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.ffsai_card_owner_name ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.ffsai_card_owner_name ? "is-invalid" : ""}`}
                             />
                             {errors.ffsai_card_owner_name && (
-                              <div className='invalid-feedback'>
-                                {errors.ffsai_card_owner_name}
-                              </div>
+                              <div className="invalid-feedback">{errors.ffsai_card_owner_name}</div>
                             )}
                           </div>
                         </div>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              FSSAI Expiry Date
-                            </label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">FSSAI Expiry Date</label>
                             <input
-                              type='date'
-                              name='ffsai_expiry_date'
+                              type="date"
+                              name="ffsai_expiry_date"
                               value={formData.ffsai_expiry_date}
                               onChange={handleChange}
-                              className={`form-control ${
-                                errors.ffsai_expiry_date ? "is-invalid" : ""
-                              }`}
+                              className={`form-control ${errors.ffsai_expiry_date ? "is-invalid" : ""}`}
                             />
                             {errors.ffsai_expiry_date && (
-                              <div className='invalid-feedback'>
-                                {errors.ffsai_expiry_date}
-                              </div>
+                              <div className="invalid-feedback">{errors.ffsai_expiry_date}</div>
                             )}
                           </div>
                         </div>
-                        <div className='col-12'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              FSSAI Certificate Image
-                            </label>
+                        <div className="col-12">
+                          <div className="form-group">
+                            <label className="form-label">FSSAI Certificate Image</label>
                             <FileUpload
                               onFileSelect={(file) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  ffsai_certificate_image: file,
-                                }))
+                                setFormData((prev) => ({ ...prev, ffsai_certificate_image: file }))
                               }
                               value={formData.ffsai_certificate_image}
                               error={errors.ffsai_certificate_image}
@@ -1179,301 +1112,324 @@ export function WizardForm({ initialData }: WizardFormProps) {
                   </div>
                 )}
 
-{currentStep === 3 && (
-  <div>
-    <h2 className="card-title mb-4">Kitchen Timings</h2>
-    <div className="mb-4">
-      <h3 className="h5 mb-3">Working Days</h3>
-      {formData.working_days.map((day, index) => (
-        <div key={index} className="row g-3 mb-3 align-items-end">
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label">Day</label>
-              <select
-                value={day.day}
-                onChange={(e) =>
-                  handleArrayChange("working_days", index, "day", e.target.value)
-                }
-                className={`form-select ${
-                  errors[`working_days.${index}.day` as keyof FormData] ? "is-invalid" : ""
-                }`}
-              >
-                <option value="">Select Day</option>
-                {[
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                  "Sunday",
-                ]
-                  .filter((d) => !formData.working_days.some((wd, i) => wd.day === d && i !== index))
-                  .map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-              </select>
-              {errors[`working_days.${index}.day` as keyof FormData] && (
-                <div className="invalid-feedback">
-                  {errors[`working_days.${index}.day` as keyof FormData]}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Status</label>
-              <select
-                value={day.is_open.toString()}
-                onChange={(e) =>
-                  handleArrayChange("working_days", index, "is_open", e.target.value === "true")
-                }
-                className="form-select"
-              >
-                <option value="true">Open</option>
-                <option value="false">Closed</option>
-              </select>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label">Open Time</label>
-              <input
-                type="time"
-                value={day.open_time}
-                onChange={(e) =>
-                  handleArrayChange("working_days", index, "open_time", e.target.value)
-                }
-                className={`form-control ${
-                  errors[`working_days.${index}.open_time` as keyof FormData] ? "is-invalid" : ""
-                }`}
-                disabled={!day.is_open}
-              />
-              {errors[`working_days.${index}.open_time` as keyof FormData] && (
-                <div className="invalid-feedback">
-                  {errors[`working_days.${index}.open_time` as keyof FormData]}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label">Close Time</label>
-              <input
-                type="time"
-                value={day.close_time}
-                onChange={(e) =>
-                  handleArrayChange("working_days", index, "close_time", e.target.value)
-                }
-                className={`form-control ${
-                  errors[`working_days.${index}.close_time` as keyof FormData] ? "is-invalid" : ""
-                }`}
-                disabled={!day.is_open}
-              />
-              {errors[`working_days.${index}.close_time` as keyof FormData] && (
-                <div className="invalid-feedback">
-                  {errors[`working_days.${index}.close_time` as keyof FormData]}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="col-md-1">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => removeArrayItem("working_days", index)}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      ))}
-      {errors.working_days && (
-        <div className="text-danger mb-2">{errors.working_days}</div>
-      )}
-      <button
-        type="button"
-        className="btn btn-outline-primary mt-2"
-        onClick={() => addArrayItem("working_days")}
-        disabled={formData.working_days.length >= 7}
-      >
-        Add Working Day
-      </button>
-    </div>
+                {currentStep === 3 && (
+                  <div>
+                    <h2 className="card-title mb-4">Kitchen Timings</h2>
+                    <div className="mb-4">
+                      <h3 className="h5 mb-3">Working Days</h3>
+                      {formData.working_days.map((day, index) => (
+                        <div key={index} className="row g-3 mb-3 align-items-end">
+                          <div className="col-md-3">
+                            <div className="form-group">
+                              <label className="form-label">Day</label>
+                              <select
+                                value={day.day}
+                                onChange={(e) =>
+                                  handleArrayChange("working_days", index, "day", e.target.value)
+                                }
+                                className={`form-select ${
+                                  errors[`working_days.${index}.day` as keyof FormData] ? "is-invalid" : ""
+                                }`}
+                              >
+                                <option value="">Select Day</option>
+                                {[
+                                  "Monday",
+                                  "Tuesday",
+                                  "Wednesday",
+                                  "Thursday",
+                                  "Friday",
+                                  "Saturday",
+                                  "Sunday",
+                                ]
+                                  .filter(
+                                    (d) =>
+                                      !formData.working_days.some(
+                                        (wd, i) => wd.day === d && i !== index
+                                      )
+                                  )
+                                  .map((d) => (
+                                    <option key={d} value={d}>
+                                      {d}
+                                    </option>
+                                  ))}
+                              </select>
+                              {errors[`working_days.${index}.day` as keyof FormData] && (
+                                <div className="invalid-feedback">
+                                  {errors[`working_days.${index}.day` as keyof FormData]}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Status</label>
+                              <select
+                                value={day.is_open.toString()}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "working_days",
+                                    index,
+                                    "is_open",
+                                    e.target.value === "true"
+                                  )
+                                }
+                                className="form-select"
+                              >
+                                <option value="true">Open</option>
+                                <option value="false">Closed</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-3">
+                            <div className="form-group">
+                              <label className="form-label">Open Time</label>
+                              <input
+                                type="time"
+                                value={day.open_time}
+                                onChange={(e) =>
+                                  handleArrayChange("working_days", index, "open_time", e.target.value)
+                                }
+                                className={`form-control ${
+                                  errors[`working_days.${index}.open_time` as keyof FormData]
+                                    ? "is-invalid"
+                                    : ""
+                                }`}
+                                disabled={!day.is_open}
+                              />
+                              {errors[`working_days.${index}.open_time` as keyof FormData] && (
+                                <div className="invalid-feedback">
+                                  {errors[`working_days.${index}.open_time` as keyof FormData]}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-md-3">
+                            <div className="form-group">
+                              <label className="form-label">Close Time</label>
+                              <input
+                                type="time"
+                                value={day.close_time}
+                                onChange={(e) =>
+                                  handleArrayChange("working_days", index, "close_time", e.target.value)
+                                }
+                                className={`form-control ${
+                                  errors[`working_days.${index}.close_time` as keyof FormData]
+                                    ? "is-invalid"
+                                    : ""
+                                }`}
+                                disabled={!day.is_open}
+                              />
+                              {errors[`working_days.${index}.close_time` as keyof FormData] && (
+                                <div className="invalid-feedback">
+                                  {errors[`working_days.${index}.close_time` as keyof FormData]}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => removeArrayItem("working_days", index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {errors.working_days && (
+                        <div className="text-danger mb-2">{errors.working_days}</div>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary mt-2"
+                        onClick={() => addArrayItem("working_days")}
+                        disabled={formData.working_days.length >= 7}
+                      >
+                        Add Working Day
+                      </button>
+                    </div>
 
-    <div className="mb-4">
-      <h3 className="h5 mb-3">Pre-ordering Options</h3>
-      {formData.pre_ordering_options.map((option, index) => (
-        <div key={index} className="row g-3 mb-3 align-items-end">
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Day</label>
-              <select
-                value={option.day || ""}
-                onChange={(e) =>
-                  handleArrayChange("pre_ordering_options", index, "day", e.target.value)
-                }
-                className="form-select"
-              >
-                <option value="">Select Day</option>
-                {formData.working_days
-                  .filter((wd) => wd.is_open)
-                  .filter(
-                    (wd) =>
-                      !formData.pre_ordering_options.some(
-                        (po, i) => po.day === wd.day && i !== index
-                      )
-                  )
-                  .map((wd) => (
-                    <option key={wd.day} value={wd.day}>
-                      {wd.day}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Meal Type</label>
-              <input
-                type="text"
-                value={option.meal_type}
-                onChange={(e) =>
-                  handleArrayChange("pre_ordering_options", index, "meal_type", e.target.value)
-                }
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Start Time</label>
-              <input
-                type="time"
-                value={option.pre_order_start_time}
-                onChange={(e) =>
-                  handleArrayChange(
-                    "pre_ordering_options",
-                    index,
-                    "pre_order_start_time",
-                    e.target.value
-                  )
-                }
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Close Time</label>
-              <input
-                type="time"
-                value={option.pre_order_close_time}
-                onChange={(e) =>
-                  handleArrayChange(
-                    "pre_ordering_options",
-                    index,
-                    "pre_order_close_time",
-                    e.target.value
-                  )
-                }
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="col-md-2">
-            <div className="form-group">
-              <label className="form-label">Delivery Time</label>
-              <input
-                type="time"
-                value={option.delivery_time}
-                onChange={(e) =>
-                  handleArrayChange("pre_ordering_options", index, "delivery_time", e.target.value)
-                }
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="col-md-1">
-            <div className="form-group">
-              <label className="form-label">Status</label>
-              <select
-                value={option.status.toString()}
-                onChange={(e) =>
-                  handleArrayChange(
-                    "pre_ordering_options",
-                    index,
-                    "status",
-                    e.target.value === "true"
-                  )
-                }
-                className="form-select"
-              >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
-            </div>
-          </div>
-          <div className="col-md-1">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => removeArrayItem("pre_ordering_options", index)}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      ))}
-      <button
-        type="button"
-        className="btn btn-outline-primary mt-2"
-        onClick={() => addArrayItem("pre_ordering_options")}
-        disabled={
-          formData.pre_ordering_options.length >=
-          formData.working_days.filter((wd) => wd.is_open).length
-        }
-      >
-        Add Pre-order Option
-      </button>
-    </div>
-  </div>
-)}
+                    <div className="mb-4">
+                      <h3 className="h5 mb-3">Pre-ordering Options</h3>
+                      {formData.pre_ordering_options.map((option, index) => (
+                        <div key={index} className="row g-3 mb-3 align-items-end">
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Day</label>
+                              <select
+                                value={option.day || ""}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "day",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-select"
+                              >
+                                <option value="">Select Day</option>
+                                {formData.working_days
+                                  .filter((wd) => wd.is_open)
+                                  .filter(
+                                    (wd) =>
+                                      !formData.pre_ordering_options.some(
+                                        (po, i) => po.day === wd.day && i !== index
+                                      )
+                                  )
+                                  .map((wd) => (
+                                    <option key={wd.day} value={wd.day}>
+                                      {wd.day}
+                                    </option>
+                                  ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Meal Type</label>
+                              <input
+                                type="text"
+                                value={option.meal_type}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "meal_type",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Start Time</label>
+                              <input
+                                type="time"
+                                value={option.pre_order_start_time}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "pre_order_start_time",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Close Time</label>
+                              <input
+                                type="time"
+                                value={option.pre_order_close_time}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "pre_order_close_time",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-2">
+                            <div className="form-group">
+                              <label className="form-label">Delivery Time</label>
+                              <input
+                                type="time"
+                                value={option.delivery_time}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "delivery_time",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-group">
+                              <label className="form-label">Status</label>
+                              <select
+                                value={option.status.toString()}
+                                onChange={(e) =>
+                                  handleArrayChange(
+                                    "pre_ordering_options",
+                                    index,
+                                    "status",
+                                    e.target.value === "true"
+                                  )
+                                }
+                                className="form-select"
+                              >
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => removeArrayItem("pre_ordering_options", index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary mt-2"
+                        onClick={() => addArrayItem("pre_ordering_options")}
+                        disabled={
+                          formData.pre_ordering_options.length >=
+                          formData.working_days.filter((wd) => wd.is_open).length
+                        }
+                      >
+                        Add Pre-order Option
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-                <div className='d-flex justify-content-between mt-4'>
+                <div className="d-flex justify-content-between mt-4">
                   {currentStep > 1 && (
                     <button
-                      type='button'
+                      type="button"
                       onClick={handleBack}
-                      className='btn btn-outline-secondary d-flex align-items-center'
+                      className="btn btn-outline-secondary d-flex align-items-center"
                     >
-                      <ChevronLeft className='me-2' />
+                      <ChevronLeft className="me-2" />
                       Back
                     </button>
                   )}
                   <button
-                    type='button'
+                    type="button"
                     onClick={handleNext}
-                    className='btn btn-primary d-flex align-items-center ms-auto'
+                    className="btn btn-primary d-flex align-items-center ms-auto"
                     disabled={loading}
                   >
                     {loading ? (
                       <>
-                        <span
-                          className='spinner-border spinner-border-sm me-2'
-                          role='status'
-                        />
-                        <span
-                          className='spinner-grow spinner-grow-sm'
-                          role='status'
-                        />
+                        <span className="spinner-border spinner-border-sm me-2" role="status" />
+                        <span className="spinner-grow spinner-grow-sm" role="status" />
                       </>
                     ) : (
                       <>
                         {currentStep === 3 ? "Submit" : "Next"}
-                        {currentStep < 3 && <ChevronRight className='ms-2' />}
+                        {currentStep < 3 && <ChevronRight className="ms-2" />}
                       </>
                     )}
                   </button>
