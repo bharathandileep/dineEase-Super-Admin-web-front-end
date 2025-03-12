@@ -14,7 +14,8 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
-import { createEmployee } from "../../../server/admin/employeeManagment";
+import { createEmployee } from "../../../server/admin/employeemanagment";
+
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
