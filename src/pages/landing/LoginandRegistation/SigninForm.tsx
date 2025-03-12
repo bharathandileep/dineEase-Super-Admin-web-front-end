@@ -86,7 +86,7 @@ const SigninForm: React.FC = () => {
   };
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/auth/dashboard");
+      navigate("/auth/login");
     }
   }, [userLoggedIn, user, navigate]);
 

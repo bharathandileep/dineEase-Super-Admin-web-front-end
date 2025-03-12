@@ -3,7 +3,7 @@ import { apiConfig } from "../../helpers/api/apis";
 
 import { firebaseAuth } from "../../firebase.config";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
+import { toast } from "react-toastify";
 
 interface UserData {
   username: string;
@@ -62,6 +62,7 @@ export const googleAuth = async () => {
       }
     );
     api.setLoggedInUser(response.data.data);
+    toast.success(response.data.message);
     return response.data;
   } catch (error: any) {
     return error;
@@ -103,7 +104,6 @@ export const loginUserWithMail = async (userCredentials: any) => {
 };
 export const loginOTPVerify = async (userCredentials: any) => {
   try {
-
     const response = await axiosInstance.post(
       "/auth/verify-loginotp",
       userCredentials
@@ -158,5 +158,5 @@ export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
     throw error;
   }
 };
-export const verifyPhoneOTP = async ()=>{}
-export const loginUserWithPhone = async (phonenimber:any)=>{}
+export const verifyPhoneOTP = async () => {};
+export const loginUserWithPhone = async (phonenimber: any) => {};

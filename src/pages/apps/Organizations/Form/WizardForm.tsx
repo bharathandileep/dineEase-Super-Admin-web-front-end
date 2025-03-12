@@ -75,7 +75,7 @@ const initialFormData: FormData = {
   panCardImage: "",
   category: "",
   subcategoryName: "",
-  isapproved: false, // Default to false for new organizations
+  isapproved: false, 
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {
@@ -236,8 +236,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         toast.error(response.message || "Creation failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error(error.response?.data?.message || "Something went wrong.");
+      toast.error(error.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }

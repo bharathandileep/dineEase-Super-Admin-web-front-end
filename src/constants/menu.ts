@@ -1,8 +1,11 @@
+import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
+
 export interface MenuItemTypes {
   key: string;
   label: string;
   isTitle?: boolean;
   icon?: string;
+  access?:any
   url?: string;
   badge?: {
     variant: string;
@@ -13,35 +16,42 @@ export interface MenuItemTypes {
   children?: MenuItemTypes[];
 }
 
+const userAccessDetails  = getAccessDetailsFromLocalStorage()
+
 const MENU_ITEMS: MenuItemTypes[] = [
   {
     key: "dashboards",
     label: "Dashboard",
     isTitle: false,
     icon: "airplay",
-    url: "/",
+    access:["Admin","User","Organization","Kitchen"],
+    url: `/apps/${userAccessDetails.slug}`,
   },
   {
     key: "apps-kitchen",
     label: "Kitchens",
     isTitle: false,
     icon: "coffee",
+    access:["Admin","User","Organization","Kitchen"],
     children: [
       {
         key: "kitchen-list",
         label: "• List of Kitchens",
         url: "/apps/kitchen/list",
+        access:["Admin","Organization"],
         parentKey: "apps-kitchen",
       },
       {
         key:"Kitchen-menu",
         label:"• Kitchen Menus",
+        access:["Kitchen"],
         url:"/apps/kitchen/kitchen-menu",
         parentKey:"apps-kitchen",
       },
       {
         key:"requested-kitchen",
         label:"• Requested Kitchens",
+        access:["Admin"],
         url:"/apps/kitchen/requested-kitchens",
         parentKey:"apps-kitchen",
       },
@@ -53,27 +63,29 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Organizations",
     isTitle: false,
     icon: "command",
+    access:["Admin","User","Organization","Kitchen"],
     children: [
       {
         key: "Organizations-list",
         label: "• List of Organizations",
+        access:["Admin","Kitchen"],
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
       {
         key: "Organization-employadd",
         label: "• employ-list",
+        access:["Admin","Organization"],
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
       {
         key:"requested-organization",
         label:"• Requested Organizations",
+        access:["Admin"],
         url:"/apps/organizations/requested-organizations",
         parentKey:"apps-Organizations",
       },
-
-      
     ],
   },
  
@@ -81,12 +93,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
     key: "apps-menu",
     label: "Master",
     isTitle: false,
+    access:["Admin"],
     icon: "slack",
     children: [
       {
         key: "menu-list",
         label: "Menu",
         icon: "archive",
+        access:["Admin"],
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
@@ -94,12 +108,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
             key: "category",
             label: "• Category",
             url: "/apps/menu/category",
+            access:["Admin"],
             parentKey: "menu-list",
           },
           {
             key: "subcategory",
             label: "• Subcategory",
             url: "/apps/menu/subcategory",
+            access:["Admin"],
             parentKey: "menu-list",
           },
         ],
@@ -164,6 +180,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
   {
     key: "apps-Designations",
     label: "Designations",
+    access:["Admin"],
     isTitle: false,
     icon: "trello",
     url: "/apps/designations",

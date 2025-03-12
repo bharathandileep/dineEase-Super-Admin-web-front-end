@@ -4,7 +4,10 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { VerticalForm, FormInput } from "../../../../components";
 import { toast } from "react-toastify";
-import { createDesignation, updateDesignation } from "../../../../server/admin/designations";
+import {
+  createDesignation,
+  updateDesignation,
+} from "../../../../server/admin/designations";
 
 interface DesignationModalProps {
   show: boolean;
@@ -13,7 +16,12 @@ interface DesignationModalProps {
   selectedItem?: any;
 }
 
-const DesignationModal = ({ show, onHide, action, selectedItem }: DesignationModalProps) => {
+const DesignationModal = ({
+  show,
+  onHide,
+  action,
+  selectedItem,
+}: DesignationModalProps) => {
   const schemaResolver = yupResolver(
     yup.object().shape({
       designation: yup.string().required("Please enter designation"),
@@ -34,15 +42,16 @@ const DesignationModal = ({ show, onHide, action, selectedItem }: DesignationMod
         toast.success("Designation created successfully!");
       }
       onHide();
-    } catch (error) {
-      toast.error("Operation failed.");
+    } catch (error: any) {
+      toast.error(error.message);
     }
   };
-
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header className="bg-light" closeButton>
-        <Modal.Title>{action === "edit" ? "Edit Designation" : "Add New Designation"}</Modal.Title>
+        <Modal.Title>
+          {action === "edit" ? "Edit Designation" : "Add New Designation"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-4">
         <VerticalForm onSubmit={onSubmit} resolver={schemaResolver}>
