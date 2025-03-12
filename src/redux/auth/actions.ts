@@ -30,7 +30,7 @@ interface UserData {
 // common success
 export const authApiResponseSuccess = ( 
   actionType: string,
-  data: any | {}
+  data: any
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
   payload: { actionType, data },

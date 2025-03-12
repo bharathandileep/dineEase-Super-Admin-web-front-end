@@ -78,7 +78,12 @@ const Auth = (state: State = INIT_STATE, action: AuthActionType): any => {
           };
         }
         case AuthActionTypes.GOOGLE_LOGIN_USER:
-          return { ...state, loading: false, userLoggedIn: true };
+          return {
+            ...state,
+            user: action.payload.data,
+            loading: false,
+            userLoggedIn: true,
+          };
         default:
           return { ...state };
       }

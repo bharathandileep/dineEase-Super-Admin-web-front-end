@@ -24,7 +24,7 @@ const OrganizationList = () => {
         const response = await getUserApprovedOrganizations();
         setOrganizations(response.data.organizations);
         setLoading(false);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching organizations:", error);
         setLoading(false);
       }

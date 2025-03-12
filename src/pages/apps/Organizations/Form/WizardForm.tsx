@@ -186,7 +186,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getAllCountries();
       if (data?.success) setCountries(data.data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -195,7 +195,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getStatesByCountry(countryName);
       if (data?.success) setStates(data.data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -204,7 +204,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getDistrictsByState(stateId);
       if (data?.success) setDistricts(data.data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -213,7 +213,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getCitiesByState(stateName);
       if (data?.success) setCities(data.data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -276,10 +276,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
       try {
         const response = await orgGetAllCategories({ page: 1, limit: 100 });
         if (response.status) setCategories(response.data.categories);
-        else toast.error("Failed to load categories.");
-      } catch (error) {
+        else toast.error(response.message);
+      } catch (error:any) {
         console.error("Error fetching categories:", error);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -295,10 +295,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
             selectedCategoryId
           );
           if (response.status) setSubcategories(response.data);
-          else toast.error("Failed to load subcategories.");
-        } catch (error) {
+          else toast.error(response.message);
+        } catch (error:any) {
           console.error("Error fetching subcategories:", error);
-          toast.error("An error occurred while fetching subcategories.");
+          toast.error(error.message);
         }
       };
       fetchSubcategories();
@@ -373,7 +373,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           await fetchCities(orgData?.addresses[0]?.state_id);
           await fetchDistricts(orgData?.addresses[0]?.state_id);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);

@@ -41,7 +41,7 @@ const refreshTokenLogic = async (): Promise<string> => {
     localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(accessToken));
     setAuthorization(accessToken);
     return accessToken;
-  } catch (error) {
+  } catch (error:any) {
     localStorage.removeItem(AUTH_SESSION_KEY);
     window.location.href = "/auth/login";
     throw error;
@@ -66,7 +66,7 @@ const setupTokenRefreshInterval = () => {
     if (new APICore().isUserAuthenticated()) {
       try {
         await refreshTokenLogic();
-      } catch (error) {
+      } catch (error:any) {
         console.error("Periodic token refresh failed:", error);
       }
     }

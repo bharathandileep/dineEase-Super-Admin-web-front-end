@@ -68,9 +68,9 @@ const KitchenMenu = () => {
       if (firstCategory) {
         setActiveKey(firstCategory);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching items:", error);
-      toast.error("Failed to load menu items");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

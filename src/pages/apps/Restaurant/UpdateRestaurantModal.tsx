@@ -34,7 +34,7 @@ const UpdateRestaurantModal: React.FC<UpdateRestaurantModalProps> = ({ show, onH
         const updatedKitchen = await updateKitchenApi(kitchen._id, formData);
         onUpdateKitchen(updatedKitchen);
         onHide();
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating kitchen:', error);
         alert('Error updating kitchen');
       }

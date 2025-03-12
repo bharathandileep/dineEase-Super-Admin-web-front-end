@@ -24,7 +24,7 @@ const KitchenList = () => {
         const response = await getUserApprovedKitchens();
         setKitchens(response.data.kitchens); 
         setLoading(false);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching kitchens:", error);
         setLoading(false);
       }

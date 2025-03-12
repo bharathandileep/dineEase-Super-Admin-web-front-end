@@ -68,7 +68,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ show, onHide, onAddFood }) 
       const newFood = await postFoodMenuApi(formData);
       onAddFood(newFood);
       onHide();
-    } catch (error) {
+    } catch (error:any) {
       setError((error as Error).message);
     } finally {
       setLoading(false);

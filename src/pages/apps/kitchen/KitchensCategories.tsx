@@ -44,11 +44,11 @@ function KitchensCategories() {
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load kitchen categories.");
+          toast.error(response.message || "Failed to fetch categories.");
         }
       } catch (error: any) {
         console.error("Fetch Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -120,7 +120,7 @@ function KitchensCategories() {
       setSelectedItem(item);
       setShow(true);
     } else {
-      toast.error("Category not found for editing.");
+      toast.error("Category not found.");
     }
   };
 
@@ -146,7 +146,7 @@ function KitchensCategories() {
       }
     } catch (error: any) {
       console.error("Delete Error:", error.response?.data || error.message);
-      toast.error("Delete failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

@@ -37,7 +37,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({ show, onHide, c
         const updatedCompany = await updateCompanyApi(company._id, formData);
         onUpdateCompany(updatedCompany);
         onHide();
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating company:', error);
         alert('Error updating company');
       }
