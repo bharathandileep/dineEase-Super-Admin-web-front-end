@@ -372,7 +372,32 @@ const EmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">District</label>
+                      <select
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.district ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select District</option>
+                        {districts.map((district) => (
+                          <option key={district._id} value={district.id}>
+                            {district.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.district && (
+                        <div className="invalid-feedback">
+                          {errors.district}
+                        </div>
+                      )}
+                    </div>
+                  </Col>
                   {/* City Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -400,32 +425,7 @@ const EmployeeManagement = () => {
                   </Col>
 
                   {/* District Selection */}
-                  <Col md={6}>
-                    <div className="mb-3">
-                      <label className="form-label">District</label>
-                      <select
-                        name="district"
-                        value={formData.district}
-                        onChange={handleChange}
-                        className={`form-control ${
-                          errors.district ? "is-invalid" : ""
-                        }`}
-                        disabled={!formData.state}
-                      >
-                        <option value="">Select District</option>
-                        {districts.map((district) => (
-                          <option key={district._id} value={district.id}>
-                            {district.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.district && (
-                        <div className="invalid-feedback">
-                          {errors.district}
-                        </div>
-                      )}
-                    </div>
-                  </Col>
+
 
                   <Col md={6}>
                     <FormInput

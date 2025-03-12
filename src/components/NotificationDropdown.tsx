@@ -1,13 +1,13 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import SimpleBar from "simplebar-react";
 import classNames from "classnames";
 
-//interface
 import { NotificationItem } from "../layouts/Topbar";
+import { getUserNotifications } from "../server/admin/notification";
 
-// notifiaction continer styles
 const notificationContainerStyle = {
   maxHeight: "300px",
   display: "none",
@@ -18,18 +18,22 @@ const notificationShowContainerStyle = {
 };
 
 interface NotificationDropdownProps {
-  notifications: Array<NotificationItem>;
+  userId: string;
+  notifications?: NotificationItem[];
+  
 }
 
 interface NotificationContainerStyle {
   maxHeight?: string;
   display?: string;
+  kitchenImage?: string; 
+
 }
 
 const NotificationDropdown = (props: NotificationDropdownProps) => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [notificationContentStyle, setNotificationContentStyles] = useState<NotificationContainerStyle>(notificationContainerStyle);
-  let notifications = props.notifications
+  const [notifications, setNotifications] = useState<NotificationItem[]>(props.notifications || []);
 
   /*
    * toggle notification-dropdown
@@ -43,8 +47,28 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
     );
   };
 
+  
+  const fetchNotifications = async () => {
+    try {
+      const notifications = await getUserNotifications("67a1083b3c9f01a384e9683c");
+      setNotifications(notifications);
+      console.log(notifications)
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    if (dropdownOpen && !props.notifications) {
+    }
+  }, [dropdownOpen]);
+
+
   const handleClearNotification = (index: number) => {
-    notifications.splice(index, 1);
+    const updatedNotifications = [...notifications];
+    updatedNotifications.splice(index, 1);
+    setNotifications(updatedNotifications);
   }
 
   return (
@@ -58,7 +82,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
       >
         <i className="fe-bell noti-icon font-22"></i>
         <span className="badge bg-danger rounded-circle noti-icon-badge">
-          9
+          {notifications.length}
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0">
@@ -97,13 +121,13 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
                         </div>
                         <div className="flex-grow-1 text-truncate ms-2">
                           <h5 className="noti-item-title fw-semibold font-14">
-                            {item.text}
+                            {item.message}
                             <small className="fw-normal text-muted ms-1">
-                              {item.text}
+                              {item.message}
                             </small>
                           </h5>
                           <small className="noti-item-subtitle text-muted">
-                            {item.subText}
+                            {item.message}
                           </small>
                         </div>
                       </div>
@@ -117,9 +141,9 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
                         <i className={item.icon}></i>
                       </div>
                       <p className="notify-details">
-                        {item.text}
+                        {item.message}
                         <small className="noti-item-subtitle text-muted">
-                          {item.subText}
+                          {item.message}
                         </small>
                       </p>
                     </div>
@@ -130,7 +154,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
           </SimpleBar>
 
           <Link
-            to="#"
+            to="/ui/allnotifications"
             className="dropdown-item text-center text-primary notify-item notify-all"
           >
             View All <i className="fe-arrow-right"></i>

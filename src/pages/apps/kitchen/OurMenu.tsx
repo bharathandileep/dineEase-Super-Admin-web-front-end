@@ -61,7 +61,7 @@ const KitchenMenu = () => {
     setLoading(true);
     try {
       const response = await listItems( { page: 1, limit: 1000 } );
-      const transformedData = transformFoodData(response.data);
+      const transformedData = transformFoodData(response.data.items);
       setGroupedItems(transformedData);
 
       const firstCategory = Object.keys(transformedData)[0];

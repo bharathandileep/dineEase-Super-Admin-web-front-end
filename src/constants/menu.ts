@@ -72,12 +72,19 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url:"/apps/organizations/requested-organizations",
         parentKey:"apps-Organizations",
       },
+      // {
+      //   key:"Menus",
+      //   label:"• Menus",
+      //   url:"/apps/organizations/menus",
+      //   parentKey:"apps-Organizations",
+      // },
       {
-        key:"Menus",
-        label:"• Menus",
-        url:"/apps/organizations/menus",
+        key:"List-kitchens",
+        label:"• List of Kitchens",
+        url:"/apps/organizations/list-kitchens",
         parentKey:"apps-Organizations",
       },
+
 
       
     ],
@@ -550,6 +557,12 @@ const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [
         label: "Notifications",
         url: "/ui/notifications",
         parentKey: "base-ui",
+      },
+      {
+        key:"base-ui-allnotification",
+        label:"All-Notifications",
+        url:"/ui/allnotifications",
+        parentKey:"base-ui",
       },
       {
         key: "base-ui-offcanvas",

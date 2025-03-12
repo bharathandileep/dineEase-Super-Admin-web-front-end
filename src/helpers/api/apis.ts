@@ -127,7 +127,6 @@ export const apiConfig = {
       // approveOrganization: (orgId: string | undefined) => 
       //   `/organization/approve/${orgId}`,
       approveorganizations:(id: string | undefined)=>`/organization/approve/${id}`,
-
     },
     
     
@@ -223,6 +222,7 @@ export const apiConfig = {
     toggleOrgEmployeeStatus: (id: string | undefined) =>
       `/org-employee/orgemployee/${id}/toggle-status`,
   },
+
   kitchenMenu: {
     getKitchenMenu: (id: string | undefined) =>
       `/kitchens-menu/kitchen-menu/${id}`,
@@ -238,13 +238,6 @@ export const apiConfig = {
     ) => `/kitchens-menu/${kitchenId}/menu-item/${itemId}`,
   },
 
-  // kitchenMenu: {
-  //   getKitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   removekitchenMenu: (item: string | undefined, kitchenId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${item}`,
-  //   createkitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   kitchenMenuItemChange: (kitchenId: string | undefined, itemId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${itemId}`,
-  // },
-
   addressDetails: {
     getAllCountries: "/addressDetails/allcountries",
     getStatesByCountry: (countryName: string | undefined) =>
@@ -253,5 +246,11 @@ export const apiConfig = {
       `/addressDetails/cities/${stateName}`,
     getDistrictsByState: (stateId: string | undefined) =>
       `/addressDetails/districts/${stateId}`,
+  },
+  notification: {
+    generateKitchenNotification: "/notification/generate-kitchen",
+    getUserNotifications:(id:string | undefined)=>`/notification/get/${id}`,
+    getAllNotifications:"/notification/all",
+    generateOrganizationNotification:"/notification/generate-organization"
   },
 };

@@ -69,6 +69,7 @@ export const deleteOrgDetails = async (id: string | undefined) => {
     return error.response?.data
   }
 };
+
 export const toggleOrganizationStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -281,3 +282,16 @@ export const approveorganizations = async(id:string | undefined)=>{
     console.log("Error:",error.response?.data || error.message);
   }
 }
+
+
+export const getAllKitches = async (query:any) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens.getAllkitchens(query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
+};

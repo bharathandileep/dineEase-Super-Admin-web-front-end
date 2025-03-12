@@ -39,6 +39,7 @@ export interface NotificationItem {
   icon?: string;
   avatar?: string;
   bgColor?: string;
+  message?: string;
 }
 
 // get the notifications
@@ -377,7 +378,7 @@ const Topbar = ({
               <LanguageDropdown />
             </li> */}
             <li className="dropdown notification-list">
-              <NotificationDropdown notifications={Notifications} />
+              <NotificationDropdown userId="user-id-placeholder" notifications={Notifications} />
             </li>
             <li className="dropdown">
               <ProfileDropdown

@@ -80,6 +80,7 @@ function ListKitchens() {
       isLoadingRef.current = false;
     }
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
@@ -171,7 +172,7 @@ function ListKitchens() {
           {kitchens.length > 0 ? (
             kitchens.map((item) => (
               <Col key={item._id} md={6} xl={3} className='mb-3'>
-                <Link to={`/apps/kitchen/${item._id}`}>
+                <Link to={`/apps/kitchen/details/${item._id}`}>
                   <Card className='product-box h-100 shadow-sm'>
                     <Card.Body className='d-flex flex-column'>
                       <div className='bg-light mb-1'>
@@ -225,9 +226,9 @@ function ListKitchens() {
             <Col>
               <Card>
                 <Card.Body className='text-center'>
-                  <i
                     className='mdi mdi-alert-circle-outline text-muted'
-                    style={{ fontSize: "48px" }}
+                                    <i
+  style={{ fontSize: "48px" }}
                   ></i>
                   <h4 className='mt-3'>No Kitchens Found</h4>
                   <p className='text-muted'>

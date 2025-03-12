@@ -19,11 +19,11 @@ import {
   getDistrictsByState,
   getStatesByCountry,
 } from "../../../../server/admin/addressDetails";
-
+ 
 interface WizardFormProps {
   initialData?: any;
 }
-
+ 
 interface FormData {
   kitchen_name: string;
   role: string;
@@ -57,7 +57,7 @@ interface FormData {
   subcategoryName: string;
   isapproved?: boolean; // Added isapproved field
 }
-
+ 
 const initialFormData: FormData = {
   kitchen_name: "",
   user_id: "67a1fe128d946316957c42d8",
@@ -91,7 +91,7 @@ const initialFormData: FormData = {
   role: "User",
   isapproved: false, // Default to false for new kitchens
 };
-
+ 
 export function WizardForm({ initialData }: WizardFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -106,15 +106,15 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-
+ 
   const { id } = useParams();
   const navigate = useNavigate();
-
+ 
   const steps = [
     { number: 1, title: "Personal Info" },
     { number: 2, title: "Documents" },
   ];
-
+ 
   const validateStep1 = () => {
     const newErrors: Partial<FormData> = {};
     if (!formData.kitchen_name) newErrors.kitchen_name = "Required";
@@ -143,11 +143,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
     if (!formData.state) newErrors.state = "Required";
     if (!formData.pincode) newErrors.pincode = "Required";
     if (!formData.country) newErrors.country = "Required";
-
+ 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const validateStep2 = () => {
     const newErrors: Partial<FormData> = {};
     if (!formData.pan_card_number) {
@@ -174,11 +174,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
     }
     if (!formData.ffsai_card_owner_name) newErrors.ffsai_card_owner_name = "Required";
     if (!formData.ffsai_certificate_image) newErrors.ffsai_certificate_image = "Required";
-
+ 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -187,7 +187,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching countries:", error);
     }
   };
-
+ 
   const fetchStates = async (countryName: string) => {
     try {
       const data = await getStatesByCountry(countryName);
@@ -196,7 +196,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching states:", error);
     }
   };
-
+ 
   const fetchCities = async (stateName: string) => {
     try {
       const data = await getCitiesByState(stateName);
@@ -205,7 +205,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching cities:", error);
     }
   };
-
+ 
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -214,7 +214,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching districts:", error);
     }
   };
-
+ 
   const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -232,11 +232,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
-
+ 
   useEffect(() => {
     fetchCountries();
   }, []);
-
+ 
   const handleNext = () => {
     if (currentStep === 1 && validateStep1()) {
       setCurrentStep(2);
@@ -244,11 +244,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
       initialData ? handleEdit() : handleSubmit();
     }
   };
-
+ 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
-
+ 
   const handleEdit = async () => {
     setLoading(true);
     try {
@@ -267,7 +267,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setLoading(false);
     }
   };
-
+ 
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -286,7 +286,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setLoading(false);
     }
   };
-
+ 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -302,7 +302,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     };
     fetchCategories();
   }, []);
-
+ 
   useEffect(() => {
     if (CategoryId) {
       const fetchSubcategories = async () => {
@@ -320,7 +320,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setSubcategories([]);
     }
   }, [CategoryId]);
-
+ 
   useEffect(() => {
     if (!id) return;
     const fetchKitchenDetails = async () => {
@@ -363,7 +363,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           kitchen_image: response.data.kitchen_image || "",
           isapproved: response.data.isapproved || false, // Fetch isapproved status
         }));
-
+ 
         if (response.data.addresses?.[0]?.country_id) {
           await fetchStates(response.data.addresses[0].country_id);
         }
@@ -379,7 +379,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     };
     fetchKitchenDetails();
   }, [id]);
-
+ 
   return (
     <div className="container py-2">
       <div className="row justify-content-center">
@@ -408,7 +408,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           </div>
                         </div>
                       )}
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Name</label>
@@ -424,7 +424,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Owner Name</label>
@@ -440,7 +440,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Owner Email</label>
@@ -456,7 +456,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Owner Phone Number</label>
@@ -472,7 +472,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Restaurant Type</label>
@@ -488,7 +488,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Type</label>
@@ -505,7 +505,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           </select>
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Phone Number</label>
@@ -521,7 +521,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Kitchen Logo</label>
@@ -537,7 +537,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="row g-3">
                         <div className="col-md-6">
                           <div className="form-group">
@@ -568,7 +568,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                             )}
                           </div>
                         </div>
-
+ 
                         <div className="col-md-6">
                           <div className="form-group">
                             <label className="form-label">Subcategory</label>
@@ -594,7 +594,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           </div>
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Street Address</label>
@@ -610,7 +610,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Country</label>
@@ -632,7 +632,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">State</label>
@@ -652,29 +652,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           </select>
                           {errors.state && (
                             <div className="invalid-feedback">{errors.state}</div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label className="form-label">City</label>
-                          <select
-                            name="city"
-                            value={formData.city || ""}
-                            onChange={handleChange}
-                            className={`form-control ${errors.city ? "is-invalid" : ""}`}
-                            disabled={!formData.state}
-                          >
-                            <option value="">Select City</option>
-                            {cities.map((city) => (
-                              <option key={city._id} value={city.id}>
-                                {city.name}
-                              </option>
-                            ))}
-                          </select>
-                          {errors.city && (
-                            <div className="invalid-feedback">{errors.city}</div>
                           )}
                         </div>
                       </div>
@@ -701,7 +678,32 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
+                      <div className="col-md-6">
+                        <div className="form-group">
+                          <label className="form-label">City</label>
+                          <select
+                            name="city"
+                            value={formData.city || ""}
+                            onChange={handleChange}
+                            className={`form-control ${errors.city ? "is-invalid" : ""}`}
+                            disabled={!formData.state}
+                          >
+                            <option value="">Select City</option>
+                            {cities.map((city) => (
+                              <option key={city._id} value={city.id}>
+                                {city.name}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.city && (
+                            <div className="invalid-feedback">{errors.city}</div>
+                          )}
+                        </div>
+                      </div>
+ 
+                
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Pincode</label>
@@ -720,7 +722,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                     </div>
                   </div>
                 )}
-
+ 
                 {currentStep === 2 && (
                   <div>
                     <h2 className="card-title mb-4">Documents</h2>
@@ -740,7 +742,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">PAN Card User Name</label>
@@ -756,7 +758,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-12">
                         <div className="form-group">
                           <label className="form-label">PAN Card Image</label>
@@ -769,7 +771,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           />
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">GST Number</label>
@@ -785,7 +787,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Expiry Date</label>
@@ -801,7 +803,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-12">
                         <div className="form-group">
                           <label className="form-label">GST Certificate Image</label>
@@ -817,7 +819,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">FSSAI Certificate Number</label>
@@ -833,7 +835,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">FSSAI Card Owner Name</label>
@@ -849,7 +851,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-6">
                         <div className="form-group">
                           <label className="form-label">Expiry Date</label>
@@ -865,7 +867,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="col-md-12">
                         <div className="form-group">
                           <label className="form-label">FSSAI Certificate Image</label>
@@ -884,7 +886,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                     </div>
                   </div>
                 )}
-
+ 
                 <div className="d-flex justify-content-between mt-4">
                   {currentStep > 1 && (
                     <button

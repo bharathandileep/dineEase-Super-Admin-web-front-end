@@ -97,17 +97,17 @@ export interface IKitchenDetails {
   }>;
 }
 
-const VerificationButton = () => (
-  <Button
-    variant="danger"
-    className="d-flex align-items-center gap-2 px-3 py-2"
-  >
-    <i className="mdi mdi-close-circle-outline"></i>
-    Not Verified
-  </Button>
-);
+// const VerificationButton = () => (
+//   <Button
+//     variant="danger"
+//     className="d-flex align-items-center gap-2 px-3 py-2"
+//   >
+//     <i className="mdi mdi-close-circle-outline"></i>
+//     Not Verified
+//   </Button>
+// );
 
-function KitchensDetails() {
+function KitchensDetailss() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
@@ -116,6 +116,23 @@ function KitchensDetails() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
+
+  const handleStatusToggle = async () => {
+    setLoading(true);
+    try {
+      const response = await toggleKitchenStatus(id);
+      if (response?.status) {
+        setStatus(!status);
+        toast.success(response.message);
+      } else {
+        toast.error(response?.message || "Failed to toggle kitchen status.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while toggling kitchen status.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onEdit = () => {
     navigate(`/apps/kitchen/edit/${id}`);
@@ -147,21 +164,17 @@ function KitchensDetails() {
 
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
-      // Use category and subcategory, or default to 'Uncategorized'
       const categoryName = item.category?.category || "Allitems";
       const subcategoryName = item.subcategory?.subcategoryName || "Allitems";
-  
-      // Initialize category if not exists
+
       if (!acc[categoryName]) {
         acc[categoryName] = {};
       }
-  
-      // Initialize subcategory if not exists
+
       if (!acc[categoryName][subcategoryName]) {
         acc[categoryName][subcategoryName] = [];
       }
-  
-      // Add item to the specific category and subcategory
+
       acc[categoryName][subcategoryName].push({
         item_name: item.item_name,
         description: item.description,
@@ -170,22 +183,23 @@ function KitchensDetails() {
         ingredients: item.ingredients || [],
         reviews_id: item.reviews_id || [],
       });
-  
+
       return acc;
     }, {} as TransformedData);
-  
+
     return transformed;
   };
-  const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
-    <Button
-      variant={isVerified ? "success" : "danger"}
-      className="d-flex align-items-center gap-2 px-3 py-2"
-    >
-      <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
-      {isVerified ? "Verified" : "Not Verified"}
-    </Button>
-  );
-  
+
+//   const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
+//     <Button
+//       variant={isVerified ? "success" : "danger"}
+//       className="d-flex align-items-center gap-2 px-3 py-2"
+//     >
+//       <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
+//       {isVerified ? "Verified" : "Not Verified"}
+//     </Button>
+//   );
+
   useEffect(() => {
     const fetchMenuItems = async () => {
       setLoading(true);
@@ -195,7 +209,7 @@ function KitchensDetails() {
           const items = response.data.items_id;
           const transformedData = transformFoodData(items);
           setGroupedItems(transformedData);
-  
+
           const firstCategory = Object.keys(transformedData)[0];
           if (firstCategory) {
             setActiveKey(firstCategory);
@@ -208,9 +222,11 @@ function KitchensDetails() {
         setLoading(false);
       }
     };
-  
+
     fetchMenuItems();
-  }, [id]);  useEffect(() => {
+  }, [id]);
+
+  useEffect(() => {
     const fetchKitchenDetails = async () => {
       setLoading(true);
       try {
@@ -226,65 +242,6 @@ function KitchensDetails() {
     };
     fetchKitchenDetails();
   }, [id]);
-
-  useEffect(() => {
-    const fetchItemDetails = async () => {
-      setLoading(true);
-      try {
-        const response = await listItems( { search: id } );
-        let transformedData;
-        try {
-          transformedData = transformFoodData(response.data);
-          console.log("Transformed Data inside try:", transformedData);
-        } catch (error) {
-          console.error("Error transforming data:", error);
-          toast.error("Error processing menu items");
-          setLoading(false);
-          return;
-        }
-
-        setGroupedItems(transformedData);
-        console.log("Transformed Data after setGroupedItems:", transformedData);
-
-        const firstCategory = Object.keys(transformedData)[0];
-        if (firstCategory) {
-          setActiveKey(firstCategory);
-        }
-      } catch (error) {
-        console.error("Error fetching menu items:", error);
-        // FIX THE TOAST
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchItemDetails();
-  }, []);
-
-  const handleAddToCart = (item: FoodItem) => {
-    setCartItems((prevCart) => {
-      const existingItem = prevCart.find(
-        (cartItem) => cartItem.item_name === item.item_name
-      );
-      if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.item_name === item.item_name
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { ...item, quantity: 1 }];
-      }
-    });
-    toast.success(`${item.item_name} added to cart`);
-  };
-
-  const handleRemoveFromCart = (item: { item_name: string }) => {
-    setCartItems((prevCart) =>
-      prevCart.filter((cartItem) => cartItem.item_name !== item.item_name)
-    );
-    toast.info(`${item.item_name} removed from cart`);
-  };
 
   if (loading) {
     return (
@@ -302,70 +259,6 @@ function KitchensDetails() {
   if (!kitchenData) {
     return <div className="alert alert-warning">No kitchen data found</div>;
   }
-
-  const CheckoutBar = ({ cartItems, onProceed }: any) => {
-    if (cartItems?.length === 0) return null;
-    return (
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "white",
-          padding: "1rem",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-          zIndex: 1000,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <span className="fw-bold">
-            {cartItems.reduce((sum: any, item: any) => sum + item.quantity, 0)}{" "}
-            items
-          </span>
-        </div>
-        <Button variant="primary" onClick={onProceed}>
-          Proceed to Checkout
-        </Button>
-      </div>
-    );
-  };
-
-  const handleProceedToCheckout = async () => {
-    setLoading(true);
-    try {
-      const response = await createNewkitchenMenu(id, cartItems);
-      if (response && response.status) {
-        toast.success(response.message);
-        setCartItems([]); // Clear cart after successful checkout
-      } else {
-        toast.error(response?.message || "An unexpected error occurred");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusToggle = async () => {
-    try {
-      const response = await toggleKitchenStatus(id);
-      if (response.status) {
-        setStatus((prev) => !prev);
-        toast.success(response.message);
-      } else {
-        toast.error(response.message || "Failed to toggle kitchen status.");
-      }
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Error toggling kitchen status."
-      );
-    }
-  };
 
   return (
     <div className="container-fluid px-4 py-3">
@@ -543,91 +436,53 @@ function KitchensDetails() {
       </div>
       <Row className="mb-4 g-3">
         <Col md={6}>
-        <Card className="h-100 shadow-sm">
-  <Card.Body>
-    <div className="d-flex justify-content-between align-items-start mb-3">
-      <h5 className="card-title text-bold text-black">
-        FSSAI License
-      </h5>
-      <VerificationButton isVerified={kitchenData?.isapproved || false} />
-    </div>
-    <div className="mb-3">
-      <p className="mb-2">
-        <strong>Certificate Number:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
-      </p>
-      <p className="mb-2">
-        <strong>Licence owner:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
-      </p>
-      <p className="mb-2">
-        <strong>Expiry Date:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.expiry_date}
-      </p>
-    </div>
-    {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
-      <img
-        src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
-        alt="FSSAI Certificate"
-        className="img-fluid rounded"
-        style={{
-          maxHeight: "150px",
-          objectFit: "cover",
-          width: "100%",
-        }}
-      />
-    )}
-  </Card.Body>
-</Card>
-        </Col>
-
-        <Col md={6}>
           <Card className="h-100 shadow-sm">
-  <Card.Body>
-    <div className="d-flex justify-content-between align-items-start mb-3">
-      <h5 className="card-title text-bold text-black">PAN Details</h5>
-      <VerificationButton isVerified={kitchenData?.isapproved || false} />
-    </div>
-    <div className="mb-3">
-      <p className="mb-2">
-        <strong>PAN Number:</strong>{" "}
-        {kitchenData?.panDetails[0]?.pan_card_number}
-      </p>
-      <p className="mb-2">
-        <strong>Card Holder:</strong>{" "}
-        {kitchenData?.panDetails[0]?.pan_card_user_name}
-      </p>
-    </div>
-    {kitchenData?.panDetails?.[0]?.pan_card_image && (
-      <img
-        src={kitchenData.panDetails[0].pan_card_image}
-        alt="PAN Card"
-        className="img-fluid rounded"
-        style={{ maxHeight: "150px", objectFit: "cover" }}
-      />
-    )}
-  </Card.Body>
-</Card>
+            <Card.Body>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">FSSAI License</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
+              </div>
+              {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
+                <img
+                  src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
+                  alt="FSSAI Certificate"
+                  className="img-fluid rounded"
+                  style={{
+                    maxHeight: "150px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                />
+              )}
+            </Card.Body>
+          </Card>
         </Col>
 
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-            <div className="d-flex justify-content-between align-items-start mb-3">
-  <h5 className="card-title text-bold text-black">
-    GST Registration
-  </h5>
-  <VerificationButton isVerified={kitchenData?.isapproved || false} />
-</div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>GST Number:</strong>{" "}
-                  {kitchenData?.gstDetails[0]?.gst_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Expiry Date:</strong>{" "}
-                  {kitchenData?.gstDetails[0]?.expiry_date}
-                </p>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">PAN Details</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
+              </div>
+              {kitchenData?.panDetails?.[0]?.pan_card_image && (
+                <img
+                  src={kitchenData.panDetails[0].pan_card_image}
+                  alt="PAN Card"
+                  className="img-fluid rounded"
+                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                />
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={6}>
+          <Card className="h-100 shadow-sm">
+            <Card.Body>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">GST Registration</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
                 <img
@@ -764,53 +619,29 @@ function KitchensDetails() {
                                   <strong>Price:</strong> ${item.item_price?.toFixed(2) || "N/A"}
                                 </div>
                                 <div style={{ marginBottom: "10px", width: "100%" }}>
-                                <strong>Ingredients:</strong>  
-                                 {item.ingredients && item.ingredients.length > 0 ? (
-                                 <span style={{ textAlign: "center" }}>
-                                  {item.ingredients.join(", ")}
-                                  </span>
-                                   ) : (
-                               <span className="text-muted">No ingredients available</span>
-                                 )}
-                                    </div>
-
-                                    <div style={{ marginBottom: "10px", width: "100%" }}>
-  <strong>Reviews:</strong>
-  {item.reviews_id && item.reviews_id.length > 0 ? (
-    <span style={{ textAlign: "center", fontSize: "0.85rem" }}>
-      {item.reviews_id
-        .map(
-          (review) =>
-            `"${review.comment}" (${Array(review.rating).fill("★").join("")}${Array(5 - review.rating).fill("☆").join("")})`
-        )
-        .join(", ")}
-    </span>
-  ) : (
-    <span className="text-muted">No reviews yet.</span>
-  )}
-</div>
-
-                                <div style={{ width: "100%" }}>
-                                  {cartItems.some(
-                                    (cartItem) => cartItem.item_name === item.item_name
-                                  ) ? (
-                                    <Button
-                                      variant="outline-danger"
-                                      size="sm"
-                                      onClick={() => handleRemoveFromCart(item)}
-                                      style={{ width: "100%" }}
-                                    >
-                                      Remove
-                                    </Button>
+                                  <strong>Ingredients:</strong>
+                                  {item.ingredients && item.ingredients.length > 0 ? (
+                                    <span style={{ textAlign: "center" }}>
+                                      {item.ingredients.join(", ")}
+                                    </span>
                                   ) : (
-                                    <Button
-                                      variant="outline-primary"
-                                      size="sm"
-                                      onClick={() => handleAddToCart(item)}
-                                      style={{ width: "100%" }}
-                                    >
-                                      Add
-                                    </Button>
+                                    <span className="text-muted">No ingredients available</span>
+                                  )}
+                                </div>
+
+                                <div style={{ marginBottom: "10px", width: "100%" }}>
+                                  <strong>Reviews:</strong>
+                                  {item.reviews_id && item.reviews_id.length > 0 ? (
+                                    <span style={{ textAlign: "center", fontSize: "0.85rem" }}>
+                                      {item.reviews_id
+                                        .map(
+                                          (review) =>
+                                            `"${review.comment}" (${Array(review.rating).fill("★").join("")}${Array(5 - review.rating).fill("☆").join("")})`
+                                        )
+                                        .join(", ")}
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted">No reviews yet.</span>
                                   )}
                                 </div>
                               </div>
@@ -826,11 +657,8 @@ function KitchensDetails() {
           )}
         </Card.Body>
       </Card>
-      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </div>
   );
 }
 
-export default KitchensDetails;
-
-
+export default KitchensDetailss;

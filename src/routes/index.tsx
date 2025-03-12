@@ -48,8 +48,12 @@ import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import ListKItchens from "../pages/apps/Organizations/ListKItchens";
+import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
 
-
+//import Notification from "../pages/notification/Notification"
+import Notifications from "../pages/uikit/Notifications";
+import AllNotifications from "../components/AllNotifications"
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -208,7 +212,7 @@ const TabsAccordions = React.lazy(
 );
 const Progress = React.lazy(() => import("../pages/uikit/Progress"));
 const Modals = React.lazy(() => import("../pages/uikit/Modals"));
-const Notifications = React.lazy(() => import("../pages/uikit/Notifications"));
+// const Notifications = React.lazy(() => import("../pages/uikit/Notifications"));
 const Offcanvases = React.lazy(() => import("../pages/uikit/Offcanvas"));
 const Placeholders = React.lazy(() => import("../pages/uikit/Placeholders"));
 const Spinners = React.lazy(() => import("../pages/uikit/Spinners"));
@@ -370,6 +374,16 @@ const organizationsAppRoutes = {
     //   element:<OrganizationKitchenView/>,
     //   route:PrivateRoute,
     // },
+    {
+      path:"/apps/organizations/list-kitchens",
+      name:"List of kitcehns",
+      element:<ListKItchens/>
+    },
+    {
+      path:"/apps/kitchen/details/:id",
+      name:"Kitchen Details",
+      element:<KitchensDetailss/>
+    },
     
   ],
 };
@@ -1119,6 +1133,12 @@ const uiRoutes = {
           name: "Notifications",
           element: <Notifications />,
           route: PrivateRoute,
+        },
+        {
+          path:"/ui/allnotifications",
+          name:"Allnotifications",
+          element:<AllNotifications/>,
+          route:PrivateRoute,
         },
         {
           path: "/ui/offcanvas",
