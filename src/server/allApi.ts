@@ -615,7 +615,7 @@ export const addOrder = async (data: Omit<Order, '_id'>): Promise<Order> => {
     }
 
     return response.json();
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error in addOrder function:', error);
     throw new Error(
       `Failed to add order: ${

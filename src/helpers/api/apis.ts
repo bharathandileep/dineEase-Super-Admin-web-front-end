@@ -41,7 +41,7 @@ export const apiConfig = {
     getUserApprovedKitchens: "/kitchens/user/approved",
 
     createCategory: "/kitchens/categories",
-    getAllCategories: (query: any) =>
+    getallCategories: (query: any) =>
       `/kitchens/categories/all?page=${query.page}&limit=${query.limit}${
         query.search ? `&search=${encodeURIComponent(query.search)}` : ""
       }${
@@ -53,7 +53,7 @@ export const apiConfig = {
       `/kitchens/categories/${id}/toggle-status`,
 
     createSubcategory: "/kitchens/subcategories",
-    getAllSubCategories: (query: any) =>
+    getallSubCategories: (query: any) =>
       `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}${
         query.search ? `&search=${encodeURIComponent(query.search)}` : ""
       }${
@@ -240,13 +240,6 @@ export const apiConfig = {
       itemId: string | undefined
     ) => `/kitchens-menu/${kitchenId}/menu-item/${itemId}`,
   },
-
-  // kitchenMenu: {
-  //   getKitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   removekitchenMenu: (item: string | undefined, kitchenId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${item}`,
-  //   createkitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   kitchenMenuItemChange: (kitchenId: string | undefined, itemId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${itemId}`,
-  // },
 
   addressDetails: {
     getAllCountries: "/addressDetails/allcountries",

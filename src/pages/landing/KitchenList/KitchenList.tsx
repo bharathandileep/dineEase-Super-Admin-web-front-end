@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
-
+ 
 const KitchenList = () => {
   interface Kitchen {
     id: string;
@@ -18,19 +18,19 @@ const KitchenList = () => {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
     const fetchUserKitchens = async () => {
       try {
         const response = await getUserApprovedKitchens();
         setKitchens(response.data.kitchens);
         setLoading(false);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching kitchens:", error);
         setLoading(false);
       }
     };
-
+ 
     fetchUserKitchens();
   }, []);
 
@@ -59,7 +59,7 @@ const KitchenList = () => {
       </div>
     );
   }
-
+ 
   return (
     <>
       <DashboardNavbar />
@@ -141,7 +141,7 @@ const KitchenList = () => {
             </div>
           ))}
         </div>
-
+ 
         {/* Add Your Kitchen button section */}
         <div className="text-center mt-5">
           <button

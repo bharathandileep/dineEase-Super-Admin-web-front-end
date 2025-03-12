@@ -14,7 +14,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
-import { createEmployee } from "../../../server/admin/employeemanagment";
+import { createEmployee } from "../../../server/admin/employeeManagment";
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
@@ -52,14 +52,14 @@ const EmployeeManagement = () => {
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
-          toast.error("Failed to load designations.");
+          toast.error(response.message);
         }
 
         // Fetch countries
         await fetchCountries();
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching initial data:", error);
-        toast.error("An error occurred while loading initial data.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -75,7 +75,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setCountries(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -86,7 +86,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setStates(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -97,7 +97,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setCities(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -108,7 +108,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setDistricts(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -192,9 +192,9 @@ const EmployeeManagement = () => {
       } else {
         toast.error(response.message || "Failed to add employee.");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error adding employee:", error);
-      toast.error("Error adding employee. Please try again.");
+      toast.error(error.message);
     } finally {
       setOrgEmpLoading(false);
     }

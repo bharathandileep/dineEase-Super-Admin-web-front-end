@@ -52,10 +52,10 @@ function RequestedOrganization() {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load unapproved organizations.");
+        toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("An error occurred while fetching unapproved organizations.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);

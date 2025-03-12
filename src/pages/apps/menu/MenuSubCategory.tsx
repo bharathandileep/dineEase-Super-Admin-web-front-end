@@ -44,11 +44,11 @@ function MenuSubCategory() {
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load subcategories.");
+          toast.error(response.message);
         }
       } catch (error: any) {
         console.error("Fetch Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching subcategories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -109,7 +109,7 @@ function MenuSubCategory() {
       }
     } catch (error: any) {
       console.error("Toggle Error:", error.response?.data || error.message);
-      toast.error("Error toggling status.");
+      toast.error(error.message);
     }
   };
 
@@ -142,7 +142,7 @@ function MenuSubCategory() {
       }
     } catch (error: any) {
       console.error("Delete Error:", error.response?.data || error.message);
-      toast.error("Delete failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

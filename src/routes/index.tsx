@@ -34,17 +34,19 @@ import RequestOrganization from "../pages/landing/OrganizationList/RequestOrgani
 import RequestKitchen from "../pages/landing/KitchenList/RequestKitchen";
 import NewOrganizations from "../pages/apps/Organizations/NewOrganizations";
 import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
 import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
+import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
 
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -441,9 +443,14 @@ const kitchenAppRoutes = {
       element: <MenuDetails />,
     },
     {
-      path: "/apps/kitchen/requested-kitchens",
-      name: "Requested Kitchens",
-      element: <RequestedKitchen />,
+      path:"/apps/kitchen/requested-kitchens",
+      name:"Requested Kitchens",
+      element:<RequestedKitchen />
+    },
+    {
+      path:"/apps/kitchen/editt-kitchens",
+      name:"Edit Kitchens",
+      element:<KitchenEdit />
     },
   ],
 };

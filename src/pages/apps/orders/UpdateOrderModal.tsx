@@ -31,7 +31,7 @@ const UpdateOrderModal: React.FC<UpdateOrderModalProps> = ({
       if (!response.ok) throw new Error("Failed to fetch employees");
       const data = await response.json();
       return data.data || []; // Ensure default to empty array
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching employees from API:", error);
       return []; // Return empty array in case of error
     }
@@ -46,7 +46,7 @@ const UpdateOrderModal: React.FC<UpdateOrderModalProps> = ({
       if (!response.ok) throw new Error("Failed to fetch food products");
       const data = await response.json();
       return data.data || []; // Ensure default to empty array
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching food products from API:", error);
       return []; // Return empty array in case of error
     }

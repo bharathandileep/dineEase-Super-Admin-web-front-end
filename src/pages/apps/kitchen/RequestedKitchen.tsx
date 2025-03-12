@@ -49,10 +49,10 @@ function RequestedKitchen() {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load unapproved kitchens.");
+        toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("An error occurred while fetching unapproved kitchens.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);

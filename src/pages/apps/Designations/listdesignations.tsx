@@ -16,6 +16,7 @@ import Table from "../../../components/Table";
 import DesignationModal from "./modal/DesignationModal";
 
 
+
 function Designations() {
   const navigate = useNavigate();
   const [action, setAction] = useState("");
@@ -46,11 +47,11 @@ function Designations() {
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load designations.");
+          toast.error(response.message);
         }
       } catch (error: any) {
         console.error("Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching designations.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -100,11 +101,11 @@ function Designations() {
           );
         }
       } else {
-        toast.error("Failed to toggle status.");
+        toast.error(response.message);
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Error toggling status.");
+      toast.error(error.message);
     }
   };
 
@@ -139,7 +140,7 @@ function Designations() {
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Delete failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

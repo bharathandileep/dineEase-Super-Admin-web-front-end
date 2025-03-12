@@ -13,7 +13,7 @@ export const createOrganisation = async (organizationData: any) => {
     const response = await API.post("/organizations", organizationData);
     console.log(response.data);
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
   }
 };
@@ -24,7 +24,7 @@ export const getOrganisation = async () => {
     const response = await API.get("/organizations");
     console.log(response.data);
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
   }
 };
@@ -35,7 +35,7 @@ export const deleteOrganization = async (orgId: string) => {
     console.log("Organization deleted successfully:", response.data);
 
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.error(
       "Error deleting organization and associated addresses:",
       error
@@ -49,7 +49,7 @@ export const getOrganizationById = async (orgId: string) => {
     const response = await API.get(`http://localhost:5000/api/v1/organizations/${orgId}`);
     console.log(response.data); // You can process this data as required
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     throw new Error("Failed to fetch organization");
   }

@@ -50,11 +50,11 @@ const OrgEmployeeManagement = () => {
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
-          toast.error("Failed to load designations.");
+          toast.error(response.message);
         }
         await fetchCountries();
-      } catch (error) {
-        toast.error("An error occurred while loading initial data.");
+      } catch (error:any) {
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -69,7 +69,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setCountries(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -80,7 +80,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setStates(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -91,7 +91,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setCities(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -102,7 +102,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setDistricts(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -184,15 +184,15 @@ const OrgEmployeeManagement = () => {
         } else {
           toast.error(response.message || "Failed to add employee.");
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error adding employee:", error);
-        toast.error("Error adding employee. Please try again.");
+        toast.error(error.message);
       } finally {
         setOrgEmpLoading(false);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Unexpected error:", error);
-      toast.error("Unexpected error occurred. Please try again.");
+      toast.error(error.message);
       setOrgEmpLoading(false);
     }
   };

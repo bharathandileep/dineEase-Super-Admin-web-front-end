@@ -23,12 +23,12 @@ const setAuthorization = (token: string | null) => {
     delete axiosInstance.defaults.headers.common["Authorization"];
   }
 };
-
+ 
 const getUserFromCookie = () => {
   const user = localStorage.getItem(AUTH_SESSION_KEY);
   return user ? (typeof user == "object" ? user : JSON.parse(user)) : null;
 };
-
+ 
 const refreshTokenLogic = async (): Promise<string> => {
   try {
     const response = await axiosInstance.post(
@@ -44,13 +44,13 @@ const refreshTokenLogic = async (): Promise<string> => {
     authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, userInfo);
     setAuthorization(accessToken);
     return accessToken;
-  } catch (error) {
+  } catch (error:any) {
     localStorage.removeItem(AUTH_SESSION_KEY);
     window.location.href = "/auth/login";
     throw error;
   }
 };
-
+ 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
@@ -62,45 +62,45 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
+ 
 // Setup periodic token refresh
 const setupTokenRefreshInterval = () => {
   setInterval(async () => {
     if (new APICore().isUserAuthenticated()) {
       try {
         await refreshTokenLogic();
-      } catch (error) {
+      } catch (error:any) {
         console.error("Periodic token refresh failed:", error);
       }
     }
   }, REFRESH_INTERVAL);
 };
-
+ 
 class APICore {
   get = (url: string, params: any) => {
     return axiosInstance.get(url, { params });
   };
-
+ 
   getFile = (url: string, params: any) => {
     return axiosInstance.get(url, { params, responseType: "blob" });
   };
-
+ 
   create = (url: string, data: any) => {
     return axiosInstance.post(url, data);
   };
-
+ 
   updatePatch = (url: string, data: any) => {
     return axiosInstance.patch(url, data);
   };
-
+ 
   update = (url: string, data: any) => {
     return axiosInstance.put(url, data);
   };
-
+ 
   delete = (url: string) => {
     return axiosInstance.delete(url);
   };
-
+ 
   createWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -110,7 +110,7 @@ class APICore {
       headers: { "content-type": "multipart/form-data" },
     });
   };
-
+ 
   updateWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -120,7 +120,7 @@ class APICore {
       headers: { "content-type": "multipart/form-data" },
     });
   };
-
+ 
   getLoggedInUserInfo = () => {
     const user = this.getLoggedInUser();
     if (user) {
@@ -128,7 +128,7 @@ class APICore {
     }
     return null;
   };
-
+ 
   isUserAuthenticated = () => {
     const user = this.getLoggedInUser();
     if (!user) {
@@ -145,7 +145,7 @@ class APICore {
       return true;
     }
   };
-
+ 
   setLoggedInUser = (session: any) => {
     if (session) {
       localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session?.token));
@@ -153,11 +153,11 @@ class APICore {
       localStorage.removeItem(AUTH_SESSION_KEY);
     }
   };
-
+ 
   getLoggedInUser = () => {
     return getUserFromCookie();
   };
-
+ 
   setUserInSession = (modifiedUser: any) => {
     let userInfo = localStorage.getItem(AUTH_SESSION_KEY);
     if (userInfo) {
@@ -166,7 +166,7 @@ class APICore {
     }
   };
 }
-
+ 
 const initializeAxios = () => {
   const session = getUserFromCookie();
   if (session?.token) {
@@ -174,7 +174,7 @@ const initializeAxios = () => {
   }
   setupTokenRefreshInterval();
 };
-
+ 
 initializeAxios();
-
+ 
 export { APICore, setAuthorization, axiosInstance };
