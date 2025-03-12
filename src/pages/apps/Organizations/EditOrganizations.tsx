@@ -3,7 +3,6 @@ import { WizardForm } from "./Form/WizardForm";
  
 function EditOrganizations() {
   const isEditing = true;
- 
   return (
     <div>
       <WizardForm initialData={isEditing} />
@@ -12,4 +11,3 @@ function EditOrganizations() {
 }
  
 export default EditOrganizations;
- 

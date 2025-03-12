@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
- 
+
 // layout constants
 import { LayoutTypes } from "../constants/layout";
- 
+
 // strore
 import { RootState } from "../redux/store";
- 
+
 // All layouts containers
 import DefaultLayout from "../layouts/Default";
 import VerticalLayout from "../layouts/Vertical";
 import DetachedLayout from "../layouts/Detached";
 import HorizontalLayout from "../layouts/Horizontal/";
 import TwoColumnLayout from "../layouts/TwoColumn/";
- 
+
 import {
   authProtectedFlattenRoutes,
   publicProtectedFlattenRoutes,
@@ -22,18 +22,18 @@ import {
 import { APICore } from "../helpers/api/apiCore";
 import PrivateRoute from "./PrivateRoute";
 // import { isUserAuthenticated } from "../helpers/api/apiCore";
- 
+
 interface IRoutesProps {}
- 
+
 const AllRoutes = (props: IRoutesProps) => {
   const { layout } = useSelector((state: RootState) => ({
     layout: state.Layout,
   }));
   const api = new APICore();
- 
+
   const getLayout = () => {
     let layoutCls = TwoColumnLayout;
- 
+
     switch (layout.layoutType) {
       case LayoutTypes.LAYOUT_HORIZONTAL:
         layoutCls = HorizontalLayout;
@@ -52,14 +52,14 @@ const AllRoutes = (props: IRoutesProps) => {
   };
   useEffect(() => {
     const checkAuth = () => {};
- 
+
     window.addEventListener("storage", checkAuth);
- 
+
     return () => {
       window.removeEventListener("storage", checkAuth);
     };
   }, []);
- 
+
   let Layout = getLayout();
   return (
     <React.Fragment>
@@ -77,7 +77,7 @@ const AllRoutes = (props: IRoutesProps) => {
             />
           ))}
         </Route>
- 
+
         <Route>
           {authProtectedFlattenRoutes.map((route, idx) => (
             <Route
@@ -104,7 +104,5 @@ const AllRoutes = (props: IRoutesProps) => {
     </React.Fragment>
   );
 };
- 
+
 export default AllRoutes;
- 
- 

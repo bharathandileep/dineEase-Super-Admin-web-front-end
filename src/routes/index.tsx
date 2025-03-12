@@ -293,7 +293,7 @@ const organizationsAppRoutes = {
   path: "/apps/organizations",
   name: "Organizations",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/apps/organizations/new",
@@ -367,7 +367,7 @@ const kitchenAppRoutes = {
   path: "/apps/kitchen",
   name: "Kitchens",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/apps/kitchen/new",
@@ -458,7 +458,7 @@ const itemAppRoutes = {
   path: "/apps/items",
   name: "items",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   Children: [
     {
       path: "/apps/items/menu",
@@ -473,7 +473,7 @@ const menuAppRoutes = {
   path: "/apps/menu",
   name: "Organizations",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/apps/menu/category",
@@ -512,7 +512,7 @@ const employeeRoutes = {
   path: "/apps/employee",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/apps/employee/add",
@@ -542,7 +542,7 @@ const employeeRoutes = {
 };
 
 const dashboardRoutes = {
-  path: "/",
+  path: "/apps/:name",
   name: "Dashboard",
   route: PrivateRoute,
   roles: ["Admin", "User"],
@@ -554,7 +554,7 @@ const protectedNoLayoutRoutes = {
   path: "/user",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/user/dashboard",
@@ -567,12 +567,11 @@ const protectedNoLayoutRoutes = {
   ],
 };
 
-
 const calendarAppRoutes: RoutesProps = {
   path: "/apps/calendar",
   name: "Calendar",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "calendar",
   element: <CalendarApp />,
   header: "Apps",
@@ -582,7 +581,7 @@ const chatAppRoutes = {
   path: "/apps/chat",
   name: "Chat",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "message-square",
   element: <ChatApp />,
 };
@@ -591,7 +590,7 @@ const ecommerceAppRoutes = {
   path: "/apps/ecommerce",
   name: "eCommerce",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   children: [
     {
       path: "/apps/ecommerce/dashboard",
@@ -660,7 +659,7 @@ const crmAppRoutes = {
   path: "/apps/crm",
   name: "CRM",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   children: [
     {
@@ -700,7 +699,7 @@ const emailAppRoutes = {
   path: "/apps/email",
   name: "Email",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "mail",
   children: [
     {
@@ -728,7 +727,7 @@ const socialAppRoutes = {
   path: "/apps/social-feed",
   name: "Social Feed",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "rss",
   element: <SocialFeed />,
 };
@@ -737,7 +736,7 @@ const sttingsAppRoutes = {
   path: "/apps/settings",
   name: "settings",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "settings",
   element: <Settings />,
 };
@@ -746,7 +745,7 @@ const foodAppRoutes = {
   path: "/apps/food",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   element: <FoodDetails />,
 };
@@ -755,7 +754,7 @@ const foodCartAppRoute = {
   path: "/apps/food/cart",
   name: "cart",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   element: <CartDetails />,
 };
@@ -763,7 +762,7 @@ const foodCheckoutAppRoute = {
   path: "/apps/food/checkout",
   name: "checkout",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   element: <CheckoutDetails />,
 };
@@ -778,7 +777,7 @@ const customerAppRoute = {
   path: "/apps/customer",
   name: "customers",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   element: <Customer />,
 };
@@ -786,7 +785,7 @@ const CustomerProfileAppRoutes = {
   path: "/apps/customer/profile",
   name: "profile",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "profile",
   element: <CustomerContactsProfile />,
 };
@@ -795,7 +794,7 @@ const usersAppRoutes = {
   path: "/apps/users",
   name: "users",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "users",
   element: <Users />,
 };
@@ -803,7 +802,7 @@ const userProfileAppRoutes = {
   path: "/apps/users/profile",
   name: "profile",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "profile",
   element: <UsersProfile />,
 };
@@ -812,7 +811,7 @@ const restaurantsAppRoutes = {
   path: "/apps/restaurants",
   name: "restaurants",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "restaurant",
   element: <Restaurants />,
 };
@@ -820,7 +819,7 @@ const totalCompanyAppRoute = {
   path: "/apps/restaurants/company",
   name: "totalCompany",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "totalCompany",
   element: <TotalCompany />,
 };
@@ -829,7 +828,7 @@ const ListAppRouts = {
   path: "/apps/restaurants/lists",
   name: "List",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "list",
   element: <List />,
 };
@@ -837,7 +836,7 @@ const restaurantDetailsAppRoute = {
   path: "/apps/restaurants/details",
   name: "restaurantsdetails",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "restaurantdetails",
   element: <PaginatedTable detailsInfo={detailsInfo} />,
 };
@@ -846,7 +845,7 @@ const companiesAppRoutes = {
   path: "/apps/companies",
   name: "Companies",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "activity",
   element: <Companies />,
 };
@@ -855,7 +854,7 @@ const companyDetailsAppRoutes = {
   path: "/apps/company/details",
   name: "Detail",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "activity",
   element: <CompanyDetail />,
 };
@@ -864,7 +863,7 @@ const totalRestaurantsAppRoutes = {
   path: "/apps/company/details/restaurants",
   name: "restaurantsdetails",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "activity",
   element: <TotalRestaurants />,
 };
@@ -873,9 +872,8 @@ const projectAppRoutes = {
   path: "/apps/projects",
   name: "Projects",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "uil-briefcase",
-
   children: [
     {
       path: "/apps/projects/list",
@@ -902,7 +900,7 @@ const taskAppRoutes = {
   path: "/apps/tasks",
   name: "Tasks",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "clipboard",
   children: [
     {
@@ -930,7 +928,7 @@ const contactsRoutes = {
   path: "/apps/contacts",
   name: "Contacts",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "book",
   children: [
     {
@@ -952,7 +950,7 @@ const ticketsRoutes = {
   path: "/apps/tickets",
   name: "Tickets",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "aperture",
   children: [
     {
@@ -968,7 +966,7 @@ const fileAppRoutes = {
   path: "/apps/file-manager",
   name: "File Manager",
   route: PrivateRoute,
-  roles: ["Admin"],
+  roles: ["Admin","Employee"],
   icon: "folder-plus",
   element: <FileManager />,
 };
@@ -1436,7 +1434,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/access/login",
+    path: "/auth/employe/login",
     name: "Login2",
     element: <Login2 />,
     route: Route,

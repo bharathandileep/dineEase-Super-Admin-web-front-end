@@ -51,7 +51,7 @@ const ProfileDropdown = (props: ProfileDropdownProps) => {
           {(props.menuItems || []).map((item, i) => {
             return (
               <React.Fragment key={i}>
-                {i === props["menuItems"].length - 1 && (
+                {i === props["menuItems"].length - 1 && ( 
                   <div className="dropdown-divider"></div>
                 )}
                 <Link
