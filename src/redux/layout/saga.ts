@@ -38,7 +38,7 @@ function manageHtmlClass(cssClass: string, action = "toggle") {
 function* showRightSidebar() {
   try {
     yield call(manageHtmlClass, "right-bar-enabled", "add");
-  } catch (error) {}
+  } catch (error:any) {}
 }
 
 /**
@@ -47,7 +47,7 @@ function* showRightSidebar() {
 function* hideRightSidebar() {
   try {
     yield call(manageHtmlClass, "right-bar-enabled", "remove");
-  } catch (error) {}
+  } catch (error:any) {}
 }
 
 export function* watchShowRightSidebar(): any {

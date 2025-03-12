@@ -81,17 +81,21 @@ const AddkitchenCategory = ({
           });
         } else {
           response = await orgCreateCategory(formdata);
+          console.log(response);
         }
       }
-      if (response.status) {
+    console.log("Response:", response);  
+      if (response) {
         toast.success(response.message);
         onHide();
       } else {
-        toast.error(response.message || "Operation failed. Please try again.");
+        toast.error("Operation failed. Please try again.");
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Operation failed. Please try again.");
+       const errorMessage =
+    error.response?.data?.message || "Something went wrong. Please try again.";
+      toast.error(error.message);
     }
   };
 

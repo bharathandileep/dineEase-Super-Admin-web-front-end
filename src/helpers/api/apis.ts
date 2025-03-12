@@ -7,6 +7,9 @@ export const apiConfig = {
     generateForgotOtp: "/auth/admin/forgot-password",
     verifyForgotOtp: "/auth/admin/verify-password",
     updatePassword: "/auth/admin/update-password",
+    approveOrganization: (id: string | undefined) =>
+      `/admin/approve/organization/${id}`,
+    approvekitchen: (id: string | undefined) => `/admin/approve/kitchen/${id}`,
   },
   auth: {
     google: "/google-auth",
@@ -35,9 +38,10 @@ export const apiConfig = {
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
     toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
+    getUserApprovedKitchens: "/kitchens/user/approved",
 
     createCategory: "/kitchens/categories",
-    getAllCategories: (query: any) =>
+    getallCategories: (query: any) =>
       `/kitchens/categories/all?page=${query.page}&limit=${query.limit}${
         query.search ? `&search=${encodeURIComponent(query.search)}` : ""
       }${
@@ -49,7 +53,7 @@ export const apiConfig = {
       `/kitchens/categories/${id}/toggle-status`,
 
     createSubcategory: "/kitchens/subcategories",
-    getAllSubCategories: (query: any) =>
+    getallSubCategories: (query: any) =>
       `/kitchens/subcategories/all?page=${query.page}&limit=${query.limit}${
         query.search ? `&search=${encodeURIComponent(query.search)}` : ""
       }${
@@ -65,6 +69,10 @@ export const apiConfig = {
       `/kitchens/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/kitchens/subcategories/${id}/toggle-status`,
+    getUnapprovedKitchens: (query: any) =>
+      `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${
+        query.search || ""
+      }`,
   },
   organization: {
     newOrganization: "/organization/new",
@@ -80,6 +88,7 @@ export const apiConfig = {
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
     toggleOrgStatus: (id: string | undefined) => `/organization/status/${id}`,
+    getUserApprovedOrganizations: "/organization//user/get-all",
 
     createCategory: "/organization/categories",
     getAllCategories: (query: any) =>
@@ -112,7 +121,14 @@ export const apiConfig = {
       `/organization/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
       `/organization/subcategories/${id}/toggle-status`,
+    getUnapprovedOrganizations: (query: any) =>
+      `/organization/requested/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
+    approveOrganization: (orgId: string | undefined) =>
+      `/organization/approve/${orgId}`,
   },
+
   menu: {
     createCategory: "/menu-category/categories",
     getAllCategories: (query: any) =>
@@ -149,13 +165,20 @@ export const apiConfig = {
       `/sub-menu-category/subcategories/${id}/toggle-status`,
 
     createItem: "/menu-items/allmenuitems",
-    listItems: "/menu-items/allmenuitems",
+    listItems: (query: any) =>
+      `/menu-items/allmenuitems?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }`,
     getItemById: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     updateItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     deleteItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     changeItemStatus: (id: string | undefined) =>
       `/menu-items/allmenuitems/${id}/status`,
+
+    getMenuItemsByKitchen: (id: string | undefined) =>
+      `menu-items/menu-items/kitchen/${id}`,
   },
+
   designation: {
     createDesignation: "/designation/designations",
     getAllDesignations: (query: any) =>
@@ -173,6 +196,7 @@ export const apiConfig = {
     toggleDesignationStatus: (id: string | undefined) =>
       `/designation/designations/${id}/toggle-status`,
   },
+
   employee: {
     createEmployee: "/employee/employees",
     getAllEmployees: (query: any) =>
@@ -199,6 +223,8 @@ export const apiConfig = {
       `/org-employee/orgemployee/${id}`,
     toggleOrgEmployeeStatus: (id: string | undefined) =>
       `/org-employee/orgemployee/${id}/toggle-status`,
+    getEmployeeOrg: (email: string | undefined) =>
+      `/org-employee/employee/org?email=${email}`,
   },
   kitchenMenu: {
     getKitchenMenu: (id: string | undefined) =>
@@ -214,13 +240,6 @@ export const apiConfig = {
       itemId: string | undefined
     ) => `/kitchens-menu/${kitchenId}/menu-item/${itemId}`,
   },
-
-  // kitchenMenu: {
-  //   getKitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   removekitchenMenu: (item: string | undefined, kitchenId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${item}`,
-  //   createkitchenMenu: (id: string | undefined) => `/kitchen-menu/${id}`,
-  //   kitchenMenuItemChange: (kitchenId: string | undefined, itemId: string | undefined) => `/kitchen-menu/${kitchenId}/item/${itemId}`,
-  // },
 
   addressDetails: {
     getAllCountries: "/addressDetails/allcountries",

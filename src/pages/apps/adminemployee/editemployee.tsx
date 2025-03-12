@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Row, Col, Card, Button } from "react-bootstrap";
@@ -12,7 +11,7 @@ import { FormInput } from "../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import { 
   getAllCountries, 
@@ -27,12 +26,12 @@ const EditEmployee = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
-  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(
-    null
-  );
+  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
   const [panImagePreview, setPanImagePreview] = useState<string | null>(null);
-  const [designations, setDesignations] = useState<any[]>([]);
+  const [designations, setDesignations] = useState<
+    { _id: string; designation_name: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
   const [adminEmpLoading, setAdminEmpLoading] = useState(false);
@@ -49,9 +48,33 @@ const EditEmployee = () => {
     district: ""
   });
   
-  // Add this flag to track initial loading of address data
   const [addressDataLoaded, setAddressDataLoaded] = useState(false);
-const [EmpLoading, setEmpLoading] = useState(false);
+  const [EmpLoading, setEmpLoading] = useState(false);
+
+  // Validation Schema
+  const schema = yup.object().shape({
+    username: yup.string().required("Employee name is required"),
+    email: yup.string().email("Invalid email").required("Email is required"),
+    phone_number: yup.string().required("Phone number is required"),
+    designation: yup.string().required("Designation is required"),
+    street_address: yup.string().required("Street address is required"),
+    city: yup.string().required("City is required"),
+    pincode: yup.string().required("Pincode is required"),
+    district: yup.string().required("district is required"),
+    state: yup.string().required("State is required"),
+    country: yup.string().required("Country is required"),
+    aadhar_number: yup.string().required("Aadhaar number is required"),
+    pan_number: yup.string().required("PAN number is required"),
+  });
+
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({ resolver: yupResolver(schema) });
+
   // Fetch employee data
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -102,7 +125,6 @@ const [EmpLoading, setEmpLoading] = useState(false);
       setLoading(true);
       try {
         const response = await getAllDesignations({page:1,limit:100});
-     
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
@@ -122,50 +144,47 @@ const [EmpLoading, setEmpLoading] = useState(false);
     fetchInitialData();
   }, []);
 
-  // Load address data when employee data is available
+  // Load address data and set form values when employee and designations are available
   useEffect(() => {
-    const loadAddressData = async () => {
-      if (employee && employee.address && !addressDataLoaded) {
-        // Set the flag to prevent multiple loads
-        setAddressDataLoaded(true);
-        
-        try {
-          // Load country data first
-          await fetchCountries();
-          
-          // Then load state data based on country
-          if (employee.address.country) {
-            await fetchStates(employee.address.country);
-          }
-          
-          // Then load city and district data based on state
-          if (employee.address.state) {
-            await fetchCities(employee.address.state);
-            await fetchDistricts(employee.address.state);
-          }
-          
-          // Update formData with saved address values
-          setFormData({
-            country: employee.address.country || "",
-            state: employee.address.state || "",
-            city: employee.address.city || "",
-            district: employee.address.district || ""
-          });
-          
-          // Also set the form values
-          setValue("country", employee.address.country || "");
-          setValue("state", employee.address.state || "");
-          setValue("city", employee.address.city || "");
-          setValue("district", employee.address.district || "");
-        } catch (error) {
-          console.error("Error loading address data:", error);
-          toast.error("Failed to load address details.");
-        }
+    if (employee && designations.length > 0) {
+      setValue("username", employee.username);
+      setValue("email", employee.email);
+      setValue("phone_number", employee.phone_number);
+      // Set the designation value using the _id from the employee data
+      setValue("designation", employee.designation?._id || employee.designation);
+      
+      if (employee.address) {
+        setValue("street_address", employee.address.street_address || "");
+        setValue("city", employee.address.city || "");
+        setValue("district", employee.address.district || "");
+        setValue("pincode", employee.address.pincode || "");
       }
-    };
-    
-    loadAddressData();
-  }, [employee, addressDataLoaded]);
+      setValue("aadhar_number", employee.aadhar_number || "");
+      setValue("pan_number", employee.pan_number || "");
+
+      // Load address data
+      const loadAddressData = async () => {
+        if (!addressDataLoaded) {
+          setAddressDataLoaded(true);
+          try {
+            if (employee.address.country) {
+              await fetchStates(employee.address.country);
+              setValue("country", employee.address.country);
+            }
+            if (employee.address.state) {
+              await fetchCities(employee.address.state);
+              await fetchDistricts(employee.address.state);
+              setValue("state", employee.address.state);
+            }
+          } catch (error) {
+            console.error("Error loading address data:", error);
+            toast.error("Failed to load address details.");
+          }
+        }
+      };
+      loadAddressData();
+    }
+  }, [employee, designations, setValue, addressDataLoaded]);
 
   // Location data fetching functions
   const fetchCountries = async () => {
@@ -218,8 +237,6 @@ const [EmpLoading, setEmpLoading] = useState(false);
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Also update the form value
     setValue(name, value);
 
     if (name === "country") {
@@ -237,62 +254,12 @@ const [EmpLoading, setEmpLoading] = useState(false);
     }
   };
 
-  // Validation Schema
-  const schema = yup.object().shape({
-    username: yup.string().required("Employee name is required"),
-    email: yup.string().email("Invalid email").required("Email is required"),
-    phone_number: yup.string().required("Phone number is required"),
-    designation: yup.string().required("Designation is required"),
-    street_address: yup.string().required("Street address is required"),
-    city: yup.string().required("City is required"),
-    pincode: yup.string().required("Pincode is required"),
-    district: yup.string().required("district is required"),
-    state: yup.string().required("State is required"),
-    country: yup.string().required("Country is required"),
-    aadhar_number: yup.string().required("Aadhaar number is required"),
-    pan_number: yup.string().required("PAN number is required"),
-  });
-
-  const {
-    handleSubmit,
-    register,
-    control,
-    formState: { errors },
-    setValue,
-  } = useForm({ resolver: yupResolver(schema) });
-
-  useEffect(() => {
-    if (employee) {
-      setValue("username", employee.username);
-      setValue("email", employee.email);
-      setValue("phone_number", employee.phone_number);
-      setValue(
-        "designation",
-        employee.designation?._id || employee.designation
-      );
-      if (employee.address) {
-        setValue("street_address", employee.address.street_address || "");
-        setValue("city", employee.address.city || "");
-        setValue("district", employee.address.district || ""); // Fix capitalization
-        setValue("pincode", employee.address.pincode || "");
-        
-        // Address dropdown fields are handled in the separate useEffect above
-      }
-
-      // Set identification details
-      setValue("aadhar_number", employee.aadhar_number || "");
-      setValue("pan_number", employee.pan_number || "");
-    }
-  }, [employee, setValue]);
-
   // Handle form submission
   const onSubmit = async (data: any) => {
     try {
-      setAdminEmpLoading(true); // Start loading
-
+      setAdminEmpLoading(true);
       const formData = new FormData();
 
-      // Append all form data
       formData.append("entity_id", "67a1083b3c9f01a384e9683c");
       formData.append("entity_type", "admin");
       formData.append("designation", data.designation);
@@ -304,7 +271,6 @@ const [EmpLoading, setEmpLoading] = useState(false);
       formData.append("aadhar_number", data.aadhar_number);
       formData.append("pan_number", data.pan_number);
 
-      // Address Fields
       formData.append("street_address", data.street_address);
       formData.append("city", data.city);
       formData.append("district", data.district);
@@ -312,17 +278,12 @@ const [EmpLoading, setEmpLoading] = useState(false);
       formData.append("state", data.state);
       formData.append("country", data.country);
 
-      // Append profile picture if updated
       if (profileImage) {
         formData.append("profile_picture", profileImage);
       }
-
-      // Append Aadhaar image if updated
       if (aadharImage) {
         formData.append("aadhar_image", aadharImage);
       }
-
-      // Append PAN image if updated
       if (panImage) {
         formData.append("pan_image", panImage);
       }
@@ -342,7 +303,7 @@ const [EmpLoading, setEmpLoading] = useState(false);
       console.error("Error updating employee:", error);
       toast.error("Error updating employee. Please try again.");
     } finally {
-      setAdminEmpLoading(false); // Stop loading
+      setAdminEmpLoading(false);
     }
   };
 
@@ -431,11 +392,10 @@ const [EmpLoading, setEmpLoading] = useState(false);
                   <option value="">Select Designation</option>
                   {designations?.map((designation) => (
                     <option
-                      key={designation?._id}
-                      value={designation?._id}
-                      selected={designation?._id === employee?.designation}
+                      key={designation._id}
+                      value={designation._id}
                     >
-                      {designation?.designation_name}
+                      {designation.designation_name}
                     </option>
                   ))}
                 </FormInput>

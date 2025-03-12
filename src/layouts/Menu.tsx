@@ -9,6 +9,9 @@ import { findAllParent, findMenuItem } from "../helpers/menu";
 
 // constants
 import { MenuItemTypes } from "../constants/menu";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
 
 interface SubMenus {
   item: MenuItemTypes;
@@ -29,18 +32,30 @@ const MenuItemWithChildren = ({
   const [open, setOpen] = useState<boolean>(
     activeMenuItems!.includes(item.key)
   );
-  // ;
+  const accessDetails = getAccessDetailsFromLocalStorage();
+  // Get the current user role
+  const userRole = accessDetails?.role || "";
 
   useEffect(() => {
     setOpen(activeMenuItems!.includes(item.key));
   }, [activeMenuItems, item]);
 
-  const toggleMenuItem = () => {
+  const toggleMenuItem = (e: React.MouseEvent) => {
+    e.preventDefault();
     const status = !open;
     setOpen(status);
     if (toggleMenu) toggleMenu(item, status);
     return false;
   };
+
+  // Filter children based on user role
+  const accessibleChildren = (item.children || []).filter((child) => {
+    if (!child.access) return true;
+    return child.access.includes(userRole);
+  });
+
+  // If no accessible children, don't render this menu item
+  if (accessibleChildren.length === 0) return null;
 
   return (
     <li className={classNames("menu-item", { "menuitem-active": open })}>
@@ -74,12 +89,11 @@ const MenuItemWithChildren = ({
       <Collapse in={open}>
         <div>
           <ul className={classNames(subMenuClassNames)}>
-            {(item.children || []).map((child, i) => {
+            {accessibleChildren.map((child, i) => {
               return (
                 <React.Fragment key={i}>
                   {child.children ? (
                     <>
-                      {/* parent */}
                       <MenuItemWithChildren
                         item={child}
                         linkClassName={
@@ -92,7 +106,6 @@ const MenuItemWithChildren = ({
                     </>
                   ) : (
                     <>
-                      {/* child */}
                       <MenuItem
                         item={child}
                         className={
@@ -117,6 +130,15 @@ const MenuItemWithChildren = ({
 };
 
 const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
+  const accessDetails = getAccessDetailsFromLocalStorage();
+  // Get the current user role
+  const userRole = accessDetails?.role || "";
+
+  // Check if user has access to this item
+  if (item.access && !item.access.includes(userRole)) {
+    return null;
+  }
+
   return (
     <li className={classNames("menu-item", className)}>
       <MenuItemLink item={item} className={linkClassName} />
@@ -156,10 +178,12 @@ interface AppMenuProps {
 
 const AppMenu = ({ menuItems }: AppMenuProps) => {
   let location = useLocation();
-
   const menuRef: any = useRef(null);
-
+  const accessDetails = getAccessDetailsFromLocalStorage();
   const [activeMenuItems, setActiveMenuItems] = useState<Array<string>>([]);
+  
+  // Get the current user role from localStorage
+  const userRole = accessDetails?.role || "";
 
   /*
    * toggle the menus
@@ -178,17 +202,22 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const activeMenu = useCallback(() => {
     const div = document.getElementById("main-side-menu");
     let matchingMenuItem = null;
-    // ;
+
     if (div) {
       let items: any = div.getElementsByClassName("side-nav-link-ref");
       for (let i = 0; i < items.length; ++i) {
-        let trimmedURL = location?.pathname?.replaceAll(process.env.PUBLIC_URL, "");
-        if (trimmedURL === items[i]?.pathname?.replaceAll(process.env.PUBLIC_URL, "")) {
+        let trimmedURL = location?.pathname?.replaceAll(
+          process.env.PUBLIC_URL,
+          ""
+        );
+        if (
+          trimmedURL ===
+          items[i]?.pathname?.replaceAll(process.env.PUBLIC_URL, "")
+        ) {
           matchingMenuItem = items[i];
           break;
         }
       }
-
       if (matchingMenuItem) {
         const mid = matchingMenuItem.getAttribute("data-menu-key");
         const activeMt = findMenuItem(menuItems, mid);
@@ -204,14 +233,18 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
 
   useEffect(() => {
     activeMenu();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeMenu]);
+
+  // Filter top-level menu items based on user role
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (!item.access) return true;
+    return item.access.includes(userRole);
+  });
 
   return (
     <>
       <ul className="menu" ref={menuRef} id="main-side-menu">
-        {(menuItems || []).map((item, idx) => {
-          //
+        {filteredMenuItems.map((item, idx) => {
           return (
             <React.Fragment key={idx}>
               {item.isTitle ? (

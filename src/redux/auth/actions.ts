@@ -12,7 +12,9 @@ export interface AuthActionType {
     | AuthActionTypes.RESET
     | AuthActionTypes.SIGNUP_USER
     | AuthActionTypes.VERIFY_OTP
-    | AuthActionTypes.RESET_PASSWORD;
+    | AuthActionTypes.RESET_PASSWORD
+    | AuthActionTypes.GOOGLE_LOGIN_USER
+    | AuthActionTypes.EMP_LOGIN_USER;
   payload: {} | string;
 }
 
@@ -29,7 +31,7 @@ interface UserData {
 // common success
 export const authApiResponseSuccess = (
   actionType: string,
-  data: UserData | {}
+  data: any
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
   payload: { actionType, data },
@@ -48,6 +50,13 @@ export const loginUser = (
   password: string
 ): AuthActionType => ({
   type: AuthActionTypes.LOGIN_USER,
+  payload: { username, password },
+});
+export const emploginUser = (
+  username: string,
+  password: string
+): AuthActionType => ({
+  type: AuthActionTypes.EMP_LOGIN_USER,
   payload: { username, password },
 });
 
@@ -74,12 +83,16 @@ export const resetAuth = (): AuthActionType => ({
   type: AuthActionTypes.RESET,
   payload: {},
 });
- 
+
 export const verifyOtp = (otp: string): AuthActionType => ({
-type: AuthActionTypes.VERIFY_OTP,
-payload: { otp },
+  type: AuthActionTypes.VERIFY_OTP,
+  payload: { otp },
 });
 export const resetPassword = (otp: string): AuthActionType => ({
-type: AuthActionTypes.RESET_PASSWORD,
-payload: { otp },
+  type: AuthActionTypes.RESET_PASSWORD,
+  payload: { otp },
+});
+export const googleLoginUser = (): AuthActionType => ({
+  type: AuthActionTypes.GOOGLE_LOGIN_USER,
+  payload: {},
 });

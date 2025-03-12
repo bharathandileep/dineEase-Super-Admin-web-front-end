@@ -5,7 +5,6 @@ import dashlogo from "../../../assets/images/logo-dark.png";
 
 const DashboardNavbar = () => {
   const location = useLocation();
-
   return (
     <nav className="dashboard-navbar">
       <div className="dashboard-navbar-logo">
@@ -15,8 +14,8 @@ const DashboardNavbar = () => {
       </div>
       <div className="dashboard-navbar-links"> 
         <Link 
-          to="/auth/dashboard"
-          className={location.pathname === '/auth/dashboard' ? 'active' : ''}
+          to="/user/dashboard"
+          className={location.pathname === '/user/dashboard' ? 'active' : ''}
         >
           Home
         </Link>
@@ -33,10 +32,10 @@ const DashboardNavbar = () => {
           My Kitchen
         </Link>
         <Link 
-          to="/dashboard/points"
-          className={location.pathname === '/dashboard/points' ? 'active' : ''}
+          to="/auth/logout"
+          className={location.pathname ==='/auth/logout' ? 'active' : ''}
         >
-          My Points
+          Logout
         </Link>
       </div>
     </nav>

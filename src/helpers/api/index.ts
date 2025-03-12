@@ -7,12 +7,12 @@ function login(params: { username: string; password: string }) {
   return AuthAdminCredentials(params);
 }
 
-
-
 function logout() {
   localStorage.removeItem("Session_token");
-  const baseUrl = "/logout/";
-  return api.create(`${baseUrl}`, {});
+  // implimant after logout api set
+  // const baseUrl = "/logout/";
+  // return api.create(`${baseUrl}`, {});
+  return null;
 }
 
 function signup(params: { fullname: string; email: string; password: string }) {

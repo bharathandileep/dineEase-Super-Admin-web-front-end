@@ -144,7 +144,7 @@ const ManageTickets: React.FC = () => {
       console.log('New Staff:', newStaff); // Add this line to verify the structure
 
       setStaffs((prevStaffs) => [...prevStaffs, newStaff]);
-      setToastMessage(`${newStaff.name??'Unknown Staff'}  has been added successfully!`);    } catch (error) {
+      setToastMessage(`${newStaff.name??'Unknown Staff'}  has been added successfully!`);    } catch (error:any) {
       console.error('Error adding staff:', error);
       setToastMessage('Error adding staff');
     } finally {
@@ -181,7 +181,7 @@ const ManageTickets: React.FC = () => {
   //       // setStaffs(response.data);
   //       // setTotalPages(response.pagination.totalPages);
   //       // setToastMessage('Staff deleted successfully');
-  //     } catch (error) {
+  //     } catch (error:any) {
   //       console.error('Error deleting staff:', error);
   //       setToastMessage('Error deleting staff');
   //       setShowToast(true);
@@ -213,7 +213,7 @@ const ManageTickets: React.FC = () => {
           
           setToastMessage(`${staffName} deleted successfully`);
           setShowToast(true);
-        } catch (error) {
+        } catch (error:any) {
           console.error('Error deleting staff:', error);
           setToastMessage('Error deleting staff');
           setShowToast(true);
@@ -238,7 +238,7 @@ const ManageTickets: React.FC = () => {
         setTotalPages(response.pagination.totalPages);
         
         setToastMessage(`Staff updated successfully`);
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating staff:', error);
         setToastMessage('Error updating staff');
       } finally {

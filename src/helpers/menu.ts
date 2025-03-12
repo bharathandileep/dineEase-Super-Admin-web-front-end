@@ -26,7 +26,6 @@ const findAllParent = (
 ): string[] => {
   let parents: string[] = [];
   const parent = findMenuItem(menuItems, menuItem["parentKey"]);
-
   if (parent) {
     parents.push(parent["key"]);
     if (parent["parentKey"])

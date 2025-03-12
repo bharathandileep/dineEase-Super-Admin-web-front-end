@@ -85,7 +85,7 @@ const AddCategory = ({
         toast.error(response.message || "Operation failed. Please try again.");
       }
     } catch (error: any) {
-      toast.error("Operation failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

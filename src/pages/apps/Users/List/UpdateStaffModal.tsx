@@ -33,7 +33,7 @@ const UpdateStaffModal: React.FC<UpdateStaffModalProps> = ({ show, onHide, staff
         const updatedStaff = await UpdateStaffApi(staff._id, formData);
         onUpdateStaff(updatedStaff);
         onHide();
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating staff:', error);
         alert('Error updating staff');
       }

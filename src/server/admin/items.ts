@@ -15,16 +15,17 @@ export const createItem = async (menuData: any) => {
     }
 };
 
-export const listItems = async () =>{
-    try{
-        const response = await axiosInstance.get(
-            `${apiConfig.menu.listItems}`
-        );
-        return response.data;
-    }catch(error:any){
-        console.log("Login Error:",error.response?.data || error.message);
-        
-    }
+export const listItems = async (query: any) => {
+  try {
+    const url = `${apiConfig.menu.listItems(query)}`;
+    console.log("Fetching with URL:", url);
+    const response = await axiosInstance.get(url);
+    console.log("API Response:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching items:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
 };
 
 export const getItemById =  async(id:string | undefined)=>{

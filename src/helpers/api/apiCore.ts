@@ -1,9 +1,11 @@
 import jwtDecode from "jwt-decode";
 import axios, { AxiosInstance } from "axios";
 import config from "../../config";
+import { authApiResponseSuccess } from "../../redux/actions";
+import { AuthActionTypes } from "../../redux/auth/constants";
 
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 14 * 60 * 1000;
+const REFRESH_INTERVAL = 60 * 60 * 1000;
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -14,7 +16,6 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Token management
 const setAuthorization = (token: string | null) => {
   if (token) {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -22,12 +23,12 @@ const setAuthorization = (token: string | null) => {
     delete axiosInstance.defaults.headers.common["Authorization"];
   }
 };
-
+ 
 const getUserFromCookie = () => {
   const user = localStorage.getItem(AUTH_SESSION_KEY);
   return user ? (typeof user == "object" ? user : JSON.parse(user)) : null;
 };
-
+ 
 const refreshTokenLogic = async (): Promise<string> => {
   try {
     const response = await axiosInstance.post(
@@ -37,68 +38,69 @@ const refreshTokenLogic = async (): Promise<string> => {
         withCredentials: true,
       }
     );
-
     const accessToken = response.data.data;
-    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(accessToken));
+    new APICore().setLoggedInUser(accessToken);
+    const userInfo = new APICore().getLoggedInUserInfo();
+    authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, userInfo);
     setAuthorization(accessToken);
     return accessToken;
-  } catch (error) {
+  } catch (error:any) {
     localStorage.removeItem(AUTH_SESSION_KEY);
     window.location.href = "/auth/login";
     throw error;
   }
 };
-
+ 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
     const session = getUserFromCookie();
-    if (session?.token) {
-      config.headers["Authorization"] = `Bearer ${session.token}`;
+    if (session) {
+      config.headers["Authorization"] = `Bearer ${session}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
-
+ 
 // Setup periodic token refresh
 const setupTokenRefreshInterval = () => {
   setInterval(async () => {
     if (new APICore().isUserAuthenticated()) {
       try {
         await refreshTokenLogic();
-      } catch (error) {
+      } catch (error:any) {
         console.error("Periodic token refresh failed:", error);
       }
     }
   }, REFRESH_INTERVAL);
 };
-
+ 
 class APICore {
   get = (url: string, params: any) => {
     return axiosInstance.get(url, { params });
   };
-
+ 
   getFile = (url: string, params: any) => {
     return axiosInstance.get(url, { params, responseType: "blob" });
   };
-
+ 
   create = (url: string, data: any) => {
     return axiosInstance.post(url, data);
   };
-
+ 
   updatePatch = (url: string, data: any) => {
     return axiosInstance.patch(url, data);
   };
-
+ 
   update = (url: string, data: any) => {
     return axiosInstance.put(url, data);
   };
-
+ 
   delete = (url: string) => {
     return axiosInstance.delete(url);
   };
-
+ 
   createWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -108,7 +110,7 @@ class APICore {
       headers: { "content-type": "multipart/form-data" },
     });
   };
-
+ 
   updateWithFile = (url: string, data: any) => {
     const formData = new FormData();
     for (const k in data) {
@@ -118,39 +120,44 @@ class APICore {
       headers: { "content-type": "multipart/form-data" },
     });
   };
-
+ 
   getLoggedInUserInfo = () => {
     const user = this.getLoggedInUser();
-    return jwtDecode(user);
+    if (user) {
+      return jwtDecode(user);
+    }
+    return null;
   };
-
+ 
   isUserAuthenticated = () => {
     const user = this.getLoggedInUser();
     if (!user) {
       return false;
     }
-    const decoded: any = this.getLoggedInUserInfo();
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
-      console.warn("Please log in again");
-      return false;
-    } else {
+    // fix later
+    // const decoded: any = this.getLoggedInUserInfo();
+    // const currentTime = Date.now() / 1000;
+    // if (decoded.exp < currentTime) {
+    //   console.warn("Please log in again");
+    //   return false;
+    // } 
+    else {
       return true;
     }
   };
-
+ 
   setLoggedInUser = (session: any) => {
     if (session) {
-      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session.token));
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session?.token));
     } else {
       localStorage.removeItem(AUTH_SESSION_KEY);
     }
   };
-
+ 
   getLoggedInUser = () => {
     return getUserFromCookie();
   };
-
+ 
   setUserInSession = (modifiedUser: any) => {
     let userInfo = localStorage.getItem(AUTH_SESSION_KEY);
     if (userInfo) {
@@ -159,8 +166,7 @@ class APICore {
     }
   };
 }
-
-// Initialize
+ 
 const initializeAxios = () => {
   const session = getUserFromCookie();
   if (session?.token) {
@@ -168,7 +174,7 @@ const initializeAxios = () => {
   }
   setupTokenRefreshInterval();
 };
-
+ 
 initializeAxios();
-
+ 
 export { APICore, setAuthorization, axiosInstance };

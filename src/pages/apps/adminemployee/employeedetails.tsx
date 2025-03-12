@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeemanagment";
+import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, Mail, Phone, MapPin, Building } from "lucide-react";
+
 
 interface Employee {
   _id: string;
@@ -175,14 +176,11 @@ const EmployeeDetails = () => {
                 }
                 className='mb-3'
                 onClick={handleToggleStatus}
-                style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
+                style={{ cursor: "pointer" }}
               >
                 {employee.employee_status}
               </Badge>
 
-              {/* Toggle Status Button */}
-
-              {/* Contact Information */}
               <div className='text-start'>
                 <div className='d-flex align-items-center mb-2'>
                   <Mail size={16} className='me-2' />

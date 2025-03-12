@@ -3,7 +3,7 @@ import { apiConfig } from "../../helpers/api/apis";
 
 import { firebaseAuth } from "../../firebase.config";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
+import { toast } from "react-toastify";
 
 interface UserData {
   username: string;
@@ -62,6 +62,7 @@ export const googleAuth = async () => {
       }
     );
     api.setLoggedInUser(response.data.data);
+    toast.success(response.data.message);
     return response.data;
   } catch (error: any) {
     return error;
@@ -90,10 +91,8 @@ export const authvaliadateOTP = async (userCredentials: any) => {
     return error.response.data;
   }
 };
-
 export const loginUserWithMail = async (userCredentials: any) => {
   try {
-    console.log(userCredentials);
     const response = await axiosInstance.post(
       "/auth/login-Otp",
       userCredentials
@@ -103,10 +102,8 @@ export const loginUserWithMail = async (userCredentials: any) => {
     return error.response.data;
   }
 };
-
 export const loginOTPVerify = async (userCredentials: any) => {
   try {
-    console.log(userCredentials);
     const response = await axiosInstance.post(
       "/auth/verify-loginotp",
       userCredentials
@@ -134,7 +131,6 @@ export const generateForgotPasswordOtp = async (
     throw error;
   }
 };
-
 export const verifyForgotPasswordOtp = async (otpData: VerifyOtpData) => {
   try {
     const response = await axiosInstance.post(
@@ -147,7 +143,6 @@ export const verifyForgotPasswordOtp = async (otpData: VerifyOtpData) => {
     throw error;
   }
 };
-
 export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
   try {
     const response = await axiosInstance.post(
@@ -163,3 +158,5 @@ export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
     throw error;
   }
 };
+export const verifyPhoneOTP = async () => {};
+export const loginUserWithPhone = async (phonenimber: any) => {};

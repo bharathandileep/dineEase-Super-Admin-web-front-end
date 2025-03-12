@@ -6,7 +6,7 @@ import {
   getAllEmployees,
   deleteEmployee,
   toggleEmployeeStatus,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface Employee {
@@ -71,11 +71,11 @@ const EmployeeList = () => {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load employees.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching employees:", error);
-      toast.error("An error occurred while fetching employees.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -121,11 +121,11 @@ const EmployeeList = () => {
           toast.success("Employee deleted successfully!");
           setEmployees(employees.filter((emp) => emp._id !== id));
         } else {
-          toast.error("Failed to delete employee.");
+          toast.error(response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error deleting employee:", error);
-        toast.error("An error occurred while deleting the employee.");
+        toast.error(error.message);
       }
     }
   };
@@ -147,11 +147,11 @@ const EmployeeList = () => {
           )
         );
       } else {
-        toast.error("Failed to update status.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error updating employee status:", error);
-      toast.error("An error occurred while updating status.");
+      toast.error(error.message);
     }
   };
 

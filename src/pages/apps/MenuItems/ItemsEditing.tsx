@@ -36,11 +36,11 @@ const EditFoodItem = () => {
             response.data.category?._id || response.data.category || ""
           );
         } else {
-          toast.error("Failed to load item details.");
+          toast.error(response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching item details:", error);
-        toast.error("Error fetching item details.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -57,11 +57,11 @@ const EditFoodItem = () => {
         if (response.status) {
           setCategories(response.data.categories || []);
         } else {
-          toast.error("Failed to load categories.");
+          toast.error(response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching categories:", error);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       }
     };
     fetchCategories();
@@ -76,12 +76,12 @@ const EditFoodItem = () => {
           if (response && response.status) {
             setSubcategories(response.data || []);
           } else {
-            toast.error("Failed to load subcategories.");
+            toast.error(response.message);
             setSubcategories([]);
           }
-        } catch (error) {
+        } catch (error:any) {
           console.error("Error fetching subcategories:", error);
-          toast.error("An error occurred while fetching subcategories.");
+          toast.error(error.message);
           setSubcategories([]);
         }
       };
@@ -146,11 +146,11 @@ const EditFoodItem = () => {
         toast.success("Item updated successfully!");
         navigate("/apps/menu-items/list");
       } else {
-        toast.error("Failed to update item.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error updating item:", error);
-      toast.error("Error updating item.");
+      toast.error(error.message);
     } finally {
       setMenuLoading(false); // Stop loading
     }

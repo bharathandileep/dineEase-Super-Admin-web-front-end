@@ -43,11 +43,11 @@ function MenuCategory() {
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load menu categories.");
+          toast.error(response.message);
         }
       } catch (error: any) {
         console.error("Fetch Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -98,11 +98,11 @@ function MenuCategory() {
           );
         }
       } else {
-        toast.error("Failed to toggle status.");
+        toast.error(response.message);
       }
     } catch (error: any) {
       console.error("Toggle Error:", error.response?.data || error.message);
-      toast.error("Error toggling status.");
+      toast.error(error.message);
     }
   };
 
@@ -137,7 +137,7 @@ function MenuCategory() {
       }
     } catch (error: any) {
       console.error("Delete Error:", error.response?.data || error.message);
-      toast.error("Delete failed. Please try again.");
+      toast.error(error.message);
     }
   };
 
