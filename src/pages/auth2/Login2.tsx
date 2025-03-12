@@ -8,19 +8,16 @@ import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
 
 // actions
-import { resetAuth, loginUser } from "../../redux/actions";
+import { resetAuth, loginUser, emploginUser } from "../../redux/actions";
 
 // store
 import { RootState, AppDispatch } from "../../redux/store";
-
 
 // components
 import { VerticalForm, FormInput } from "../../components/";
 
 import AuthLayout from "./AuthLayout";
-import { authAccessCredentials } from "../../server/admin/login";
 import { toast } from "react-toastify";
-
 
 interface UserData {
   username: string;
@@ -43,27 +40,14 @@ const BottomLink = () => {
   );
 };
 
-
-
 const Login2 = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-
   const { userLoggedIn, user, loading } = useSelector(
-     (state: RootState) => state.Auth
-   );
-
-  useEffect(() => {
-    // if (userLoggedIn && user) {
-    if (user) {
-      // navigate("/");
-      navigate("/")
-      
-    }
-  }, [userLoggedIn, user, navigate]);
-
+    (state: RootState) => state.Auth
+  );
 
   useEffect(() => {
     dispatch(resetAuth());
@@ -88,25 +72,22 @@ const Login2 = () => {
     })
   );
 
-
-
   const onSubmit = async (formData: UserData) => {
-  try {
-    const response = await authAccessCredentials(formData);
-    if (response.status) {
-      toast.success(response.message);
-      window.location.href = "/";
-      navigate("/")
-    } else {
-      toast.error(response.message || "Something went wrong.");
+    try {
+      dispatch(emploginUser(formData["username"], formData["password"]));
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      toast.error(errorMessage);
+      console.error("Error:", error);
     }
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
-    toast.error(errorMessage);
-    console.error("Error:", error);
-  }
-};
+  };
 
+  useEffect(() => {
+    if (userLoggedIn && user) {
+      navigate("/auth/login");
+    }
+  }, [userLoggedIn, user, navigate]);
 
   return (
     <>
@@ -115,7 +96,6 @@ const Login2 = () => {
         <p className="text-muted mb-4">
           {t("Enter your User name and password to access account.")}
         </p>
-
 
         <VerticalForm
           onSubmit={onSubmit}

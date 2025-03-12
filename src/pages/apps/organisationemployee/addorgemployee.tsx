@@ -14,6 +14,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 const OrgEmployeeManagement = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const OrgEmployeeManagement = () => {
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+ const [organizationDetails, setOrganizationsDetails] = useState(getAccessDetailsFromLocalStorage())
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -143,10 +145,10 @@ const OrgEmployeeManagement = () => {
       setErrors(locationErrors);
       return;
     }
-
+  
     try {
       const formDataObj = new FormData();
-      formDataObj.append("entity_id", "67aad807dcbe481e9d130696");
+      formDataObj.append("entity_id", organizationDetails.orgId);
       formDataObj.append("entity_type", "Organization");
       formDataObj.append("designation", data.designation);
       formDataObj.append("username", data.username);

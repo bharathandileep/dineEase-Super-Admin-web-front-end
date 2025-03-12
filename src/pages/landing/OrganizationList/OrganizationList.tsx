@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedOrganizations } from "../../../server/admin/organization"; 
+import { getUserApprovedOrganizations } from "../../../server/admin/organization";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
 
 interface Organization {
   id: number;
@@ -11,19 +14,31 @@ interface Organization {
   address: string;
   industry?: string[];
   employees?: number;
+  isapproved: string;
+  slug: String;
 }
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [showloading, setLoading] = useState(true);
   const navigate = useNavigate();
-  
+  const { userLoggedIn, user, loading } = useSelector(
+    (state: RootState) => state.Auth
+  );
 
   useEffect(() => {
     const fetchUserOrganizations = async () => {
       try {
-        const response = await getUserApprovedOrganizations();
-        setOrganizations(response.data.organizations); 
+        let response;
+        if (user.role === "Employee") {
+          response = await getEmployeeOrg(user.email);
+          console.log(response);
+          setOrganizations(response.data.organizations);
+        } else {
+          response = await getUserApprovedOrganizations();
+          console.log(response);
+          setOrganizations(response.data.organizations);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching organizations:", error);
@@ -33,20 +48,39 @@ const OrganizationList = () => {
 
     fetchUserOrganizations();
   }, []);
+  const handleNavigateOrg = (organization: Organization) => {
+    let organizationViewDetails = {
+      role: "Organization",
+      organization: organization.name,
+      orgId: organization.id,
+      slug: organization.slug,
+    };
 
-  if (loading) {
+    if (user.role === "Employee") {
+      organizationViewDetails.role = "Employee";
+    }
+
+    if (organization.isapproved === "approved") {
+      localStorage.setItem(
+        "accessDetails",
+        JSON.stringify(organizationViewDetails)
+      );
+      navigate(`/apps/${organization.slug}`);
+    }
+  };
+
+  if (showloading) {
     return (
       <div
-      className="text-center py-5"
-      style={{
-        backgroundColor: 'white',
-        height: '100vh', 
-        margin: 0,
-      }}
-    >
-      <h3>Loading organizations...</h3>
-    </div>
-    
+        className="text-center py-5"
+        style={{
+          backgroundColor: "white",
+          height: "100vh",
+          margin: 0,
+        }}
+      >
+        <h3>Loading organizations...</h3>
+      </div>
     );
   }
 
@@ -60,7 +94,8 @@ const OrganizationList = () => {
             className="w-25 mx-auto mt-2"
             style={{
               height: "3px",
-              background: "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
+              background:
+                "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
             }}
           ></div>
         </h2>
@@ -73,7 +108,7 @@ const OrganizationList = () => {
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
-                    src={org.profilePic || "https://via.placeholder.com/220"} 
+                    src={org.profilePic || "https://via.placeholder.com/220"}
                     className="card-img-top"
                     alt={org.name}
                     style={{
@@ -85,9 +120,17 @@ const OrganizationList = () => {
                     }}
                   />
                   <div className="position-absolute top-0 end-0 m-3">
-                    <span className="badge bg-light text-dark shadow-sm px-3 py-2">
-                      <i className="bi bi-building-fill text-primary me-1"></i>
-                      Est. {org.yearFounded || "N/A"}
+                    <span
+                      className={`badge text-dark shadow-sm text-white px-3 py-2 ${
+                        org.isapproved === "approved"
+                          ? "bg-success"
+                          : org.isapproved === "rejected"
+                          ? "bg-danger"
+                          : "bg-warning"
+                      }`}
+                    >
+                      <i className="bi  bi-building-fill text-primary me-1"></i>
+                      {org.isapproved || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -120,7 +163,10 @@ const OrganizationList = () => {
                     <i className="bi bi-people-fill me-2 text-success"></i>
                     Employees: {org.employees || "Not specified"}
                   </p>
-                  <button className="btn btn-primary w-100 rounded-pill hover-button">
+                  <button
+                    className="btn btn-primary w-100 rounded-pill hover-button"
+                    onClick={() => handleNavigateOrg(org)}
+                  >
                     View Organization
                   </button>
                 </div>
@@ -129,7 +175,6 @@ const OrganizationList = () => {
           ))}
         </div>
 
-        {/* Add Organization button section */}
         <div className="text-center mt-5">
           <button
             className="btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button"

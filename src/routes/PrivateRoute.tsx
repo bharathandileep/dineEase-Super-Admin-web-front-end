@@ -17,11 +17,10 @@ interface LoggedInUser {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
   const api = new APICore();
   const location = useLocation();
-
+  console.log("haii")
   const isAuthenticated = api.isUserAuthenticated();
   const loggedInUser = api.getLoggedInUserInfo() as LoggedInUser | null;
-
-  if (!isAuthenticated) {
+  if (!loggedInUser) {
     return <Navigate to="/auth/login" />;
   } 
 
@@ -37,5 +36,5 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
 
   return <>{children}</>;
 };
-
+ 
 export default PrivateRoute;

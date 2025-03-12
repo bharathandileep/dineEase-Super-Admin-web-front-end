@@ -247,8 +247,6 @@ export const kitchensToggleSubcategoryStatus = async (
 };
 
 export const getUnapprovedKitchens = async (query: any) => {
-  console.log("zxczxzxxz");
-  
   try {
     const response = await axiosInstance.get(
       `${apiConfig.kitchens. getUnapprovedKitchens(query)}`
