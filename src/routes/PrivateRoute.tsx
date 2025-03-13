@@ -23,7 +23,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
   const user = getAccessDetailsFromLocalStorage()
   const loggedInUser = api.getLoggedInUserInfo() as LoggedInUser | null;
   if (!loggedInUser) {
-    return <Navigate to="/auth/login" />;
+    return <Navigate to="/" />;
   } 
 
   if (roles && roles.length > 0) {
