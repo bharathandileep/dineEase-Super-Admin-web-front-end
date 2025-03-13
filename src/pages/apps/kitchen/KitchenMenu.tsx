@@ -54,7 +54,7 @@ function OurMenu() {
   useEffect(() => {
     const fetchKitchenMenu = async () => {
       try {
-        const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
+        const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; 
         const response = await getKitchenMenus(hardcodedKitchenId);
         setKitchenMenuItems(response.data);
       } catch (error:any) {
@@ -70,7 +70,7 @@ function OurMenu() {
 
   const handleDelete = async (itemId: string) => {
     try {
-      const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
+      const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; 
       const response = await removeKitchenMenus(itemId, hardcodedKitchenId);
       if (response.status) {
         toast.success(response.message);
