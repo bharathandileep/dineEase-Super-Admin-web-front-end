@@ -226,6 +226,7 @@ export const apiConfig = {
     getEmployeeOrg: (email: string | undefined) =>
       `/org-employee/employee/org?email=${email}`,
   },
+
   kitchenMenu: {
     getKitchenMenu: (id: string | undefined) =>
       `/kitchens-menu/kitchen-menu/${id}`,
@@ -249,5 +250,11 @@ export const apiConfig = {
       `/addressDetails/cities/${stateName}`,
     getDistrictsByState: (stateId: string | undefined) =>
       `/addressDetails/districts/${stateId}`,
+  },
+  notification: {
+    generateKitchenNotification: "/notification/generate-kitchen",
+    getUserNotifications:(id:string | undefined)=>`/notification/get/${id}`,
+    getAllNotifications:"/notification/all",
+    generateOrganizationNotification:"/notification/generate-organization"
   },
 };

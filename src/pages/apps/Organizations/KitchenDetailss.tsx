@@ -16,12 +16,30 @@ import {
   Badge,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 
-// Define interfaces
-type FoodItem = {
+// Define interface for menu items
+interface MenuItem {
+  _id: string;
+  item_id: {
+    _id: string;
+    item_name: string;
+    item_price: number;
+    description: string;
+    ingredients: string[];
+    isAvailable: boolean;
+    custom_image: string;
+    reviews_id: any[];
+  };
+}
+
+interface CartItem extends MenuItem {
   quantity: number;
+}
+
+type FoodItem = {
   item_name: string;
   description: string;
   custom_image: string;
@@ -79,43 +97,66 @@ export interface IKitchenDetails {
   }>;
 }
 
-const VerificationButton = () => (
-  <Button
-    variant="danger"
-    className="d-flex align-items-center gap-2 px-3 py-2"
-  >
-    <i className="mdi mdi-close-circle-outline"></i>
-    Not Verified
-  </Button>
-);
+// const VerificationButton = () => (
+//   <Button
+//     variant="danger"
+//     className="d-flex align-items-center gap-2 px-3 py-2"
+//   >
+//     <i className="mdi mdi-close-circle-outline"></i>
+//     Not Verified
+//   </Button>
+// );
 
-function KitchensDetails() {
+function KitchensDetailss() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<FoodItem[]>([]);
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
 
-  const onEdit = () => navigate(`/apps/kitchen/edit/${id}`);
+  const handleStatusToggle = async () => {
+    setLoading(true);
+    try {
+      const response = await toggleKitchenStatus(id);
+      if (response?.status) {
+        setStatus(!status);
+        toast.success(response.message);
+      } else {
+        toast.error(response?.message || "Failed to toggle kitchen status.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while toggling kitchen status.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onEdit = () => {
+    navigate(`/apps/kitchen/edit/${id}`);
+  };
 
   const onDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this kitchen?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this kitchen?"
+    );
+
     if (!confirmDelete) return;
 
     setLoading(true);
     try {
       const response = await deletekitchenDetails(id);
+
       if (response?.status) {
         toast.success(response.message);
         navigate("/apps/kitchen/list");
       } else {
         toast.error(response?.message || "Failed to delete kitchen.");
       }
-    } catch (error:any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error("An error occurred while deleting kitchen details.");
     } finally {
       setLoading(false);
     }
@@ -126,8 +167,13 @@ function KitchensDetails() {
       const categoryName = item.category?.category || "Allitems";
       const subcategoryName = item.subcategory?.subcategoryName || "Allitems";
 
-      if (!acc[categoryName]) acc[categoryName] = {};
-      if (!acc[categoryName][subcategoryName]) acc[categoryName][subcategoryName] = [];
+      if (!acc[categoryName]) {
+        acc[categoryName] = {};
+      }
+
+      if (!acc[categoryName][subcategoryName]) {
+        acc[categoryName][subcategoryName] = [];
+      }
 
       acc[categoryName][subcategoryName].push({
         item_name: item.item_name,
@@ -136,7 +182,6 @@ function KitchensDetails() {
         item_price: item.item_price || 0,
         ingredients: item.ingredients || [],
         reviews_id: item.reviews_id || [],
-        quantity: 0, // Add quantity property
       });
 
       return acc;
@@ -144,51 +189,35 @@ function KitchensDetails() {
 
     return transformed;
   };
-  const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
-    <Button
-      variant={isVerified ? "success" : "danger"}
-      className="d-flex align-items-center gap-2 px-3 py-2"
-    >
-      <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
-      {isVerified ? "Verified" : "Not Verified"}
-    </Button>
-  );
-  
-  useEffect(() => {
-    const fetchKitchenDetails = async () => {
-      setLoading(true);
-      try {
-        const response = await getkitchenDetails(id);
-        setKitchenData(response.data);
-        setStatus(response.data.status);
-      } catch (error:any) {
-        console.error("Error fetching kitchen details:", error);
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchKitchenDetails();
-  }, [id]);
+
+//   const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
+//     <Button
+//       variant={isVerified ? "success" : "danger"}
+//       className="d-flex align-items-center gap-2 px-3 py-2"
+//     >
+//       <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
+//       {isVerified ? "Verified" : "Not Verified"}
+//     </Button>
+//   );
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       setLoading(true);
       try {
         const response = await getMenuItemsByKitchen(id);
-        if (response?.data?.items_id) {
+        if (response.data && response.data.items_id) {
           const items = response.data.items_id;
           const transformedData = transformFoodData(items);
           setGroupedItems(transformedData);
+
           const firstCategory = Object.keys(transformedData)[0];
-          if (firstCategory) setActiveKey(firstCategory);
-        } else {
-          setGroupedItems({}); // No items found
-          console.log("No menu items found for this kitchen");
+          if (firstCategory) {
+            setActiveKey(firstCategory);
+          }
         }
-      } catch (error:any) {
+      } catch (error) {
         console.error("Error fetching menu items:", error);
-        // FIX THE TOAST
+        toast.error("Failed to load menu items");
       } finally {
         setLoading(false);
       }
@@ -197,63 +226,29 @@ function KitchensDetails() {
     fetchMenuItems();
   }, [id]);
 
-  const handleAddToCart = (item: FoodItem) => {
-    setCartItems((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.item_name === item.item_name);
-      if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.item_name === item.item_name
-            ? { ...cartItem, quantity: (cartItem.quantity || 0) + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { ...item, quantity: 1 }];
+  useEffect(() => {
+    const fetchKitchenDetails = async () => {
+      setLoading(true);
+      try {
+        const response = await getkitchenDetails(id);
+        setKitchenData(response.data);
+        setStatus(response.data.status);
+      } catch (error) {
+        console.error("Error fetching kitchen details:", error);
+        toast.error("Failed to load kitchen details");
+      } finally {
+        setLoading(false);
       }
-    });
-    toast.success(`${item.item_name} added to cart`);
-  };
-
-  const handleRemoveFromCart = (item: { item_name: string }) => {
-    setCartItems((prevCart) =>
-      prevCart.filter((cartItem) => cartItem.item_name !== item.item_name)
-    );
-    toast.info(`${item.item_name} removed from cart`);
-  };
-
-  const handleProceedToCheckout = async () => {
-    setLoading(true);
-    try {
-      const response = await createNewkitchenMenu(id, cartItems);
-      if (response && response.status) {
-        toast.success(response.message);
-        setCartItems([]);
-      } else {
-        toast.error(response?.message || "An unexpected error occurred");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusToggle = async () => {
-    try {
-      const response = await toggleKitchenStatus(id);
-      if (response.status) {
-        setStatus((prev) => !prev);
-        toast.success(response.message);
-      } else {
-        toast.error(response.message || "Failed to toggle kitchen status.");
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Error toggling kitchen status.");
-    }
-  };
+    };
+    fetchKitchenDetails();
+  }, [id]);
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -264,36 +259,6 @@ function KitchensDetails() {
   if (!kitchenData) {
     return <div className="alert alert-warning">No kitchen data found</div>;
   }
-
-  const CheckoutBar = ({ cartItems, onProceed }: any) => {
-    if (!cartItems?.length) return null;
-    return (
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "white",
-          padding: "1rem",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-          zIndex: 1000,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <span className="fw-bold">
-            {cartItems.reduce((sum: any, item: any) => sum + (item.quantity || 0), 0)} items
-          </span>
-        </div>
-        <Button variant="primary" onClick={onProceed}>
-          Proceed to Checkout
-        </Button>
-      </div>
-    );
-  };
 
   return (
     <div className="container-fluid px-4 py-3">
@@ -344,19 +309,33 @@ function KitchensDetails() {
                   justifyContent: "center",
                 }}
               >
-                <i className="mdi mdi-check text-white" style={{ fontSize: "14px" }}></i>
+                <i
+                  className="mdi mdi-check text-white"
+                  style={{ fontSize: "14px" }}
+                ></i>
               </div>
             </div>
           </Col>
-          <Col xs={12} md={6} className="text-center text-md-start mt-4 mt-md-0">
+          <Col
+            xs={12}
+            md={6}
+            className="text-center text-md-start mt-4 mt-md-0"
+          >
             <div className="d-flex flex-column h-100">
               <h2
                 className="text-white mb-3"
-                style={{ fontSize: "2rem", fontWeight: "600", lineHeight: "1.2" }}
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: "600",
+                  lineHeight: "1.2",
+                }}
               >
                 {kitchenData?.kitchen_name}
               </h2>
-              <div className="mb-3" style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                className="mb-3"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 {[
                   { icon: "account", text: "Dine Eas" },
                   { icon: "email", text: kitchenData?.owner_email },
@@ -367,45 +346,61 @@ function KitchensDetails() {
                     className="d-flex align-items-center gap-2 mb-2"
                     style={{ color: "rgba(255, 255, 255, 0.9)" }}
                   >
-                    <i className={`mdi mdi-${item.icon}`} style={{ fontSize: "18px" }}></i>
+                    <i
+                      className={`mdi mdi-${item.icon}`}
+                      style={{ fontSize: "18px" }}
+                    ></i>
                     <span style={{ fontSize: "0.95rem" }}>{item.text}</span>
                   </div>
                 ))}
               </div>
               <div className="d-flex gap-2">
-                {[status ? "Active" : "Inactive", "Organic", "Veg"].map((badge, index) => (
-                  <Badge
-                    key={index}
-                    className="rounded-pill px-2 py-1"
-                    style={{
-                      backgroundColor:
-                        badge === "Inactive" ? "rgba(200, 200, 200, 0.9)" : "rgba(255, 255, 255, 0.9)",
-                      fontSize: "0.75rem",
-                      fontWeight: "500",
-                      cursor: badge === "Active" || badge === "Inactive" ? "pointer" : "default",
-                    }}
-                    onClick={
-                      badge === "Active" || badge === "Inactive" ? () => handleStatusToggle() : undefined
-                    }
-                  >
-                    <i
-                      className={`mdi mdi-${
-                        badge === "Active"
-                          ? "check-circle text-success"
-                          : badge === "Inactive"
-                          ? "close-circle text-secondary"
-                          : badge === "Organic"
-                          ? "leaf text-success"
-                          : "food-apple text-success"
-                      } me-1`}
-                    ></i>
-                    {badge}
-                  </Badge>
-                ))}
+                {[status ? "Active" : "Inactive", "Organic", "Veg"].map(
+                  (badge, index) => (
+                    <Badge
+                      key={index}
+                      className="rounded-pill px-2 py-1"
+                      style={{
+                        backgroundColor:
+                          badge === "Inactive"
+                            ? "rgba(200, 200, 200, 0.9)"
+                            : "rgba(255, 255, 255, 0.9)",
+                        fontSize: "0.75rem",
+                        fontWeight: "500",
+                        cursor:
+                          badge === "Active" || badge === "Inactive"
+                            ? "pointer"
+                            : "default",
+                      }}
+                      onClick={
+                        badge === "Active" || badge === "Inactive"
+                          ? () => handleStatusToggle()
+                          : undefined
+                      }
+                    >
+                      <i
+                        className={`mdi mdi-${
+                          badge === "Active"
+                            ? "check-circle text-success"
+                            : badge === "Inactive"
+                            ? "close-circle text-secondary"
+                            : badge === "Organic"
+                            ? "leaf text-success"
+                            : "food-apple text-success"
+                        } me-1`}
+                      ></i>
+                      {badge}
+                    </Badge>
+                  )
+                )}
               </div>
             </div>
           </Col>
-          <Col xs={12} md={3} className="d-flex justify-content-md-end mt-4 mt-md-0">
+          <Col
+            xs={12}
+            md={3}
+            className="d-flex justify-content-md-end mt-4 mt-md-0"
+          >
             <div className="d-flex gap-2">
               <Button
                 variant="light"
@@ -441,104 +436,76 @@ function KitchensDetails() {
       </div>
       <Row className="mb-4 g-3">
         <Col md={6}>
-        <Card className="h-100 shadow-sm">
-  <Card.Body>
-    <div className="d-flex justify-content-between align-items-start mb-3">
-      <h5 className="card-title text-bold text-black">
-        FSSAI License
-      </h5>
-      <VerificationButton isVerified={kitchenData?.isapproved || false} />
-    </div>
-    <div className="mb-3">
-      <p className="mb-2">
-        <strong>Certificate Number:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
-      </p>
-      <p className="mb-2">
-        <strong>Licence owner:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
-      </p>
-      <p className="mb-2">
-        <strong>Expiry Date:</strong>{" "}
-        {kitchenData?.fssaiDetails[0]?.expiry_date}
-      </p>
-    </div>
-    {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
-      <img
-        src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
-        alt="FSSAI Certificate"
-        className="img-fluid rounded"
-        style={{
-          maxHeight: "150px",
-          objectFit: "cover",
-          width: "100%",
-        }}
-      />
-    )}
-  </Card.Body>
-</Card>
+          <Card className="h-100 shadow-sm">
+            <Card.Body>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">FSSAI License</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
+              </div>
+              {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
+                <img
+                  src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
+                  alt="FSSAI Certificate"
+                  className="img-fluid rounded"
+                  style={{
+                    maxHeight: "150px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                />
+              )}
+            </Card.Body>
+          </Card>
         </Col>
 
         <Col md={6}>
           <Card className="h-100 shadow-sm">
-  <Card.Body>
-    <div className="d-flex justify-content-between align-items-start mb-3">
-      <h5 className="card-title text-bold text-black">PAN Details</h5>
-      <VerificationButton isVerified={kitchenData?.isapproved || false} />
-    </div>
-    <div className="mb-3">
-      <p className="mb-2">
-        <strong>PAN Number:</strong>{" "}
-        {kitchenData?.panDetails[0]?.pan_card_number}
-      </p>
-      <p className="mb-2">
-        <strong>Card Holder:</strong>{" "}
-        {kitchenData?.panDetails[0]?.pan_card_user_name}
-      </p>
-    </div>
-    {kitchenData?.panDetails?.[0]?.pan_card_image && (
-      <img
-        src={kitchenData.panDetails[0].pan_card_image}
-        alt="PAN Card"
-        className="img-fluid rounded"
-        style={{ maxHeight: "150px", objectFit: "cover" }}
-      />
-    )}
-  </Card.Body>
-</Card>
+            <Card.Body>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">PAN Details</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
+              </div>
+              {kitchenData?.panDetails?.[0]?.pan_card_image && (
+                <img
+                  src={kitchenData.panDetails[0].pan_card_image}
+                  alt="PAN Card"
+                  className="img-fluid rounded"
+                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                />
+              )}
+            </Card.Body>
+          </Card>
         </Col>
+
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-            <div className="d-flex justify-content-between align-items-start mb-3">
-  <h5 className="card-title text-bold text-black">
-    GST Registration
-  </h5>
-  <VerificationButton isVerified={kitchenData?.isapproved || false} />
-</div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>GST Number:</strong> {kitchenData?.gstDetails[0]?.gst_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Expiry Date:</strong> {kitchenData?.gstDetails[0]?.expiry_date}
-                </p>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <h5 className="card-title text-bold text-black">GST Registration</h5>
+                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
                 <img
                   src={kitchenData.gstDetails[0].gst_certificate_image}
                   alt="GST Certificate"
                   className="img-fluid rounded"
-                  style={{ maxHeight: "150px", objectFit: "cover", width: "100%" }}
+                  style={{
+                    maxHeight: "150px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
                 />
               )}
             </Card.Body>
           </Card>
         </Col>
+
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
-              <h5 className="card-title text-bold text-black mb-3">Location Details</h5>
+              <h5 className="card-title text-bold text-black mb-3">
+                Location Details
+              </h5>
               <p className="card-text mb-4">
                 {[
                   kitchenData?.addresses?.[0]?.street_address,
@@ -551,7 +518,10 @@ function KitchensDetails() {
                   .filter(Boolean)
                   .join(", ") || "No address available"}
               </p>
-              <div className="map-container" style={{ height: "200px", width: "100%" }}>
+              <div
+                className="map-container"
+                style={{ height: "200px", width: "100%" }}
+              >
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.769314809927!2d76.32868731479452!3d10.031941892830645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080c31865e74c1%3A0x4742c12c4f2a903f!2sCochin%20University%20of%20Science%20and%20Technology!5e0!3m2!1sen!2sin!4v1645446314016!5m2!1sen!2sin"
                   width="100%"
@@ -566,6 +536,7 @@ function KitchensDetails() {
           </Card>
         </Col>
       </Row>
+
       <Card className="shadow-sm mb-4">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -585,7 +556,10 @@ function KitchensDetails() {
             </Button>
           </div>
           {loading ? (
-            <div className="d-flex justify-content-center align-items-center" style={{ height: "100px" }}>
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "100px" }}
+            >
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
@@ -617,7 +591,13 @@ function KitchensDetails() {
                                   backgroundColor: "#fff",
                                 }}
                               >
-                                <div style={{ width: "150px", height: "150px", marginBottom: "10px" }}>
+                                <div
+                                  style={{
+                                    width: "150px",
+                                    height: "150px",
+                                    marginBottom: "10px",
+                                  }}
+                                >
                                   <img
                                     src={item.custom_image || "https://via.placeholder.com/150"}
                                     alt={item.item_name}
@@ -629,19 +609,26 @@ function KitchensDetails() {
                                     }}
                                   />
                                 </div>
-                                <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>{item.item_name}</h6>
-                                <small style={{ color: "#666", marginBottom: "10px" }}>{item.description}</small>
+                                <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>
+                                  {item.item_name}
+                                </h6>
+                                <small style={{ color: "#666", marginBottom: "10px" }}>
+                                  {item.description}
+                                </small>
                                 <div style={{ marginBottom: "10px" }}>
                                   <strong>Price:</strong> ${item.item_price?.toFixed(2) || "N/A"}
                                 </div>
                                 <div style={{ marginBottom: "10px", width: "100%" }}>
-                                  <strong>Ingredients:</strong>{" "}
+                                  <strong>Ingredients:</strong>
                                   {item.ingredients && item.ingredients.length > 0 ? (
-                                    <span style={{ textAlign: "center" }}>{item.ingredients.join(", ")}</span>
+                                    <span style={{ textAlign: "center" }}>
+                                      {item.ingredients.join(", ")}
+                                    </span>
                                   ) : (
                                     <span className="text-muted">No ingredients available</span>
                                   )}
                                 </div>
+
                                 <div style={{ marginBottom: "10px", width: "100%" }}>
                                   <strong>Reviews:</strong>
                                   {item.reviews_id && item.reviews_id.length > 0 ? (
@@ -649,37 +636,12 @@ function KitchensDetails() {
                                       {item.reviews_id
                                         .map(
                                           (review) =>
-                                            `"${review.comment}" (${Array(review.rating)
-                                              .fill("★")
-                                              .join("")}${Array(5 - review.rating)
-                                              .fill("☆")
-                                              .join("")})`
+                                            `"${review.comment}" (${Array(review.rating).fill("★").join("")}${Array(5 - review.rating).fill("☆").join("")})`
                                         )
                                         .join(", ")}
                                     </span>
                                   ) : (
                                     <span className="text-muted">No reviews yet.</span>
-                                  )}
-                                </div>
-                                <div style={{ width: "100%" }}>
-                                  {cartItems.some((cartItem) => cartItem.item_name === item.item_name) ? (
-                                    <Button
-                                      variant="outline-danger"
-                                      size="sm"
-                                      onClick={() => handleRemoveFromCart(item)}
-                                      style={{ width: "100%" }}
-                                    >
-                                      Remove
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      variant="outline-primary"
-                                      size="sm"
-                                      onClick={() => handleAddToCart(item)}
-                                      style={{ width: "100%" }}
-                                    >
-                                      Add
-                                    </Button>
                                   )}
                                 </div>
                               </div>
@@ -695,11 +657,8 @@ function KitchensDetails() {
           )}
         </Card.Body>
       </Card>
-      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </div>
   );
 }
 
-export default KitchensDetails;
-
-
+export default KitchensDetailss;

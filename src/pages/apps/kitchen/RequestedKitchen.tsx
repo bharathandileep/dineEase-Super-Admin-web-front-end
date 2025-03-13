@@ -117,9 +117,9 @@ function RequestedKitchen() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </Col>
-                <Col className="col-auto">
+                {/* <Col className="col-auto">
                   <p className="text-muted mt-2">Total Unapproved Kitchen: {totalItems}</p>
-                </Col>
+                </Col> */}
               </Row>
             </Card.Body>
           </Card>
@@ -156,10 +156,11 @@ function RequestedKitchen() {
                         <i className="mdi mdi-email me-1"></i>
                         {item.owner_email}
                       </p>
-                      <p className="text-muted">
+                     
+                      {/* <p className="text-muted">
                         <i className="mdi mdi-domain me-1"></i>
-                        {item.categoryDetails[0]?.name || "Uncategorized"}
-                      </p>
+                        {item.categoryDetails[0]?.name || 'Uncategorized'}
+                      </p> */}
                       <div className="d-flex justify-content-between mt-3">
                         <Button variant="outline-info" onClick={() => navigate(`/apps/kitchen/${item._id}`)}>
                           View Details
