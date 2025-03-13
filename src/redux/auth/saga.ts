@@ -18,6 +18,8 @@ import { authApiResponseSuccess, authApiResponseError } from "./actions";
 // constants
 import { AuthActionTypes } from "./constants";
 import { googleAuth } from "../../server/admin/auth";
+import jwtDecode from "jwt-decode";
+import { authAccessCredentials } from "../../server/admin/login";
 
 interface UserData {
   payload: {
@@ -45,9 +47,29 @@ function* login({
     const user = response.data;
     api.setLoggedInUser(user);
     setAuthorization(user["token"]);
-    yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, user));
+    const loginUser = api.getLoggedInUserInfo();
+    yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, loginUser));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.LOGIN_USER, error));
+    api.setLoggedInUser(null);
+    setAuthorization(null);
+  }
+}
+
+function* empLogin({
+  payload: { username, password },
+  type,
+}: UserData): SagaIterator {
+  try {
+    console.log("heloo")
+    const response = yield call(authAccessCredentials, { username, password });
+    const user = response.data;
+    api.setLoggedInUser(user);
+    setAuthorization(user["token"]);
+    const loginUser = api.getLoggedInUserInfo();
+    yield put(authApiResponseSuccess(AuthActionTypes.EMP_LOGIN_USER, loginUser));
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.EMP_LOGIN_USER, error));
     api.setLoggedInUser(null);
     setAuthorization(null);
   }
@@ -71,14 +93,15 @@ function* googleLogin(): SagaIterator {
     const response = yield call(googleAuth);
     const user = response.data;
     api.setLoggedInUser(user);
-    setAuthorization(user['token']);
-    yield put(authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, response));
+    setAuthorization(user["token"]);
+    const loginUser = api.getLoggedInUserInfo();
+    yield put(
+      authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, loginUser)
+    );
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.GOOGLE_LOGIN_USER, error));
+    setAuthorization(null);
   }
-}
-export function* watchGoogleLogin() {
-  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
 }
 
 function* signup({
@@ -88,15 +111,19 @@ function* signup({
     const response = yield call(signupApi, { fullname, email, password });
     const user = response.data;
     api.setLoggedInUser(user);
-    setAuthorization(user['token']);
-    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
+    setAuthorization(user["token"]);
+    yield put(
+      authApiResponseSuccess(
+        AuthActionTypes.SIGNUP_USER,
+        api.getLoggedInUserInfo()
+      )
+    );
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error));
     api.setLoggedInUser(null);
     setAuthorization(null);
   }
 }
-
 function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
   try {
     const response = yield call(forgotPasswordApi, { username });
@@ -107,10 +134,16 @@ function* forgotPassword({ payload: { username } }: UserData): SagaIterator {
     yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
   }
 }
+
+export function* watchGoogleLogin() {
+  yield takeEvery(AuthActionTypes.GOOGLE_LOGIN_USER, googleLogin);
+}
 export function* watchLoginUser() {
   yield takeEvery(AuthActionTypes.LOGIN_USER, login);
 }
-
+export function* watchEmpLoginUser() {
+  yield takeEvery(AuthActionTypes.EMP_LOGIN_USER, empLogin);
+}
 export function* watchLogout() {
   yield takeEvery(AuthActionTypes.LOGOUT_USER, logout);
 }
@@ -130,7 +163,8 @@ function* authSaga() {
     fork(watchSignup),
     fork(watchForgotPassword),
     fork(watchGoogleLogin),
+    fork(watchEmpLoginUser),
   ]);
 }
- 
+
 export default authSaga;

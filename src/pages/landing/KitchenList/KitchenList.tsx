@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
-
+ 
 const KitchenList = () => {
   interface Kitchen {
     id: string;
@@ -12,43 +12,54 @@ const KitchenList = () => {
     address: string;
     cuisine?: string[];
     specialty?: string;
+    slug: string;
   }
-  
+
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
     const fetchUserKitchens = async () => {
       try {
         const response = await getUserApprovedKitchens();
-        setKitchens(response.data.kitchens); // Adjust based on your backend response structure
+        setKitchens(response.data.kitchens);
         setLoading(false);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching kitchens:", error);
         setLoading(false);
       }
     };
-
+ 
     fetchUserKitchens();
   }, []);
+
+  const handleNavigateKitchen = (kitchen: Kitchen) => {
+    const kitchenViewDetails = {
+      role: "Kitchen",
+      kitchenName: kitchen.name,
+      kitchenId: kitchen.id,
+      slug: kitchen.slug,
+    };
+    localStorage.setItem("accessDetails", JSON.stringify(kitchenViewDetails));
+    navigate(`/apps/${kitchen?.slug}`)
+  };
 
   if (loading) {
     return (
       <div
-      className="text-center py-5"
-      style={{
-        backgroundColor: 'white',
-        height: '100vh', 
-        margin: 0,
-      }}
-    >
-      <h3>Loading kitchens...</h3>
-    </div>
-    
+        className="text-center py-5"
+        style={{
+          backgroundColor: "white",
+          height: "100vh",
+          margin: 0,
+        }}
+      >
+        <h3>Loading kitchens...</h3>
+      </div>
     );
   }
-
+ 
   return (
     <>
       <DashboardNavbar />
@@ -57,7 +68,10 @@ const KitchenList = () => {
           Featured Kitchens
           <div
             className="w-25 mx-auto mt-2"
-            style={{ height: "3px", background: "linear-gradient(to right, #3498db, #2ecc71)" }}
+            style={{
+              height: "3px",
+              background: "linear-gradient(to right, #3498db, #2ecc71)",
+            }}
           ></div>
         </h2>
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5">
@@ -69,7 +83,9 @@ const KitchenList = () => {
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
-                    src={kitchen.profilePic || "https://via.placeholder.com/220"} // Fallback image
+                    src={
+                      kitchen.profilePic || "https://via.placeholder.com/220"
+                    } // Fallback image
                     className="card-img-top"
                     alt={kitchen.name}
                     style={{
@@ -87,7 +103,9 @@ const KitchenList = () => {
                 </div>
                 <div
                   className="card-body"
-                  style={{ background: "linear-gradient(to bottom, #ffffff, #f8f9fa)" }}
+                  style={{
+                    background: "linear-gradient(to bottom, #ffffff, #f8f9fa)",
+                  }}
                 >
                   <h5 className="card-title fw-bold mb-3">{kitchen.name}</h5>
                   <p
@@ -112,7 +130,10 @@ const KitchenList = () => {
                     <i className="bi bi-award-fill me-2 text-success"></i>
                     Specialty: {kitchen.specialty || "Not specified"}
                   </p>
-                  <button className="btn btn-primary w-100 rounded-pill hover-button">
+                  <button
+                    className="btn btn-primary w-100 rounded-pill hover-button"
+                    onClick={() => handleNavigateKitchen(kitchen)}
+                  >
                     Explore Menu
                   </button>
                 </div>
@@ -120,7 +141,7 @@ const KitchenList = () => {
             </div>
           ))}
         </div>
-
+ 
         {/* Add Your Kitchen button section */}
         <div className="text-center mt-5">
           <button
@@ -135,7 +156,9 @@ const KitchenList = () => {
             <i className="bi bi-building-add me-2"></i>
             Add Your Kitchen
           </button>
-          <p className="text-muted mt-3">Join our network of partner Kitchens</p>
+          <p className="text-muted mt-3">
+            Join our network of partner Kitchens
+          </p>
         </div>
       </div>
     </>

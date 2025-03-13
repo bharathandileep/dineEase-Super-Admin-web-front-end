@@ -76,12 +76,12 @@ const FoodItemsList = () => {
         console.log("Updated page to:", currentPage + 1);
         console.log("Has more items:", currentPage < pagination.totalPages);
       } else {
-        toast.error("Failed to load items.");
+        toast.error(response.message);
         setHasMore(false);
       }
     } catch (error: any) {
       console.error("Error fetching items:", error);
-      toast.error("An error occurred while fetching items.");
+      toast.error(error.message);
       setHasMore(false);
     } finally {
       setLoading(false);
@@ -135,11 +135,11 @@ const FoodItemsList = () => {
           setItems((prevItems) => prevItems.filter((item) => item._id !== id));
           setTotalItems((prev) => prev - 1);
         } else {
-          toast.error("Failed to delete item.");
+          toast.error(response.message);
         }
       } catch (error: any) {
         console.error("Error deleting item:", error);
-        toast.error("An error occurred while deleting the item.");
+        toast.error(error.message);
       }
     }
   };

@@ -55,12 +55,12 @@ const OrgEmployeeDetails = () => {
           if (response.status) {
             setEmployee(response.data);
           } else {
-            toast.error("Failed to load employee details.");
+            toast.error(response.message);
           }
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching employee details:", error);
-        toast.error("An error occurred while fetching employee details.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -77,12 +77,12 @@ const OrgEmployeeDetails = () => {
             toast.success("Employee deleted successfully!");
             navigate("/apps/organizations/employee/list"); // Redirect to the employee list after deletion
           } else {
-            toast.error("Failed to delete employee.");
+            toast.error(response.message);
           }
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error deleting employee:", error);
-        toast.error("An error occurred while deleting the employee.");
+        toast.error(error.message);
       }
     }
   };
@@ -103,12 +103,12 @@ const OrgEmployeeDetails = () => {
               : null
           );
         } else {
-          toast.error("Failed to update status.");
+          toast.error(response.message);
         }
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error updating employee status:", error);
-      toast.error("An error occurred while updating status.");
+      toast.error(error.message);
     }
   };
 

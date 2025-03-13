@@ -1,25 +1,17 @@
+// src/components/layout/VerticalLayout.tsx
 import React, { Suspense, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Container } from "react-bootstrap";
-
-// redux
 import { RootState, AppDispatch } from "../redux/store";
 import { LayoutTypes, SideBarTypes } from "../constants/layout";
 import { changeSidebarType } from "../redux/actions";
-
-// constants
-// import { LayoutTypes, SideBarTypes } from '../constants';
-
-// utils
 import { changeHTMLAttribute } from "../utils";
 import { useViewport } from "../hooks/useViewPort";
 
-// code splitting and lazy loading
-// https://blog.logrocket.com/lazy-loading-components-in-react-16-6-6cea535c0b52
 const Topbar = React.lazy(() => import("./Topbar"));
 const LeftSidebar = React.lazy(() => import("./LeftSidebar"));
 const Footer = React.lazy(() => import("./Footer"));
-const RightSidebar = React.lazy(() => import("./RightSidebar/"));
+const RightSidebar = React.lazy(() => import("./RightSidebar"));
 
 const loading = () => <div className=""></div>;
 
@@ -57,22 +49,14 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
 
   const [isMenuOpened, setIsMenuOpened] = useState<boolean>(false);
 
-  /*
-  layout defaults
-  */
-
   useEffect(() => {
     if (width < 1140) {
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_FULL));
-      // document.getElementsByTagName('html')[0].classList.add('sidebar-enable')
     } else if (width >= 1140) {
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_DEFAULT));
-      document
-        .getElementsByTagName("html")[0]
-        .classList.remove("sidebar-enable");
+      document.getElementsByTagName("html")[0].classList.remove("sidebar-enable");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width]);
+  }, [width, dispatch]);
 
   useEffect(() => {
     changeHTMLAttribute("data-layout", LayoutTypes.LAYOUT_VERTICAL);
@@ -88,7 +72,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
 
   useEffect(() => {
     changeHTMLAttribute("data-layout-width", layoutWidth);
-  }, [dispatch, layoutWidth]);
+  }, [layoutWidth]);
 
   useEffect(() => {
     changeHTMLAttribute("data-menu-position", menuPosition);
@@ -114,12 +98,8 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     changeHTMLAttribute("data-sidenav-user", showSidebarUserInfo);
   }, [showSidebarUserInfo]);
 
-  /**
-   * Open the menu when having mobile screen
-   */
   const openMenu = () => {
     setIsMenuOpened((prevState) => !prevState);
-
     if (document.body) {
       if (isMenuOpened) {
         document.body.classList.remove("sidebar-enable");
@@ -129,8 +109,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     }
   };
 
-  const isCondensed: boolean =
-    leftSideBarType === SideBarTypes.LEFT_SIDEBAR_TYPE_CONDENSED;
+  const isCondensed: boolean = leftSideBarType === SideBarTypes.LEFT_SIDEBAR_TYPE_CONDENSED;
 
   return (
     <>
@@ -163,4 +142,5 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
     </>
   );
 };
+
 export default VerticalLayout;

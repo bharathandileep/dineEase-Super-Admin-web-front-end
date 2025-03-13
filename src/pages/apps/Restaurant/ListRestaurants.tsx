@@ -28,7 +28,7 @@ const RestaurantDetails: React.FC = () => {
         const response = await fetchrestaurantApi(currentPage, itemsPerPage);
         setKitchens(response.data);
         setTotalPages(response.pagination.totalPages);
-      } catch (error) {
+      } catch (error:any) {
         setError((error as Error).message);
       } finally {
         setLoading(false);
@@ -75,7 +75,7 @@ const RestaurantDetails: React.FC = () => {
         // setTotalPages(response.pagination.totalPages);
         // setToastMessage("Kitchen deleted successfully");
         // setShowToast(true);
-      } catch (error) {
+      } catch (error:any) {
         setToastMessage("Error deleting kitchen");
         setToastMessage("Error deleting company");
         setShowToast(true);

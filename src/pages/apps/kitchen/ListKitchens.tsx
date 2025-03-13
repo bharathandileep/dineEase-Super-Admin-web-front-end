@@ -69,11 +69,11 @@ function ListKitchens() {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load kitchens.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching kitchens:", error);
-      toast.error("An error occurred while fetching kitchens.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);

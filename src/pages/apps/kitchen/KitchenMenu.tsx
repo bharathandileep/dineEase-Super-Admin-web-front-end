@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -60,7 +57,7 @@ function OurMenu() {
         const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
         const response = await getKitchenMenus(hardcodedKitchenId);
         setKitchenMenuItems(response.data);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching kitchen details:", error);
       }
     };
@@ -79,7 +76,7 @@ function OurMenu() {
         toast.success(response.message);
         setIsRemoved(true);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching kitchen details:", error);
     }
   };

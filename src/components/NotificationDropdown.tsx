@@ -1,4 +1,6 @@
 
+
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
@@ -6,7 +8,7 @@ import SimpleBar from "simplebar-react";
 import classNames from "classnames";
 
 import { NotificationItem } from "../layouts/Topbar";
-import { getUserNotifications } from "../server/admin/notification";
+import { getAllNotifications } from "../server/admin/notification"; // Update the import to fetch all notifications
 
 const notificationContainerStyle = {
   maxHeight: "300px",
@@ -18,16 +20,13 @@ const notificationShowContainerStyle = {
 };
 
 interface NotificationDropdownProps {
-  userId: string;
   notifications?: NotificationItem[];
-  
 }
 
 interface NotificationContainerStyle {
   maxHeight?: string;
   display?: string;
-  kitchenImage?: string; 
-
+  kitchenImage?: string;
 }
 
 const NotificationDropdown = (props: NotificationDropdownProps) => {
@@ -47,12 +46,12 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
     );
   };
 
-  
   const fetchNotifications = async () => {
     try {
-      const notifications = await getUserNotifications("67a1083b3c9f01a384e9683c");
-      setNotifications(notifications);
-      console.log(notifications)
+      // Fetch all notifications instead of user-specific notifications
+      const allNotifications = await getAllNotifications("");
+      setNotifications(allNotifications);
+      console.log(allNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -63,7 +62,6 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
     if (dropdownOpen && !props.notifications) {
     }
   }, [dropdownOpen]);
-
 
   const handleClearNotification = (index: number) => {
     const updatedNotifications = [...notifications];
@@ -82,7 +80,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
       >
         <i className="fe-bell noti-icon font-22"></i>
         <span className="badge bg-danger rounded-circle noti-icon-badge">
-          {notifications.length}
+          {notifications?.length}
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0">
@@ -101,7 +99,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
           </div>
           <SimpleBar className="px-1" style={notificationContentStyle}>
             <h5 className="text-muted font-13 fw-normal mt-2">Today</h5>
-            {(notifications || []).map((item, i) => {
+            {(notifications || [])?.map((item, i) => {
               return (
                 <Link to="#" className="dropdown-item p-0 notify-item card unread-noti shadow-none mb-1" key={i + "-noti"}                >
                   {item.avatar ? (

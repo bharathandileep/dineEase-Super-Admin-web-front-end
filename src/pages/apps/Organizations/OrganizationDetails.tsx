@@ -119,7 +119,7 @@ function OrganizationDetails() {
         const response = await getOrgDetails(id);
         setOrgData(response.data);
         setStatus(response.data.status);
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);
@@ -138,9 +138,9 @@ function OrganizationDetails() {
         toast.success(response.message);
         navigate("/apps/organizations/list")
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error deleting  details:", error);
-      toast.error("An error occurred while deleting organisation details.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

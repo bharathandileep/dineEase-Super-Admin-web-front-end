@@ -63,10 +63,10 @@ function ListOrganizations() {
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
-        toast.error("Failed to load organizations.");
+        toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("An error occurred while fetching organizations.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);

@@ -14,6 +14,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 const OrgEmployeeManagement = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const OrgEmployeeManagement = () => {
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+ const [organizationDetails, setOrganizationsDetails] = useState(getAccessDetailsFromLocalStorage())
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -48,11 +50,11 @@ const OrgEmployeeManagement = () => {
         if (response.status) {
           setDesignations(response.data.designations);
         } else {
-          toast.error("Failed to load designations.");
+          toast.error(response.message);
         }
         await fetchCountries();
-      } catch (error) {
-        toast.error("An error occurred while loading initial data.");
+      } catch (error:any) {
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -67,7 +69,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setCountries(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -78,7 +80,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setStates(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -89,7 +91,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setCities(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -100,7 +102,7 @@ const OrgEmployeeManagement = () => {
       if (data?.success) {
         setDistricts(data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -143,10 +145,10 @@ const OrgEmployeeManagement = () => {
       setErrors(locationErrors);
       return;
     }
-
+  
     try {
       const formDataObj = new FormData();
-      formDataObj.append("entity_id", "67aad807dcbe481e9d130696");
+      formDataObj.append("entity_id", organizationDetails.orgId);
       formDataObj.append("entity_type", "Organization");
       formDataObj.append("designation", data.designation);
       formDataObj.append("username", data.username);
@@ -182,15 +184,15 @@ const OrgEmployeeManagement = () => {
         } else {
           toast.error(response.message || "Failed to add employee.");
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error adding employee:", error);
-        toast.error("Error adding employee. Please try again.");
+        toast.error(error.message);
       } finally {
         setOrgEmpLoading(false);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Unexpected error:", error);
-      toast.error("Unexpected error occurred. Please try again.");
+      toast.error(error.message);
       setOrgEmpLoading(false);
     }
   };

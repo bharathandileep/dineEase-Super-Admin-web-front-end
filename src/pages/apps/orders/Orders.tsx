@@ -93,7 +93,7 @@ const OrdersPage: React.FC = () => {
       } else {
         console.error('Unexpected API Response Structure:', response);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching orders:", error);
     }
   };
@@ -117,7 +117,7 @@ const OrdersPage: React.FC = () => {
   //     const response: OrderResponse = await getOrders();
   //     setOrders(response.data);
   //     setFilteredOrders(response.data || []); // Initialize filteredOrders with all data
-  //   } catch (error) {
+  //   } catch (error:any) {
   //     if (error instanceof Error) {
   //       console.error('Error fetching orders:', error.message);
   //       setError(error.message);
@@ -135,7 +135,7 @@ const OrdersPage: React.FC = () => {
 
       setShowAddModal(false);
       toast.success('Order added successfully');
-    } catch (error) {
+    } catch (error:any) {
       if (error instanceof Error) {
         console.error('Error adding order', error.message);
         toast.error('Error adding order');
@@ -156,7 +156,7 @@ const OrdersPage: React.FC = () => {
 
       setShowEditModal(false);
       setCurrentOrder(null);
-    } catch (error) {
+    } catch (error:any) {
       if (error instanceof Error) {
         toast.error('Error updating order');
         console.error('Error updating order:', error.message);
@@ -179,7 +179,7 @@ const OrdersPage: React.FC = () => {
       toast.success(` deleted successfully`);
       setShowConfirmDelete(false);
       setOrderToDelete(null);
-    } catch (error) {
+    } catch (error:any) {
       if (error instanceof Error) {
         toast.error('Error deleting order');
         console.error('Error deleting order:', error.message);
@@ -203,7 +203,7 @@ const OrdersPage: React.FC = () => {
       onCloseAddModal();
       setError(null);
       toast.success('Order added successfully');
-    } catch (error) {
+    } catch (error:any) {
       if (error instanceof Error) {
         toast.error('Error adding order');
         console.error('Error adding order:', error.message);
@@ -395,7 +395,7 @@ const OrdersPage: React.FC = () => {
               onCloseEditModal();
               setError(null);
               toast.success('Order updated successfully');
-            } catch (error) {
+            } catch (error:any) {
               if (error instanceof Error) {
                 toast.error('Error updating order');
                 console.error('Error updating order:', error.message);

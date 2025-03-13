@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -378,7 +379,7 @@ const Topbar = ({
               <LanguageDropdown />
             </li> */}
             <li className="dropdown notification-list">
-              <NotificationDropdown userId="user-id-placeholder" notifications={Notifications} />
+              <NotificationDropdown notifications={Notifications} />
             </li>
             <li className="dropdown">
               <ProfileDropdown

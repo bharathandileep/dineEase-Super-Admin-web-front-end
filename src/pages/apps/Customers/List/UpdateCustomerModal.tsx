@@ -40,7 +40,7 @@ const UpdateCustomerModal: React.FC<UpdateCustomerModalProps> = ({ show, onHide,
         const updatedCustomer = await updateCustomerApi(customer._id, formData);
         onUpdateCustomer(updatedCustomer);
         onHide();
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating customer:', error);
         setError('Error updating customer');
       } finally {

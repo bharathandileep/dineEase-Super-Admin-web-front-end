@@ -38,7 +38,7 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({
 
       const data = await response.json();
       return data.data; // Adjust based on your backend response structure
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching employees from API:", error);
       return []; // Return an empty array in case of error to prevent map issues
     }
@@ -60,7 +60,7 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({
 
   //     const data = await response.json();
   //     return data.data; // Ensure this matches the actual structure of your API response
-  //   } catch (error) {
+  //   } catch (error:any) {
   //     console.error("Error fetching food products from API:", error);
   //     return []; // Return an empty array in case of error to prevent map issues
   //   }
@@ -87,7 +87,7 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({
       }
   
       return data.data; 
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching food products from API:", error);
       return []; // Prevents the map error by ensuring we return an array
     }

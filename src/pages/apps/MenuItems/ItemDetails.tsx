@@ -29,11 +29,11 @@ const ItemDetails = () => {
           setItem(response.data);
           console.log("Item data:", response.data); // For debugging
         } else {
-          toast.error("Failed to load item details.");
+          toast.error(response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching item details:", error);
-        toast.error("An error occurred while fetching item details.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -53,11 +53,11 @@ const ItemDetails = () => {
           toast.success("Item deleted successfully!");
           navigate("/apps/menu-item/new");
         } else {
-          toast.error("Failed to delete item.");
+          toast.error(response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error deleting item:", error);
-        toast.error("An error occurred while deleting the item.");
+        toast.error(error.message);
       }
     }
   };
@@ -70,11 +70,11 @@ const ItemDetails = () => {
         setItem(prev => prev ? { ...prev, status: response.data.status } : null);
         toast.success("Item status updated successfully!");
       } else {
-        toast.error("Failed to update status.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error updating status:", error);
-      toast.error("An error occurred while updating status.");
+      toast.error(error.message);
     }
   };
 
