@@ -233,5 +233,18 @@ export const getUnapprovedKitchens = async (query: any) => {
     throw error;
   }
 }
+
+// export const approveKitchens = async(id:string | undefined)=>{
+//   try{
+//     const response = await axiosInstance.patch(
+//       apiConfig.kitchens.approveKitchens(id)
+//     );
+//     return response.data;
+
+//   }
+//   catch(error:any){
+//     console.log("Error:",error.response?.data || error.message);
+//   }
+// }
  
  

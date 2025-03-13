@@ -50,7 +50,7 @@ interface FormData {
   expiryDate: string;
   category: string;
   subcategoryName: string;
-  isapproved?: boolean;
+ // isapproved?: boolean;
 }
 
 const initialFormData: FormData = {
@@ -76,7 +76,7 @@ const initialFormData: FormData = {
   panCardImage: "",
   category: "",
   subcategoryName: "",
-  isapproved: true,
+ // isapproved: true,
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {
@@ -640,6 +640,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                             </div>
                           </div>
 
+                           
                           <div className='col-12'>
                             <div className='form-group'>
                               <label className='form-label'>
@@ -661,7 +662,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>Country</label>
@@ -687,7 +688,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>State</label>
@@ -714,7 +715,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>District</label>
@@ -744,7 +745,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>City</label>
@@ -771,10 +772,15 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
+ 
 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Pincode</label>
+                     
+
+                 
+
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Pincode</label>
                               <input
                                 type='text'
                                 name='pincode'

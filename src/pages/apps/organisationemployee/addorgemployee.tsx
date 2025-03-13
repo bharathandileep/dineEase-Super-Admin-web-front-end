@@ -371,33 +371,6 @@ const OrgEmployeeManagement = () => {
                     </div>
                   </Col>
 
-                  {/* City Selection */}
-                  <Col md={6}>
-                    <div className="mb-3">
-                      <label className="form-label">City</label>
-                      <select
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className={`form-control ${
-                          errors.city ? "is-invalid" : ""
-                        }`}
-                        disabled={!formData.state}
-                      >
-                        <option value="">Select City</option>
-                        {cities.map((city) => (
-                          <option key={city._id} value={city.id}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.city && (
-                        <div className="invalid-feedback">{errors.city}</div>
-                      )}
-                    </div>
-                  </Col>
-
-                  {/* District Selection */}
                   <Col md={6}>
                     <div className="mb-3">
                       <label className="form-label">District</label>
@@ -427,6 +400,35 @@ const OrgEmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
+
+
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <select
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.city ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city) => (
+                          <option key={city._id} value={city.id}>
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city && (
+                        <div className="invalid-feedback">{errors.city}</div>
+                      )}
+                    </div>
+                  </Col>
+
+                  {/* District Selection */}
+           
 
                   <Col md={6}>
                     <FormInput

@@ -111,18 +111,25 @@ function RequestedOrganization() {
         <Col>
           <Card>
             <Card.Body>
-              <Row className="justify-content-between">
-                <Col className="col-auto">
-                  <Form.Control
-                    type="search"
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+              <Row className='justify-content-between'>
+                <Col className='col-auto'>
+                  <form className='d-flex align-items-center'>
+                    <div>
+                      <input
+                        type='search'
+                        className='form-control my-1 my-lg-0'
+                        placeholder='Search'
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </form>
                 </Col>
-                <Col className="col-auto">
-                  <p className="text-muted mt-2">Total Unapproved Organizations: {totalItems}</p>
-                </Col>
+                {/* <Col className='col-auto'>
+                  <p className="text-muted mt-2">
+                    Total Unapproved Organizations: {totalItems}
+                  </p>
+                </Col> */}
               </Row>
             </Card.Body>
           </Card>
@@ -167,10 +174,10 @@ function RequestedOrganization() {
                         <i className="mdi mdi-account-group me-1"></i>
                         {item.no_of_employees} Employees
                       </p>
-                      <p className="text-muted">
+                      {/* <p className="text-muted">
                         <i className="mdi mdi-domain me-1"></i>
-                        {item.categoryDetails[0]?.name || "Uncategorized"}
-                      </p>
+                        {item.categoryDetails[0]?.name || 'Uncategorized'}
+                      </p> */}
                       <div className="d-flex justify-content-between mt-3">
                         <Button variant="outline-info" onClick={() => navigate(`/apps/organizations/${item._id}`)}>
                           View Details

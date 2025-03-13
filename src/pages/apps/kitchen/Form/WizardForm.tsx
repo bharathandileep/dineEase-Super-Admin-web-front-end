@@ -18,11 +18,11 @@ import {
   getDistrictsByState,
   getStatesByCountry,
 } from "../../../../server/admin/addressDetails";
-
+ 
 interface WizardFormProps {
   initialData?: any;
 }
-
+ 
 interface FormData {
   kitchen_name: string;
   role: string;
@@ -69,7 +69,7 @@ interface FormData {
     status: boolean;
   }>;
 }
-
+ 
 const initialFormData: FormData = {
   kitchen_name: "",
   kitchen_status: "Active",
@@ -113,7 +113,7 @@ const initialFormData: FormData = {
     },
   ],
 };
-
+ 
 export function WizardForm({ initialData }: WizardFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -127,16 +127,16 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
-
+ 
   const { id } = useParams();
   const navigate = useNavigate();
-
+ 
   const steps = [
     { number: 1, title: "Personal Info" },
     { number: 2, title: "Documents" },
     { number: 3, title: "Timings" },
   ];
-
+ 
   const requiredFields = [
     "kitchen_name",
     "kitchen_owner_name",
@@ -166,55 +166,55 @@ export function WizardForm({ initialData }: WizardFormProps) {
     "ffsai_certificate_image",
     "ffsai_expiry_date",
   ];
-
+ 
   useEffect(() => {
     const filledFields = requiredFields.filter((field) => {
       const value = formData[field as keyof FormData];
       return value !== "" && value !== undefined && value !== null;
     }).length;
-
+ 
     const workingDaysFilled =
       formData.working_days.length > 0 &&
       formData.working_days.some((day) => day.day && day.is_open !== undefined)
         ? 1
         : 0;
-
+ 
     const totalFields = requiredFields.length + 1;
     const totalFilled = filledFields + workingDaysFilled;
     const progressPercentage = Math.round((totalFilled / totalFields) * 100);
-
+ 
     setProgress(progressPercentage);
   }, [formData]);
-
+ 
   const validateStep1 = () => {
     const newErrors: Partial<FormData & { working_days: string }> = {};
     if (!formData.kitchen_name) newErrors.kitchen_name = "Required";
     else if (!/^[A-Za-z\s]+$/.test(formData.kitchen_name))
       newErrors.kitchen_name = "Only alphabets are allowed";
-
+ 
     if (!formData.kitchen_owner_name) newErrors.kitchen_owner_name = "Required";
     else if (!/^[A-Za-z\s]+$/.test(formData.kitchen_owner_name))
       newErrors.kitchen_owner_name = "Only alphabets are allowed";
-
+ 
     if (!formData.owner_email) newErrors.owner_email = "Required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.owner_email))
       newErrors.owner_email = "Invalid email";
-
+ 
     if (!formData.owner_phone_number) newErrors.owner_phone_number = "Required";
     else if (!/^\d{10}$/.test(formData.owner_phone_number))
       newErrors.owner_phone_number = "Invalid phone number";
-
+ 
     if (!formData.restaurant_type) newErrors.restaurant_type = "Required";
     else if (!/^[A-Za-z\s]+$/.test(formData.restaurant_type))
       newErrors.restaurant_type = "Only alphabets are allowed";
-
+ 
     if (!formData.kitchen_type) newErrors.kitchen_type = "Required";
-
+ 
     if (!formData.kitchen_phone_number)
       newErrors.kitchen_phone_number = "Required";
     else if (!/^\d{10}$/.test(formData.kitchen_phone_number))
       newErrors.kitchen_phone_number = "Invalid phone number";
-
+ 
     if (!formData.kitchen_image) newErrors.kitchen_image = "Required";
     if (!formData.address_type) newErrors.address_type = "Required";
     if (!formData.street_address) newErrors.street_address = "Required";
@@ -225,24 +225,24 @@ export function WizardForm({ initialData }: WizardFormProps) {
     if (!formData.country) newErrors.country = "Required";
     if (!formData.category) newErrors.category = "Required";
     if (!formData.subcategoryName) newErrors.subcategoryName = "Required";
-
+ 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const validateStep2 = () => {
     const newErrors: Partial<FormData & { [key: string]: string }> = {};
     if (!formData.pan_card_number)
       newErrors.pan_card_number = "Invalid PAN number (must be 10 elements)";
     else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan_card_number))
       newErrors.pan_card_number = "Invalid PAN number (must be 10 elements)";
-
+ 
     if (!formData.pan_card_user_name) newErrors.pan_card_user_name = "Required";
     else if (!/^[A-Za-z\s]+$/.test(formData.pan_card_user_name))
       newErrors.pan_card_user_name = "Only alphabets are allowed";
-
+ 
     if (!formData.pan_card_image) newErrors.pan_card_image = "Required";
-
+ 
     if (!formData.gst_number)
       newErrors.gst_number = "Invalid GST number (must be 15 elements)";
     else if (
@@ -251,31 +251,31 @@ export function WizardForm({ initialData }: WizardFormProps) {
       )
     )
       newErrors.gst_number = "Invalid GST number (must be 15 elements)";
-
+ 
     if (!formData.gst_certificate_image)
       newErrors.gst_certificate_image = "Required";
     if (!formData.gst_expiry_date) newErrors.gst_expiry_date = "Required";
-
+ 
     if (!formData.ffsai_certificate_number)
       newErrors.ffsai_certificate_number =
         "Invalid FSSAI number (must be 14 digits and start with '1')";
     else if (!/^1\d{13}$/.test(formData.ffsai_certificate_number))
       newErrors.ffsai_certificate_number =
         "Invalid FSSAI number (must be 14 digits and start with '1')";
-
+ 
     if (!formData.ffsai_card_owner_name)
       newErrors.ffsai_card_owner_name = "Required";
     else if (!/^[A-Za-z\s]+$/.test(formData.ffsai_card_owner_name))
       newErrors.ffsai_card_owner_name = "Only alphabets are allowed";
-
+ 
     if (!formData.ffsai_certificate_image)
       newErrors.ffsai_certificate_image = "Required";
     if (!formData.ffsai_expiry_date) newErrors.ffsai_expiry_date = "Required";
-
+ 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const validateStep3 = () => {
     const newErrors: { [key: string]: string | undefined } = {};
     if (formData.working_days.length === 0) {
@@ -294,7 +294,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         }
       });
     }
-
+ 
     if (formData.pre_ordering_options.length > 0) {
       formData.pre_ordering_options.forEach((option, index) => {
         if (!option.day)
@@ -318,11 +318,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
         }
       });
     }
-
+ 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+ 
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -331,7 +331,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching countries:", error);
     }
   };
-
+ 
   const fetchStates = async (countryId: string) => {
     try {
       const data = await getStatesByCountry(countryId);
@@ -340,7 +340,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching states:", error);
     }
   };
-
+ 
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -349,7 +349,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching districts:", error);
     }
   };
-
+ 
   const fetchCities = async (stateId: string) => {
     try {
       const data = await getCitiesByState(stateId);
@@ -358,7 +358,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       console.error("Error fetching cities:", error);
     }
   };
-
+ 
   const handleNext = () => {
     if (currentStep === 1) {
       if (validateStep1()) setCurrentStep(2);
@@ -371,11 +371,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
       else toast.error("Please complete all required fields in Step 3 correctly.");
     }
   };
-
+ 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
-
+ 
   const handleEdit = async () => {
     setLoading(true);
     try {
@@ -390,7 +390,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setLoading(false);
     }
   };
-
+ 
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -406,13 +406,13 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setLoading(false);
     }
   };
-
+ 
   const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
+ 
     if (name === "country") {
       await fetchStates(value);
       setFormData((prev) => ({ ...prev, state: "", city: "", district: "" }));
@@ -421,12 +421,12 @@ export function WizardForm({ initialData }: WizardFormProps) {
       await fetchDistricts(value);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
     }
-
+ 
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
-
+ 
   const handleArrayChange = (
     field: keyof FormData,
     index: number,
@@ -446,7 +446,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       }));
     }
   };
-
+ 
   const addArrayItem = (field: keyof FormData) => {
     if (field === "working_days") {
       setFormData((prev) => ({
@@ -473,25 +473,25 @@ export function WizardForm({ initialData }: WizardFormProps) {
       }));
     }
   };
-
+ 
   const removeArrayItem = (field: keyof FormData, index: number) => {
     setFormData((prev) => ({
       ...prev,
       [field]: prev[field].filter((_: any, i: number) => i !== index),
     }));
   };
-
+ 
   // Helper function to count meal types selected for a specific day
   const getMealTypeCountForDay = (day: string) => {
     return formData.pre_ordering_options.filter(
       (option) => option.day === day && option.meal_type
     ).length;
   };
-
+ 
   useEffect(() => {
     fetchCountries();
   }, []);
-
+ 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -508,7 +508,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     };
     fetchCategories();
   }, []);
-
+ 
   useEffect(() => {
     if (categoryId) {
       const fetchSubcategories = async () => {
@@ -524,14 +524,14 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setSubcategories([]);
     }
   }, [categoryId]);
-
+ 
   useEffect(() => {
     if (!id) return;
     const fetchKitchenDetails = async () => {
       try {
         const response = await getkitchenDetails(id);
         const kitchenData = response.data;
-
+ 
         setFormData((prevFormData) => ({
           ...prevFormData,
           kitchen_name: kitchenData?.kitchen_name || "",
@@ -579,7 +579,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           working_days: kitchenData?.working_days || [],
           pre_ordering_options: kitchenData?.pre_ordering_options || [],
         }));
-
+ 
         if (kitchenData?.addresses?.[0]?.country_id) {
           await fetchStates(kitchenData.addresses[0].country_id);
         }
@@ -595,7 +595,8 @@ export function WizardForm({ initialData }: WizardFormProps) {
     };
     fetchKitchenDetails();
   }, [id]);
-
+ 
+ 
   return (
     <div className="container py-2">
       <div className="row justify-content-center">
@@ -955,7 +956,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                     </div>
                   </div>
                 )}
-
+ 
                 {currentStep === 2 && (
                   <div>
                     <h2 className="card-title mb-4">PAN, GST & FSSAI Details</h2>
@@ -1473,7 +1474,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                     </div>
                   </div>
                 )}
-
+ 
                 <div className="d-flex justify-content-between mt-4">
                   {currentStep > 1 && (
                     <button

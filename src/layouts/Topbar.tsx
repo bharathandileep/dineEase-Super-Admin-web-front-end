@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -39,6 +40,7 @@ export interface NotificationItem {
   icon?: string;
   avatar?: string;
   bgColor?: string;
+  message?: string;
 }
 
 // get the notifications

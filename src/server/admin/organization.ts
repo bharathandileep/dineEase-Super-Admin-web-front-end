@@ -189,6 +189,7 @@ export const getAllCategoriesByStatus = async () => {
   }
 };
 
+
 export const getUnapprovedOrganizations = async (query: any) => {
   try {
     const response = await axiosInstance.get(apiConfig.organization.getUnapprovedOrganizations(query));
@@ -196,4 +197,34 @@ export const getUnapprovedOrganizations = async (query: any) => {
   } catch (error: any) {
     throw new Error(extractErrorMessage(error));
   }
+}
+
+
+
+
+// export const approveorganizations = async(id:string | undefined)=>{
+//   try{
+//     const response = await axiosInstance.patch(
+//       apiConfig.organization.approveorganizations(id)
+//     );
+//     return response.data;
+
+//   }
+//   catch(error:any){
+//     console.log("Error:",error.response?.data || error.message);
+//   }
+// }
+
+
+export const getAllKitches = async (query:any) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchens.getAllkitchens(query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching kitchens:", error.response?.data || error.message);
+    throw error;
+  }
 };
+
