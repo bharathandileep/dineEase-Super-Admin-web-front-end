@@ -125,12 +125,12 @@ function ListKitchens() {
           <h3 className='page-title m-0' style={{ color: "#fff" }}>
             Kitchens
           </h3>
-          <Link
+          {/* <Link
             to='/apps/kitchen/new'
             className='btn btn-danger waves-effect waves-light'
           >
             <i className='mdi mdi-plus-circle me-1'></i> Add New Kitchen
-          </Link>
+          </Link> */}
         </div>
       </div>
       <Row>

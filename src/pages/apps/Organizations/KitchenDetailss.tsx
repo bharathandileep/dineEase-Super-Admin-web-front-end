@@ -402,7 +402,7 @@ function KitchensDetailss() {
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
             <div className="d-flex gap-2">
-              <Button
+              {/* <Button
                 variant="light"
                 className="d-flex align-items-center gap-1 px-3 py-1"
                 style={{
@@ -415,8 +415,8 @@ function KitchensDetailss() {
               >
                 <i className="mdi mdi-pencil"></i>
                 Edit
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 variant="danger"
                 className="d-flex align-items-center gap-1 px-3 py-1"
                 style={{
@@ -429,7 +429,7 @@ function KitchensDetailss() {
               >
                 <i className="mdi mdi-delete"></i>
                 Delete
-              </Button>
+              </Button> */}
             </div>
           </Col>
         </Row>
