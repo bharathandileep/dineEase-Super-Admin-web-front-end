@@ -1,10 +1,12 @@
 import jwtDecode from "jwt-decode";
 import axios, { AxiosInstance } from "axios";
 import config from "../../config";
- 
+import { authApiResponseSuccess } from "../../redux/actions";
+import { AuthActionTypes } from "../../redux/auth/constants";
+
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 14 * 60 * 1000;
- 
+const REFRESH_INTERVAL = 60 * 60 * 1000;
+
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: config.API_URL,
@@ -36,12 +38,13 @@ const refreshTokenLogic = async (): Promise<string> => {
         withCredentials: true,
       }
     );
- 
     const accessToken = response.data.data;
-    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(accessToken));
+    new APICore().setLoggedInUser(accessToken);
+    const userInfo = new APICore().getLoggedInUserInfo();
+    authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, userInfo);
     setAuthorization(accessToken);
     return accessToken;
-  } catch (error) {
+  } catch (error:any) {
     localStorage.removeItem(AUTH_SESSION_KEY);
     window.location.href = "/auth/login";
     throw error;
@@ -66,7 +69,7 @@ const setupTokenRefreshInterval = () => {
     if (new APICore().isUserAuthenticated()) {
       try {
         await refreshTokenLogic();
-      } catch (error) {
+      } catch (error:any) {
         console.error("Periodic token refresh failed:", error);
       }
     }
@@ -120,7 +123,10 @@ class APICore {
  
   getLoggedInUserInfo = () => {
     const user = this.getLoggedInUser();
-    return jwtDecode(user);
+    if (user) {
+      return jwtDecode(user);
+    }
+    return null;
   };
  
   isUserAuthenticated = () => {
@@ -128,18 +134,19 @@ class APICore {
     if (!user) {
       return false;
     }
-    const decoded: any = this.getLoggedInUserInfo();
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
-      console.warn("Please log in again");
-      return false;
-    } else {
+    // fix later
+    // const decoded: any = this.getLoggedInUserInfo();
+    // const currentTime = Date.now() / 1000;
+    // if (decoded.exp < currentTime) {
+    //   console.warn("Please log in again");
+    //   return false;
+    // } 
+    else {
       return true;
     }
   };
  
   setLoggedInUser = (session: any) => {
-    console.log(session, "haii");
     if (session) {
       localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session?.token));
     } else {

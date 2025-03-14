@@ -26,7 +26,6 @@ interface WizardFormProps {
 }
 
 interface FormData {
-  // Step 1
   organizationName: string;
   managerName: string;
   registerNumber: string;
@@ -41,7 +40,6 @@ interface FormData {
   state: string;
   pincode: string;
   country: string;
-  // Step 2
   panNumber: string;
   panCardUserName: string;
   panCardImage?: any;
@@ -50,7 +48,7 @@ interface FormData {
   expiryDate: string;
   category: string;
   subcategoryName: string;
-  isapproved?: boolean;
+ // isapproved?: boolean;
 }
 
 const initialFormData: FormData = {
@@ -76,7 +74,7 @@ const initialFormData: FormData = {
   panCardImage: "",
   category: "",
   subcategoryName: "",
-  isapproved: true,
+ // isapproved: true,
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {
@@ -92,6 +90,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [progress, setProgress] = useState(0); // Added progress state
   const { userLoggedIn, user } = useSelector((state: RootState) => state.Auth);
 
   const navigate = useNavigate();
@@ -102,9 +101,47 @@ export function WizardForm({ initialData }: WizardFormProps) {
     { number: 2, title: "Documents" },
   ];
 
+  // Define required fields
+  const requiredFields = [
+    "organizationName",
+    "managerName",
+    "registerNumber",
+    "contactNumber",
+    "email",
+    "numberOfEmployees",
+    "organizationLogo",
+    "addressType",
+    "streetAddress",
+    "district",
+    "city",
+    "state",
+    "pincode",
+    "country",
+    "panNumber",
+    "panCardUserName",
+    "panCardImage",
+    "gstNumber",
+    "gstCertificateImage",
+    "expiryDate",
+    "category",
+    "subcategoryName",
+  ];
+
+  // Calculate progress
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof FormData];
+      return value !== "" && value !== undefined && value !== null;
+    }).length;
+
+    const totalFields = requiredFields.length;
+    const progressPercentage = Math.round((filledFields / totalFields) * 100);
+    setProgress(progressPercentage);
+  }, [formData]);
+
   const validateStep1 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep1 remains unchanged)
     if (!formData.organizationName) {
       newErrors.organizationName = "Required";
     } else if (!/^[A-Za-z\s]+$/.test(formData.organizationName)) {
@@ -149,7 +186,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   const validateStep2 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep2 remains unchanged)
     if (!formData.panNumber) {
       newErrors.panNumber = "Invalid PAN number (must be 10 elements)";
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNumber)) {
@@ -182,11 +219,12 @@ export function WizardForm({ initialData }: WizardFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ... (fetchCountries, fetchStates, fetchDistricts, fetchCities remain unchanged)
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
       if (data?.success) setCountries(data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -195,7 +233,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getStatesByCountry(countryName);
       if (data?.success) setStates(data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -204,7 +242,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getDistrictsByState(stateId);
       if (data?.success) setDistricts(data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -213,19 +251,28 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getCitiesByState(stateName);
       if (data?.success) setCities(data.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching cities:", error);
     }
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      initialData ? handleEdit() : handleSubmit();
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      } else {
+        toast.error("Please complete all required fields in Step 1 correctly.");
+      }
+    } else if (currentStep === 2) {
+      if (validateStep2()) {
+        initialData ? handleEdit() : handleSubmit();
+      } else {
+        toast.error("Please complete all required fields in Step 2 correctly.");
+      }
     }
   };
 
+  // ... (handleBack, handleEdit, handleSubmit, handleChange remain unchanged)
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
@@ -258,14 +305,12 @@ export function WizardForm({ initialData }: WizardFormProps) {
         toast.success(response.message);
         user
           ? navigate("/apps/organizations/list")
-          : navigate("dashboard/organization-list");
-        navigate("/dashboard/organization-list");
+          : navigate("/dashboard/organization-list");
       } else {
         toast.error(response.message || "Creation failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error(error.response?.data?.message || "Something went wrong.");
+      toast.error(error.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -276,10 +321,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
       try {
         const response = await orgGetAllCategories({ page: 1, limit: 100 });
         if (response.status) setCategories(response.data.categories);
-        else toast.error("Failed to load categories.");
-      } catch (error) {
+        else toast.error(response.message);
+      } catch (error: any) {
         console.error("Error fetching categories:", error);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -295,10 +340,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
             selectedCategoryId
           );
           if (response.status) setSubcategories(response.data);
-          else toast.error("Failed to load subcategories.");
-        } catch (error) {
+          else toast.error(response.message);
+        } catch (error: any) {
           console.error("Error fetching subcategories:", error);
-          toast.error("An error occurred while fetching subcategories.");
+          toast.error(error.message);
         }
       };
       fetchSubcategories();
@@ -363,7 +408,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           gstCertificateImage:
             orgData?.gstDetails[0]?.gst_certificate_image || "",
           panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
-          isapproved: orgData?.isapproved || false, // Fetch isapproved status
+          isapproved: orgData?.isapproved || false,
         }));
 
         if (response.data.addresses?.[0]?.country_id) {
@@ -373,7 +418,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           await fetchCities(orgData?.addresses[0]?.state_id);
           await fetchDistricts(orgData?.addresses[0]?.state_id);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);
@@ -387,7 +432,30 @@ export function WizardForm({ initialData }: WizardFormProps) {
     <div className='container py-2'>
       <div className='row justify-content-center'>
         <div className='col-lg-12'>
-          <div className='card d-flex flex-column align-items-center'>
+          <div className='card d-flex flex-column align-items-center' style={{ position: "relative" }}>
+            {/* Progress Bar */}
+            <div
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                width: "200px",
+              }}
+            >
+              <div className="progress" style={{ height: "20px" }}>
+                <div
+                  className="progress-bar bg-success"
+                  role="progressbar"
+                  style={{ width: `${progress}%` }}
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  {progress}%
+                </div>
+              </div>
+            </div>
+
             <div className='col-lg-8 justify-content-center'>
               <Stepper steps={steps} currentStep={currentStep} />
             </div>
@@ -397,30 +465,22 @@ export function WizardForm({ initialData }: WizardFormProps) {
                   <div>
                     <h2 className='card-title mb-4'>Organisation Details</h2>
                     <div className='row g-3'>
-                     
-
                       <div className='col-md-6'>
                         <div className='form-group'>
-                          <label className='form-label'>
-                            Organization Name
-                          </label>
+                          <label className='form-label'>Organization Name</label>
                           <input
                             type='text'
                             name='organizationName'
                             value={formData.organizationName}
                             onChange={handleChange}
-                            className={`form-control ${
-                              errors.organizationName ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.organizationName ? "is-invalid" : ""}`}
                           />
                           {errors.organizationName && (
-                            <div className='invalid-feedback'>
-                              {errors.organizationName}
-                            </div>
+                            <div className='invalid-feedback'>{errors.organizationName}</div>
                           )}
                         </div>
                       </div>
-
+                      {/* ... (rest of Step 1 form fields remain unchanged) */}
                       <div className='col-md-6'>
                         <div className='form-group'>
                           <label className='form-label'>Manager Name</label>
@@ -641,6 +701,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                             </div>
                           </div>
 
+                           
                           <div className='col-12'>
                             <div className='form-group'>
                               <label className='form-label'>
@@ -662,7 +723,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>Country</label>
@@ -688,7 +749,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>State</label>
@@ -715,7 +776,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>District</label>
@@ -745,7 +806,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
-
+ 
                           <div className='col-md-6'>
                             <div className='form-group'>
                               <label className='form-label'>City</label>
@@ -772,10 +833,15 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               )}
                             </div>
                           </div>
+ 
 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Pincode</label>
+                     
+
+                 
+
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Pincode</label>
                               <input
                                 type='text'
                                 name='pincode'
@@ -801,6 +867,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                 {currentStep === 2 && (
                   <div>
                     <h2 className='card-title mb-4'>PAN & GST Details</h2>
+                    {/* ... (rest of Step 2 form fields remain unchanged) */}
                     <div className='mb-4'>
                       <h3 className='h5 mb-3'>PAN Details</h3>
                       <div className='row g-3'>
@@ -823,7 +890,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 {errors.panNumber}
                               </div>
                             )}
-                            {/* Example PAN Card Number structure */}
                             <small className='form-text text-muted'>
                               Example: ABCDE1234F
                             </small>
@@ -891,7 +957,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   {errors.gstNumber}
                                 </div>
                               )}
-                              {/* Example GST Number structure */}
                               <small className='form-text text-muted'>
                                 Example: 22AAAAA0000A1Z5
                               </small>

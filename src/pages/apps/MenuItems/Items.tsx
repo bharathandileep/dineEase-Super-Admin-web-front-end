@@ -34,11 +34,11 @@ const AddFoodItem = () => {
         if (response.status) {
           setCategories(response.data.categories);
         } else {
-          toast.error("Failed to load categories.");
+          toast.error( response.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching categories:", error);
-        toast.error("An error occurred while fetching categories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -55,11 +55,11 @@ const AddFoodItem = () => {
             setSubcategories(response.data);
             console.log(response.data);
           } else {
-            toast.error("Failed to load subcategories.");
+            toast.error(response.message);
           }
-        } catch (error) {
+        } catch (error:any) {
           console.error("Error fetching subcategories:", error);
-          toast.error("An error occurred while fetching subcategories.");
+          toast.error(error.message);
         }
       };
       fetchSubcategories();
@@ -107,11 +107,11 @@ const AddFoodItem = () => {
         toast.success("Item created successfully!");
         navigate("/apps/menu-items/list");
       } else {
-        toast.error("Failed to create item.");
+        toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error creating item:", error);
-      toast.error("Error creating item. Please try again.");
+      toast.error(error.message);
     } finally {
       setMenuLoading(false);
     }

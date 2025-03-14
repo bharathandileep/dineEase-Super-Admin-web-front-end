@@ -64,7 +64,7 @@ const UpdateFoodModal: React.FC<UpdateFoodModalProps> = ({ show, onHide, foodIte
         setToastMessage('Food item updated successfully!');
         setShowToast(true);
         onHide();
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating food item:', error);
         setError('Error updating food item');
         setToastMessage('Error updating food item');

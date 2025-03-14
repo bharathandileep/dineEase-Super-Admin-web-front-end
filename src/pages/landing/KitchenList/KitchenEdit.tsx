@@ -8,6 +8,7 @@ function KitchenEdit() {
    
      return (
        <div>
+        <DashboardNavbar/>
          <WizardForm initialData={isEditing} />
        </div>
      );

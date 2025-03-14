@@ -100,7 +100,7 @@ const AddkitchenCategory = ({
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Operation failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

@@ -29,9 +29,7 @@ const KitchenMenu = () => {
     const transformed = items.reduce((acc: TransformedData, item) => {
       const categoryName = item.category?.category;
       const subcategoryName = item.subcategory?.subcategoryName;
-
       if (!categoryName || !subcategoryName) {
-        console.warn("Skipping item due to missing category/subcategory:", item);
         return acc;
       }
 
@@ -60,17 +58,17 @@ const KitchenMenu = () => {
   const fetchItemDetails = async () => {
     setLoading(true);
     try {
-      const response = await listItems( { page: 1, limit: 1000 } );
-      const transformedData = transformFoodData(response.data);
+      const response = await listItems( { page: 1, limit: 1000 } );  
+      const transformedData = transformFoodData(response.data.items);
       setGroupedItems(transformedData);
 
       const firstCategory = Object.keys(transformedData)[0];
       if (firstCategory) {
         setActiveKey(firstCategory);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching items:", error);
-      toast.error("Failed to load menu items");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

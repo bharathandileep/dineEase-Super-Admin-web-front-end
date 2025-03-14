@@ -162,7 +162,7 @@ export default function MenuDetails() {
           ingredients: response.data.ingredients || [],
           price: response.data.price || null,
         });
-      } catch (error) {
+      } catch (error:any) {
         console.log(error);
       }
     };

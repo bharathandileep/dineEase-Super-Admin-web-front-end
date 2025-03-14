@@ -86,7 +86,7 @@ const SigninForm: React.FC = () => {
   };
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/auth/dashboard");
+      navigate("/auth/login");
     }
   }, [userLoggedIn, user, navigate]);
 
@@ -114,7 +114,7 @@ const SigninForm: React.FC = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
+    } catch (error:any) {
       toast.error(
         `${
           method.charAt(0).toUpperCase() + method.slice(1)
@@ -144,8 +144,8 @@ const SigninForm: React.FC = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("Sign-up failed. Please try again.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setShowLoader(false);
     }
@@ -172,8 +172,8 @@ const SigninForm: React.FC = () => {
       response.status
         ? toast.success(response.message)
         : toast.error(response.message || "OTP verification failed");
-    } catch (error) {
-      toast.error("OTP verification error. Please try again.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setShowLoader(false);
     }
@@ -193,8 +193,8 @@ const SigninForm: React.FC = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("Failed to resend OTP. Please try again.");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setShowLoader(false);
     }

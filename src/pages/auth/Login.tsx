@@ -32,13 +32,22 @@ const Login = () => {
   );
   const onSubmit = (formData: UserData) => {
     dispatch(loginUser(formData["userName"], formData["password"]));
+    const organizationViewDetails = {
+      role: "Admin",
+      adminName: "admin@123",
+      adminId: "67a1083b3c9f01a384e9683c",
+      slug: "admin",
+    };
+    localStorage.setItem(
+      "accessDetails",
+      JSON.stringify(organizationViewDetails)
+    );
   };
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/");
+      navigate(`/apps/${user.role.toLowerCase()}`);
     }
-  }, [userLoggedIn, user, navigate]); 
-
+  }, [userLoggedIn, user, navigate]);
 
   return (
     <>
@@ -66,7 +75,7 @@ const Login = () => {
               {t("Log In")}
             </Button>
           </div>
-          
+
           <div className="text-center mt-3">
             <Link to="/auth/forget-password" className="text-muted">
               {t("Forgot Password?")}

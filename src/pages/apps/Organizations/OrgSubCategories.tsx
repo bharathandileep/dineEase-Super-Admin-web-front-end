@@ -46,11 +46,11 @@ function OrgSubCategories() {
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
-          toast.error("Failed to load subcategories.");
+          toast.error(response.message);
         }
       } catch (error: any) {
         console.error("Fetch Error:", error.response?.data || error.message);
-        toast.error("An error occurred while fetching subcategories.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -122,7 +122,7 @@ function OrgSubCategories() {
       setSelectedItem(item);
       setShow(true);
     } else {
-      toast.error("Subcategory not found for editing.");
+      toast.error("Item not found.");
     }
   };
 
@@ -148,7 +148,7 @@ function OrgSubCategories() {
       }
     } catch (error: any) {
       console.error("Delete Error:", error.response?.data || error.message);
-      toast.error("Delete failed. Please try again.");
+      toast.error(error.message);
     }
   };
 

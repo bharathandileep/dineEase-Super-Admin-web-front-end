@@ -36,4 +36,11 @@ const downloadFile = ({ data, filename, mime, bom }: DownloadFile) => {
   }, 200);
 };
 
+
+export const getAccessDetailsFromLocalStorage = () => {
+  const data = localStorage.getItem("accessDetails");
+  return data ? JSON.parse(data) : null;
+};
+
+
 export { downloadFile };

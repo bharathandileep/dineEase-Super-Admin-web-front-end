@@ -32,7 +32,7 @@ const List: React.FC = () => {
         setCustomers(response.data);
         setTotalPages(response.pagination.totalPages);
         setLoading(false);
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error fetching customers:', error);
         setError((error as Error).message);
         setLoading(false);
@@ -64,7 +64,7 @@ const List: React.FC = () => {
     try {
 
       setCustomers((prevCustomer) => [...prevCustomer, newCustomer]);
-      setToastMessage(`${newCustomer.cust_name??'Unknown Customer'}  has been added successfully!`);    } catch (error) {
+      setToastMessage(`${newCustomer.cust_name??'Unknown Customer'}  has been added successfully!`);    } catch (error:any) {
       console.error('Error adding Customer:', error);
       setToastMessage('Error adding Customer');
     } finally {
@@ -75,7 +75,7 @@ const List: React.FC = () => {
     //   setCustomers((prevCustomer) => [...prevCustomer, newCustomer]);
     //   setToastMessage("Customer added successfully");
     //   setShowToast(true);
-    // } catch (error) {
+    // } catch (error:any) {
     //   console.error('Error adding customer:', error);
     //   setToastMessage("Error adding customer");
     //   setShowToast(true);
@@ -110,7 +110,7 @@ const List: React.FC = () => {
           
           setToastMessage(`${cust_name} deleted successfully`);
           setShowToast(true);
-        } catch (error) {
+        } catch (error:any) {
           console.error('Error deleting Customer:', error);
           setToastMessage('Error deleting Customer');
           setShowToast(true);
@@ -127,7 +127,7 @@ const List: React.FC = () => {
     //       setTotalPages(response.pagination.totalPages);
     //       setToastMessage("Customer deleted successfully");
     //       setShowToast(true);
-    //     } catch (error) {
+    //     } catch (error:any) {
     //       console.error('Error deleting customer:', error);
     //       setToastMessage("Error deleting customer");
     //       setShowToast(true);
@@ -149,7 +149,7 @@ const List: React.FC = () => {
         setCustomers(response.data);
         setTotalPages(response.pagination.totalPages);
         setToastMessage('Staff updated successfully');
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error updating staff:', error);
         setToastMessage('Error updating staff');
       } finally {
@@ -168,7 +168,7 @@ const List: React.FC = () => {
   //     setTotalPages(response.pagination.totalPages);
   //     setToastMessage("Customer updated successfully");
   //     setShowToast(true);
-  //   } catch (error) {
+  //   } catch (error:any) {
   //     console.error('Error updating customer:', error);
   //     setToastMessage("Error updating customer");
   //     setShowToast(true);

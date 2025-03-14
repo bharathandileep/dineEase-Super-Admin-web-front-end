@@ -1,5 +1,6 @@
 import { axiosInstance } from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
+import { emails } from "../../pages/apps/Email/data";
 
 
 export const getAllOrgEmployees = async (query:any) => {
@@ -78,6 +79,25 @@ export const deleteOrgEmployee = async (id: string) => {
     return response.data;
   } catch (error: any) {
     console.error("Error deleting organization employee:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+
+export const getEmployeeOrg = async (empEmail: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(apiConfig.orgemployee.getEmployeeOrg(empEmail));
+    const Employee = response.data;
+
+    // Extract address information from the organization employee data
+    const address = Employee.address || {};
+
+    return {
+      ...Employee,
+      address,
+    };
+  } catch (error: any) {
+    console.error("Error fetching organization employee:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };

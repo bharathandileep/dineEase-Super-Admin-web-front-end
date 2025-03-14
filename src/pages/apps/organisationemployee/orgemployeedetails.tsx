@@ -33,11 +33,11 @@ interface Employee {
   pan_image: string;
   address: {
     street_address: string;
-    city: string;
-    district?: string;
-    state?: string;
+    city: string;      // Will be changed to city_name when displaying
+    district?: string; // Will be changed to district_name when displaying
+    state?: string;    // Will be changed to state_name when displaying
     pincode?: string;
-    country?: string;
+    country?: string;  // Will be changed to country_name when displaying
   };
 }
 
@@ -55,12 +55,12 @@ const OrgEmployeeDetails = () => {
           if (response.status) {
             setEmployee(response.data);
           } else {
-            toast.error("Failed to load employee details.");
+            toast.error(response.message);
           }
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error fetching employee details:", error);
-        toast.error("An error occurred while fetching employee details.");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -77,12 +77,12 @@ const OrgEmployeeDetails = () => {
             toast.success("Employee deleted successfully!");
             navigate("/apps/organizations/employee/list"); // Redirect to the employee list after deletion
           } else {
-            toast.error("Failed to delete employee.");
+            toast.error(response.message);
           }
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error deleting employee:", error);
-        toast.error("An error occurred while deleting the employee.");
+        toast.error(error.message);
       }
     }
   };
@@ -103,12 +103,12 @@ const OrgEmployeeDetails = () => {
               : null
           );
         } else {
-          toast.error("Failed to update status.");
+          toast.error(response.message);
         }
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error updating employee status:", error);
-      toast.error("An error occurred while updating status.");
+      toast.error(error.message);
     }
   };
 
@@ -127,6 +127,16 @@ const OrgEmployeeDetails = () => {
       </div>
     );
   }
+
+  // Map the address fields to their proper display names
+  const addressDisplay = {
+    street: orgemployee.address?.street_address || "N/A",
+    city: orgemployee.address?.city || "N/A",
+    district: orgemployee.address?.district || "N/A",
+    state: orgemployee.address?.state || "N/A",
+    pincode: orgemployee.address?.pincode || "N/A",
+    country: orgemployee.address?.country || "N/A"
+  };
 
   return (
     <React.Fragment>
@@ -274,13 +284,16 @@ const OrgEmployeeDetails = () => {
               <h5 className="card-title mb-3">Address Details</h5>
               <p>
                 <MapPin size={16} className="me-2" />{" "}
-                {orgemployee.address?.street_address}
+                {addressDisplay.street}
               </p>
               <p>
-                {orgemployee.address?.city}, {orgemployee.address?.district}
+                {addressDisplay.city}, {addressDisplay.district}
               </p>
               <p>
-                {orgemployee.address?.state}, {orgemployee.address?.pincode}
+                {addressDisplay.state}, {addressDisplay.pincode}
+              </p>
+              <p>
+                {addressDisplay.country}
               </p>
             </Card.Body>
           </Card>

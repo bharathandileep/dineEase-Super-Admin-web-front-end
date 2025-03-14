@@ -22,7 +22,7 @@ const DesignationModal = ({ show, onHide, action, selectedItem }: DesignationMod
 
   const onSubmit = async (formData: any) => {
     if (!formData.designation) {
-      toast.error("All fields are required.");
+      toast.error("Please enter designation");
       return;
     }
     try {
@@ -34,8 +34,8 @@ const DesignationModal = ({ show, onHide, action, selectedItem }: DesignationMod
         toast.success("Designation created successfully!");
       }
       onHide();
-    } catch (error) {
-      toast.error("Operation failed.");
+    } catch (error:any) {
+      toast.error(error.message);
     }
   };
 
