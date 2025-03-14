@@ -85,7 +85,7 @@ const Login2 = () => {
 
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/auth/login");
+      navigate("/");
     }
   }, [userLoggedIn, user, navigate]);
 
@@ -116,7 +116,7 @@ const Login2 = () => {
             placeholder={t("Enter your password")}
             containerClass={"mb-3"}
           >
-            <Link to="/auth/login" className="text-muted float-end">
+            <Link to="/" className="text-muted float-end">
               <small>{t("Forgot your password?")}</small>
             </Link>
           </FormInput>

@@ -97,16 +97,6 @@ export interface IKitchenDetails {
   }>;
 }
 
-// const VerificationButton = () => (
-//   <Button
-//     variant="danger"
-//     className="d-flex align-items-center gap-2 px-3 py-2"
-//   >
-//     <i className="mdi mdi-close-circle-outline"></i>
-//     Not Verified
-//   </Button>
-// );
-
 function KitchensDetailss() {
   const { id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
@@ -189,16 +179,6 @@ function KitchensDetailss() {
 
     return transformed;
   };
-
-//   const VerificationButton = ({ isVerified }: { isVerified: boolean }) => (
-//     <Button
-//       variant={isVerified ? "success" : "danger"}
-//       className="d-flex align-items-center gap-2 px-3 py-2"
-//     >
-//       <i className={`mdi mdi-${isVerified ? "check-circle-outline" : "close-circle-outline"}`}></i>
-//       {isVerified ? "Verified" : "Not Verified"}
-//     </Button>
-//   );
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -439,7 +419,9 @@ function KitchensDetailss() {
           <Card className="h-100 shadow-sm">
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">FSSAI License</h5>
+                <h5 className="card-title text-bold text-black">
+                  FSSAI License
+                </h5>
                 {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
@@ -481,7 +463,9 @@ function KitchensDetailss() {
           <Card className="h-100 shadow-sm">
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">GST Registration</h5>
+                <h5 className="card-title text-bold text-black">
+                  GST Registration
+                </h5>
                 {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
@@ -536,127 +520,237 @@ function KitchensDetailss() {
           </Card>
         </Col>
       </Row>
-
-      <Card className="shadow-sm mb-4">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h4 className="mb-0">Choose Menu</h4>
-            <Button
-              variant="light"
-              className="d-flex align-items-center gap-1 px-3 py-1"
-              style={{
-                backgroundColor: "bg-success",
-                border: "none",
-                fontSize: "0.9rem",
-                height: "35px",
-              }}
-              onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
-            >
-              Our menu
-            </Button>
-          </div>
-          {loading ? (
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ height: "100px" }}
-            >
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
+      {Object.keys(groupedItems).length !== 0 ? (
+        <Card className="shadow-sm mb-4">
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="mb-0">Choose Menu</h4>
+              <Button
+                variant="light"
+                className="d-flex align-items-center gap-1 px-3 py-1"
+                style={{
+                  backgroundColor: "bg-success",
+                  border: "none",
+                  fontSize: "0.9rem",
+                  height: "35px",
+                }}
+                onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
+              >
+                Our menu
+              </Button>
             </div>
-          ) : (
-            <Tabs activeKey={activeKey} onSelect={(k: any) => setActiveKey(k)}>
-              {Object.entries(groupedItems).map(([category, subcategories]) => (
-                <Tab eventKey={category} title={category} key={category}>
-                  <Accordion>
-                    {Object.entries(subcategories).map(([subcategory, items]) => (
-                      <Accordion.Item key={subcategory} eventKey={subcategory}>
-                        <Accordion.Header>{subcategory}</Accordion.Header>
-                        <Accordion.Body>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
-                            {items.map((item, idx) => (
-                              <div
-                                key={idx}
-                                style={{
-                                  flex: "1 1 300px",
-                                  maxWidth: "300px",
-                                  border: "1px solid #ddd",
-                                  borderRadius: "8px",
-                                  padding: "15px",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  alignItems: "center",
-                                  textAlign: "center",
-                                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                                  backgroundColor: "#fff",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    width: "150px",
-                                    height: "150px",
-                                    marginBottom: "10px",
-                                  }}
-                                >
-                                  <img
-                                    src={item.custom_image || "https://via.placeholder.com/150"}
-                                    alt={item.item_name}
-                                    style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "cover",
-                                      borderRadius: "8px",
-                                    }}
-                                  />
-                                </div>
-                                <h6 style={{ marginBottom: "5px", fontSize: "18px" }}>
-                                  {item.item_name}
-                                </h6>
-                                <small style={{ color: "#666", marginBottom: "10px" }}>
-                                  {item.description}
-                                </small>
-                                <div style={{ marginBottom: "10px" }}>
-                                  <strong>Price:</strong> ${item.item_price?.toFixed(2) || "N/A"}
-                                </div>
-                                <div style={{ marginBottom: "10px", width: "100%" }}>
-                                  <strong>Ingredients:</strong>
-                                  {item.ingredients && item.ingredients.length > 0 ? (
-                                    <span style={{ textAlign: "center" }}>
-                                      {item.ingredients.join(", ")}
-                                    </span>
-                                  ) : (
-                                    <span className="text-muted">No ingredients available</span>
-                                  )}
-                                </div>
 
-                                <div style={{ marginBottom: "10px", width: "100%" }}>
-                                  <strong>Reviews:</strong>
-                                  {item.reviews_id && item.reviews_id.length > 0 ? (
-                                    <span style={{ textAlign: "center", fontSize: "0.85rem" }}>
-                                      {item.reviews_id
-                                        .map(
-                                          (review) =>
-                                            `"${review.comment}" (${Array(review.rating).fill("★").join("")}${Array(5 - review.rating).fill("☆").join("")})`
-                                        )
-                                        .join(", ")}
-                                    </span>
+            {loading ? (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "100px" }}
+              >
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : (
+              <Tabs
+                activeKey={activeKey}
+                onSelect={(k: any) => setActiveKey(k)}
+              >
+                {Object.keys(groupedItems).length === 0 ? (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "20px",
+                      fontSize: "18px",
+                      color: "#666",
+                    }}
+                  >
+                    No menus are chosen.
+                  </div>
+                ) : (
+                  Object.entries(groupedItems).map(
+                    ([category, subcategories]) => (
+                      <Tab eventKey={category} title={category} key={category}>
+                        <Accordion>
+                          {Object.entries(subcategories).map(
+                            ([subcategory, items]) => (
+                              <Accordion.Item
+                                key={subcategory}
+                                eventKey={subcategory}
+                              >
+                                <Accordion.Header>
+                                  {subcategory}
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                  {items.length === 0 ? (
+                                    <div
+                                      style={{
+                                        textAlign: "center",
+                                        fontSize: "16px",
+                                        color: "#888",
+                                      }}
+                                    >
+                                      No menus are chosen.
+                                    </div>
                                   ) : (
-                                    <span className="text-muted">No reviews yet.</span>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        gap: "15px",
+                                      }}
+                                    >
+                                      {items.map((item, idx) => (
+                                        <div
+                                          key={idx}
+                                          style={{
+                                            flex: "1 1 300px",
+                                            maxWidth: "300px",
+                                            border: "1px solid #ddd",
+                                            borderRadius: "8px",
+                                            padding: "15px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            textAlign: "center",
+                                            boxShadow:
+                                              "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                            backgroundColor: "#fff",
+                                          }}
+                                        >
+                                          <div
+                                            style={{
+                                              width: "150px",
+                                              height: "150px",
+                                              marginBottom: "10px",
+                                            }}
+                                          >
+                                            <img
+                                              src={
+                                                item.custom_image ||
+                                                "https://via.placeholder.com/150"
+                                              }
+                                              alt={item.item_name}
+                                              style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                                borderRadius: "8px",
+                                              }}
+                                            />
+                                          </div>
+                                          <h6
+                                            style={{
+                                              marginBottom: "5px",
+                                              fontSize: "18px",
+                                            }}
+                                          >
+                                            {item.item_name}
+                                          </h6>
+                                          <small
+                                            style={{
+                                              color: "#666",
+                                              marginBottom: "10px",
+                                            }}
+                                          >
+                                            {item.description}
+                                          </small>
+                                          <div style={{ marginBottom: "10px" }}>
+                                            <strong>Price:</strong> $
+                                            {item.item_price?.toFixed(2) ||
+                                              "N/A"}
+                                          </div>
+                                          <div
+                                            style={{
+                                              marginBottom: "10px",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <strong>Ingredients:</strong>
+                                            {item.ingredients &&
+                                            item.ingredients.length > 0 ? (
+                                              <span
+                                                style={{ textAlign: "center" }}
+                                              >
+                                                {item.ingredients.join(", ")}
+                                              </span>
+                                            ) : (
+                                              <span className="text-muted">
+                                                No ingredients available
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          <div
+                                            style={{
+                                              marginBottom: "10px",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <strong>Reviews:</strong>
+                                            {item.reviews_id &&
+                                            item.reviews_id.length > 0 ? (
+                                              <span
+                                                style={{
+                                                  textAlign: "center",
+                                                  fontSize: "0.85rem",
+                                                }}
+                                              >
+                                                {item.reviews_id
+                                                  .map(
+                                                    (review) =>
+                                                      `"${
+                                                        review.comment
+                                                      }" (${Array(review.rating)
+                                                        .fill("★")
+                                                        .join("")}${Array(
+                                                        5 - review.rating
+                                                      )
+                                                        .fill("☆")
+                                                        .join("")})`
+                                                  )
+                                                  .join(", ")}
+                                              </span>
+                                            ) : (
+                                              <span className="text-muted">
+                                                No reviews yet.
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
                                   )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    ))}
-                  </Accordion>
-                </Tab>
-              ))}
-            </Tabs>
-          )}
-        </Card.Body>
-      </Card>
+                                </Accordion.Body>
+                              </Accordion.Item>
+                            )
+                          )}
+                        </Accordion>
+                      </Tab>
+                    )
+                  )
+                )}
+              </Tabs>
+            )}
+          </Card.Body>
+        </Card>
+      ) : (
+        <Card className="shadow-sm mb-4">
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="mb-0">Choose Menu</h4>
+            </div>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                fontSize: "18px",
+                color: "#666",
+              }}
+            >
+              No items found
+            </div>
+          </Card.Body>
+        </Card>
+      )}
     </div>
   );
 }

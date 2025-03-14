@@ -224,7 +224,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getAllCountries();
       if (data?.success) setCountries(data.data);
-    } catch (error: any) {
+    } catch (error:any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -233,7 +233,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getStatesByCountry(countryName);
       if (data?.success) setStates(data.data);
-    } catch (error: any) {
+    } catch (error:any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -242,7 +242,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getDistrictsByState(stateId);
       if (data?.success) setDistricts(data.data);
-    } catch (error: any) {
+    } catch (error:any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -251,7 +251,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getCitiesByState(stateName);
       if (data?.success) setCities(data.data);
-    } catch (error: any) {
+    } catch (error:any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -322,7 +322,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         const response = await orgGetAllCategories({ page: 1, limit: 100 });
         if (response.status) setCategories(response.data.categories);
         else toast.error(response.message);
-      } catch (error: any) {
+      } catch (error:any) {
         console.error("Error fetching categories:", error);
         toast.error(error.message);
       } finally {
@@ -341,7 +341,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           );
           if (response.status) setSubcategories(response.data);
           else toast.error(response.message);
-        } catch (error: any) {
+        } catch (error:any) {
           console.error("Error fetching subcategories:", error);
           toast.error(error.message);
         }
@@ -418,7 +418,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           await fetchCities(orgData?.addresses[0]?.state_id);
           await fetchDistricts(orgData?.addresses[0]?.state_id);
         }
-      } catch (error: any) {
+      } catch (error:any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);

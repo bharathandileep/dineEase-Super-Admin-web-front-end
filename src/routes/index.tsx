@@ -49,8 +49,8 @@ import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee"
 import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
 import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
 import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
-import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
@@ -366,12 +366,7 @@ const organizationsAppRoutes = {
       element: <RequestedOrganization />,
       route: PrivateRoute,
     },
-    // {
-    //   path:"/apps/organizations/organizationn-menuview",
-    //   name:"Organization-Menu",
-    //   element:<OrganizationKitchenView/>,
-    //   route:PrivateRoute,
-    // },
+
     {
       path:"/apps/organizations/list-kitchens",
       name:"List of kitcehns",
@@ -568,7 +563,7 @@ const dashboardRoutes = {
   path: "/apps/:name",
   name: "Dashboard",
   route: PrivateRoute,
-  roles: ["Admin", "User"],
+  roles: ["Admin", "User",  "Employee"],
   icon: "airplay",
   element: <EcommerceDashboard />,
 };
@@ -1409,7 +1404,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/login",
+    path: "/",
     name: "Login",
     element: <Landing />,
     route: Route,
