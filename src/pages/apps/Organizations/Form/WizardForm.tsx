@@ -306,7 +306,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       const response = await createNewOrg(orgFormData);
       if (response.status) {
         toast.success(response.message);
-        user
+        user.role === "Admin"
           ? navigate("/apps/organizations/list")
           : navigate("/dashboard/organization-list");
       } else {

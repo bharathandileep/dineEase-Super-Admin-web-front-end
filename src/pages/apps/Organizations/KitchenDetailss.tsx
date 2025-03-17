@@ -128,30 +128,6 @@ function KitchensDetailss() {
     }
   };
 
-  // const handleSelectKitchen = async () => {
-  //   if (!id || !orgId) {
-  //     toast.error("Missing kitchen or organization information.");
-  //     return;
-  //   }
-  
-  //   setIsSelecting(true);
-  //   try {
-  //     const response = await selectKitchen(orgId, id);
-  //     if (response?.status) {
-  //       toast.success("Kitchen selected successfully!");
-  //       navigate("/apps/organizations/selected-kitchens");
-  //     } else {
-  //       toast.error(response?.message || "Failed to select kitchen.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error selecting kitchen:", error);
-  //     toast.error("An error occurred while selecting the kitchen.");
-  //   } finally {
-  //     setIsSelecting(false);
-  //   }
-  // };
-// Only updating the handleSelectKitchen function from your KitchensDetailss component
-// Replace this function in your existing component
 
 const handleSelectKitchen = async () => {
   if (!id || !orgId) {
@@ -164,8 +140,7 @@ const handleSelectKitchen = async () => {
     const response = await selectKitchen(orgId, id);
     if (response?.status) {
       toast.success("Kitchen selected successfully!");
-      
-      // Ask the user if they want to view the selected kitchen now
+    
       const viewNow = window.confirm("Kitchen selected successfully! Do you want to view your selected kitchen now?");
       
       if (viewNow) {
@@ -464,20 +439,6 @@ const handleSelectKitchen = async () => {
                   </>
                 )}
               </Button>
-              {/* <Button
-                variant="success"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "#28a745",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={() => navigate("/apps/organizations/selected-kitchens")}
-              >
-                <i className="mdi mdi-view-list"></i>
-                View Selected
-              </Button> */}
             </div>
           </Col>
         </Row>
