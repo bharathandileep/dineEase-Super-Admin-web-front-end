@@ -37,20 +37,21 @@ import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
 import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
 import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
 import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+
 import ListKItchens from "../pages/apps/Organizations/ListKItchens";
 import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
 
 //import Notification from "../pages/notification/Notification"
 import Notifications from "../pages/uikit/Notifications";
 import AllNotifications from "../components/AllNotifications"
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -365,12 +366,7 @@ const organizationsAppRoutes = {
       element: <RequestedOrganization />,
       route: PrivateRoute,
     },
-    // {
-    //   path:"/apps/organizations/organizationn-menuview",
-    //   name:"Organization-Menu",
-    //   element:<OrganizationKitchenView/>,
-    //   route:PrivateRoute,
-    // },
+
     {
       path:"/apps/organizations/list-kitchens",
       name:"List of kitcehns",
@@ -567,7 +563,7 @@ const dashboardRoutes = {
   path: "/apps/:name",
   name: "Dashboard",
   route: PrivateRoute,
-  roles: ["Admin", "User"],
+  roles: ["Admin", "User",  "Employee"],
   icon: "airplay",
   element: <EcommerceDashboard />,
 };
@@ -1408,7 +1404,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/login",
+    path: "/",
     name: "Login",
     element: <Landing />,
     route: Route,
