@@ -27,7 +27,6 @@ interface WizardFormProps {
 }
 
 interface FormData {
-  // Step 1
   organizationName: string;
   managerName: string;
   registerNumber: string;
@@ -42,7 +41,6 @@ interface FormData {
   state: string;
   pincode: string;
   country: string;
-  // Step 2
   panNumber: string;
   panCardUserName: string;
   panCardImage?: any;
@@ -93,6 +91,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [progress, setProgress] = useState(0); // Added progress state
   const { userLoggedIn, user } = useSelector((state: RootState) => state.Auth);
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState<any>({ email: "" });
@@ -105,9 +104,47 @@ export function WizardForm({ initialData }: WizardFormProps) {
     { number: 2, title: "Documents" },
   ];
 
+  // Define required fields
+  const requiredFields = [
+    "organizationName",
+    "managerName",
+    "registerNumber",
+    "contactNumber",
+    "email",
+    "numberOfEmployees",
+    "organizationLogo",
+    "addressType",
+    "streetAddress",
+    "district",
+    "city",
+    "state",
+    "pincode",
+    "country",
+    "panNumber",
+    "panCardUserName",
+    "panCardImage",
+    "gstNumber",
+    "gstCertificateImage",
+    "expiryDate",
+    "category",
+    "subcategoryName",
+  ];
+
+  // Calculate progress
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof FormData];
+      return value !== "" && value !== undefined && value !== null;
+    }).length;
+
+    const totalFields = requiredFields.length;
+    const progressPercentage = Math.round((filledFields / totalFields) * 100);
+    setProgress(progressPercentage);
+  }, [formData]);
+
   const validateStep1 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep1 remains unchanged)
     if (!formData.organizationName) {
       newErrors.organizationName = "Required";
     } else if (!/^[A-Za-z\s]+$/.test(formData.organizationName)) {
@@ -152,7 +189,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   const validateStep2 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep2 remains unchanged)
     if (!formData.panNumber) {
       newErrors.panNumber = "Invalid PAN number (must be 10 elements)";
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNumber)) {
@@ -185,6 +222,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ... (fetchCountries, fetchStates, fetchDistricts, fetchCities remain unchanged)
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -222,13 +260,22 @@ export function WizardForm({ initialData }: WizardFormProps) {
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      initialData ? handleEdit() : handleSubmit();
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      } else {
+        toast.error("Please complete all required fields in Step 1 correctly.");
+      }
+    } else if (currentStep === 2) {
+      if (validateStep2()) {
+        initialData ? handleEdit() : handleSubmit();
+      } else {
+        toast.error("Please complete all required fields in Step 2 correctly.");
+      }
     }
   };
 
+  // ... (handleBack, handleEdit, handleSubmit, handleChange remain unchanged)
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
@@ -261,8 +308,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         toast.success(response.message);
         user
           ? navigate("/apps/organizations/list")
-          : navigate("dashboard/organization-list");
-        navigate("/dashboard/organization-list");
+          : navigate("/dashboard/organization-list");
       } else {
         toast.error(response.message || "Creation failed. Please try again.");
       }
@@ -366,7 +412,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           gstCertificateImage:
             orgData?.gstDetails[0]?.gst_certificate_image || "",
           panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
-          isapproved: orgData?.isapproved || false, // Fetch isapproved status
+          isapproved: orgData?.isapproved || false,
         }));
 
         if (response.data.addresses?.[0]?.country_id) {

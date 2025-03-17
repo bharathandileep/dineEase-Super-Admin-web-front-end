@@ -3,11 +3,12 @@ import { apiConfig } from "../../helpers/api/apis";
  
  
  
-export const getAllKitches = async (query:any) => {
+export const getAllKitches = async (query: any) => {
   try {
-    const response = await axiosInstance.get(
-      `${apiConfig.kitchens.getAllkitchens(query)}`
-    );
+    const url = `${apiConfig.kitchens.getAllkitchens(query)}`;
+    console.log("Fetching kitchens with URL:", url); // Debug log
+    const response = await axiosInstance.get(url);
+    console.log("Kitchens Response:", response.data); // Debug log
     return response.data;
   } catch (error: any) {
     console.error("Error fetching kitchens:", error.response?.data || error.message);
@@ -85,11 +86,6 @@ export const getUserApprovedKitchens = async () => {
   }
 };
  
- 
- 
- 
- 
-//categories status
 export const kitchenCreateCategory = async (data: any) => {
   try {
     const response = await axiosInstance.post(apiConfig.kitchens.createCategory, data);

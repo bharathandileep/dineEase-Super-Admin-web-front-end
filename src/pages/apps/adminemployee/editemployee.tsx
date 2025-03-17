@@ -11,7 +11,7 @@ import { FormInput } from "../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import { 
   getAllCountries, 

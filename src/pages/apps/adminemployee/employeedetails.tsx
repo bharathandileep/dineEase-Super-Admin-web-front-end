@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeemanagment";
+import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, Mail, Phone, MapPin, Building } from "lucide-react";
 
 
