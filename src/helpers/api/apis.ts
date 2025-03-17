@@ -19,6 +19,8 @@ export const apiConfig = {
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
     accessAccount: "/user/access/login",
+    checkUserExistence: "/auth/user/present",
+    createUser: "/auth/user/new",
   },
   users: {
     getUser: "/users/:id",
@@ -253,8 +255,8 @@ export const apiConfig = {
   },
   notification: {
     generateKitchenNotification: "/notification/generate-kitchen",
-    getUserNotifications:(id:string | undefined)=>`/notification/get/${id}`,
-    getAllNotifications:"/notification/all",
-    generateOrganizationNotification:"/notification/generate-organization"
+    getUserNotifications: (id: string | undefined) => `/notification/get/${id}`,
+    getAllNotifications: "/notification/all",
+    generateOrganizationNotification: "/notification/generate-organization",
   },
 };

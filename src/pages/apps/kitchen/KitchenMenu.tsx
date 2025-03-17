@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -9,6 +8,7 @@ import {
   removeKitchenMenus,
 } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 // TypeScript interfaces
 interface MenuItem {
@@ -50,14 +50,15 @@ function OurMenu() {
   const { id } = useParams();
   const [kitchenMenuItems, setKitchenMenuItems] = useState<Menu[]>([]);
   const [isRemoved, setIsRemoved] = useState(false);
+  const userInfo = getAccessDetailsFromLocalStorage();
 
   useEffect(() => {
     const fetchKitchenMenu = async () => {
       try {
-        const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
-        const response = await getKitchenMenus(hardcodedKitchenId);
+        const kitchenId = userInfo.kitchenId;
+        const response = await getKitchenMenus(kitchenId);
         setKitchenMenuItems(response.data);
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching kitchen details:", error);
       }
     };
@@ -70,13 +71,13 @@ function OurMenu() {
 
   const handleDelete = async (itemId: string) => {
     try {
-      const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
-      const response = await removeKitchenMenus(itemId, hardcodedKitchenId);
+      const kitchenId = userInfo.kitchenId;
+      const response = await removeKitchenMenus(itemId, kitchenId);
       if (response.status) {
         toast.success(response.message);
         setIsRemoved(true);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching kitchen details:", error);
     }
   };
@@ -106,7 +107,7 @@ function OurMenu() {
 
           {/* Add Food Item Button */}
           <Link
-            to="/apps/kitchen/67c1372e962df283dc2b80eb/our-menu"
+            to={`/apps/kitchen/${userInfo.kitchenId}/our-menu`}
             className="btn btn-danger"
           >
             <i className="mdi mdi-plus me-1"></i> Add Food Item
@@ -124,8 +125,8 @@ function OurMenu() {
               className="mb-3"
             >
               <Link
-                to={`/apps/kitchen/67c1372e962df283dc2b80eb/item-details/${item?.item_id._id}`}
-              > 
+                to={`/apps/kitchen/${userInfo.kitchenId}/item-details/${item?.item_id._id}`}
+              >
                 <Card className="product-box h-100">
                   <Card.Body className="d-flex flex-column position-relative">
                     <div className="product-action position-absolute top-0 end-0 m-2">
