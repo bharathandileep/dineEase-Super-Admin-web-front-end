@@ -1,3 +1,4 @@
+
 export const apiConfig = {
   token: {
     getAccessToken: "/api/refresh-token",
@@ -125,6 +126,9 @@ export const apiConfig = {
       }&search=${query.search || ""}`,
     approveOrganization: (orgId: string | undefined) =>
       `/organization/approve/${orgId}`,
+
+    selectKitchen:(orgId: string | undefined)=>`/organization/select`,
+    getSelectedKitchen:(orgId: string | undefined)=>`/organization/${orgId}/selcted-kitchens`
   },
 
   menu: {

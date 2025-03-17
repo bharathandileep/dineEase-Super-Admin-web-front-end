@@ -48,6 +48,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url:"/apps/organizations/list-kitchens",
         parentKey:"apps-Organizations",
       },
+   
       {
         key:"Kitchen-menu",
         label:"• Kitchen Menus",
@@ -93,6 +94,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url:"/apps/organizations/requested-organizations",
         parentKey:"apps-Organizations",
       },
+      {
+        key:"selected-kitchens",
+        label:"• Selected Kitchens",
+        access:["Organization"],
+        url:"/apps/organizations/selected-kitchens",
+        parentKey:"apps-organizations"
+      }
       
     ],
   },

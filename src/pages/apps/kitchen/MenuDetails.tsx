@@ -246,6 +246,7 @@ export default function MenuDetails() {
                     </div>
                   )}
                 </div>
+                
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-center mb-4">
                     <div className="flex-grow-1">
@@ -481,6 +482,8 @@ export default function MenuDetails() {
                       </>
                     )}
                   </div>
+
+
 
                   <div className="mb-4">
                     <h2 className="fs-5 fw-semibold mb-2">Ingredients</h2>

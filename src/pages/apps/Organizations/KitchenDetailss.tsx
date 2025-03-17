@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -19,6 +20,7 @@ import { toast } from "react-toastify";
 import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
+import { selectKitchen } from "../../../server/admin/organization"; // Add this import
 
 // Define interface for menu items
 interface MenuItem {
@@ -103,9 +105,11 @@ function KitchensDetailss() {
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
+  const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
+  const orgId = localStorage.getItem('organizationId') || ''; // Get organization ID from localStorage
 
   const handleStatusToggle = async () => {
     setLoading(true);
@@ -124,6 +128,59 @@ function KitchensDetailss() {
     }
   };
 
+  // const handleSelectKitchen = async () => {
+  //   if (!id || !orgId) {
+  //     toast.error("Missing kitchen or organization information.");
+  //     return;
+  //   }
+  
+  //   setIsSelecting(true);
+  //   try {
+  //     const response = await selectKitchen(orgId, id);
+  //     if (response?.status) {
+  //       toast.success("Kitchen selected successfully!");
+  //       navigate("/apps/organizations/selected-kitchens");
+  //     } else {
+  //       toast.error(response?.message || "Failed to select kitchen.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error selecting kitchen:", error);
+  //     toast.error("An error occurred while selecting the kitchen.");
+  //   } finally {
+  //     setIsSelecting(false);
+  //   }
+  // };
+// Only updating the handleSelectKitchen function from your KitchensDetailss component
+// Replace this function in your existing component
+
+const handleSelectKitchen = async () => {
+  if (!id || !orgId) {
+    toast.error("Missing kitchen or organization information.");
+    return;
+  }
+
+  setIsSelecting(true);
+  try {
+    const response = await selectKitchen(orgId, id);
+    if (response?.status) {
+      toast.success("Kitchen selected successfully!");
+      
+      // Ask the user if they want to view the selected kitchen now
+      const viewNow = window.confirm("Kitchen selected successfully! Do you want to view your selected kitchen now?");
+      
+      if (viewNow) {
+        navigate("/apps/organizations/selected-kitchens");
+      }
+    } else {
+      toast.error(response?.message || "Failed to select kitchen.");
+    }
+  } catch (error) {
+    console.error("Error selecting kitchen:", error);
+    toast.error("An error occurred while selecting the kitchen.");
+  } finally {
+    setIsSelecting(false);
+  }
+};
   const onEdit = () => {
     navigate(`/apps/kitchen/edit/${id}`);
   };
@@ -382,38 +439,51 @@ function KitchensDetailss() {
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
             <div className="d-flex gap-2">
+              {/* Select Kitchen Button */}
               <Button
-                variant="light"
+                variant="primary"
                 className="d-flex align-items-center gap-1 px-3 py-1"
                 style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  backgroundColor: "#007bff",
                   border: "none",
                   fontSize: "0.9rem",
                   height: "35px",
                 }}
-                onClick={onEdit}
+                onClick={handleSelectKitchen}
+                disabled={isSelecting}
               >
-                <i className="mdi mdi-pencil"></i>
-                Edit
+                {isSelecting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span className="ms-1">Selecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="mdi mdi-check-circle"></i>
+                    Collab kitchen
+                  </>
+                )}
               </Button>
-              <Button
-                variant="danger"
+              {/* <Button
+                variant="success"
                 className="d-flex align-items-center gap-1 px-3 py-1"
                 style={{
-                  backgroundColor: "rgba(220, 53, 69, 0.9)",
+                  backgroundColor: "#28a745",
                   border: "none",
                   fontSize: "0.9rem",
                   height: "35px",
                 }}
-                onClick={onDelete}
+                onClick={() => navigate("/apps/organizations/selected-kitchens")}
               >
-                <i className="mdi mdi-delete"></i>
-                Delete
-              </Button>
+                <i className="mdi mdi-view-list"></i>
+                View Selected
+              </Button> */}
             </div>
           </Col>
         </Row>
       </div>
+      
+      {/* Rest of your component remains the same */}
       <Row className="mb-4 g-3">
         <Col md={6}>
           <Card className="h-100 shadow-sm">
@@ -422,7 +492,6 @@ function KitchensDetailss() {
                 <h5 className="card-title text-bold text-black">
                   FSSAI License
                 </h5>
-                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
                 <img
@@ -445,7 +514,6 @@ function KitchensDetailss() {
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">PAN Details</h5>
-                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.panDetails?.[0]?.pan_card_image && (
                 <img
@@ -466,7 +534,6 @@ function KitchensDetailss() {
                 <h5 className="card-title text-bold text-black">
                   GST Registration
                 </h5>
-                {/* <VerificationButton isVerified={kitchenData?.isapproved || false} /> */}
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
                 <img
@@ -520,6 +587,7 @@ function KitchensDetailss() {
           </Card>
         </Col>
       </Row>
+      
       {Object.keys(groupedItems).length !== 0 ? (
         <Card className="shadow-sm mb-4">
           <Card.Body>

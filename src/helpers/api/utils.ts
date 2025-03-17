@@ -25,7 +25,6 @@ const downloadFile = ({ data, filename, mime, bom }: DownloadFile) => {
   if (typeof tempLink.download === "undefined") {
     tempLink.setAttribute("target", "_blank");
   }
-
   document.body.appendChild(tempLink);
   tempLink.click();
 
@@ -41,6 +40,4 @@ export const getAccessDetailsFromLocalStorage = () => {
   const data = localStorage.getItem("accessDetails");
   return data ? JSON.parse(data) : null;
 };
-
-
 export { downloadFile };

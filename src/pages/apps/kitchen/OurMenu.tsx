@@ -148,6 +148,7 @@ const KitchenMenu = () => {
           alignItems: "center",
         }}
       >
+        
         <div>
           <span className="fw-bold">
             {cartItems.reduce(
@@ -355,8 +356,7 @@ const KitchenMenu = () => {
           </Card>
         </div>
       )}
-
-      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
+  <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </>
   );
 };
