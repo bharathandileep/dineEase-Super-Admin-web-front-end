@@ -9,9 +9,15 @@ const extractErrorMessage = (error: any) => {
 
 export const getAllOrg = async (query: any) => {
   try {
-    const response = await axiosInstance.get(`${apiConfig.organization.getAllOrganization(query)}`);
+    const url = apiConfig.organization.getAllOrganization(query);
+    console.log("Request URL:", url); // Debug log
+
+    const response = await axiosInstance.get(url);
+    console.log("Response Data:", response.data); // Debug log
+
     return response.data;
   } catch (error: any) {
+    console.error("Error in getAllOrg:", error);
     throw new Error(extractErrorMessage(error));
   }
 };
@@ -199,23 +205,6 @@ export const getUnapprovedOrganizations = async (query: any) => {
   }
 }
 
-
-
-
-// export const approveorganizations = async(id:string | undefined)=>{
-//   try{
-//     const response = await axiosInstance.patch(
-//       apiConfig.organization.approveorganizations(id)
-//     );
-//     return response.data;
-
-//   }
-//   catch(error:any){
-//     console.log("Error:",error.response?.data || error.message);
-//   }
-// }
-
-
 export const getAllKitches = async (query:any) => {
   try {
     const response = await axiosInstance.get(
@@ -228,3 +217,31 @@ export const getAllKitches = async (query:any) => {
   }
 };
 
+// In server/admin/organization.ts
+
+export const selectKitchen = async (orgId: string, kitchenId: string) => {
+  try {
+    const response = await axiosInstance.post(
+      apiConfig.organization.selectKitchen(orgId),
+      { orgId, kitchenId }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const getSelectedKitchen = async (orgId: string) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.organization.getSelectedKitchen(orgId)
+    );
+    return response.data;
+  } catch (error: any) {
+    // Handle the specific error for no kitchen selected
+    if (error.response && error.response.status === 400) {
+      return { status: false, message: "No kitchen selected", data: { kitchen: null } };
+    }
+    throw new Error(extractErrorMessage(error));
+  }
+};

@@ -37,20 +37,23 @@ import EditOrganizations from "../pages/apps/Organizations/EditOrganizations";
 import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganization";
 import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
 import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+
 import ListKItchens from "../pages/apps/Organizations/ListKItchens";
 import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
 
 //import Notification from "../pages/notification/Notification"
 import Notifications from "../pages/uikit/Notifications";
 import AllNotifications from "../components/AllNotifications"
+import OrgNotifications from "../pages/apps/Organizations/notifications/OrgNotifications";
+import KitchenNotifications from "../pages/apps/kitchen/notifications/KitchenNotifications";
+import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
+import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
+import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
+import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
+import EmployeeList from "../pages/apps/adminemployee/listemployee";
+import EditEmployee from "../pages/apps/adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -365,12 +368,7 @@ const organizationsAppRoutes = {
       element: <RequestedOrganization />,
       route: PrivateRoute,
     },
-    // {
-    //   path:"/apps/organizations/organizationn-menuview",
-    //   name:"Organization-Menu",
-    //   element:<OrganizationKitchenView/>,
-    //   route:PrivateRoute,
-    // },
+
     {
       path:"/apps/organizations/list-kitchens",
       name:"List of kitcehns",
@@ -394,6 +392,12 @@ const kitchenAppRoutes = {
       path: "/apps/kitchen/new",
       name: "Add New Kitchen",
       element: <NewKitchen />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/notifications",
+      name: "Menu Category",
+      element: <KitchenNotifications />,
       route: PrivateRoute,
     },
     {
@@ -503,6 +507,13 @@ const menuAppRoutes = {
       element: <MenuCategory />,
       route: PrivateRoute,
     },
+    {
+      path: "/apps/organizations/notifications",
+      name: "Menu Category",
+      element: <OrgNotifications />,
+      route: PrivateRoute,
+    },
+    
     {
       path: "/apps/menu/subcategory",
       name: "Menu Sub Category",

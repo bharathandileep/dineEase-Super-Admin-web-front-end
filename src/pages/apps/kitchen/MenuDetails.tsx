@@ -17,6 +17,7 @@ import {
 } from "../../../server/admin/kitchensMenuCreation";
 import { appendToFormData } from "../../../helpers/formdataAppend";
 import { toast } from "react-toastify";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 export default function MenuDetails() {
   const { kitchenId, id } = useParams();
@@ -31,14 +32,18 @@ export default function MenuDetails() {
     custom_image: "",
     ingredients: [],
     price: 0.0,
+    viewType: "both",
+    priceOrganization: 0.0,
+    priceUser: 0.0,
   });
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const userInfo = getAccessDetailsFromLocalStorage();
 
   const handleSave = async () => {
     setLoading(true);
     setFood(editedFood);
-    console.log(editedFood)
+    console.log(editedFood);
     setIsEditing(false);
     setPreviewUrl(null);
 
@@ -161,8 +166,11 @@ export default function MenuDetails() {
           ...response.data,
           ingredients: response.data.ingredients || [],
           price: response.data.price || null,
+          viewType: response.data.viewType || "both",
+          priceOrganization: response.data.price_organization || 0.0,
+          priceUser: response.data.price_user || 0.0,
         });
-      } catch (error:any) {
+      } catch (error: any) {
         console.log(error);
       }
     };
@@ -238,6 +246,7 @@ export default function MenuDetails() {
                     </div>
                   )}
                 </div>
+                
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-center mb-4">
                     <div className="flex-grow-1">
@@ -285,6 +294,66 @@ export default function MenuDetails() {
                   </div>
 
                   <div className="mb-4">
+                    <h2 className="fs-5 fw-semibold mb-2">View Type</h2>
+                    <div className="d-flex gap-3">
+                      <div className="form-check">
+                        <input
+                          type="checkbox"
+                          id="organization"
+                          checked={editedFood.viewType === "organization"}
+                          onChange={() =>
+                            setEditedFood((prev: any) => ({
+                              ...prev,
+                              viewType: "organization",
+                            }))
+                          }
+                          className="form-check-input"
+                        />
+                        <label
+                          htmlFor="organization"
+                          className="form-check-label"
+                        >
+                          Organization
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                          type="checkbox"
+                          id="user"
+                          checked={editedFood.viewType === "user"}
+                          onChange={() =>
+                            setEditedFood((prev: any) => ({
+                              ...prev,
+                              viewType: "user",
+                            }))
+                          }
+                          className="form-check-input"
+                        />
+                        <label htmlFor="user" className="form-check-label">
+                          User
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                          type="checkbox"
+                          id="both"
+                          checked={editedFood.viewType === "both"}
+                          onChange={() =>
+                            setEditedFood((prev: any) => ({
+                              ...prev,
+                              viewType: "both",
+                            }))
+                          }
+                          className="form-check-input"
+                        />
+                        <label htmlFor="both" className="form-check-label">
+                          Both
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
                     <h2 className="fs-5 fw-semibold mb-2">Description</h2>
                     {isEditing ? (
                       <textarea
@@ -306,29 +375,115 @@ export default function MenuDetails() {
                   <div className="mb-4">
                     <h2 className="fs-5 fw-semibold mb-2">Price</h2>
                     {isEditing ? (
-                      <input
-                        type="number"
-                        value={editedFood.price || ""}
-                        onChange={(e) =>
-                          setEditedFood((prev: any) => ({
-                            ...prev,
-                            price: e.target.value
-                              ? parseFloat(e.target.value)
-                              : "",
-                          }))
-                        }
-                        className="form-control w-auto"
-                        step="0.01"
-                        placeholder="Enter price"
-                      />
+                      <>
+                        {editedFood.viewType === "organization" && (
+                          <input
+                            type="number"
+                            value={editedFood.priceOrganization || ""}
+                            onChange={(e) =>
+                              setEditedFood((prev: any) => ({
+                                ...prev,
+                                priceOrganization: e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : "",
+                              }))
+                            }
+                            className="form-control w-auto mb-2"
+                            step="0.01"
+                            placeholder="Enter price for organization"
+                          />
+                        )}
+                        {editedFood.viewType === "user" && (
+                          <input
+                            type="number"
+                            value={editedFood.priceUser || ""}
+                            onChange={(e) =>
+                              setEditedFood((prev: any) => ({
+                                ...prev,
+                                priceUser: e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : "",
+                              }))
+                            }
+                            className="form-control w-auto mb-2"
+                            step="0.01"
+                            placeholder="Enter price for user"
+                          />
+                        )}
+                        {editedFood.viewType === "both" && (
+                          <>
+                            <input
+                              type="number"
+                              value={editedFood.priceOrganization || ""}
+                              onChange={(e) =>
+                                setEditedFood((prev: any) => ({
+                                  ...prev,
+                                  priceOrganization: e.target.value
+                                    ? parseFloat(e.target.value)
+                                    : "",
+                                }))
+                              }
+                              className="form-control w-auto mb-2"
+                              step="0.01"
+                              placeholder="Enter price for organization"
+                            />
+                            <input
+                              type="number"
+                              value={editedFood.priceUser || ""}
+                              onChange={(e) =>
+                                setEditedFood((prev: any) => ({
+                                  ...prev,
+                                  priceUser: e.target.value
+                                    ? parseFloat(e.target.value)
+                                    : "",
+                                }))
+                              }
+                              className="form-control w-auto mb-2"
+                              step="0.01"
+                              placeholder="Enter price for user"
+                            />
+                          </>
+                        )}
+                      </>
                     ) : (
-                      <p className="fs-4 fw-bold text-success">
-                        {editedFood.price
-                          ? `$${Number(editedFood.price).toFixed(2)}`
-                          : "No price set"}
-                      </p>
+                      <>
+                        {editedFood.viewType === "organization" && (
+                          <p className="fs-4 fw-bold text-success">
+                            {editedFood.priceOrganization
+                              ? `$${Number(
+                                  editedFood.priceOrganization
+                                ).toFixed(2)}`
+                              : "No price set for organization"}
+                          </p>
+                        )}
+                        {editedFood.viewType === "user" && (
+                          <p className="fs-4 fw-bold text-success">
+                            {editedFood.priceUser
+                              ? `$${Number(editedFood.priceUser).toFixed(2)}`
+                              : "No price set for user"}
+                          </p>
+                        )}
+                        {editedFood.viewType === "both" && (
+                          <>
+                            <p className="fs-4 fw-bold text-success">
+                              {editedFood.priceOrganization
+                                ? `$${Number(
+                                    editedFood.priceOrganization
+                                  ).toFixed(2)}`
+                                : "No price set for organization"}
+                            </p>
+                            <p className="fs-4 fw-bold text-success">
+                              {editedFood.priceUser
+                                ? `$${Number(editedFood.priceUser).toFixed(2)}`
+                                : "No price set for user"}
+                            </p>
+                          </>
+                        )}
+                      </>
                     )}
                   </div>
+
+
 
                   <div className="mb-4">
                     <h2 className="fs-5 fw-semibold mb-2">Ingredients</h2>
@@ -375,7 +530,7 @@ export default function MenuDetails() {
                       )}
                     </div>
                   </div>
-                      
+
                   <div>
                     <h2 className="fs-5 fw-semibold mb-2">Reviews</h2>
                     <div className="d-flex flex-column gap-3">

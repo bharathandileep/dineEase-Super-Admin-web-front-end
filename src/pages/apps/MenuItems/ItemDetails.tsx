@@ -14,7 +14,6 @@ interface Item {
   category?: { category: string }; // Adjusted based on FoodItemsList
   subcategory?: { subcategoryName: string }; // Adjusted based on FoodItemsList
 }
-
 const ItemDetails = () => {
   const { id } = useParams();
   const [item, setItem] = useState<Item | null>(null);

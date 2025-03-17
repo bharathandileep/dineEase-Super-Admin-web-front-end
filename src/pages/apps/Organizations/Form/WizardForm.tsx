@@ -20,13 +20,13 @@ import {
 } from "../../../../server/admin/addressDetails";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
+import { UserCreateModal } from "../../../../components/UserCreateModal";
 
 interface WizardFormProps {
   initialData?: any;
 }
 
 interface FormData {
-  // Step 1
   organizationName: string;
   managerName: string;
   registerNumber: string;
@@ -41,7 +41,6 @@ interface FormData {
   state: string;
   pincode: string;
   country: string;
-  // Step 2
   panNumber: string;
   panCardUserName: string;
   panCardImage?: any;
@@ -50,7 +49,7 @@ interface FormData {
   expiryDate: string;
   category: string;
   subcategoryName: string;
- // isapproved?: boolean;
+  // isapproved?: boolean;
 }
 
 const initialFormData: FormData = {
@@ -76,7 +75,7 @@ const initialFormData: FormData = {
   panCardImage: "",
   category: "",
   subcategoryName: "",
- // isapproved: true,
+  // isapproved: true,
 };
 
 export function WizardForm({ initialData }: WizardFormProps) {
@@ -92,7 +91,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const [progress, setProgress] = useState(0); // Added progress state
   const { userLoggedIn, user } = useSelector((state: RootState) => state.Auth);
+  const [isOpen, setIsOpen] = useState(false);
+  const [userData, setUserData] = useState<any>({ email: "" });
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -102,9 +104,47 @@ export function WizardForm({ initialData }: WizardFormProps) {
     { number: 2, title: "Documents" },
   ];
 
+  // Define required fields
+  const requiredFields = [
+    "organizationName",
+    "managerName",
+    "registerNumber",
+    "contactNumber",
+    "email",
+    "numberOfEmployees",
+    "organizationLogo",
+    "addressType",
+    "streetAddress",
+    "district",
+    "city",
+    "state",
+    "pincode",
+    "country",
+    "panNumber",
+    "panCardUserName",
+    "panCardImage",
+    "gstNumber",
+    "gstCertificateImage",
+    "expiryDate",
+    "category",
+    "subcategoryName",
+  ];
+
+  // Calculate progress
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof FormData];
+      return value !== "" && value !== undefined && value !== null;
+    }).length;
+
+    const totalFields = requiredFields.length;
+    const progressPercentage = Math.round((filledFields / totalFields) * 100);
+    setProgress(progressPercentage);
+  }, [formData]);
+
   const validateStep1 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep1 remains unchanged)
     if (!formData.organizationName) {
       newErrors.organizationName = "Required";
     } else if (!/^[A-Za-z\s]+$/.test(formData.organizationName)) {
@@ -149,7 +189,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   const validateStep2 = () => {
     const newErrors: Partial<FormData> = {};
-
+    // ... (rest of validateStep2 remains unchanged)
     if (!formData.panNumber) {
       newErrors.panNumber = "Invalid PAN number (must be 10 elements)";
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNumber)) {
@@ -182,11 +222,12 @@ export function WizardForm({ initialData }: WizardFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ... (fetchCountries, fetchStates, fetchDistricts, fetchCities remain unchanged)
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
       if (data?.success) setCountries(data.data);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -195,7 +236,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getStatesByCountry(countryName);
       if (data?.success) setStates(data.data);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -204,7 +245,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getDistrictsByState(stateId);
       if (data?.success) setDistricts(data.data);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -213,19 +254,28 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const data = await getCitiesByState(stateName);
       if (data?.success) setCities(data.data);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching cities:", error);
     }
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      initialData ? handleEdit() : handleSubmit();
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      } else {
+        toast.error("Please complete all required fields in Step 1 correctly.");
+      }
+    } else if (currentStep === 2) {
+      if (validateStep2()) {
+        initialData ? handleEdit() : handleSubmit();
+      } else {
+        toast.error("Please complete all required fields in Step 2 correctly.");
+      }
     }
   };
 
+  // ... (handleBack, handleEdit, handleSubmit, handleChange remain unchanged)
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
@@ -258,8 +308,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         toast.success(response.message);
         user
           ? navigate("/apps/organizations/list")
-          : navigate("dashboard/organization-list");
-        navigate("/dashboard/organization-list");
+          : navigate("/dashboard/organization-list");
       } else {
         toast.error(response.message || "Creation failed. Please try again.");
       }
@@ -276,7 +325,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         const response = await orgGetAllCategories({ page: 1, limit: 100 });
         if (response.status) setCategories(response.data.categories);
         else toast.error(response.message);
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching categories:", error);
         toast.error(error.message);
       } finally {
@@ -295,7 +344,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           );
           if (response.status) setSubcategories(response.data);
           else toast.error(response.message);
-        } catch (error:any) {
+        } catch (error: any) {
           console.error("Error fetching subcategories:", error);
           toast.error(error.message);
         }
@@ -328,6 +377,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   useEffect(() => {
     fetchCountries();
+    user.role === "Admin" ? setIsOpen(true) : setIsOpen(false);
   }, []);
 
   useEffect(() => {
@@ -362,7 +412,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           gstCertificateImage:
             orgData?.gstDetails[0]?.gst_certificate_image || "",
           panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
-          isapproved: orgData?.isapproved || false, // Fetch isapproved status
+          isapproved: orgData?.isapproved || false,
         }));
 
         if (response.data.addresses?.[0]?.country_id) {
@@ -372,7 +422,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           await fetchCities(orgData?.addresses[0]?.state_id);
           await fetchDistricts(orgData?.addresses[0]?.state_id);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);
@@ -381,614 +431,632 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
     fetchOrgDetails();
   }, [id]);
-
+  const handleUserDataChange = (updatedUserData: any) => {
+    setUserData(updatedUserData);
+    console.log(updatedUserData);
+    formData.email = updatedUserData?.email;
+    formData.contactNumber = updatedUserData?.phone;
+    formData.managerName = updatedUserData?.fullName;
+  };
   return (
-    <div className='container py-2'>
-      <div className='row justify-content-center'>
-        <div className='col-lg-12'>
-          <div className='card d-flex flex-column align-items-center'>
-            <div className='col-lg-8 justify-content-center'>
-              <Stepper steps={steps} currentStep={currentStep} />
-            </div>
-            <div className='card-body p-4'>
-              <form onSubmit={(e) => e.preventDefault()}>
-                {currentStep === 1 && (
-                  <div>
-                    <h2 className='card-title mb-4'>Organisation Details</h2>
-                    <div className='row g-3'>
-                     
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Organization Name
-                          </label>
-                          <input
-                            type='text'
-                            name='organizationName'
-                            value={formData.organizationName}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.organizationName ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.organizationName && (
-                            <div className='invalid-feedback'>
-                              {errors.organizationName}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Manager Name</label>
-                          <input
-                            type='text'
-                            name='managerName'
-                            value={formData.managerName}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.managerName ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.managerName && (
-                            <div className='invalid-feedback'>
-                              {errors.managerName}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Register Number</label>
-                          <input
-                            type='text'
-                            name='registerNumber'
-                            value={formData.registerNumber}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.registerNumber ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.registerNumber && (
-                            <div className='invalid-feedback'>
-                              {errors.registerNumber}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Contact Number</label>
-                          <input
-                            type='tel'
-                            name='contactNumber'
-                            value={formData.contactNumber}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.contactNumber ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.contactNumber && (
-                            <div className='invalid-feedback'>
-                              {errors.contactNumber}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>Email</label>
-                          <input
-                            type='email'
-                            name='email'
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.email ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.email && (
-                            <div className='invalid-feedback'>
-                              {errors.email}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='col-md-6'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Number of Employees
-                          </label>
-                          <input
-                            type='number'
-                            name='numberOfEmployees'
-                            value={formData.numberOfEmployees}
-                            onChange={handleChange}
-                            className={`form-control ${
-                              errors.numberOfEmployees ? "is-invalid" : ""
-                            }`}
-                          />
-                          {errors.numberOfEmployees && (
-                            <div className='invalid-feedback'>
-                              {errors.numberOfEmployees}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>Category</label>
-                            <select
-                              name='category'
-                              value={formData.category}
-                              onChange={(e) => {
-                                const selectedCategory = e.target.value;
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  category: selectedCategory,
-                                  subcategoryName: "",
-                                }));
-                                setSelectedCategoryId(selectedCategory);
-                              }}
-                              className={`form-select form-control ${
-                                errors.category ? "is-invalid" : ""
+    <>
+      <UserCreateModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        setIsOpen={setIsOpen}
+        userInfo={userData}
+        onUserDataChange={handleUserDataChange}
+      />
+      <div className="container py-2">
+        <div className="row justify-content-center">
+          <div className="col-lg-12">
+            <div className="card d-flex flex-column align-items-center">
+              <div className="col-lg-8 justify-content-center">
+                <Stepper steps={steps} currentStep={currentStep} />
+              </div>
+              <div className="card-body p-4">
+                <form onSubmit={(e) => e.preventDefault()}>
+                  {currentStep === 1 && (
+                    <div>
+                      <h2 className="card-title mb-4">Organisation Details</h2>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">
+                              Organization Name
+                            </label>
+                            <input
+                              type="text"
+                              name="organizationName"
+                              value={formData.organizationName}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.organizationName ? "is-invalid" : ""
                               }`}
-                            >
-                              <option value=''>Select Category</option>
-                              {categories?.map((cat) => (
-                                <option key={cat._id} value={cat._id}>
-                                  {cat?.category}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.category && (
-                              <div className='invalid-feedback'>
-                                {errors.category}
-                              </div>
-                            )}
-                            {!categories.length && (
-                              <div className='text-muted mt-1'>
-                                Loading categories...
+                            />
+                            {errors.organizationName && (
+                              <div className="invalid-feedback">
+                                {errors.organizationName}
                               </div>
                             )}
                           </div>
                         </div>
 
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>Subcategory</label>
-                            <select
-                              name='subcategoryName'
-                              value={formData.subcategoryName}
-                              onChange={(e) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  subcategoryName: e.target.value,
-                                }))
-                              }
-                              className={`form-select form-control ${
-                                errors.subcategoryName ? "is-invalid" : ""
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">Manager Name</label>
+                            <input
+                              type="text"
+                              name="managerName"
+                              value={formData.managerName}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.managerName ? "is-invalid" : ""
                               }`}
-                              disabled={!formData.category}
-                            >
-                              <option value=''>Select Subcategory</option>
-                              {subcategories.map((sub) => (
-                                <option key={sub._id} value={sub._id}>
-                                  {sub?.subcategoryName}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.subcategoryName && (
-                              <div className='invalid-feedback'>
-                                {errors.subcategoryName}
+                            />
+                            {errors.managerName && (
+                              <div className="invalid-feedback">
+                                {errors.managerName}
                               </div>
                             )}
                           </div>
                         </div>
-                      </div>
 
-                      <div className='col-12'>
-                        <div className='form-group'>
-                          <label className='form-label'>
-                            Organization Logo
-                          </label>
-                          <FileUpload
-                            onFileSelect={(file) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                organizationLogo: file,
-                              }))
-                            }
-                            value={formData.organizationLogo}
-                            error={errors.organizationLogo}
-                          />
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">
+                              Register Number
+                            </label>
+                            <input
+                              type="text"
+                              name="registerNumber"
+                              value={formData.registerNumber}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.registerNumber ? "is-invalid" : ""
+                              }`}
+                            />
+                            {errors.registerNumber && (
+                              <div className="invalid-feedback">
+                                {errors.registerNumber}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      <div className='col-12 mt-4'>
-                        <h3 className='h5 mb-3'>Address Details</h3>
-                        <div className='row g-3'>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Address Type</label>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">Contact Number</label>
+                            <input
+                              type="tel"
+                              name="contactNumber"
+                              value={formData.contactNumber}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.contactNumber ? "is-invalid" : ""
+                              }`}
+                            />
+                            {errors.contactNumber && (
+                              <div className="invalid-feedback">
+                                {errors.contactNumber}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">Email</label>
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.email ? "is-invalid" : ""
+                              }`}
+                            />
+                            {errors.email && (
+                              <div className="invalid-feedback">
+                                {errors.email}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label className="form-label">
+                              Number of Employees
+                            </label>
+                            <input
+                              type="number"
+                              name="numberOfEmployees"
+                              value={formData.numberOfEmployees}
+                              onChange={handleChange}
+                              className={`form-control ${
+                                errors.numberOfEmployees ? "is-invalid" : ""
+                              }`}
+                            />
+                            {errors.numberOfEmployees && (
+                              <div className="invalid-feedback">
+                                {errors.numberOfEmployees}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">Category</label>
                               <select
-                                name='addressType'
-                                value={formData.addressType}
-                                onChange={handleChange}
-                                className={`form-select ${
-                                  errors.addressType ? "is-invalid" : ""
+                                name="category"
+                                value={formData.category}
+                                onChange={(e) => {
+                                  const selectedCategory = e.target.value;
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    category: selectedCategory,
+                                    subcategoryName: "",
+                                  }));
+                                  setSelectedCategoryId(selectedCategory);
+                                }}
+                                className={`form-select form-control ${
+                                  errors.category ? "is-invalid" : ""
                                 }`}
                               >
-                                <option value=''>Select</option>
-                                <option value='Home'>Home</option>
-                                <option value='Office'>Office</option>
-                                <option value='Other'>Other</option>
-                              </select>
-                              {errors.addressType && (
-                                <div className='invalid-feedback'>
-                                  {errors.addressType}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                           
-                          <div className='col-12'>
-                            <div className='form-group'>
-                              <label className='form-label'>
-                                Street Address
-                              </label>
-                              <input
-                                type='text'
-                                name='streetAddress'
-                                value={formData.streetAddress}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.streetAddress ? "is-invalid" : ""
-                                }`}
-                              />
-                              {errors.streetAddress && (
-                                <div className='invalid-feedback'>
-                                  {errors.streetAddress}
-                                </div>
-                              )}
-                            </div>
-                          </div>
- 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>Country</label>
-                              <select
-                                name='country'
-                                value={formData.country}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.country ? "is-invalid" : ""
-                                }`}
-                              >
-                                <option value=''>Select Country</option>
-                                {countries.map((country) => (
-                                  <option key={country._id} value={country.id}>
-                                    {country.name}
+                                <option value="">Select Category</option>
+                                {categories?.map((cat) => (
+                                  <option key={cat._id} value={cat._id}>
+                                    {cat?.category}
                                   </option>
                                 ))}
                               </select>
-                              {errors.country && (
-                                <div className='invalid-feedback'>
-                                  {errors.country}
+                              {errors.category && (
+                                <div className="invalid-feedback">
+                                  {errors.category}
+                                </div>
+                              )}
+                              {!categories.length && (
+                                <div className="text-muted mt-1">
+                                  Loading categories...
                                 </div>
                               )}
                             </div>
                           </div>
- 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>State</label>
-                              <select
-                                name='state'
-                                value={formData.state}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.state ? "is-invalid" : ""
-                                }`}
-                                disabled={!formData.country}
-                              >
-                                <option value=''>Select State</option>
-                                {states.map((state) => (
-                                  <option key={state._id} value={state.id}>
-                                    {state.name}
-                                  </option>
-                                ))}
-                              </select>
-                              {errors.state && (
-                                <div className='invalid-feedback'>
-                                  {errors.state}
-                                </div>
-                              )}
-                            </div>
-                          </div>
- 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>District</label>
-                              <select
-                                name='district'
-                                value={formData.district}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.district ? "is-invalid" : ""
-                                }`}
-                                disabled={!formData.state}
-                              >
-                                <option value=''>Select District</option>
-                                {districts.map((district) => (
-                                  <option
-                                    key={district._id}
-                                    value={district.id}
-                                  >
-                                    {district.name}
-                                  </option>
-                                ))}
-                              </select>
-                              {errors.district && (
-                                <div className='invalid-feedback'>
-                                  {errors.district}
-                                </div>
-                              )}
-                            </div>
-                          </div>
- 
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>City</label>
-                              <select
-                                name='city'
-                                value={formData.city}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.city ? "is-invalid" : ""
-                                }`}
-                                disabled={!formData.state}
-                              >
-                                <option value=''>Select City</option>
-                                {cities.map((city) => (
-                                  <option key={city._id} value={city.id}>
-                                    {city.name}
-                                  </option>
-                                ))}
-                              </select>
-                              {errors.city && (
-                                <div className='invalid-feedback'>
-                                  {errors.city}
-                                </div>
-                              )}
-                            </div>
-                          </div>
- 
-
-                     
-
-                 
 
                           <div className="col-md-6">
                             <div className="form-group">
-                              <label className="form-label">Pincode</label>
-                              <input
-                                type='text'
-                                name='pincode'
-                                value={formData.pincode}
-                                onChange={handleChange}
-                                className={`form-control ${
-                                  errors.pincode ? "is-invalid" : ""
+                              <label className="form-label">Subcategory</label>
+                              <select
+                                name="subcategoryName"
+                                value={formData.subcategoryName}
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    subcategoryName: e.target.value,
+                                  }))
+                                }
+                                className={`form-select form-control ${
+                                  errors.subcategoryName ? "is-invalid" : ""
                                 }`}
-                              />
-                              {errors.pincode && (
-                                <div className='invalid-feedback'>
-                                  {errors.pincode}
+                                disabled={!formData.category}
+                              >
+                                <option value="">Select Subcategory</option>
+                                {subcategories.map((sub) => (
+                                  <option key={sub._id} value={sub._id}>
+                                    {sub?.subcategoryName}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.subcategoryName && (
+                                <div className="invalid-feedback">
+                                  {errors.subcategoryName}
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
-                {currentStep === 2 && (
-                  <div>
-                    <h2 className='card-title mb-4'>PAN & GST Details</h2>
-                    <div className='mb-4'>
-                      <h3 className='h5 mb-3'>PAN Details</h3>
-                      <div className='row g-3'>
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              PAN Card Number
+                        <div className="col-12">
+                          <div className="form-group">
+                            <label className="form-label">
+                              Organization Logo
                             </label>
-                            <input
-                              type='text'
-                              name='panNumber'
-                              value={formData.panNumber}
-                              onChange={handleChange}
-                              className={`form-control ${
-                                errors.panNumber ? "is-invalid" : ""
-                              }`}
-                            />
-                            {errors.panNumber && (
-                              <div className='invalid-feedback'>
-                                {errors.panNumber}
-                              </div>
-                            )}
-                            {/* Example PAN Card Number structure */}
-                            <small className='form-text text-muted'>
-                              Example: ABCDE1234F
-                            </small>
-                          </div>
-                        </div>
-
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              PAN Card User Name
-                            </label>
-                            <input
-                              type='text'
-                              name='panCardUserName'
-                              value={formData.panCardUserName}
-                              onChange={handleChange}
-                              className={`form-control ${
-                                errors.panCardUserName ? "is-invalid" : ""
-                              }`}
-                            />
-                            {errors.panCardUserName && (
-                              <div className='invalid-feedback'>
-                                {errors.panCardUserName}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className='col-12'>
-                          <div className='form-group'>
-                            <label className='form-label'>PAN Card Image</label>
                             <FileUpload
                               onFileSelect={(file) =>
                                 setFormData((prev) => ({
                                   ...prev,
-                                  panCardImage: file,
+                                  organizationLogo: file,
                                 }))
                               }
-                              value={formData.panCardImage}
-                              error={errors.panCardImage}
+                              value={formData.organizationLogo}
+                              error={errors.organizationLogo}
                             />
+                          </div>
+                        </div>
+
+                        <div className="col-12 mt-4">
+                          <h3 className="h5 mb-3">Address Details</h3>
+                          <div className="row g-3">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">
+                                  Address Type
+                                </label>
+                                <select
+                                  name="addressType"
+                                  value={formData.addressType}
+                                  onChange={handleChange}
+                                  className={`form-select ${
+                                    errors.addressType ? "is-invalid" : ""
+                                  }`}
+                                >
+                                  <option value="">Select</option>
+                                  <option value="Home">Home</option>
+                                  <option value="Office">Office</option>
+                                  <option value="Other">Other</option>
+                                </select>
+                                {errors.addressType && (
+                                  <div className="invalid-feedback">
+                                    {errors.addressType}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <div className="form-group">
+                                <label className="form-label">
+                                  Street Address
+                                </label>
+                                <input
+                                  type="text"
+                                  name="streetAddress"
+                                  value={formData.streetAddress}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.streetAddress ? "is-invalid" : ""
+                                  }`}
+                                />
+                                {errors.streetAddress && (
+                                  <div className="invalid-feedback">
+                                    {errors.streetAddress}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">Country</label>
+                                <select
+                                  name="country"
+                                  value={formData.country}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.country ? "is-invalid" : ""
+                                  }`}
+                                >
+                                  <option value="">Select Country</option>
+                                  {countries.map((country) => (
+                                    <option
+                                      key={country._id}
+                                      value={country.id}
+                                    >
+                                      {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.country && (
+                                  <div className="invalid-feedback">
+                                    {errors.country}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">State</label>
+                                <select
+                                  name="state"
+                                  value={formData.state}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.state ? "is-invalid" : ""
+                                  }`}
+                                  disabled={!formData.country}
+                                >
+                                  <option value="">Select State</option>
+                                  {states.map((state) => (
+                                    <option key={state._id} value={state.id}>
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.state && (
+                                  <div className="invalid-feedback">
+                                    {errors.state}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">District</label>
+                                <select
+                                  name="district"
+                                  value={formData.district}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.district ? "is-invalid" : ""
+                                  }`}
+                                  disabled={!formData.state}
+                                >
+                                  <option value="">Select District</option>
+                                  {districts.map((district) => (
+                                    <option
+                                      key={district._id}
+                                      value={district.id}
+                                    >
+                                      {district.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.district && (
+                                  <div className="invalid-feedback">
+                                    {errors.district}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">City</label>
+                                <select
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.city ? "is-invalid" : ""
+                                  }`}
+                                  disabled={!formData.state}
+                                >
+                                  <option value="">Select City</option>
+                                  {cities.map((city) => (
+                                    <option key={city._id} value={city.id}>
+                                      {city.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.city && (
+                                  <div className="invalid-feedback">
+                                    {errors.city}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">Pincode</label>
+                                <input
+                                  type="text"
+                                  name="pincode"
+                                  value={formData.pincode}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.pincode ? "is-invalid" : ""
+                                  }`}
+                                />
+                                {errors.pincode && (
+                                  <div className="invalid-feedback">
+                                    {errors.pincode}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                  )}
 
+                  {currentStep === 2 && (
                     <div>
-                      <h3 className='h5 mb-3'>GST Details</h3>
-                      <div className='row g-3'>
-                        <div className='row g-3'>
-                          <div className='col-md-6'>
-                            <div className='form-group'>
-                              <label className='form-label'>GST Number</label>
+                      <h2 className="card-title mb-4">PAN & GST Details</h2>
+                      <div className="mb-4">
+                        <h3 className="h5 mb-3">PAN Details</h3>
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">
+                                PAN Card Number
+                              </label>
                               <input
-                                type='text'
-                                name='gstNumber'
-                                value={formData.gstNumber}
+                                type="text"
+                                name="panNumber"
+                                value={formData.panNumber}
                                 onChange={handleChange}
                                 className={`form-control ${
-                                  errors.gstNumber ? "is-invalid" : ""
+                                  errors.panNumber ? "is-invalid" : ""
                                 }`}
                               />
-                              {errors.gstNumber && (
-                                <div className='invalid-feedback'>
-                                  {errors.gstNumber}
+                              {errors.panNumber && (
+                                <div className="invalid-feedback">
+                                  {errors.panNumber}
                                 </div>
                               )}
-                              {/* Example GST Number structure */}
-                              <small className='form-text text-muted'>
-                                Example: 22AAAAA0000A1Z5
+                              {/* Example PAN Card Number structure */}
+                              <small className="form-text text-muted">
+                                Example: ABCDE1234F
                               </small>
                             </div>
                           </div>
-                        </div>
 
-                        <div className='col-md-6'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              GST Expiry Date
-                            </label>
-                            <input
-                              type='date'
-                              name='expiryDate'
-                              value={formData.expiryDate}
-                              onChange={handleChange}
-                              className={`form-control ${
-                                errors.expiryDate ? "is-invalid" : ""
-                              }`}
-                            />
-                            {errors.expiryDate && (
-                              <div className='invalid-feedback'>
-                                {errors.expiryDate}
-                              </div>
-                            )}
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">
+                                PAN Card User Name
+                              </label>
+                              <input
+                                type="text"
+                                name="panCardUserName"
+                                value={formData.panCardUserName}
+                                onChange={handleChange}
+                                className={`form-control ${
+                                  errors.panCardUserName ? "is-invalid" : ""
+                                }`}
+                              />
+                              {errors.panCardUserName && (
+                                <div className="invalid-feedback">
+                                  {errors.panCardUserName}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="col-12">
+                            <div className="form-group">
+                              <label className="form-label">
+                                PAN Card Image
+                              </label>
+                              <FileUpload
+                                onFileSelect={(file) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    panCardImage: file,
+                                  }))
+                                }
+                                value={formData.panCardImage}
+                                error={errors.panCardImage}
+                              />
+                            </div>
                           </div>
                         </div>
+                      </div>
 
-                        <div className='col-12'>
-                          <div className='form-group'>
-                            <label className='form-label'>
-                              GST Certificate Image
-                            </label>
-                            <FileUpload
-                              onFileSelect={(file) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  gstCertificateImage: file,
-                                }))
-                              }
-                              value={formData.gstCertificateImage}
-                              error={errors.gstCertificateImage}
-                            />
+                      <div>
+                        <h3 className="h5 mb-3">GST Details</h3>
+                        <div className="row g-3">
+                          <div className="row g-3">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label className="form-label">GST Number</label>
+                                <input
+                                  type="text"
+                                  name="gstNumber"
+                                  value={formData.gstNumber}
+                                  onChange={handleChange}
+                                  className={`form-control ${
+                                    errors.gstNumber ? "is-invalid" : ""
+                                  }`}
+                                />
+                                {errors.gstNumber && (
+                                  <div className="invalid-feedback">
+                                    {errors.gstNumber}
+                                  </div>
+                                )}
+                                {/* Example GST Number structure */}
+                                <small className="form-text text-muted">
+                                  Example: 22AAAAA0000A1Z5
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label className="form-label">
+                                GST Expiry Date
+                              </label>
+                              <input
+                                type="date"
+                                name="expiryDate"
+                                value={formData.expiryDate}
+                                onChange={handleChange}
+                                className={`form-control ${
+                                  errors.expiryDate ? "is-invalid" : ""
+                                }`}
+                              />
+                              {errors.expiryDate && (
+                                <div className="invalid-feedback">
+                                  {errors.expiryDate}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="col-12">
+                            <div className="form-group">
+                              <label className="form-label">
+                                GST Certificate Image
+                              </label>
+                              <FileUpload
+                                onFileSelect={(file) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    gstCertificateImage: file,
+                                  }))
+                                }
+                                value={formData.gstCertificateImage}
+                                error={errors.gstCertificateImage}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                <div className='d-flex justify-content-between mt-4'>
-                  {currentStep > 1 && (
-                    <button
-                      type='button'
-                      onClick={handleBack}
-                      className='btn btn-outline-secondary d-flex align-items-center'
-                    >
-                      <ChevronLeft className='me-2' />
-                      Back
-                    </button>
                   )}
-                  <button
-                    type='button'
-                    onClick={handleNext}
-                    className='btn btn-primary d-flex align-items-center ms-auto'
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span
-                          className='spinner-border spinner-border-sm me-2'
-                          role='status'
-                        />
-                        <span
-                          className='spinner-grow spinner-grow-sm'
-                          role='status'
-                        />
-                      </>
-                    ) : (
-                      <>
-                        {currentStep === 2 ? "Submit" : "Next"}
-                        {currentStep === 1 && <ChevronRight className='ms-2' />}
-                      </>
+
+                  <div className="d-flex justify-content-between mt-4">
+                    {currentStep > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleBack}
+                        className="btn btn-outline-secondary d-flex align-items-center"
+                      >
+                        <ChevronLeft className="me-2" />
+                        Back
+                      </button>
                     )}
-                  </button>
-                </div>
-              </form>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="btn btn-primary d-flex align-items-center ms-auto"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                          />
+                          <span
+                            className="spinner-grow spinner-grow-sm"
+                            role="status"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          {currentStep === 2 ? "Submit" : "Next"}
+                          {currentStep === 1 && (
+                            <ChevronRight className="ms-2" />
+                          )}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

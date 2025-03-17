@@ -11,6 +11,7 @@ const Navbar: React.FC = () => {
   const { userLoggedIn, user, loading } = useSelector(
     (state: RootState) => state.Auth
   );
+  console.log(userLoggedIn,user,"is logged")
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
       <div className="container">

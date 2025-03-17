@@ -665,7 +665,7 @@ const OrgEmployeeEdit = () => {
             <Button
               variant="danger"
               className="me-2"
-              onClick={() => navigate("/apps/organizations/employ/list")}
+              onClick={() => navigate(`/apps/organizations/employee/details/${id}`)}
             >
               Cancel
             </Button>

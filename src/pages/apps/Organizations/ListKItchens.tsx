@@ -1,9 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
-import { getAllKitches } from "../../../server/admin/kitchens";
+import { 
+  getAllKitches, 
+  kitchensGetAllCategories, 
+  kitchensGetSubcategoriesByCategory 
+} from "../../../server/admin/kitchens";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
+import debounce from "lodash/debounce"; 
 
 interface Kitchen {
   _id: string;
@@ -12,100 +17,198 @@ interface Kitchen {
   kitchen_type: string;
   kitchen_phone_number: string;
   kitchen_image: string;
-  addresses: { street_address: string; city: string; country: string }[];
+  addresses: { 
+    street_address: string; 
+    city_name: string; 
+    country_name: string;
+    pincode: string;
+  }[];
   owner_email: string;
-  kitchen_status: string;
+  kitchen_status: string | null;
+  categoryDetails: {
+    _id: string;
+    category: string;
+  };
+  subcategoryDetails: {
+    _id: string;
+    subcategoryName: string;
+    category: string;
+  };
+}
+
+interface Category {
+  _id: string;
+  category: string;
+}
+
+interface Subcategory {
+  _id: string;
+  subcategoryName: string;
+  category: string;
 }
 
 function ListKitchens() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start as false to avoid initial flicker
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [subcategoryFilter, setSubcategoryFilter] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
   const isLoadingRef = useRef(false);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastFetchParams = useRef<string>(""); // To track fetch params and avoid duplicates
 
-  const fetchKitchens = async (
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoryResponse = await kitchensGetAllCategories({});
+        let categoryData = [];
+        if (categoryResponse?.status && Array.isArray(categoryResponse.data)) {
+          categoryData = categoryResponse.data;
+        } else if (categoryResponse?.status && Array.isArray(categoryResponse.data?.categories)) {
+          categoryData = categoryResponse.data.categories;
+        } else if (Array.isArray(categoryResponse)) {
+          categoryData = categoryResponse;
+        }
+        setCategories(Array.isArray(categoryData) ? categoryData : []);
+      } catch (error: any) {
+        toast.error("Failed to load categories: " + error.message);
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch subcategories
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      if (!categoryFilter) {
+        setSubcategories([]);
+        return;
+      }
+      try {
+        const subcategoryResponse = await kitchensGetSubcategoriesByCategory(categoryFilter);
+        let subcategoryData = [];
+        if (subcategoryResponse?.status && Array.isArray(subcategoryResponse.data)) {
+          subcategoryData = subcategoryResponse.data;
+        } else if (subcategoryResponse?.status && Array.isArray(subcategoryResponse.data?.subcategories)) {
+          subcategoryData = subcategoryResponse.data.subcategories;
+        } else if (Array.isArray(subcategoryResponse)) {
+          subcategoryData = subcategoryResponse;
+        }
+        setSubcategories(Array.isArray(subcategoryData) ? subcategoryData : []);
+      } catch (error: any) {
+        toast.error("Failed to load subcategories: " + error.message);
+        setSubcategories([]);
+      }
+    };
+    fetchSubcategories();
+  }, [categoryFilter]);
+
+  // Fetch kitchens
+  const fetchKitchens = useCallback(async (
     currentPage: number,
     isNewSearch: boolean = false,
-    searchQuery: string = ""
+    searchQuery: string = "",
+    category: string = "",
+    subcategory: string = ""
   ) => {
     if (isLoadingRef.current) return;
 
-    if (isNewSearch) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
+    const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
+    if (!isNewSearch && lastFetchParams.current === paramsKey) {
+      console.log("Skipping duplicate fetch for:", paramsKey);
+      return;
     }
+
     isLoadingRef.current = true;
+    if (isNewSearch) setLoading(true);
+    else setLoadingMore(true);
 
     try {
       const params = {
         page: currentPage,
-        limit: 10,
+        limit: 4,
         search: searchQuery,
+        category,
+        subcategory,
       };
+      console.log("Fetching kitchens with params:", params);
 
       const response = await getAllKitches(params);
       if (response.status) {
-        const { kitchens, totalPages, totalKitchens } = response.data;
+        const { kitchens: fetchedKitchens, totalPages, totalKitchens } = response.data;
+        console.log("Fetched kitchens:", fetchedKitchens);
 
-        if (isNewSearch) {
-          setKitchens(kitchens);
-        } else {
-          setKitchens((prev) => {
-            const existingIds = new Set(prev.map((item) => item._id));
-            const newItems = kitchens.filter(
-              (item: any) => !existingIds.has(item._id)
-            );
-            return [...prev, ...newItems];
-          });
-        }
-
-        setTotalItems(totalKitchens);
+        setKitchens((prev) => 
+          isNewSearch ? fetchedKitchens : [...prev, ...fetchedKitchens]
+        );
+        setTotalItems(totalKitchens || 0);
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
+        lastFetchParams.current = paramsKey; // Update last fetch params
       } else {
-        toast.error("Failed to load kitchens.");
+        toast.error(response.message || "Failed to fetch kitchens");
+        setHasMore(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching kitchens:", error);
-      toast.error("An error occurred while fetching kitchens.");
+      toast.error(error.message || "Error fetching kitchens");
+      setHasMore(false);
     } finally {
       setLoading(false);
       setLoadingMore(false);
       isLoadingRef.current = false;
     }
-  };
+  }, []);
+
+  // Debounced fetch for search and filters
+  const debouncedFetchKitchens = useCallback(
+    debounce((page, isNewSearch, search, category, subcategory) => {
+      setKitchens([]); // Reset kitchens on new search
+      setPage(1); // Reset page
+      lastFetchParams.current = ""; // Reset fetch params
+      fetchKitchens(1, true, search, category, subcategory);
+    }, 500),
+    [fetchKitchens]
+  );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      fetchKitchens(1, true, searchTerm);
-    }, 500);
+    debouncedFetchKitchens(page, true, searchTerm, categoryFilter, subcategoryFilter);
+  }, [searchTerm, categoryFilter, subcategoryFilter, debouncedFetchKitchens]);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+  // Intersection Observer for infinite scroll
+  const lastKitchenElementRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (loading || loadingMore || !hasMore) return;
+      if (observer.current) observer.current.disconnect();
 
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !isLoadingRef.current) {
+            console.log("Last element visible, fetching page:", page);
+            fetchKitchens(page, false, searchTerm, categoryFilter, subcategoryFilter);
+          }
+        },
+        { threshold: 0.5 } // Trigger when 50% of the last element is visible
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, loadingMore, hasMore, page, searchTerm, categoryFilter, subcategoryFilter, fetchKitchens]
+  );
+
+  // Initial fetch on mount
   useEffect(() => {
-    const handleScroll = () => {
-      if (isLoadingRef.current || !hasMore) return;
-
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
-
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        fetchKitchens(page, false, searchTerm);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, page, searchTerm]);
+    fetchKitchens(1, true);
+  }, [fetchKitchens]);
 
   return (
     <>
@@ -117,50 +220,70 @@ function ListKitchens() {
         title={"Kitchens"}
       />
 
-      <div
-        className='mb-3'
-        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
-      >
+      <div className='mb-3' style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
         <div className='d-flex align-items-center justify-content-between'>
-          <h3 className='page-title m-0' style={{ color: "#fff" }}>
-            Kitchens
-          </h3>
-          <Link
-            to='/apps/kitchen/new'
-            className='btn btn-danger waves-effect waves-light'
-          >
+          <h3 className='page-title m-0' style={{ color: "#fff" }}>Kitchens</h3>
+          <Link to='/apps/kitchen/new' className='btn btn-danger waves-effect waves-light'>
             <i className='mdi mdi-plus-circle me-1'></i> Add New Kitchen
-          </Link>
+          </Link> 
         </div>
       </div>
+
       <Row>
         <Col>
           <Card>
             <Card.Body>
-              <Row className='justify-content-between'>
+              <Row className='justify-content-between align-items-center'>
                 <Col className='col-auto'>
-                  <form className='d-flex align-items-center'>
-                    <label htmlFor='inputPassword2' className='visually-hidden'>
-                      Search
-                    </label>
-                    <div>
-                      <input
+                  <Form className='d-flex align-items-center gap-2'>
+                    <Form.Group>
+                      <Form.Control
                         type='search'
-                        className='form-control my-1 my-lg-0'
-                        id='inputPassword2'
-                        placeholder='Search...'
+                        placeholder='Search kitchens...'
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                        style={{ minWidth: "200px" }}
                       />
-                    </div>
-                  </form>
+                    </Form.Group>
+                  </Form>
+                </Col>
+                <Col className='col-auto d-flex gap-2'>
+                  <Form.Group>
+                    <Form.Select
+                      value={categoryFilter}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        setCategoryFilter(e.target.value);
+                        setSubcategoryFilter("");
+                      }}
+                      style={{ minWidth: "150px" }}
+                    >
+                      <option value="">All Categories</option>
+                      {categories.map((cat) => (
+                        <option key={cat._id} value={cat._id}>{cat.category}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Select
+                      value={subcategoryFilter}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSubcategoryFilter(e.target.value)}
+                      style={{ minWidth: "150px" }}
+                      disabled={!categoryFilter}
+                    >
+                      <option value="">All Subcategories</option>
+                      {subcategories.map((sub) => (
+                        <option key={sub._id} value={sub._id}>{sub.subcategoryName}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
                 </Col>
               </Row>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      {loading ? (
+
+      {loading && kitchens.length === 0 ? (
         <div className='text-center my-5'>
           <Spinner animation='border' role='status'>
             <span className='visually-hidden'>Loading...</span>
@@ -170,76 +293,69 @@ function ListKitchens() {
       ) : (
         <Row>
           {kitchens.length > 0 ? (
-            kitchens.map((item) => (
-              <Col key={item._id} md={6} xl={3} className='mb-3'>
-                <Link to={`/apps/kitchen/details/${item._id}`}>
-                  <Card className='product-box h-100 shadow-sm'>
-                    <Card.Body className='d-flex flex-column'>
-                      <div className='bg-light mb-1'>
-                        <img
-                          src={
-                            item.kitchen_image ||
-                            "https://via.placeholder.com/150"
-                          }
-                          alt={item.kitchen_name}
-                          className='img-fluid'
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      </div>
-                      <div className='product-info mt-auto'>
-                        <h5 className='font-24 mt-0 sp-line-1 bold'>
-                          {item.kitchen_name}
-                        </h5>
-                        <div className='text-muted font-14'>
-                          <div className='d-flex align-items-center mb-1 text-black'>
-                            <i className='mdi mdi-map-marker me-1'></i>
-                            <span>
-                              {item.addresses[0]?.street_address},{" "}
-                              {item.addresses[0]?.city},{" "}
-                              {item.addresses[0]?.country}
-                            </span>
-                          </div>
-                          <div className='d-flex align-items-center mb-1 text-black'>
-                            <i className='mdi mdi-phone-classic me-1'></i>
-                            <span>{item.kitchen_phone_number}</span>
-                          </div>
-                          <div className='d-flex align-items-center text-black'>
-                            <i className='mdi mdi-email me-1'></i>
-                            <span>{item.owner_email}</span>
-                          </div>
-                          <div className='d-flex align-items-center text-black'>
-                            <i className='mdi mdi-home-variant me-1'></i>
-                            <span>{item.kitchen_type}</span>
+            kitchens.map((item, index) => {
+              const isLastElement = index === kitchens.length - 1;
+              return (
+                <Col 
+                  key={item._id} 
+                  md={6} 
+                  xl={3} 
+                  className='mb-3' 
+                  ref={isLastElement ? lastKitchenElementRef : null}
+                >
+                  <Link to={`/apps/kitchen/${item._id}`}>
+                    <Card className='product-box h-100 shadow-sm'>
+                      <Card.Body className='d-flex flex-column'>
+                        <div className='bg-light mb-1'>
+                          <img
+                            src={item.kitchen_image || "https://via.placeholder.com/150"}
+                            alt={item.kitchen_name}
+                            className='img-fluid'
+                            style={{ width: "100%", height: "200px", objectFit: "contain" }}
+                          />
+                        </div>
+                        <div className='product-info mt-auto'>
+                          <h5 className='font-24 mt-0 sp-line-1 bold'>{item.kitchen_name}</h5>
+                          <div className='text-muted font-14'>
+                            <div className='d-flex align-items-center mb-1 text-black'>
+                              <i className='mdi mdi-map-marker me-1'></i>
+                              <span>
+                                {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name}, 
+                                {item.addresses[0]?.country_name}
+                              </span>
+                            </div>
+                            <div className='d-flex align-items-center mb-1 text-black'>
+                              <i className='mdi mdi-phone-classic me-1'></i>
+                              <span>{item.kitchen_phone_number}</span>
+                            </div>
+                            <div className='d-flex align-items-center text-black'>
+                              <i className='mdi mdi-email me-1'></i>
+                              <span>{item.owner_email}</span>
+                            </div>
+                            <div className='d-flex align-items-center text-black'>
+                              <i className='mdi mdi-home-variant me-1'></i>
+                              <span>{item.kitchen_type}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </Col>
-            ))
+                      </Card.Body>
+                    </Card>
+                  </Link>
+                </Col>
+              );
+            })
           ) : (
             <Col>
               <Card>
                 <Card.Body className='text-center'>
-                    className='mdi mdi-alert-circle-outline text-muted'
-                                    <i
-  style={{ fontSize: "48px" }}
-                  ></i>
+                  <i className='mdi mdi-alert-circle-outline text-muted' style={{ fontSize: "48px" }}></i>
                   <h4 className='mt-3'>No Kitchens Found</h4>
                   <p className='text-muted'>
-                    {searchTerm
-                      ? `No kitchens match your search criteria "${searchTerm}".`
+                    {searchTerm || categoryFilter || subcategoryFilter
+                      ? "No kitchens match your search criteria."
                       : "There are no kitchens in the system yet."}
                   </p>
-                  <Button
-                    variant='primary'
-                    onClick={() => navigate("/apps/kitchen/new")}
-                  >
+                  <Button variant='primary' onClick={() => navigate("/apps/kitchen/new")}>
                     Add New Kitchen
                   </Button>
                 </Card.Body>
