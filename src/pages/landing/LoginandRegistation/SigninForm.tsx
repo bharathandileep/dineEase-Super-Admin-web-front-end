@@ -86,7 +86,7 @@ const SigninForm: React.FC = () => {
   };
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/auth/login");
+      navigate("/");
     }
   }, [userLoggedIn, user, navigate]);
 
@@ -172,6 +172,7 @@ const SigninForm: React.FC = () => {
       response.status
         ? toast.success(response.message)
         : toast.error(response.message || "OTP verification failed");
+        navigate("/")
     } catch (error:any) {
       toast.error(error.message);
     } finally {

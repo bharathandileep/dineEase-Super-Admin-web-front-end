@@ -567,7 +567,7 @@ const dashboardRoutes = {
   path: "/apps/:name",
   name: "Dashboard",
   route: PrivateRoute,
-  roles: ["Admin", "User"],
+  roles: ["Admin", "User",  "Employee"],
   icon: "airplay",
   element: <EcommerceDashboard />,
 };
@@ -1408,7 +1408,7 @@ const authRoutes: RoutesProps[] = [
     route: Route,
   },
   {
-    path: "/auth/login",
+    path: "/",
     name: "Login",
     element: <Landing />,
     route: Route,

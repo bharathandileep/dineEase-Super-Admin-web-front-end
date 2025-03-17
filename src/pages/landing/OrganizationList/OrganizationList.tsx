@@ -32,7 +32,6 @@ const OrganizationList = () => {
         let response;
         if (user.role === "Employee") {
           response = await getEmployeeOrg(user.email);
-          console.log(response);
           setOrganizations(response.data.organizations);
         } else {
           response = await getUserApprovedOrganizations();

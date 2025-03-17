@@ -36,7 +36,7 @@ const BottomLink = () => {
       <Col className="text-center">
         <p className="text-white-50">
           {t("Back to")}{" "}
-          <Link to={"/auth/login"} className="text-white ms-1">
+          <Link to={"/"} className="text-white ms-1">
             <b>{t("Log in")}</b>
           </Link>
         </p>
@@ -184,10 +184,10 @@ const ForgetPassword = () => {
           
           console.log('Password Response:', passwordResponse); // Debug log
           
-          if (passwordResponse.status) { // Adjusted to match API response structure
+          if (passwordResponse.status) { 
             setApiSuccess(passwordResponse?.data?.message || t("Password updated successfully!"));
             setTimeout(() => {
-              navigate("/auth/login");
+              navigate("/");
             }, 2000);
           } else {
             setApiError(passwordResponse?.data?.message || t("Failed to update password. Please try again."));

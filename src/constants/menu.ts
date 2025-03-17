@@ -24,7 +24,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Dashboard",
     isTitle: false,
     icon: "airplay",
-    access:["Admin","User","Organization","Kitchen"],
+    access:["Admin","User","Organization","Kitchen","Employee"],
     url: `/apps/${userAccessDetails.slug}`,
   },
   {
@@ -32,15 +32,23 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Kitchens",
     isTitle: false,
     icon: "coffee",
-    access:["Admin","User","Organization","Kitchen"],
+    access:["Admin","User","Organization","Kitchen","Employee"],
     children: [
       {
         key: "kitchen-list",
         label: "• List of Kitchens",
         url: "/apps/kitchen/list",
-        access:["Admin","Organization"],
+        access:["Admin"],
         parentKey: "apps-kitchen",
       },
+      {
+        key:"List-kitchens", 
+        label:"• List of Kitchens",
+        access:["Organization","Employee"],
+        url:"/apps/organizations/list-kitchens",
+        parentKey:"apps-Organizations",
+      },
+   
       {
         key:"Kitchen-menu",
         label:"• Kitchen Menus",
@@ -53,12 +61,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
         label:"• Requested Kitchens",
         access:["Admin"],
         url:"/apps/kitchen/requested-kitchens",
-        parentKey:"apps-kitchen",
-      },
-      {
-        key:"Edit-kitchen",
-        label:"• Edit Kitchens",
-        url:"/apps/kitchen/editt-kitchens",
         parentKey:"apps-kitchen",
       },
     ],
@@ -80,7 +82,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
       },
       {
         key: "Organization-employadd",
-        label: "• employ-list",
+        label: "• Employees",
         access:["Admin","Organization"],
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
@@ -92,20 +94,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url:"/apps/organizations/requested-organizations",
         parentKey:"apps-Organizations",
       },
-      // {
-      //   key:"Menus",
-      //   label:"• Menus",
-      //   url:"/apps/organizations/menus",
-      //   parentKey:"apps-Organizations",
-      // },
       {
-        key:"List-kitchens",
-        label:"• List of Kitchens",
-        url:"/apps/organizations/list-kitchens",
-        parentKey:"apps-Organizations",
-      },
-
-
+        key:"selected-kitchens",
+        label:"• Selected Kitchens",
+        access:["Organization"],
+        url:"/apps/organizations/selected-kitchens",
+        parentKey:"apps-organizations"
+      }
       
     ],
   },
@@ -206,14 +201,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     icon: "trello",
     url: "/apps/designations",
   },
-  // {
-  //   key: "apps-employee",
-  //   label: "Employee",
-  //   isTitle: false,
-  //   icon: "user",
-  //   url: "/apps/employee/add",
-  // },
- 
 ];
 
 const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [

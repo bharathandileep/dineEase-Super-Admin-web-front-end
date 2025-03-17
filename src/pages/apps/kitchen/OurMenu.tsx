@@ -142,6 +142,7 @@ const KitchenMenu = () => {
           alignItems: "center",
         }}
       >
+        
         <div>
           <span className="fw-bold">
             {cartItems.reduce((sum: any, item: any) => sum + (item.quantity || 0), 0)} items
@@ -311,8 +312,7 @@ const KitchenMenu = () => {
           </Card>
         </div>
       )}
-
-      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
+  <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </>
   );
 };
