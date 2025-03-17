@@ -52,6 +52,8 @@ import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
 import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
+import OrgNotifications from "../pages/apps/Organizations/notifications/OrgNotifications";
+import KitchenNotifications from "../pages/apps/kitchen/notifications/KitchenNotifications";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -393,6 +395,12 @@ const kitchenAppRoutes = {
       route: PrivateRoute,
     },
     {
+      path: "/apps/kitchen/notifications",
+      name: "Menu Category",
+      element: <KitchenNotifications />,
+      route: PrivateRoute,
+    },
+    {
       path: "/apps/kitchen/list",
       name: "List of Kitchens",
       element: <ListKitchens />,
@@ -499,6 +507,13 @@ const menuAppRoutes = {
       element: <MenuCategory />,
       route: PrivateRoute,
     },
+    {
+      path: "/apps/organizations/notifications",
+      name: "Menu Category",
+      element: <OrgNotifications />,
+      route: PrivateRoute,
+    },
+    
     {
       path: "/apps/menu/subcategory",
       name: "Menu Sub Category",
