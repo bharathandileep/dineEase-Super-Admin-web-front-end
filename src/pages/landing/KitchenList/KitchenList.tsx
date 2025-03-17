@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
- 
+
 const KitchenList = () => {
   interface Kitchen {
     id: string;
@@ -13,24 +13,25 @@ const KitchenList = () => {
     cuisine?: string[];
     specialty?: string;
     slug: string;
+    isapproved: string;
   }
 
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const fetchUserKitchens = async () => {
       try {
         const response = await getUserApprovedKitchens();
         setKitchens(response.data.kitchens);
         setLoading(false);
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching kitchens:", error);
         setLoading(false);
       }
     };
- 
+
     fetchUserKitchens();
   }, []);
 
@@ -41,8 +42,10 @@ const KitchenList = () => {
       kitchenId: kitchen.id,
       slug: kitchen.slug,
     };
-    localStorage.setItem("accessDetails", JSON.stringify(kitchenViewDetails));
-    navigate(`/apps/${kitchen?.slug}`)
+    if (kitchen.isapproved === "approved") {
+      localStorage.setItem("accessDetails", JSON.stringify(kitchenViewDetails));
+      navigate(`/apps/${kitchen.slug}`);
+    }
   };
 
   if (loading) {
@@ -59,7 +62,7 @@ const KitchenList = () => {
       </div>
     );
   }
- 
+
   return (
     <>
       <DashboardNavbar />
@@ -95,9 +98,17 @@ const KitchenList = () => {
                     }}
                   />
                   <div className="position-absolute top-0 end-0 m-3">
-                    <span className="badge bg-light text-dark shadow-sm px-3 py-2">
-                      <i className="bi bi-star-fill text-warning me-1"></i>
-                      {kitchen.rating || "N/A"}
+                    <span
+                      className={`badge text-dark shadow-sm text-white px-3 py-2 ${
+                        kitchen.isapproved === "approved"
+                          ? "bg-success"
+                          : kitchen.isapproved === "rejected"
+                          ? "bg-danger"
+                          : "bg-warning"
+                      }`}
+                    >
+                      <i className="bi  bi-building-fill text-primary me-1"></i>
+                      {kitchen.isapproved || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -134,14 +145,14 @@ const KitchenList = () => {
                     className="btn btn-primary w-100 rounded-pill hover-button"
                     onClick={() => handleNavigateKitchen(kitchen)}
                   >
-                    Explore Menu
+                    View Dashboard
                   </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
- 
+
         {/* Add Your Kitchen button section */}
         <div className="text-center mt-5">
           <button

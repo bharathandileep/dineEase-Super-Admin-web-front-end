@@ -251,7 +251,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
     if (!formData.gst_number)
       newErrors.gst_number = "Invalid GST number (must be 15 elements)";
     else if (
-      !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/.test(
+      !/^[0-3][0-9][A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}Z[A-Z\d]{1}$/.test(
         formData.gst_number
       )
     )
@@ -410,7 +410,9 @@ export function WizardForm({ initialData }: WizardFormProps) {
       const response = await createNewkitchen(kitchensFormData);
       if (response.status) {
         toast.success(response.message);
-        navigate("/dashboard/kitchen-list");
+        user.role === "Admin"
+          ? navigate("/apps/organizations/list-kitchens")
+          : navigate("/dashboard/kitchen-list");
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
@@ -604,7 +606,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   }, []);
   const handleUserDataChange = (updatedUserData: any) => {
     setUserData(updatedUserData);
-    console.log(updatedUserData)
+    console.log(updatedUserData);
     formData.owner_email = updatedUserData?.email;
     formData.owner_phone_number = updatedUserData?.phone;
     formData.kitchen_owner_name = updatedUserData?.fullName;

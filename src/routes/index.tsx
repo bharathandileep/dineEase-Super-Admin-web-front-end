@@ -54,6 +54,7 @@ import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -306,6 +307,12 @@ const organizationsAppRoutes = {
       path: "/apps/organizations/new",
       name: "Add New Organizations",
       element: <NewOrganizations />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/organizations/selected-kitchens",
+      name: "Add New Organizations",
+      element: <SelectedKitchensList />,
       route: PrivateRoute,
     },
     {

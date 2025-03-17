@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getSelectedKitchen } from "../../../server/admin/organization";
+import PageTitle from "../../../components/PageTitle";
 
 interface IKitchen {
   _id: string;
@@ -18,29 +19,29 @@ function SelectedKitchensList() {
   const [selectedKitchen, setSelectedKitchen] = useState<IKitchen | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const orgId = localStorage.getItem('organizationId') || '';
+  const orgId = localStorage.getItem("organizationId") || "";
 
-  useEffect(() => {
-    const fetchSelectedKitchen = async () => {
-      setLoading(true);
-      try {
-        const response = await getSelectedKitchen(orgId);
-        if (response?.status) {
-          // Store the single kitchen from the response
-          setSelectedKitchen(response.data.kitchen);
-        } else {
-          toast.error(response?.message || "Failed to fetch selected kitchen.");
-        }
-      } catch (error) {
-        console.error("Error fetching selected kitchen:", error);
-        toast.error("An error occurred while fetching selected kitchen.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    // useEffect(() => {
+    //   const fetchSelectedKitchen = async () => {
+    //     setLoading(true);
+    //     try {
+    //       const response = await getSelectedKitchen(orgId);
+    //       if (response?.status) {
+    //         // Store the single kitchen from the response
+    //         setSelectedKitchen(response.data.kitchen);
+    //       } else {
+    //         toast.error(response?.message || "Failed to fetch selected kitchen.");
+    //       }
+    //     } catch (error) {
+    //       console.error("Error fetching selected kitchen:", error);
+    //       toast.error("An error occurred while fetching selected kitchen.");
+    //     } finally {
+    //       setLoading(false);
+    //     }
+    //   };
 
-    fetchSelectedKitchen();
-  }, [orgId]);
+    //   fetchSelectedKitchen();
+    // }, [orgId]);
 
   if (loading) {
     return (
@@ -57,22 +58,23 @@ function SelectedKitchensList() {
 
   return (
     <div className="container-fluid px-4 py-3">
-      <nav aria-label="breadcrumb" className="mb-3">
-        <ol className="breadcrumb m-0">
-          <li className="breadcrumb-item">
-            <Link to="/products">Products</Link>
-          </li>
-          <li className="breadcrumb-item active" aria-current="page">
-            Selected Collaboration Kitchen
-          </li>
-        </ol>
-      </nav>
+      <PageTitle
+        breadCrumbItems={[
+          { label: "Organizations", path: "/apps/organizations/list" },
+          { label: "List", path: "/apps/organizations/list", active: true },
+        ]}
+        title={"Organizations"}
+      />
 
-      <div className="mb-4">
-        <h3>Collaboration Kitchen</h3>
-        <p className="text-muted">
-          View details of your currently selected collaboration kitchen
-        </p>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
+        <div className="d-flex align-items-center justify-content-between">
+          <h3 className="page-title m-0" style={{ color: "#fff" }}>
+             Selected Kitchens 
+          </h3>
+        </div>
       </div>
 
       <Row className="g-3">
@@ -95,14 +97,20 @@ function SelectedKitchensList() {
                   <strong>Phone:</strong> {selectedKitchen.owner_phone_number}
                   <br />
                   <strong>Status:</strong>{" "}
-                  <span className={`text-${selectedKitchen.status ? "success" : "danger"}`}>
+                  <span
+                    className={`text-${
+                      selectedKitchen.status ? "success" : "danger"
+                    }`}
+                  >
                     {selectedKitchen.status ? "Active" : "Inactive"}
                   </span>
                 </Card.Text>
                 <div className="d-flex gap-2">
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`/apps/kitchen/details/${selectedKitchen._id}`)}
+                    onClick={() =>
+                      navigate(`/apps/kitchen/details/${selectedKitchen._id}`)
+                    }
                   >
                     View Details
                   </Button>
@@ -114,11 +122,12 @@ function SelectedKitchensList() {
           <Col>
             <div className="alert alert-info">
               <i className="mdi mdi-information-outline me-2"></i>
-              No collaboration kitchen is currently selected. 
+              No collaboration kitchen is currently selected.
               <br />
               <Link to="/apps/kitchen/list" className="alert-link">
                 Browse available kitchens
-              </Link> to select a collaboration partner.
+              </Link>{" "}
+              to select a collaboration partner.
             </div>
           </Col>
         )}
