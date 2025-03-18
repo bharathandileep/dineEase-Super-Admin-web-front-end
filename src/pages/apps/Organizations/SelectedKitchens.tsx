@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getSelectedKitchen } from "../../../server/admin/organization";
+import { listCollaboratedKitchens } from "../../../server/admin/collab";
 
 interface IKitchen {
   _id: string;
@@ -24,7 +24,7 @@ function SelectedKitchensList() {
     const fetchSelectedKitchen = async () => {
       setLoading(true);
       try {
-        const response = await getSelectedKitchen(orgId);
+        const response = await listCollaboratedKitchens(orgId);
         if (response?.status) {
           // Store the single kitchen from the response
           setSelectedKitchen(response.data.kitchen);

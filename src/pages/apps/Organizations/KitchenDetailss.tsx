@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
-import { selectKitchen } from "../../../server/admin/organization"; // Add this import
+import { collaborateKitchen } from "../../../server/admin/collab";
 
 // Define interface for menu items
 interface MenuItem {
@@ -128,30 +128,7 @@ function KitchensDetailss() {
     }
   };
 
-  // const handleSelectKitchen = async () => {
-  //   if (!id || !orgId) {
-  //     toast.error("Missing kitchen or organization information.");
-  //     return;
-  //   }
-  
-  //   setIsSelecting(true);
-  //   try {
-  //     const response = await selectKitchen(orgId, id);
-  //     if (response?.status) {
-  //       toast.success("Kitchen selected successfully!");
-  //       navigate("/apps/organizations/selected-kitchens");
-  //     } else {
-  //       toast.error(response?.message || "Failed to select kitchen.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error selecting kitchen:", error);
-  //     toast.error("An error occurred while selecting the kitchen.");
-  //   } finally {
-  //     setIsSelecting(false);
-  //   }
-  // };
-// Only updating the handleSelectKitchen function from your KitchensDetailss component
-// Replace this function in your existing component
+ 
 
 const handleSelectKitchen = async () => {
   if (!id || !orgId) {
@@ -161,7 +138,7 @@ const handleSelectKitchen = async () => {
 
   setIsSelecting(true);
   try {
-    const response = await selectKitchen(orgId, id);
+    const response = await collaborateKitchen(orgId, id);
     if (response?.status) {
       toast.success("Kitchen selected successfully!");
       

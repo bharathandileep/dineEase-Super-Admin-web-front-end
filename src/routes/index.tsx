@@ -51,6 +51,7 @@ import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
 //import Notification from "../pages/notification/Notification"
 import Notifications from "../pages/uikit/Notifications";
 import AllNotifications from "../components/AllNotifications"
+import SelectedKitchens from "../pages/apps/Organizations/SelectedKitchens"
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -520,6 +521,11 @@ const menuAppRoutes = {
       name: "Edit Organizations",
       element: <OrganizationDetails />,
       route: PrivateRoute,
+    },
+    {
+      path:"/apps/organizations/selected-kitcens",
+      name:"Selected Kitchens",
+      element:<SelectedKitchens/>
     },
   ],
 };

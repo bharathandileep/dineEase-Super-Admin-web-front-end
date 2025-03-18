@@ -129,8 +129,8 @@ export const apiConfig = {
     approveOrganization: (orgId: string | undefined) =>
       `/organization/approve/${orgId}`,
 
-    selectKitchen:(orgId: string | undefined)=>`/organization/select`,
-    getSelectedKitchen:(orgId: string | undefined)=>`/organization/${orgId}/selcted-kitchens`
+    // selectKitchen:(orgId: string | undefined)=>`/organization/select`,
+    // getSelectedKitchen:(orgId: string | undefined)=>`/organization/${orgId}/selcted-kitchens`
   },
 
   menu: {
@@ -261,4 +261,9 @@ export const apiConfig = {
     getAllNotifications:"/notification/all",
     generateOrganizationNotification:"/notification/generate-organization"
   },
+  collab:{
+    collaborateKitchen:"/request",
+    listCollaboratedKitchens:"/organization/:organization_id"
+
+  }
 };
