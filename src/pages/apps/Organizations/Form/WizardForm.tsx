@@ -91,7 +91,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  const [progress, setProgress] = useState(0); // Added progress state
+  const [progress, setProgress] = useState(0);
   const { userLoggedIn, user } = useSelector((state: RootState) => state.Auth);
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState<any>({ email: "" });
@@ -222,7 +222,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ... (fetchCountries, fetchStates, fetchDistricts, fetchCities remain unchanged)
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -275,7 +274,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
     }
   };
 
-  // ... (handleBack, handleEdit, handleSubmit, handleChange remain unchanged)
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
   };
@@ -377,7 +375,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
 
   useEffect(() => {
     fetchCountries();
-    user.role === "Admin" ? setIsOpen(true) : setIsOpen(false);
+    setIsOpen(user.role === "Admin" && !initialData);
   }, []);
 
   useEffect(() => {

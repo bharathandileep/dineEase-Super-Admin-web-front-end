@@ -298,7 +298,7 @@ function ListKitchens() {
                   className='mb-3' 
                   ref={isLastElement ? lastKitchenElementRef : null}
                 >
-                  <Link to={`/apps/kitchen/${item._id}`}>
+                  <Link to={`/apps/kitchen/details/${item._id}`}>
                     <Card className='product-box h-100 shadow-sm'>
                       <Card.Body className='d-flex flex-column'>
                         <div className='bg-light mb-1'>

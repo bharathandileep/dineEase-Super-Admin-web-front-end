@@ -83,7 +83,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "Organization-employadd",
         label: "• Employees",
-        access:["Admin","Organization"],
+        access:["Organization"],
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
