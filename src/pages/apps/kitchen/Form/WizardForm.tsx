@@ -602,7 +602,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
   useEffect(() => {
     fetchCountries();
     fetchCategories();
-    user.role === "Admin" ? setIsOpen(true) : setIsOpen(false);
+    setIsOpen(user.role === "Admin" && !initialData)
   }, []);
   const handleUserDataChange = (updatedUserData: any) => {
     setUserData(updatedUserData);

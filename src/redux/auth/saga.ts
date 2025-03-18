@@ -61,7 +61,6 @@ function* empLogin({
   type,
 }: UserData): SagaIterator {
   try {
-    console.log("heloo")
     const response = yield call(authAccessCredentials, { username, password });
     const user = response.data;
     api.setLoggedInUser(user);

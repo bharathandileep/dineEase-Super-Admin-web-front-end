@@ -11,7 +11,7 @@ export const setStoreReference = (store: any) => {
 };
 
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 15 * 60 * 1000;
+const REFRESH_INTERVAL = 10 * 60 * 1000;
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -35,7 +35,6 @@ const getUserFromCookie = () => {
   return token ? token : null;
 };
 
-// Helper function to dispatch to Redux store if available
 const dispatchToStore = (action: any) => {
   if (storeRef) {
     storeRef.dispatch(action);
@@ -67,9 +66,7 @@ const refreshTokenLogic = async (): Promise<string> => {
     const accessToken = response.data.data;
     new APICore().setLoggedInUser(accessToken);
     const userInfo = jwtDecode(accessToken);
-    dispatchToStore(
-      authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, userInfo)
-    );
+    // authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userInfo);
     setAuthorization(accessToken);
     return accessToken;
   } catch (error: any) {
@@ -93,7 +90,6 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
@@ -130,21 +126,22 @@ const setupTokenRefreshInterval = () => {
 
   window._tokenRefreshInterval = setInterval(async () => {
     const token = getUserFromCookie();
-    if (token) {
-      const timeUntilExpiration = getTimeUntilExpiration(token);
-      if (timeUntilExpiration < 120 && timeUntilExpiration > 0) {
-        try {
-          await refreshTokenLogic();
-        } catch (error) {
-        }
-      } else if (timeUntilExpiration <= 0) {
-        try {
-          await refreshTokenLogic();
-        } catch (error) {
-          console.error("Token refresh failed:", error);
-        }
-      }
-    }
+    console.log(token, "token");
+    await refreshTokenLogic();
+    // if (token) {
+    //   const timeUntilExpiration = getTimeUntilExpiration(token);
+    //   if (timeUntilExpiration < 120 && timeUntilExpiration > 0) {
+    //     try {
+    //       await refreshTokenLogic();
+    //     } catch (error) {}
+    //   } else if (timeUntilExpiration <= 0) {
+    //     try {
+
+    //     } catch (error) {
+    //       console.error("Token refresh failed:", error);
+    //     }
+    //   }
+    // }
   }, REFRESH_INTERVAL);
 
   const immediateCheck = async () => {
@@ -281,9 +278,7 @@ const initializeAxios = () => {
     setAuthorization(token);
     try {
       const userInfo = jwtDecode(token);
-      dispatchToStore(
-        authApiResponseSuccess(AuthActionTypes.GOOGLE_LOGIN_USER, userInfo)
-      );
+      authApiResponseSuccess(AuthActionTypes.LOGOUT_USER, userInfo);
     } catch (error) {
       console.error("Error updating Redux store on init:", error);
     }
