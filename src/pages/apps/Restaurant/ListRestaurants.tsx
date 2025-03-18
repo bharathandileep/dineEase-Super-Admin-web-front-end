@@ -146,7 +146,7 @@ const RestaurantDetails: React.FC = () => {
                     <Button
                       variant="success"
                       className="waves-effect waves-light me-1"
-                      onClick={() => console.log("Settings clicked")}
+                      onClick={() => ("Settings clicked")}
                     >
                       <i className="mdi mdi-cog"></i>
                     </Button>

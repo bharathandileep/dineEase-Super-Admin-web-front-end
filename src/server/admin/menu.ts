@@ -17,11 +17,8 @@ export const createCategory = async (data: any) => {
 
 export const getAllCategories = async (query: any) => {
   try {
-    console.log("Sending API Query:", query);
     const url = `${apiConfig.menu.getAllCategories(query)}`;
-    console.log("Constructed URL:", url);
     const response = await axiosInstance.get(url);
-    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
     throw new Error(extractErrorMessage(error));
@@ -86,7 +83,6 @@ export const getSubcategories = async (query: any) => {
   try {
     const url = `${apiConfig.menu.getAllSubCategories(query)}`;
     const response = await axiosInstance.get(url);
-    console.log("API Response:", response.data);
     return response.data;
   } catch (error: any) {
     throw new Error(extractErrorMessage(error));

@@ -276,7 +276,6 @@ export const updateKitchenApi = async (id: string, updatedKitchen: Partial<Omit<
   const data: Kitchen = await response.json();
   return data;
 };
-// console.log(fetchCompanyApi);
 
 // *****************************  Users API ************************************************************
 export interface Users {
@@ -313,7 +312,7 @@ export const fetchUsersApi = async (): Promise<Users[]> => {
   const data: Users[] = await response.json();
   return data;
 };
-// console.log(fetchUsersApi);
+
 
 // ********************************  AdminStaffs---Users API ************************************************************
 export interface Staffs {
@@ -348,9 +347,9 @@ export const fetchStaffsApi =  async (page: number, limit: number): Promise<{ da
   return await response.json();
  
 };
-// console.log(fetchStaffsApi);
+
  
-// Delete a Staff
+
 export const deleteStaffApi = async (admin_staff_id: string): Promise<Staffs[]> =>{
   const response = await fetch(`${baseURL}/adminstaff/${admin_staff_id}`, {
     method: 'DELETE',
@@ -434,9 +433,7 @@ export const fetchFoodMenuApi = async (page: number, limit: number): Promise<{
  
   return await response.json();
 };
-// console.log(fetchStaffsApi);
- 
-// Delete a food
+
 export const deleteFoodMenuApi = async (food_id: string): Promise<FoodMenu[]> =>{
   const response = await fetch(`${baseURL}/foodproducts/${food_id}`, {
     method: 'DELETE',
@@ -576,10 +573,7 @@ export const updateOrder = async (
   id: string,
   data: Partial<Order>
 ): Promise<Order> => {
-  const { _id, ...rest } = data; // Exclude _id if included in data
-
-  console.log('Updated Data:', rest); // Log the data being sent
-
+  const { _id, ...rest } = data; 
   const response = await fetch(`${ORDER_API_URL}/${id}`, {
     method: 'PUT',
     headers: {

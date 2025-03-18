@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeemanagment";
+import { getEmployeeById, deleteEmployee, toggleEmployeeStatus } from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, Mail, Phone, MapPin, Building } from "lucide-react";
 
 
@@ -221,7 +221,7 @@ const EmployeeDetails = () => {
                       <Card.Body>
                         <h5 className="card-title mb-3">Address Details</h5>
                         <p><MapPin size={16} className="me-2" /> {employee.address?.street_address}</p>
-                        <p>{employee.address?.city}, {employee.address?.district}</p>
+                        <p>{employee.address?.district}, {employee.address?.city}</p>
                         <p>{employee.address?.state}, {employee.address?.pincode}</p>
                       </Card.Body>
                     </Card>

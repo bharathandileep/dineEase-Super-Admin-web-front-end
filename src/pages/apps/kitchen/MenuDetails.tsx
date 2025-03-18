@@ -43,7 +43,6 @@ export default function MenuDetails() {
   const handleSave = async () => {
     setLoading(true);
     setFood(editedFood);
-    console.log(editedFood);
     setIsEditing(false);
     setPreviewUrl(null);
 
@@ -171,7 +170,6 @@ export default function MenuDetails() {
           priceUser: response.data.price_user || 0.0,
         });
       } catch (error: any) {
-        console.log(error);
       }
     };
     fetchMenuItemDetails();

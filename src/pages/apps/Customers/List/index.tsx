@@ -99,8 +99,6 @@ const List: React.FC = () => {
     if (showConfirmDelete) {
       const customerToDelete = customers.find(customers => customers._id === showConfirmDelete);
       const cust_name = `${customerToDelete?.cust_name}`;
-  
-      console.log('Deleting Customer with ID:', showConfirmDelete);
       setDeleteLoading(true);
 
       setTimeout(async () => {

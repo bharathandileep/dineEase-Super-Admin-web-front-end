@@ -6,9 +6,7 @@ import { apiConfig } from "../../helpers/api/apis";
 export const getAllKitches = async (query: any) => {
   try {
     const url = `${apiConfig.kitchens.getAllkitchens(query)}`;
-    console.log("Fetching kitchens with URL:", url); // Debug log
     const response = await axiosInstance.get(url);
-    console.log("Kitchens Response:", response.data); // Debug log
     return response.data;
   } catch (error: any) {
     console.error("Error fetching kitchens:", error.response?.data || error.message);
@@ -98,12 +96,8 @@ export const kitchenCreateCategory = async (data: any) => {
 
 export const kitchensGetAllCategories = async (query: any) => {
   try {
-    console.log("📡 Sending API Query:", query);
     const url = `${apiConfig.kitchens.getallCategories(query)}`;
-    console.log("🔗 Constructed URL:", url);
-
     const response = await axiosInstance.get(url);
-    console.log("✅ API Response:", response.data);
     return response.data;
   } catch (error: any) {
 
@@ -165,7 +159,7 @@ export const kitchensGetSubcategories = async (query: any) => {
   try {
     const url = `${apiConfig.kitchens.getallSubCategories(query)}`;
     const response = await axiosInstance.get(url);
-    console.log("✅ API Response:", response.data);
+
     return response.data;
   } catch (error: any) {
 
@@ -230,17 +224,5 @@ export const getUnapprovedKitchens = async (query: any) => {
   }
 }
 
-// export const approveKitchens = async(id:string | undefined)=>{
-//   try{
-//     const response = await axiosInstance.patch(
-//       apiConfig.kitchens.approveKitchens(id)
-//     );
-//     return response.data;
 
-//   }
-//   catch(error:any){
-//     console.log("Error:",error.response?.data || error.message);
-//   }
-// }
- 
  

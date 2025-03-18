@@ -152,10 +152,8 @@ const setupTokenRefreshInterval = () => {
     if (token) {
       const timeUntilExpiration = getTimeUntilExpiration(token);
       if (timeUntilExpiration < 300) {
-        console.log("Token expiring soon on init, refreshing immediately...");
         try {
           await refreshTokenLogic();
-          console.log("Initial token refresh successful");
         } catch (error) {
           console.error("Initial token refresh failed:", error);
         }

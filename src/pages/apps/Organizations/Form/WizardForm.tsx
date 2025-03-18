@@ -433,7 +433,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
   }, [id]);
   const handleUserDataChange = (updatedUserData: any) => {
     setUserData(updatedUserData);
-    console.log(updatedUserData);
     formData.email = updatedUserData?.email;
     formData.contactNumber = updatedUserData?.phone;
     formData.managerName = updatedUserData?.fullName;

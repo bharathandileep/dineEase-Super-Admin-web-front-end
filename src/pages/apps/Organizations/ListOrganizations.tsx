@@ -72,7 +72,6 @@ function ListOrganizations() {
     const fetchCategories = async () => {
       try {
         const response = await orgGetAllCategories({});
-        console.log("Categories Response:", response);
         let categoryData = [];
         if (response?.status && Array.isArray(response.data)) {
           categoryData = response.data;
@@ -100,7 +99,6 @@ function ListOrganizations() {
       }
       try {
         const response = await orgGetSubcategoriesByCategory(categoryFilter);
-        console.log("Subcategories Response:", response);
         let subcategoryData = [];
         if (response?.status && Array.isArray(response.data)) {
           subcategoryData = response.data;
@@ -131,7 +129,6 @@ function ListOrganizations() {
 
     const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
     if (!isNewSearch && lastFetchParams.current === paramsKey) {
-      console.log("Skipping duplicate fetch for:", paramsKey);
       return;
     }
 
@@ -147,13 +144,9 @@ function ListOrganizations() {
         category: category || "",
         subcategory: subcategory || "",
       };
-      console.log("Fetching organizations with params:", params);
-
       const response = await getAllOrg(params);
       if (response?.status && Array.isArray(response.data?.organizations)) {
         const { organizations: fetchedOrganizations, totalPages, totalOrganizations, hasMore } = response.data;
-        console.log("Fetched organizations:", fetchedOrganizations);
-
         setOrganizations((prev) => {
           const existingIds = new Set(prev.map(o => o._id));
           const uniqueNewOrganizations = fetchedOrganizations.filter((o: Organization) => !existingIds.has(o._id));
@@ -207,7 +200,6 @@ function ListOrganizations() {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && !isLoadingRef.current) {
-            console.log("Last element visible, fetching page:", page);
             fetchOrganizations(page, false, searchTerm, categoryFilter, subcategoryFilter);
           }
         },

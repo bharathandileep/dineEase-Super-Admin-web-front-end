@@ -69,7 +69,6 @@ function ListKitchens() {
     const fetchCategories = async () => {
       try {
         const response = await kitchensGetAllCategories({});
-        console.log("Categories Response:", response); // Debug log
         let categoryData = [];
         if (response?.status && Array.isArray(response.data)) {
           categoryData = response.data; // Direct array of categories
@@ -97,7 +96,6 @@ function ListKitchens() {
       }
       try {
         const response = await kitchensGetSubcategoriesByCategory(categoryFilter);
-        console.log("Subcategories Response:", response); // Debug log
         let subcategoryData = [];
         if (response?.status && Array.isArray(response.data)) {
           subcategoryData = response.data; // Direct array of subcategories
@@ -128,7 +126,7 @@ function ListKitchens() {
 
     const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
     if (!isNewSearch && lastFetchParams.current === paramsKey) {
-      console.log("Skipping duplicate fetch for:", paramsKey);
+  
       return;
     }
 
@@ -144,12 +142,10 @@ function ListKitchens() {
         category,
         subcategory,
       };
-      console.log("Fetching kitchens with params:", params);
 
       const response = await getAllKitches(params);
       if (response?.status && Array.isArray(response.data?.kitchens)) {
         const { kitchens: fetchedKitchens, totalPages, totalKitchens, hasMore } = response.data;
-        console.log("Fetched kitchens:", fetchedKitchens);
 
         setKitchens((prev) => {
           const existingIds = new Set(prev.map(k => k._id));
@@ -204,7 +200,6 @@ function ListKitchens() {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && !isLoadingRef.current) {
-            console.log("Last element visible, fetching page:", page);
             fetchKitchens(page, false, searchTerm, categoryFilter, subcategoryFilter);
           }
         },

@@ -606,7 +606,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
   }, []);
   const handleUserDataChange = (updatedUserData: any) => {
     setUserData(updatedUserData);
-    console.log(updatedUserData);
     formData.owner_email = updatedUserData?.email;
     formData.owner_phone_number = updatedUserData?.phone;
     formData.kitchen_owner_name = updatedUserData?.fullName;

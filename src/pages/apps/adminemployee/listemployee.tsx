@@ -6,7 +6,7 @@ import {
   getAllEmployees,
   deleteEmployee,
   toggleEmployeeStatus,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface Employee {

@@ -184,7 +184,6 @@ function KitchensDetails() {
           if (firstCategory) setActiveKey(firstCategory);
         } else {
           setGroupedItems({}); // No items found
-          console.log("No menu items found for this kitchen");
         }
       } catch (error:any) {
         console.error("Error fetching menu items:", error);

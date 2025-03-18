@@ -81,10 +81,9 @@ const AddkitchenCategory = ({
           });
         } else {
           response = await orgCreateCategory(formdata);
-          console.log(response);
+        
         }
       }
-    console.log("Response:", response);  
       if (response) {
         toast.success(response.message);
         onHide();
