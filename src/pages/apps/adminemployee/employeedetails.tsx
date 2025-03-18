@@ -221,7 +221,7 @@ const EmployeeDetails = () => {
                       <Card.Body>
                         <h5 className="card-title mb-3">Address Details</h5>
                         <p><MapPin size={16} className="me-2" /> {employee.address?.street_address}</p>
-                        <p>{employee.address?.district}, {employee.address?.city}</p>
+                        <p>{employee.address?.city}, {employee.address?.district}</p>
                         <p>{employee.address?.state}, {employee.address?.pincode}</p>
                       </Card.Body>
                     </Card>

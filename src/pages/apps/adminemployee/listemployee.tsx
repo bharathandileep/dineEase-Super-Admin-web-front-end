@@ -267,7 +267,7 @@ const EmployeeList = () => {
                         style={{
                           width: "100%",
                           height: "180px",
-                          objectFit: "cover",
+                          objectFit: "contain",
                         }}
                       />
                     </div>
