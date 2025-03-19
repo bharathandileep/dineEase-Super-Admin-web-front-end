@@ -160,3 +160,28 @@ export const updateAdminPassword = async (passwordData: UpdatePasswordData) => {
 };
 export const verifyPhoneOTP = async () => {};
 export const loginUserWithPhone = async (phonenimber: any) => {};
+
+export const checkUserIspresent = async (userData: any) => {
+  try {
+    const response = await axiosInstance.post(
+      `${apiConfig.auth.checkUserExistence}`,userData
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || error;
+  }
+};
+export const createNewUser = async (userData: any) => {
+  try {
+    const response = await axiosInstance.post(
+      `${apiConfig.auth.createUser}`,userData
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Error fetching designations:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};

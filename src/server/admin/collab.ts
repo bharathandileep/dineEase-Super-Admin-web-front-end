@@ -8,24 +8,31 @@ const extractErrorMessage = (error: any) => {
   };
 
 
-export const collaborateKitchen = async (organization_id: string, kitchen_id: string) => {
+
+export const collaborateKitchen = async (
+    organization_id: string,
+    kitchen_id: string,
+   
+  ) => {
     try {
-        const response = await axiosInstance.post(apiConfig.collab.collaborateKitchen, {
-            organization_id,
-            kitchen_id
-        });
+      const response = await axiosInstance.post(apiConfig.collab.collaborateKitchen, {
+        organization_id,
+        kitchen_id,
+        
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(extractErrorMessage(error));
+    }
+  };
+  
+  export const listCollaboratedKitchens = async (orgId: string) => {
+    try {
+        const response = await axiosInstance.get(apiConfig.collab.listCollaboratedKitchens(orgId));
         return response.data;
     } catch (error: any) {
         throw new Error(extractErrorMessage(error));
     }
 };
 
-export const listCollaboratedKitchens = async (organization_id: string) => {
-    try {
-        const response = await axiosInstance.get(`${apiConfig.collab.listCollaboratedKitchens}/${organization_id}`);
-        return response.data;
-    } catch (error: any) {
-        throw new Error(extractErrorMessage(error));
-    }
-};
 

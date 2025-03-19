@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
-import {
-  getAllKitches,
-  kitchensGetAllCategories,
-  kitchensGetSubcategoriesByCategory
+import { 
+  getAllKitches, 
+  kitchensGetAllCategories, 
+  kitchensGetSubcategoriesByCategory 
 } from "../../../server/admin/kitchens";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import debounce from "lodash/debounce";
- 
+import debounce from "lodash/debounce"; 
+
 interface Kitchen {
   _id: string;
   kitchen_name: string;
@@ -17,9 +17,9 @@ interface Kitchen {
   kitchen_type: string;
   kitchen_phone_number: string;
   kitchen_image: string;
-  addresses: {
-    street_address: string;
-    city_name: string;
+  addresses: { 
+    street_address: string; 
+    city_name: string; 
     country_name: string;
     pincode: string;
   }[];
@@ -34,6 +34,17 @@ interface Kitchen {
     subcategoryName: string;
     category: string;
   };
+}
+
+interface Category {
+  _id: string;
+  category: string;
+}
+
+interface Subcategory {
+  _id: string;
+  subcategoryName: string;
+  category: string;
 }
  
 interface Category {
@@ -64,6 +75,7 @@ function ListKitchens() {
   const observer = useRef<IntersectionObserver | null>(null);
   const lastFetchParams = useRef<string>(""); // To track fetch params and avoid duplicates
  
+
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
@@ -86,6 +98,7 @@ function ListKitchens() {
     fetchCategories();
   }, []);
  
+
   // Fetch subcategories
   useEffect(() => {
     const fetchSubcategories = async () => {
@@ -112,6 +125,7 @@ function ListKitchens() {
     fetchSubcategories();
   }, [categoryFilter]);
  
+
   // Fetch kitchens
   const fetchKitchens = useCallback(async (
     currentPage: number,
@@ -122,16 +136,17 @@ function ListKitchens() {
   ) => {
     if (isLoadingRef.current) return;
  
+
     const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
     if (!isNewSearch && lastFetchParams.current === paramsKey) {
       console.log("Skipping duplicate fetch for:", paramsKey);
       return;
     }
- 
+
     isLoadingRef.current = true;
     if (isNewSearch) setLoading(true);
     else setLoadingMore(true);
- 
+
     try {
       const params = {
         page: currentPage,
@@ -142,12 +157,13 @@ function ListKitchens() {
       };
       console.log("Fetching kitchens with params:", params);
  
+
       const response = await getAllKitches(params);
       if (response.status) {
         const { kitchens: fetchedKitchens, totalPages, totalKitchens } = response.data;
         console.log("Fetched kitchens:", fetchedKitchens);
- 
-        setKitchens((prev) =>
+
+        setKitchens((prev) => 
           isNewSearch ? fetchedKitchens : [...prev, ...fetchedKitchens]
         );
         setTotalItems(totalKitchens || 0);
@@ -169,6 +185,7 @@ function ListKitchens() {
     }
   }, []);
  
+
   // Debounced fetch for search and filters
   const debouncedFetchKitchens = useCallback(
     debounce((page, isNewSearch, search, category, subcategory) => {
@@ -179,17 +196,16 @@ function ListKitchens() {
     }, 500),
     [fetchKitchens]
   );
- 
+
   useEffect(() => {
     debouncedFetchKitchens(page, true, searchTerm, categoryFilter, subcategoryFilter);
   }, [searchTerm, categoryFilter, subcategoryFilter, debouncedFetchKitchens]);
- 
+
   // Intersection Observer for infinite scroll
   const lastKitchenElementRef = useCallback(
     (node: HTMLDivElement) => {
       if (loading || loadingMore || !hasMore) return;
       if (observer.current) observer.current.disconnect();
- 
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && !isLoadingRef.current) {
@@ -199,17 +215,14 @@ function ListKitchens() {
         },
         { threshold: 0.5 } // Trigger when 50% of the last element is visible
       );
- 
       if (node) observer.current.observe(node);
     },
     [loading, loadingMore, hasMore, page, searchTerm, categoryFilter, subcategoryFilter, fetchKitchens]
   );
- 
   // Initial fetch on mount
   useEffect(() => {
     fetchKitchens(1, true);
   }, [fetchKitchens]);
- 
   return (
     <>
       <PageTitle
@@ -220,15 +233,16 @@ function ListKitchens() {
         title={"Kitchens"}
       />
  
+
       <div className='mb-3' style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='page-title m-0' style={{ color: "#fff" }}>Kitchens</h3>
           <Link to='/apps/kitchen/new' className='btn btn-danger waves-effect waves-light'>
             <i className='mdi mdi-plus-circle me-1'></i> Add New Kitchen
-          </Link>
+          </Link> 
         </div>
       </div>
- 
+
       <Row>
         <Col>
           <Card>
@@ -282,6 +296,7 @@ function ListKitchens() {
           </Card>
         </Col>
       </Row>
+
       {loading && kitchens.length === 0 ? (
         <div className='text-center my-5'>
           <Spinner animation='border' role='status'>
@@ -295,14 +310,14 @@ function ListKitchens() {
             kitchens.map((item, index) => {
               const isLastElement = index === kitchens.length - 1;
               return (
-                <Col
-                  key={item._id}
-                  md={6}
-                  xl={3}
-                  className='mb-3'
+                <Col 
+                  key={item._id} 
+                  md={6} 
+                  xl={3} 
+                  className='mb-3' 
                   ref={isLastElement ? lastKitchenElementRef : null}
                 >
-                  <Link to={`/apps/kitchen/${item._id}`}>
+                  <Link to={`/apps/kitchen/details/${item._id}`}>
                     <Card className='product-box h-100 shadow-sm'>
                       <Card.Body className='d-flex flex-column'>
                         <div className='bg-light mb-1'>
@@ -319,7 +334,7 @@ function ListKitchens() {
                             <div className='d-flex align-items-center mb-1 text-black'>
                               <i className='mdi mdi-map-marker me-1'></i>
                               <span>
-                                {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name},
+                                {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name}, 
                                 {item.addresses[0]?.country_name}
                               </span>
                             </div>
@@ -373,6 +388,5 @@ function ListKitchens() {
     </>
   );
 }
- 
+
 export default ListKitchens;
- 

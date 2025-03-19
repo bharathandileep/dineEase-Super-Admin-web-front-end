@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllNotifications } from "../server/admin/notification";
+import { getAllNotifications } from "../../../../server/admin/notification";
+
 
 interface NotificationItem {
   id: string;
@@ -12,7 +13,7 @@ interface NotificationItem {
   type?: "kitchen" | "organization";
 }
 
-const AllNotificationsPage = () => {
+const KitchenNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]); 
   const [filteredNotifications, setFilteredNotifications] = useState<NotificationItem[]>([]); 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -63,7 +64,7 @@ const AllNotificationsPage = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4 text-center fw-bold text-dark">All Notifications</h2>
+      <h2 className="mb-4 text-center fw-bold text-dark">Kitchen Notifications</h2>
 
       <div className="mb-4">
         <input
@@ -127,4 +128,4 @@ const AllNotificationsPage = () => {
   );
 };
 
-export default AllNotificationsPage;
+export default KitchenNotifications;

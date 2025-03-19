@@ -175,6 +175,7 @@ import classNames from "classnames";
 
 import { NotificationItem } from "../layouts/Topbar";
 import { getAllNotifications } from "../server/admin/notification"; // Update the import to fetch all notifications
+import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
 
 const notificationContainerStyle = {
   maxHeight: "300px",
@@ -199,8 +200,9 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [notificationContentStyle, setNotificationContentStyles] = useState<NotificationContainerStyle>(notificationContainerStyle);
   const [notifications, setNotifications] = useState<NotificationItem[]>(props.notifications || []);
-
-  /*
+const userInfo = getAccessDetailsFromLocalStorage();
+const [notificationPath, setNotificationPath] = useState<string>("");
+  /*c
    * toggle notification-dropdown
    */
   const toggleDropdown = () => {
@@ -225,7 +227,11 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
 
   useEffect(() => {
     fetchNotifications();
-    if (dropdownOpen && !props.notifications) {
+    if (userInfo.role === "Kitchen") {
+      setNotificationPath("/apps/kitchen/notifications");
+    }
+    if (userInfo.role === "Organization") {
+      setNotificationPath("/apps/organizations/notifications");
     }
   }, [dropdownOpen]);
 
@@ -289,7 +295,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
           </SimpleBar>
 
           <Link
-            to="/ui/allnotifications"
+            to={notificationPath}
             className="dropdown-item text-center text-primary notify-item notify-all"
           >
             View All <i className="fe-arrow-right"></i>

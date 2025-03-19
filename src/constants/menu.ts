@@ -97,10 +97,11 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key:"selected-kitchens",
         label:"• Selected Kitchens",
-        access:["Organization"],
+        access:["Organization","Admin"],
         url:"/apps/organizations/selected-kitchens",
         parentKey:"apps-organizations"
-      }
+      },
+     
       
     ],
   },

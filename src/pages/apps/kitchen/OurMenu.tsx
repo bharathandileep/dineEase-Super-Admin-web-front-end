@@ -5,6 +5,7 @@ import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import PageTitle from "../../../components/PageTitle";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 interface FoodItem {
   name: string;
@@ -24,6 +25,7 @@ const KitchenMenu = () => {
   const [cartItems, setCartItems] = useState<FoodItem[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const userInfo = getAccessDetailsFromLocalStorage();
 
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
@@ -58,7 +60,7 @@ const KitchenMenu = () => {
   const fetchItemDetails = async () => {
     setLoading(true);
     try {
-      const response = await listItems( { page: 1, limit: 1000 } );  
+      const response = await listItems({ page: 1, limit: 1000 });
       const transformedData = transformFoodData(response.data.items);
       setGroupedItems(transformedData);
 
@@ -66,7 +68,7 @@ const KitchenMenu = () => {
       if (firstCategory) {
         setActiveKey(firstCategory);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching items:", error);
       toast.error(error.message);
     } finally {
@@ -80,7 +82,9 @@ const KitchenMenu = () => {
 
   const handleAddToCart = (item: FoodItem) => {
     setCartItems((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.name === item.name);
+      const existingItem = prevCart.find(
+        (cartItem) => cartItem.name === item.name
+      );
       if (existingItem) {
         return prevCart.map((cartItem) =>
           cartItem.name === item.name
@@ -107,8 +111,10 @@ const KitchenMenu = () => {
 
     setLoading(true);
     try {
-      const hardcodedKitchenId = "67c1372e962df283dc2b80eb"; // Hardcoded kitchen ID
-      const response = await createNewkitchenMenu(hardcodedKitchenId, cartItems);
+      const response = await createNewkitchenMenu(
+        userInfo.kitchenId,
+        cartItems
+      );
       if (response && response.status) {
         toast.success(response.message);
         setCartItems([]);
@@ -145,7 +151,11 @@ const KitchenMenu = () => {
         
         <div>
           <span className="fw-bold">
-            {cartItems.reduce((sum: any, item: any) => sum + (item.quantity || 0), 0)} items
+            {cartItems.reduce(
+              (sum: any, item: any) => sum + (item.quantity || 0),
+              0
+            )}{" "}
+            items
           </span>
         </div>
         <Button variant="primary" onClick={onProceed} disabled={loading}>
@@ -161,7 +171,11 @@ const KitchenMenu = () => {
         breadCrumbItems={[
           { label: "Kitchens", path: "/apps/kitchen/list" },
           { label: "Kitchen Details", path: `/apps/kitchen/details/${id}` },
-          { label: "Add Menu Items", path: `/apps/kitchen/${id}/menu`, active: true },
+          {
+            label: "Add Menu Items",
+            path: `/apps/kitchen/${id}/menu`,
+            active: true,
+          },
         ]}
         title={"Add Menu Items"}
       />
@@ -176,7 +190,7 @@ const KitchenMenu = () => {
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
               Add items to kitchen Menu
             </h3>
-            <Button 
+            <Button
               variant="danger"
               onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
             >
@@ -201,70 +215,94 @@ const KitchenMenu = () => {
                   <h4 className="mb-0">Choose Menu Items</h4>
                 </div>
                 {Object.keys(groupedItems).length > 0 ? (
-                  <Tabs activeKey={activeKey} onSelect={(k: any) => setActiveKey(k)}>
-                    {Object.entries(groupedItems).map(([category, subcategories]) => (
-                      <Tab eventKey={category} title={category} key={category}>
-                        <Accordion>
-                          {Object.entries(subcategories).map(([subcategory, items]) => (
-                            <Accordion.Item key={subcategory} eventKey={subcategory}>
-                              <Accordion.Header>{subcategory}</Accordion.Header>
-                              <Accordion.Body>
-                                {items.map((item, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="d-flex align-items-center mb-3 p-2 border-bottom"
-                                    style={{ gap: "15px" }}
-                                  >
-                                    <div
-                                      className="flex-shrink-0"
-                                      style={{ width: "80px", height: "80px" }}
-                                    >
-                                      <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="rounded"
-                                        style={{
-                                          width: "100%",
-                                          height: "100%",
-                                          objectFit: "cover",
-                                        }}
-                                      />
-                                    </div>
-                                    <div className="flex-grow-1">
-                                      <h6 className="mb-1">{item.name}</h6>
-                                      <small className="text-muted">
-                                        {item.description}
-                                      </small>
-                                    </div>
-                                    <div className="text-end">
-                                      {cartItems.some(
-                                        (cartItem) => cartItem.name === item.name
-                                      ) ? (
-                                        <Button
-                                          variant="outline-danger"
-                                          size="sm"
-                                          onClick={() => handleRemoveFromCart(item)}
+                  <Tabs
+                    activeKey={activeKey}
+                    onSelect={(k: any) => setActiveKey(k)}
+                  >
+                    {Object.entries(groupedItems).map(
+                      ([category, subcategories]) => (
+                        <Tab
+                          eventKey={category}
+                          title={category}
+                          key={category}
+                        >
+                          <Accordion>
+                            {Object.entries(subcategories).map(
+                              ([subcategory, items]) => (
+                                <Accordion.Item
+                                  key={subcategory}
+                                  eventKey={subcategory}
+                                >
+                                  <Accordion.Header>
+                                    {subcategory}
+                                  </Accordion.Header>
+                                  <Accordion.Body>
+                                    {items.map((item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="d-flex align-items-center mb-3 p-2 border-bottom"
+                                        style={{ gap: "15px" }}
+                                      >
+                                        <div
+                                          className="flex-shrink-0"
+                                          style={{
+                                            width: "80px",
+                                            height: "80px",
+                                          }}
                                         >
-                                          Remove
-                                        </Button>
-                                      ) : (
-                                        <Button
-                                          variant="outline-primary"
-                                          size="sm"
-                                          onClick={() => handleAddToCart(item)}
-                                        >
-                                          Add
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </Accordion.Body>
-                            </Accordion.Item>
-                          ))}
-                        </Accordion>
-                      </Tab>
-                    ))}
+                                          <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="rounded"
+                                            style={{
+                                              width: "100%",
+                                              height: "100%",
+                                              objectFit: "cover",
+                                            }}
+                                          />
+                                        </div>
+                                        <div className="flex-grow-1">
+                                          <h6 className="mb-1">{item.name}</h6>
+                                          <small className="text-muted">
+                                            {item.description}
+                                          </small>
+                                        </div>
+                                        <div className="text-end">
+                                          {cartItems.some(
+                                            (cartItem) =>
+                                              cartItem.name === item.name
+                                          ) ? (
+                                            <Button
+                                              variant="outline-danger"
+                                              size="sm"
+                                              onClick={() =>
+                                                handleRemoveFromCart(item)
+                                              }
+                                            >
+                                              Remove
+                                            </Button>
+                                          ) : (
+                                            <Button
+                                              variant="outline-primary"
+                                              size="sm"
+                                              onClick={() =>
+                                                handleAddToCart(item)
+                                              }
+                                            >
+                                              Add
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </Accordion.Body>
+                                </Accordion.Item>
+                              )
+                            )}
+                          </Accordion>
+                        </Tab>
+                      )
+                    )}
                   </Tabs>
                 ) : (
                   <div className="text-center py-4">
@@ -287,18 +325,24 @@ const KitchenMenu = () => {
                 {cartItems.map((item, idx) => (
                   <Col md={4} key={idx}>
                     <div className="d-flex align-items-center p-2 border rounded">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        style={{width: "40px", height: "40px", objectFit: "cover"}}
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          objectFit: "cover",
+                        }}
                         className="me-3 rounded"
                       />
                       <div className="flex-grow-1">
                         <h6 className="mb-0">{item.name}</h6>
-                        <small className="text-muted">Qty: {item.quantity}</small>
+                        <small className="text-muted">
+                          Qty: {item.quantity}
+                        </small>
                       </div>
-                      <Button 
-                        variant="link" 
+                      <Button
+                        variant="link"
                         className="text-danger p-0"
                         onClick={() => handleRemoveFromCart(item)}
                       >

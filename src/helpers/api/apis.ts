@@ -20,6 +20,8 @@ export const apiConfig = {
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
     accessAccount: "/user/access/login",
+    checkUserExistence: "/auth/user/present",
+    createUser: "/auth/user/new",
   },
   users: {
     getUser: "/users/:id",
@@ -32,10 +34,10 @@ export const apiConfig = {
       `/kitchens/update/${kitchenId}`,
     deletekitchens: (kitchenId: string | undefined) =>
       `/kitchens/delete/${kitchenId}`,
-    getAllkitchens: (query: any) =>
-      `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${
-        query.search || ""
-      }`,
+    getAllkitchens: (query: any) => 
+      `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
+      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
+      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
     toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
@@ -82,9 +84,9 @@ export const apiConfig = {
     deleteOrganization: (orgId: string | undefined) =>
       `/organization/delete/${orgId}`,
     getAllOrganization: (query: any) =>
-      `/organization/all?page=${query.page}&limit=${query.limit}&search=${
-        query.search || ""
-      }`,
+      `/organization/all?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
+      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
+      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
@@ -93,11 +95,9 @@ export const apiConfig = {
 
     createCategory: "/organization/categories",
     getAllCategories: (query: any) =>
-      `/organization/categories/all?page=${query.page}&limit=${query.limit}${
-        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
-      }${
-        query.status && query.status !== "all" ? `&status=${query.status}` : ""
-      }`,
+      `/organization/categories/all?page=${query.page}&limit=${query.limit}` +
+      `${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}` +
+      `${query.status && query.status !== "all" ? `&status=${query.status}` : ""}`,
     updateCategory: (id: string | undefined) =>
       `/organization/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -107,11 +107,9 @@ export const apiConfig = {
 
     createSubcategory: "/organization/subcategories",
     getAllSubCategories: (query: any) =>
-      `/organization/subcategories/all?page=${query.page}&limit=${query.limit}${
-        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
-      }${
-        query.status && query.status !== "all" ? `&status=${query.status}` : ""
-      }`,
+      `/organization/subcategories/all?page=${query.page}&limit=${query.limit}` +
+      `${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}` +
+      `${query.status && query.status !== "all" ? `&status=${query.status}` : ""}`,
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/organization/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -257,13 +255,12 @@ export const apiConfig = {
   },
   notification: {
     generateKitchenNotification: "/notification/generate-kitchen",
-    getUserNotifications:(id:string | undefined)=>`/notification/get/${id}`,
-    getAllNotifications:"/notification/all",
-    generateOrganizationNotification:"/notification/generate-organization"
+    getUserNotifications: (id: string | undefined) => `/notification/get/${id}`,
+    getAllNotifications: "/notification/all",
+    generateOrganizationNotification: "/notification/generate-organization",
   },
   collab:{
-    collaborateKitchen:"/request",
-    listCollaboratedKitchens:"/organization/:organization_id"
-
-  }
+    collaborateKitchen:"collab/select",
+    listCollaboratedKitchens: (orgId: string | undefined) => `collab/organization/${orgId}`
+   }
 };
