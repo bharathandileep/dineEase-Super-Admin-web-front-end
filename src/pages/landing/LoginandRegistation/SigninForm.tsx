@@ -5,6 +5,7 @@ import GoogleLogo from "../../../assets/images/brands/g-suite.png";
 import "./SigninForm.css";
 import {
   authUserWithCredentials,
+  authvaliadateOTP,
   googleAuth,
   loginOTPVerify,
   loginUserWithMail,
@@ -36,7 +37,7 @@ const SigninForm: React.FC = () => {
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
   const [otpTimer, setOTPTimer] = useState(30);
   const [canResendOTP, setCanResendOTP] = useState(false);
-  const otpTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const otpTimerRef = useRef<any>(null);
   const { userLoggedIn, user, loading } = useSelector(
     (state: RootState) => state.Auth
   );
@@ -87,6 +88,7 @@ const SigninForm: React.FC = () => {
   useEffect(() => {
     if (userLoggedIn && user) {
       navigate("/");
+      window.location.reload();
     }
   }, [userLoggedIn, user, navigate]);
 
@@ -114,7 +116,7 @@ const SigninForm: React.FC = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(
         `${
           method.charAt(0).toUpperCase() + method.slice(1)
@@ -139,12 +141,12 @@ const SigninForm: React.FC = () => {
       if (response.status) {
         setShowOTP(true);
         setAuthMethod("email");
-        startOTPTimer(); // Start OTP timer
+        startOTPTimer();
         toast.success(response.message);
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setShowLoader(false);
@@ -161,19 +163,28 @@ const SigninForm: React.FC = () => {
 
     setShowLoader(true);
     try {
-      const verificationMethod =
-        authMethod === "email" ? loginOTPVerify : verifyPhoneOTP;
+      const verificationMethod = isActive
+        ? authMethod === "email"
+          ? authvaliadateOTP
+          : verifyPhoneOTP
+        : authMethod === "email"
+        ? loginOTPVerify
+        : verifyPhoneOTP;
 
-      const response = await verificationMethod({
-        [authMethod]: inputValue,
-        otp,
-      });
+      const payload =
+        verificationMethod === authvaliadateOTP
+          ? { [authMethod]: emailOrPhone, otp }
+          : { [authMethod]: inputValue, otp };
 
-      response.status
-        ? toast.success(response.message)
-        : toast.error(response.message || "OTP verification failed");
-        navigate("/")
-    } catch (error:any) {
+      const response = await verificationMethod(payload);
+
+      if (response.status) {
+        toast.success(response.message);
+        navigate("/");
+      } else {
+        toast.error(response.message || "OTP verification failed");
+      }
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setShowLoader(false);
@@ -194,7 +205,7 @@ const SigninForm: React.FC = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setShowLoader(false);
@@ -211,7 +222,7 @@ const SigninForm: React.FC = () => {
       }}
       className="needs-validation"
     >
-      <h1 className="mb-4 text-center">Login</h1>
+      <h1 className="mb-4 text-center">Sign In</h1>
       <div className="mb-3">
         <div className="input-group has-validation">
           <input
@@ -235,12 +246,12 @@ const SigninForm: React.FC = () => {
       </div>
       <div className="d-grid">
         <button type="submit" className="btn btn-primary">
-          {showLoader ? <Spinner color="light" /> : "Login"}
+          {showLoader ? <Spinner color="light" /> : "Sign in"}
         </button>
       </div>
 
       <div className="text-center my-3">
-        <p className="text-muted">Or login with</p>
+        <p className="text-muted">Or Sign in with</p>
         <button
           type="button"
           className="btn btn-outline-danger d-flex align-items-center justify-content-center w-100"

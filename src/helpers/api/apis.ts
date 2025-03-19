@@ -261,6 +261,7 @@ export const apiConfig = {
   },
   collab:{
     collaborateKitchen:"collab/select",
-    listCollaboratedKitchens: (orgId: string | undefined) => `collab/organization/${orgId}`
+    listCollaboratedKitchens: (orgId: string | undefined) => `collab/organization/${orgId}`,
+    getAllCollaborations:"collab/all",
    }
 };

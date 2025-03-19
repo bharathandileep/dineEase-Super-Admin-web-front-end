@@ -155,7 +155,6 @@ function KitchensDetailss() {
     setIsSelecting(true);
     
     try {
-      // Call the API to create collaboration
       const response = await collaborateKitchen(organization_id, kitchen_id);
       
       if (response) {
@@ -172,30 +171,24 @@ function KitchensDetailss() {
             navigate("/apps/organizations/selected-kitchens");
           }
         } else {
-          // Handle case where response exists but collaboration wasn't created
           setCollabError(response.message || "Failed to select kitchen.");
           toast.error(response.message || "Failed to select kitchen.");
         }
       } else {
-        // Handle case where response is empty or undefined
         setCollabError("Received an invalid response from the server.");
         toast.error("Received an invalid response from the server.");
       }
     } catch (error: any) {
-      // Handle errors from API call
       console.error("Error selecting kitchen:", error);
       
-      // Extract error message if available, otherwise use generic message
       const errorMessage = error.message || "An error occurred while selecting the kitchen.";
       setCollabError(errorMessage);
       toast.error(errorMessage);
       
-      // If the error is about existing collaboration, we can handle it specially
       if (errorMessage.includes("already exists")) {
         toast.info("This kitchen is already in your selected kitchens list.");
       }
     } finally {
-      // Reset loading state
       setIsSelecting(false);
     }
   };

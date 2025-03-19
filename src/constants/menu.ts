@@ -83,7 +83,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "Organization-employadd",
         label: "• Employees",
-        access:["Admin","Organization"],
+        access:["Organization"],
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
@@ -97,8 +97,15 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key:"selected-kitchens",
         label:"• Selected Kitchens",
-        access:["Organization","Admin"],
+        access:["Organization"],
         url:"/apps/organizations/selected-kitchens",
+        parentKey:"apps-organizations"
+      },
+      {
+        key:"colloborated-kitchens",
+        label:"• Colloborated Kitchens",
+        access:["Admin"],
+        url:"/apps/organizations/colloborated-kitchens",
         parentKey:"apps-organizations"
       },
      

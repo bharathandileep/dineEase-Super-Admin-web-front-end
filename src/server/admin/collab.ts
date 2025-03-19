@@ -36,3 +36,12 @@ export const collaborateKitchen = async (
 };
 
 
+export const getAllCollaborations = async () => {
+  try {
+    const response = await axiosInstance.get(apiConfig.collab.getAllCollaborations);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
