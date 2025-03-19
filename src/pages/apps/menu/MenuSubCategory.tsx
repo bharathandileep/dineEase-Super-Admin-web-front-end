@@ -63,7 +63,6 @@ function MenuSubCategory() {
   };
 
   const handleStatusFilterChange = (filterValue: string) => {
-    console.log("Updating Status Filter:", filterValue);
     setStatusFilter(filterValue);
     setCurrentPage(1);
   };

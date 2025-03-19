@@ -14,7 +14,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
-import { createEmployee } from "../../../server/admin/employeemanagment";
+import { createEmployee } from "../../../server/admin/employeeManagment";
 
 
 
@@ -521,7 +521,7 @@ const EmployeeManagement = () => {
             <Button
               variant="danger"
               className="me-2"
-              onClick={() => navigate("/apps/organizations/employ/list")}
+              onClick={() => navigate("/apps/employee/list")}
             >
               Cancel
             </Button>

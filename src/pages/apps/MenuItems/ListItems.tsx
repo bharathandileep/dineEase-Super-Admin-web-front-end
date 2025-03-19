@@ -32,7 +32,6 @@ const FoodItemsList = () => {
     searchQuery: string = ""
   ) => {
     if (isLoadingRef.current) {
-      console.log("Fetch skipped: Already loading");
       return;
     }
 
@@ -49,13 +48,10 @@ const FoodItemsList = () => {
         limit: 4, // Fixed limit of 4 items per page
         search: searchQuery,
       };
-      console.log("Fetching items with params:", params);
 
       const response = await listItems(params);
       if (response.status) {
         const { items: newItems, pagination } = response.data;
-        console.log("Fetched items:", newItems);
-        console.log("Pagination data:", pagination);
 
         if (isNewSearch) {
           setItems(newItems);
@@ -65,7 +61,6 @@ const FoodItemsList = () => {
             const uniqueNewItems = newItems.filter(
               (item: Item) => !existingIds.has(item._id)
             );
-            console.log("Appending unique items:", uniqueNewItems);
             return [...prev, ...uniqueNewItems];
           });
         }
@@ -73,8 +68,6 @@ const FoodItemsList = () => {
         setTotalItems(pagination.totalItems);
         setHasMore(currentPage < pagination.totalPages);
         setPage(currentPage + 1); // Increment page after successful fetch
-        console.log("Updated page to:", currentPage + 1);
-        console.log("Has more items:", currentPage < pagination.totalPages);
       } else {
         toast.error(response.message);
         setHasMore(false);
@@ -102,7 +95,7 @@ const FoodItemsList = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (isLoadingRef.current || !hasMore) {
-        console.log("Scroll skipped: Loading or no more items");
+  
         return;
       }
 
@@ -110,10 +103,9 @@ const FoodItemsList = () => {
       const scrollHeight = document.documentElement.scrollHeight;
       const clientHeight = document.documentElement.clientHeight;
 
-      console.log("Scroll position:", { scrollTop, scrollHeight, clientHeight });
+
 
       if (scrollTop + clientHeight >= scrollHeight - 100) {
-        console.log("Triggering fetch for page:", page);
         fetchItems(page, false, searchTerm);
       }
     };

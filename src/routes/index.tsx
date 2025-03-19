@@ -46,16 +46,17 @@ import Notifications from "../pages/uikit/Notifications";
 import AllNotifications from "../components/AllNotifications";
 import OrgNotifications from "../pages/apps/Organizations/notifications/OrgNotifications";
 import KitchenNotifications from "../pages/apps/kitchen/notifications/KitchenNotifications";
+
+import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
+import Profile from "../pages/apps/MyAccount/Profile";
 import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
 import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
 import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
 import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
-import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
-import Profile from "../pages/apps/MyAccount/Profile";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -581,7 +582,7 @@ const employeeRoutes = {
     {
       path: "/apps/employee/edit/:id",
       name: "Employee edit",
-      element: <EditEmployee />,
+      element: <EditEmployee  />,
       route: PrivateRoute,
     },
     {

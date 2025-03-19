@@ -56,7 +56,6 @@ const Auth = (state: State = INIT_STATE, action: AuthActionType): any => {
           };
         }
         case AuthActionTypes.EMP_LOGIN_USER: {
-          console.log("hello form emp");
           return {
             ...state,
             user: action.payload.data,

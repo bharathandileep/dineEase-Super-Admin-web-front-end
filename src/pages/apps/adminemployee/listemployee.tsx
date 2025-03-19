@@ -6,7 +6,7 @@ import {
   getAllEmployees,
   deleteEmployee,
   toggleEmployeeStatus,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface Employee {
@@ -267,7 +267,7 @@ const EmployeeList = () => {
                         style={{
                           width: "100%",
                           height: "180px",
-                          objectFit: "cover",
+                          objectFit: "contain",
                         }}
                       />
                     </div>

@@ -75,7 +75,7 @@ const OrgEmployeeDetails = () => {
           const response = await deleteOrgEmployee(id);
           if (response.status) {
             toast.success("Employee deleted successfully!");
-            navigate("/apps/organizations/employee/list"); // Redirect to the employee list after deletion
+            navigate("/apps/organizations/employee/list"); 
           } else {
             toast.error(response.message);
           }

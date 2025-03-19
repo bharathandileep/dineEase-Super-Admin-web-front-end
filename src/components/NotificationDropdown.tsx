@@ -5,7 +5,7 @@ import SimpleBar from "simplebar-react";
 import classNames from "classnames";
 
 import { NotificationItem } from "../layouts/Topbar";
-import { getAllNotifications } from "../server/admin/notification"; // Update the import to fetch all notifications
+import { getAllNotifications } from "../server/admin/notification"; 
 import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
 
 const notificationContainerStyle = {
@@ -15,7 +15,7 @@ const notificationContainerStyle = {
 
 const notificationShowContainerStyle = {
   maxHeight: "300px",
-  display: "block", // Ensure the container is visible when dropdown is open
+  display: "block", 
 };
 
 interface NotificationDropdownProps {
@@ -50,7 +50,6 @@ const [notificationPath, setNotificationPath] = useState<string>("");
       // Fetch all notifications instead of user-specific notifications
       const allNotifications = await getAllNotifications("");
       setNotifications(allNotifications);
-      console.log(allNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -63,6 +62,9 @@ const [notificationPath, setNotificationPath] = useState<string>("");
     }
     if (userInfo.role === "Organization") {
       setNotificationPath("/apps/organizations/notifications");
+    }
+    if (userInfo.role === "Admin") {
+      setNotificationPath("/ui/allnotifications");
     }
   }, [dropdownOpen]);
 

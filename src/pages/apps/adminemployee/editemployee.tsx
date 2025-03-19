@@ -11,7 +11,7 @@ import { FormInput } from "../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../server/admin/employeemanagment";
+} from "../../../server/admin/employeeManagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import { 
   getAllCountries, 
@@ -155,8 +155,8 @@ const EditEmployee = () => {
       
       if (employee.address) {
         setValue("street_address", employee.address.street_address || "");
-        setValue("city", employee.address.city || "");
         setValue("district", employee.address.district || "");
+        setValue("city", employee.address.city || "");
         setValue("pincode", employee.address.pincode || "");
       }
       setValue("aadhar_number", employee.aadhar_number || "");
@@ -510,35 +510,7 @@ const EditEmployee = () => {
                     </div>
                   </Col>
                   
-                  {/* City Selection */}
-                  <Col md={6}>
-                    <div className="mb-3">
-                      <label className="form-label">City</label>
-                      <select
-                        {...register("city")}
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className={`form-control ${
-                          errors.city ? "is-invalid" : ""
-                        }`}
-                        disabled={!formData.state}
-                      >
-                        <option value="">Select City</option>
-                        {cities.map((city) => (
-                          <option 
-                            key={city._id} 
-                            value={city.id}
-                          >
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.city && (
-                        <div className="invalid-feedback">{errors.city.message}</div>
-                      )}
-                    </div>
-                  </Col>
+           
                   
                   {/* District Selection */}
                   <Col md={6}>
@@ -566,6 +538,35 @@ const EditEmployee = () => {
                       </select>
                       {errors.district && (
                         <div className="invalid-feedback">{errors.district.message}</div>
+                      )}
+                    </div>
+                  </Col>
+                         {/* City Selection */}
+                         <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <select
+                        {...register("city")}
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`form-control ${
+                          errors.city ? "is-invalid" : ""
+                        }`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city) => (
+                          <option 
+                            key={city._id} 
+                            value={city.id}
+                          >
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city && (
+                        <div className="invalid-feedback">{errors.city.message}</div>
                       )}
                     </div>
                   </Col>

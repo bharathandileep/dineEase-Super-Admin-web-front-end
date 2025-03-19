@@ -182,7 +182,6 @@ export function UserCreateModal({
     if (!userInfo || !userInfo.email) {
       navigate("/apps/kitchen/list");
     } else {
-      console.log(userInfo);
       onClose();
     }
   };
