@@ -4,6 +4,7 @@ import { apiConfig } from "../../helpers/api/apis";
  
  
 export const getAllKitches = async (query: any) => {
+  console.log(query)
   try {
     const url = `${apiConfig.kitchens.getAllkitchens(query)}`;
     console.log("Fetching kitchens with URL:", url); // Debug log
@@ -98,10 +99,8 @@ export const kitchenCreateCategory = async (data: any) => {
 
 export const kitchensGetAllCategories = async (query: any) => {
   try {
-    console.log("📡 Sending API Query:", query);
-    const url = `${apiConfig.kitchens.getallCategories(query)}`;
-    console.log("🔗 Constructed URL:", url);
 
+    const url = `${apiConfig.kitchens.getallCategories(query)}`;
     const response = await axiosInstance.get(url);
     console.log("✅ API Response:", response.data);
     return response.data;

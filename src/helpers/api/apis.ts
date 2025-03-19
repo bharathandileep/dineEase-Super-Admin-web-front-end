@@ -177,7 +177,7 @@ export const apiConfig = {
     changeItemStatus: (id: string | undefined) =>
       `/menu-items/allmenuitems/${id}/status`,
 
-    getMenuItemsByKitchen: (id: string | undefined) =>
+    getMenuItemsByKitchen: (id: string | undefined,) =>
       `menu-items/menu-items/kitchen/${id}`,
   },
 

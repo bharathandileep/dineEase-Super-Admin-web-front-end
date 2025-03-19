@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -21,6 +20,7 @@ import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 import { selectKitchen } from "../../../server/admin/organization"; // Add this import
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 // Define interface for menu items
 interface MenuItem {
@@ -109,7 +109,7 @@ function KitchensDetailss() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
-  const orgId = localStorage.getItem('organizationId') || ''; // Get organization ID from localStorage
+  const {orgId ,role} = getAccessDetailsFromLocalStorage();
 
   const handleStatusToggle = async () => {
     setLoading(true);
@@ -128,34 +128,35 @@ function KitchensDetailss() {
     }
   };
 
-
-const handleSelectKitchen = async () => {
-  if (!id || !orgId) {
-    toast.error("Missing kitchen or organization information.");
-    return;
-  }
-
-  setIsSelecting(true);
-  try {
-    const response = await selectKitchen(orgId, id);
-    if (response?.status) {
-      toast.success("Kitchen selected successfully!");
-    
-      const viewNow = window.confirm("Kitchen selected successfully! Do you want to view your selected kitchen now?");
-      
-      if (viewNow) {
-        navigate("/apps/organizations/selected-kitchens");
-      }
-    } else {
-      toast.error(response?.message || "Failed to select kitchen.");
+  const handleSelectKitchen = async () => {
+    if (!id || !orgId) {
+      toast.error("Missing kitchen or organization information.");
+      return;
     }
-  } catch (error) {
-    console.error("Error selecting kitchen:", error);
-    toast.error("An error occurred while selecting the kitchen.");
-  } finally {
-    setIsSelecting(false);
-  }
-};
+
+    setIsSelecting(true);
+    try {
+      const response = await selectKitchen(orgId, id);
+      if (response?.status) {
+        toast.success("Kitchen selected successfully!");
+
+        const viewNow = window.confirm(
+          "Kitchen selected successfully! Do you want to view your selected kitchen now?"
+        );
+
+        if (viewNow) {
+          navigate("/apps/organizations/selected-kitchens");
+        }
+      } else {
+        toast.error(response?.message || "Failed to select kitchen.");
+      }
+    } catch (error) {
+      console.error("Error selecting kitchen:", error);
+      toast.error("An error occurred while selecting the kitchen.");
+    } finally {
+      setIsSelecting(false);
+    }
+  };
   const onEdit = () => {
     navigate(`/apps/kitchen/edit/${id}`);
   };
@@ -429,7 +430,11 @@ const handleSelectKitchen = async () => {
               >
                 {isSelecting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
                     <span className="ms-1">Selecting...</span>
                   </>
                 ) : (
@@ -443,7 +448,7 @@ const handleSelectKitchen = async () => {
           </Col>
         </Row>
       </div>
-      
+
       {/* Rest of your component remains the same */}
       <Row className="mb-4 g-3">
         <Col md={6}>
@@ -548,7 +553,7 @@ const handleSelectKitchen = async () => {
           </Card>
         </Col>
       </Row>
-      
+
       {Object.keys(groupedItems).length !== 0 ? (
         <Card className="shadow-sm mb-4">
           <Card.Body>

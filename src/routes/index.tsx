@@ -43,7 +43,7 @@ import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
 
 //import Notification from "../pages/notification/Notification"
 import Notifications from "../pages/uikit/Notifications";
-import AllNotifications from "../components/AllNotifications"
+import AllNotifications from "../components/AllNotifications";
 import OrgNotifications from "../pages/apps/Organizations/notifications/OrgNotifications";
 import KitchenNotifications from "../pages/apps/kitchen/notifications/KitchenNotifications";
 import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
@@ -55,6 +55,7 @@ import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
 import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
+import Profile from "../pages/apps/MyAccount/Profile";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -290,18 +291,18 @@ export interface RoutesProps {
   element?: RouteProps["element"];
   route?: any;
   exact?: boolean;
-  icon?: string;
+  icon?: string;  
   header?: string;
   roles?: string[];
   children?: RoutesProps[];
-  layout?:boolean
+  layout?: boolean;
 }
 
 const organizationsAppRoutes = {
   path: "/apps/organizations",
   name: "Organizations",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/apps/organizations/new",
@@ -377,23 +378,22 @@ const organizationsAppRoutes = {
     },
 
     {
-      path:"/apps/organizations/list-kitchens",
-      name:"List of kitcehns",
-      element:<ListKItchens/>
+      path: "/apps/organizations/list-kitchens",
+      name: "List of kitcehns",
+      element: <ListKItchens />,
     },
     {
-      path:"/apps/kitchen/details/:id",
-      name:"Kitchen Details",
-      element:<KitchensDetailss/>
+      path: "/apps/kitchen/details/:id",
+      name: "Kitchen Details",
+      element: <KitchensDetailss />,
     },
-    
   ],
 };
 const kitchenAppRoutes = {
   path: "/apps/kitchen",
   name: "Kitchens",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/apps/kitchen/new",
@@ -475,23 +475,22 @@ const kitchenAppRoutes = {
       element: <MenuDetails />,
     },
     {
-      path:"/apps/kitchen/requested-kitchens",
-      name:"Requested Kitchens",
-      element:<RequestedKitchen />
+      path: "/apps/kitchen/requested-kitchens",
+      name: "Requested Kitchens",
+      element: <RequestedKitchen />,
     },
     {
-      path:"/apps/kitchen/editt-kitchens",
-      name:"Edit Kitchens",
-      element:<KitchenEdit />
+      path: "/apps/kitchen/editt-kitchens",
+      name: "Edit Kitchens",
+      element: <KitchenEdit />,
     },
-
   ],
 };
 const itemAppRoutes = {
   path: "/apps/items",
   name: "items",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   Children: [
     {
       path: "/apps/items/menu",
@@ -501,12 +500,25 @@ const itemAppRoutes = {
     },
   ],
 };
-
+const profileAppRoutes = {
+  path: "/apps/profile",
+  name: "profile",
+  route: PrivateRoute,
+  roles: ["Admin", "Employee"],
+  children: [
+    {
+      path: "/apps/profile/:id",
+      name: "profile",
+      element: <Profile />,
+      route: PrivateRoute,
+    },
+  ],
+};
 const menuAppRoutes = {
   path: "/apps/menu",
   name: "Organizations",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/apps/menu/category",
@@ -520,7 +532,7 @@ const menuAppRoutes = {
       element: <OrgNotifications />,
       route: PrivateRoute,
     },
-    
+
     {
       path: "/apps/menu/subcategory",
       name: "Menu Sub Category",
@@ -552,7 +564,7 @@ const employeeRoutes = {
   path: "/apps/employee",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/apps/employee/add",
@@ -585,7 +597,7 @@ const dashboardRoutes = {
   path: "/apps/:name",
   name: "Dashboard",
   route: PrivateRoute,
-  roles: ["Admin", "User",  "Employee"],
+  roles: ["Admin", "User", "Employee"],
   icon: "airplay",
   element: <EcommerceDashboard />,
 };
@@ -594,14 +606,14 @@ const protectedNoLayoutRoutes = {
   path: "/user",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/user/dashboard",
       name: "userDashboard",
       element: <Dashboard />,
       roles: ["Admin", "User"],
-      layout:false,
+      layout: false,
       route: PrivateRoute,
     },
   ],
@@ -611,7 +623,7 @@ const calendarAppRoutes: RoutesProps = {
   path: "/apps/calendar",
   name: "Calendar",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "calendar",
   element: <CalendarApp />,
   header: "Apps",
@@ -621,7 +633,7 @@ const chatAppRoutes = {
   path: "/apps/chat",
   name: "Chat",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "message-square",
   element: <ChatApp />,
 };
@@ -630,7 +642,7 @@ const ecommerceAppRoutes = {
   path: "/apps/ecommerce",
   name: "eCommerce",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   children: [
     {
       path: "/apps/ecommerce/dashboard",
@@ -699,7 +711,7 @@ const crmAppRoutes = {
   path: "/apps/crm",
   name: "CRM",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   children: [
     {
@@ -739,7 +751,7 @@ const emailAppRoutes = {
   path: "/apps/email",
   name: "Email",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "mail",
   children: [
     {
@@ -767,7 +779,7 @@ const socialAppRoutes = {
   path: "/apps/social-feed",
   name: "Social Feed",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "rss",
   element: <SocialFeed />,
 };
@@ -776,7 +788,7 @@ const sttingsAppRoutes = {
   path: "/apps/settings",
   name: "settings",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "settings",
   element: <Settings />,
 };
@@ -785,7 +797,7 @@ const foodAppRoutes = {
   path: "/apps/food",
   name: "Employee",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   element: <FoodDetails />,
 };
@@ -794,7 +806,7 @@ const foodCartAppRoute = {
   path: "/apps/food/cart",
   name: "cart",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   element: <CartDetails />,
 };
@@ -802,7 +814,7 @@ const foodCheckoutAppRoute = {
   path: "/apps/food/checkout",
   name: "checkout",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   element: <CheckoutDetails />,
 };
@@ -817,7 +829,7 @@ const customerAppRoute = {
   path: "/apps/customer",
   name: "customers",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   element: <Customer />,
 };
@@ -825,7 +837,7 @@ const CustomerProfileAppRoutes = {
   path: "/apps/customer/profile",
   name: "profile",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "profile",
   element: <CustomerContactsProfile />,
 };
@@ -834,7 +846,7 @@ const usersAppRoutes = {
   path: "/apps/users",
   name: "users",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "users",
   element: <Users />,
 };
@@ -842,7 +854,7 @@ const userProfileAppRoutes = {
   path: "/apps/users/profile",
   name: "profile",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "profile",
   element: <UsersProfile />,
 };
@@ -851,7 +863,7 @@ const restaurantsAppRoutes = {
   path: "/apps/restaurants",
   name: "restaurants",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "restaurant",
   element: <Restaurants />,
 };
@@ -859,7 +871,7 @@ const totalCompanyAppRoute = {
   path: "/apps/restaurants/company",
   name: "totalCompany",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "totalCompany",
   element: <TotalCompany />,
 };
@@ -868,7 +880,7 @@ const ListAppRouts = {
   path: "/apps/restaurants/lists",
   name: "List",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "list",
   element: <List />,
 };
@@ -876,7 +888,7 @@ const restaurantDetailsAppRoute = {
   path: "/apps/restaurants/details",
   name: "restaurantsdetails",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "restaurantdetails",
   element: <PaginatedTable detailsInfo={detailsInfo} />,
 };
@@ -885,7 +897,7 @@ const companiesAppRoutes = {
   path: "/apps/companies",
   name: "Companies",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "activity",
   element: <Companies />,
 };
@@ -894,7 +906,7 @@ const companyDetailsAppRoutes = {
   path: "/apps/company/details",
   name: "Detail",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "activity",
   element: <CompanyDetail />,
 };
@@ -903,7 +915,7 @@ const totalRestaurantsAppRoutes = {
   path: "/apps/company/details/restaurants",
   name: "restaurantsdetails",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "activity",
   element: <TotalRestaurants />,
 };
@@ -912,7 +924,7 @@ const projectAppRoutes = {
   path: "/apps/projects",
   name: "Projects",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "uil-briefcase",
   children: [
     {
@@ -940,7 +952,7 @@ const taskAppRoutes = {
   path: "/apps/tasks",
   name: "Tasks",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "clipboard",
   children: [
     {
@@ -968,7 +980,7 @@ const contactsRoutes = {
   path: "/apps/contacts",
   name: "Contacts",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "book",
   children: [
     {
@@ -990,7 +1002,7 @@ const ticketsRoutes = {
   path: "/apps/tickets",
   name: "Tickets",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "aperture",
   children: [
     {
@@ -1006,12 +1018,10 @@ const fileAppRoutes = {
   path: "/apps/file-manager",
   name: "File Manager",
   route: PrivateRoute,
-  roles: ["Admin","Employee"],
+  roles: ["Admin", "Employee"],
   icon: "folder-plus",
   element: <FileManager />,
 };
-
-
 
 // pages
 const extrapagesRoutes = {
@@ -1137,10 +1147,10 @@ const uiRoutes = {
           route: PrivateRoute,
         },
         {
-          path:"/ui/allnotifications",
-          name:"Allnotifications",
-          element:<AllNotifications/>,
-          route:PrivateRoute,
+          path: "/ui/allnotifications",
+          name: "Allnotifications",
+          element: <AllNotifications />,
+          route: PrivateRoute,
         },
         {
           path: "/ui/offcanvas",
@@ -1597,6 +1607,7 @@ const flattenRoutes = (routes: RoutesProps[]) => {
 };
 
 const appRoutes = [
+  profileAppRoutes,
   calendarAppRoutes,
   chatAppRoutes,
   ecommerceAppRoutes,
