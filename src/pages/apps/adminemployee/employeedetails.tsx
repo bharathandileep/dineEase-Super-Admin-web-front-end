@@ -13,7 +13,7 @@ interface Employee {
   username: string;
   email: string;
   phone_number: string;
-  designation?: { designation_name: string };
+  designation_name?: string;
   employee_status: string;
   profile_picture?: string;
   aadhar_number?: string;
@@ -22,11 +22,12 @@ interface Employee {
   pan_image?: string;
   address?: {
     street_address?: string;
-    city?: string;
+    city_name?: string;
     district?: string;
-    state?: string;
+    state_name?: string;
     pincode?: string;
-    country?: string;
+    country_name?: string;
+    district_name?: string;
   };
 }
 
@@ -193,7 +194,7 @@ const EmployeeDetails = () => {
                 <div className='d-flex align-items-center mb-2'>
                   <Building size={16} className='me-2' />
                   <span>
-                    {employee.designation?.designation_name || "Unknown"}
+                    {employee?.designation_name || "Unknown"}
                   </span>
                 </div>
               </div>
@@ -221,8 +222,8 @@ const EmployeeDetails = () => {
                       <Card.Body>
                         <h5 className="card-title mb-3">Address Details</h5>
                         <p><MapPin size={16} className="me-2" /> {employee.address?.street_address}</p>
-                        <p>{employee.address?.city}, {employee.address?.district}</p>
-                        <p>{employee.address?.state}, {employee.address?.pincode}</p>
+                        <p>{employee.address?.city_name}, {employee.address?.district_name}</p>
+                        <p>{employee.address?.state_name}, {employee.address?.pincode}</p>
                       </Card.Body>
                     </Card>
         </Col>
