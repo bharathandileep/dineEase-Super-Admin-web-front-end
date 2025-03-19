@@ -379,55 +379,123 @@ export function WizardForm({ initialData }: WizardFormProps) {
   }, []);
 
   useEffect(() => {
-    if (!id) return;
-    const fetchOrgDetails = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await getOrgDetails(id);
-        const orgData = response.data;
-
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          organizationName: orgData?.organizationName || "",
-          organizationLogo: orgData?.organizationLogo,
-          managerName: orgData?.managerName || "",
-          registerNumber: orgData?.register_number || "",
-          contactNumber: orgData?.contact_number || "",
-          category: orgData?.category || "",
-          subcategoryName: orgData?.subcategoryName || "",
-          email: orgData?.email || "",
-          numberOfEmployees: orgData?.no_of_employees.toString() || "",
-          addressType: orgData?.addresses[0]?.address_type || "",
-          streetAddress: orgData?.addresses[0]?.street_address || "",
-          district: orgData?.addresses[0]?.district_id || "",
-          city: orgData?.addresses[0]?.city_id || "",
-          state: orgData?.addresses[0]?.state_id || "",
-          pincode: orgData?.addresses[0]?.pincode || "",
-          country: orgData?.addresses[0]?.country_id || "",
-          panNumber: orgData?.panDetails[0]?.pan_card_number || "",
-          panCardUserName: orgData?.panDetails[0]?.pan_card_user_name || "",
-          gstNumber: orgData?.gstDetails[0]?.gst_number || "",
-          expiryDate: orgData?.gstDetails[0]?.expiry_date || "",
-          gstCertificateImage:
-            orgData?.gstDetails[0]?.gst_certificate_image || "",
-          panCardImage: orgData?.panDetails[0]?.pan_card_image || "",
-          isapproved: orgData?.isapproved || false,
-        }));
-
-        if (response.data.addresses?.[0]?.country_id) {
-          await fetchStates(orgData?.addresses[0]?.country_id);
+        setLoading(true);
+  
+        // Fetch categories
+        const catResponse = await orgGetAllCategories({ page: 1, limit: 100 });
+        if (catResponse.status) {
+          setCategories(catResponse.data.categories);
+          console.log("Fetched Categories:", catResponse.data.categories);
+        } else {
+          toast.error(catResponse.message);
         }
-        if (orgData?.addresses[0]?.state_id) {
-          await fetchCities(orgData?.addresses[0]?.state_id);
-          await fetchDistricts(orgData?.addresses[0]?.state_id);
+  
+        // Fetch countries
+        await fetchCountries();
+  
+        if (id) {
+          // Fetch organization details
+          const response = await getOrgDetails(id);
+          const orgData = response.data;
+          console.log("Full Org Data:", JSON.stringify(orgData, null, 2));
+  
+          // Extract category and subcategory IDs with flexible handling
+          const initialCategory =
+            orgData?.category?._id ||
+            (typeof orgData?.category === "string" ? orgData.category : "") ||
+            "";
+          const initialSubcategory =
+            orgData?.subcategoryName?._id ||
+            (typeof orgData?.subcategoryName === "string" ? orgData.subcategoryName : "") ||
+            "";
+          console.log("Initial Category:", initialCategory);
+          console.log("Initial Subcategory:", initialSubcategory);
+  
+          // Set form data
+          setFormData({
+            ...initialFormData,
+            organizationName: orgData?.organizationName || "",
+            organizationLogo: orgData?.organizationLogo || "",
+            managerName: orgData?.managerName || "",
+            registerNumber: orgData?.register_number || "",
+            contactNumber: orgData?.contact_number || "",
+            category: initialCategory,
+            subcategoryName: initialSubcategory,
+            email: orgData?.email || "",
+            numberOfEmployees: orgData?.no_of_employees?.toString() || "",
+            addressType: orgData?.addresses?.[0]?.address_type || "",
+            streetAddress: orgData?.addresses?.[0]?.street_address || "",
+            district: orgData?.addresses?.[0]?.district_id || "",
+            city: orgData?.addresses?.[0]?.city_id || "",
+            state: orgData?.addresses?.[0]?.state_id || "",
+            pincode: orgData?.addresses?.[0]?.pincode || "",
+            country: orgData?.addresses?.[0]?.country_id || "",
+            panNumber: orgData?.panDetails?.[0]?.pan_card_number || "",
+            panCardUserName: orgData?.panDetails?.[0]?.pan_card_user_name || "",
+            gstNumber: orgData?.gstDetails?.[0]?.gst_number || "",
+            expiryDate: orgData?.gstDetails?.[0]?.expiry_date
+              ? new Date(orgData.gstDetails[0].expiry_date).toISOString().split("T")[0]
+              : "",
+            gstCertificateImage: orgData?.gstDetails?.[0]?.gst_certificate_image || "",
+            panCardImage: orgData?.panDetails?.[0]?.pan_card_image || "",
+          });
+          console.log("Form Data after set:", {
+            category: initialCategory,
+            subcategoryName: initialSubcategory,
+          });
+  
+          // Fetch subcategories if category exists
+          if (initialCategory) {
+            setSelectedCategoryId(initialCategory);
+            const subcatResponse = await orgGetSubcategoriesByCategory(initialCategory);
+            if (subcatResponse.status) {
+              const subcatData = subcatResponse.data;
+              setSubcategories(subcatData);
+              console.log("Subcategories after fetch:", subcatData);
+              console.log("Subcategory IDs in fetched data:", subcatData.map((sub: { _id: any; }) => sub._id));
+  
+              const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === initialSubcategory);
+              console.log("Is Valid Subcategory:", isValidSubcategory);
+  
+              if (!isValidSubcategory && subcatData.length > 0) {
+                console.warn("Selected subcategory not found in fetched subcategories. Resetting to empty.");
+                setFormData(prev => ({ ...prev, subcategoryName: "" }));
+              } else if (isValidSubcategory) {
+                console.log("Subcategory retained:", initialSubcategory);
+              } else {
+                console.log("No subcategories available for category:", initialCategory);
+              }
+            } else {
+              toast.error(subcatResponse.message);
+              setSubcategories([]);
+            }
+          } else {
+            console.log("No initial category found, skipping subcategory fetch.");
+            setSubcategories([]);
+          }
+  
+          // Fetch address-related data
+          if (orgData?.addresses?.[0]?.country_id) {
+            await fetchStates(orgData.addresses[0].country_id);
+          }
+          if (orgData?.addresses?.[0]?.state_id) {
+            await fetchCities(orgData.addresses[0].state_id);
+            await fetchDistricts(orgData.addresses[0].state_id);
+          }
         }
+  
+        setIsOpen(user.role === "Admin" && !initialData);
       } catch (error: any) {
-        console.error("Error fetching organization details:", error);
+        console.error("Error fetching initial data:", error);
+        toast.error("Failed to load initial data");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchOrgDetails();
+  
+    fetchInitialData();
   }, [id]);
   const handleUserDataChange = (updatedUserData: any) => {
     setUserData(updatedUserData);

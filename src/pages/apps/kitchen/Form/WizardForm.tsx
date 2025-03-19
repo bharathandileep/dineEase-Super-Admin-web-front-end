@@ -368,6 +368,46 @@ export function WizardForm({ initialData }: WizardFormProps) {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await kitchensGetAllCategories({
+        page: 1,
+        limit: 100,
+      });
+      if (response.status) setCategories(response.data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Failed to load categories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSubcategories = async (catId: string) => {
+    try {
+      setLoading(true);
+      console.log("Fetching subcategories for category ID:", catId);
+      const response = await kitchensGetSubcategoriesByCategory(catId);
+      console.log("Raw subcategory response:", response);
+      const subcatData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      console.log("Processed subcategories:", subcatData);
+      setSubcategories(subcatData);
+      if (subcatData.length === 0) {
+        console.warn("No subcategories found for category ID:", catId);
+        toast.warn("No subcategories available for this category.");
+      }
+      return subcatData; // Return the data for use in fetchInitialData
+    } catch (error: any) {
+      console.error("Error fetching subcategories:", error.message);
+      toast.error("Failed to load subcategories");
+      setSubcategories([]);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleNext = () => {
     if (currentStep === 1) {
       if (validateStep1()) setCurrentStep(2);
@@ -395,9 +435,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
       const response = await updatekitchenDetails(id, kitchensFormData);
       if (response.status) {
         navigate("/apps/kitchen/list");
+        toast.success("Kitchen updated successfully");
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
+      toast.error("Failed to update kitchen");
     } finally {
       setLoading(false);
     }
@@ -416,6 +458,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
+      toast.error("Failed to create kitchen");
     } finally {
       setLoading(false);
     }
@@ -425,7 +468,18 @@ export function WizardForm({ initialData }: WizardFormProps) {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "category") {
+      setCategoryId(value);
+      setFormData((prev) => ({
+        ...prev,
+        category: value,
+        subcategoryName: "", // Reset subcategory when category changes
+      }));
+      await fetchSubcategories(value);
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
 
     if (name === "country") {
       await fetchStates(value);
@@ -494,50 +548,38 @@ export function WizardForm({ initialData }: WizardFormProps) {
       [field]: prev[field].filter((_: any, i: number) => i !== index),
     }));
   };
-  const fetchCategories = async () => {
-    try {
-      const response = await kitchensGetAllCategories({
-        page: 1,
-        limit: 100,
-      });
-      if (response.status) setCategories(response.data.categories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   const getMealTypeCountForDay = (day: string) => {
     return formData.pre_ordering_options.filter(
       (option) => option.day === day && option.meal_type
     ).length;
   };
+// Replace the useEffect in your WizardForm.tsx with this:
+useEffect(() => {
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
 
-  useEffect(() => {
-    if (categoryId) {
-      const fetchSubcategories = async () => {
-        try {
-          const response = await kitchensGetSubcategoriesByCategory(categoryId);
-          if (response.status) setSubcategories(response.data);
-        } catch (error) {
-          console.error("Error fetching subcategories:", error);
-        }
-      };
-      fetchSubcategories();
-    } else {
-      setSubcategories([]);
-    }
-  }, [categoryId]);
+      // Fetch categories
+      await fetchCategories();
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchKitchenDetails = async () => {
-      try {
-        const response = await getkitchenDetails(id);
-        const kitchenData = response.data;
+      if (id) {
+        // Fetch kitchen details
+        const kitchenResponse = await getkitchenDetails(id);
+        const kitchenData = kitchenResponse.data;
+        console.log("Full Kitchen Data:", JSON.stringify(kitchenData, null, 2));
 
-        setFormData((prevFormData) => ({
-          ...prevFormData,
+        // Determine initial subcategory value (use subcategoryName._id)
+        const initialSubcategory =
+          kitchenData?.subcategoryName?._id || // Correct field name
+          (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
+          "";
+
+        console.log("Initial Subcategory Value:", initialSubcategory);
+
+        // Set initial form data
+        setFormData({
+          ...initialFormData,
           kitchen_name: kitchenData?.kitchen_name || "",
           kitchen_status: kitchenData?.kitchen_status || "Active",
           kitchen_owner_name: kitchenData?.kitchen_owner_name || "",
@@ -546,8 +588,8 @@ export function WizardForm({ initialData }: WizardFormProps) {
           restaurant_type: kitchenData?.restaurant_type || "",
           kitchen_type: kitchenData?.kitchen_type || "",
           kitchen_phone_number: kitchenData?.kitchen_phone_number || "",
-          category: kitchenData?.category._id || "",
-          subcategoryName: kitchenData?.subcategoryName || "",
+          category: kitchenData?.category?._id || "",
+          subcategoryName: initialSubcategory, // Set as string ID
           address_type: kitchenData?.addresses?.[0]?.address_type || "Home",
           street_address: kitchenData?.addresses?.[0]?.street_address || "",
           district: kitchenData?.addresses?.[0]?.district_id || "",
@@ -556,34 +598,55 @@ export function WizardForm({ initialData }: WizardFormProps) {
           pincode: kitchenData?.addresses?.[0]?.pincode || "",
           country: kitchenData?.addresses?.[0]?.country_id || "",
           pan_card_number: kitchenData?.panDetails?.[0]?.pan_card_number || "",
-          pan_card_user_name:
-            kitchenData?.panDetails?.[0]?.pan_card_user_name || "",
+          pan_card_user_name: kitchenData?.panDetails?.[0]?.pan_card_user_name || "",
           pan_card_image: kitchenData?.panDetails?.[0]?.pan_card_image || "",
           gst_number: kitchenData?.gstDetails?.[0]?.gst_number || "",
           gst_expiry_date: kitchenData?.gstDetails?.[0]?.expiry_date
-            ? new Date(kitchenData.gstDetails[0].expiry_date)
-                .toISOString()
-                .split("T")[0]
+            ? new Date(kitchenData.gstDetails[0].expiry_date).toISOString().split("T")[0]
             : "",
-          gst_certificate_image:
-            kitchenData?.gstDetails?.[0]?.gst_certificate_image || "",
-          ffsai_certificate_number:
-            kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_number || "",
-          ffsai_card_owner_name:
-            kitchenData?.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
+          gst_certificate_image: kitchenData?.gstDetails?.[0]?.gst_certificate_image || "",
+          ffsai_certificate_number: kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_number || "",
+          ffsai_card_owner_name: kitchenData?.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
           ffsai_expiry_date: kitchenData?.fssaiDetails?.[0]?.expiry_date
-            ? new Date(kitchenData.fssaiDetails[0].expiry_date)
-                .toISOString()
-                .split("T")[0]
+            ? new Date(kitchenData.fssaiDetails[0].expiry_date).toISOString().split("T")[0]
             : "",
-          ffsai_certificate_image:
-            kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image || "",
+          ffsai_certificate_image: kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image || "",
           kitchen_image: kitchenData?.kitchen_image || "",
           isapproved: kitchenData?.isapproved || false,
           working_days: kitchenData?.working_days || [],
           pre_ordering_options: kitchenData?.pre_ordering_options || [],
-        }));
+        });
 
+        // Fetch subcategories if category exists
+        if (kitchenData?.category?._id) {
+          setCategoryId(kitchenData.category._id);
+          const subcatData = await fetchSubcategories(kitchenData.category._id);
+          console.log("Subcategories after fetch:", subcatData);
+
+          // Use subcategoryName._id for validation
+          const selectedSubcategoryId =
+            kitchenData?.subcategoryName?._id ||
+            (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
+            "";
+          console.log("Selected Subcategory ID from kitchenData:", selectedSubcategoryId);
+          console.log("Subcategory IDs in fetched data:", subcatData.map((sub: { _id: any; }) => sub._id));
+
+          const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === selectedSubcategoryId);
+          console.log("Is Valid Subcategory:", isValidSubcategory);
+
+          if (!isValidSubcategory && subcatData.length > 0) {
+            console.warn("Selected subcategory not found in fetched subcategories. Resetting to empty.");
+            setFormData(prev => ({ ...prev, subcategoryName: "" }));
+          } else if (!subcatData.length) {
+            console.warn("No subcategories fetched for category. Keeping initial subcategory value.");
+          } else {
+            console.log("Subcategory found and retained:", selectedSubcategoryId);
+          }
+        } else {
+          console.log("No category ID found in kitchenData. Skipping subcategory fetch.");
+        }
+
+        // Fetch address-related data
         if (kitchenData?.addresses?.[0]?.country_id) {
           await fetchStates(kitchenData.addresses[0].country_id);
         }
@@ -591,25 +654,20 @@ export function WizardForm({ initialData }: WizardFormProps) {
           await fetchCities(kitchenData.addresses[0].state_id);
           await fetchDistricts(kitchenData.addresses[0].state_id);
         }
-      } catch (error) {
-        console.error("Error fetching kitchen details:", error);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchKitchenDetails();
-  }, [id]);
-  useEffect(() => {
-    fetchCountries();
-    fetchCategories();
-    setIsOpen(user.role === "Admin" && !initialData)
-  }, []);
-  const handleUserDataChange = (updatedUserData: any) => {
-    setUserData(updatedUserData);
-    formData.owner_email = updatedUserData?.email;
-    formData.owner_phone_number = updatedUserData?.phone;
-    formData.kitchen_owner_name = updatedUserData?.fullName;
+
+      await fetchCountries();
+      setIsOpen(user.role === "Admin" && !initialData);
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
+      toast.error("Failed to load initial data");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  fetchInitialData();
+}, [id]);
   return (
     <>
       <UserCreateModal
@@ -617,7 +675,15 @@ export function WizardForm({ initialData }: WizardFormProps) {
         onClose={() => setIsOpen(false)}
         setIsOpen={setIsOpen}
         userInfo={userData}
-        onUserDataChange={handleUserDataChange}
+        onUserDataChange={(updatedUserData) => {
+          setUserData(updatedUserData);
+          setFormData((prev) => ({
+            ...prev,
+            owner_email: updatedUserData?.email || "",
+            owner_phone_number: updatedUserData?.phone || "",
+            kitchen_owner_name: updatedUserData?.name || "",
+          }));
+        }}
       />
       <div className="container py-2">
         <div className="row justify-content-center">
@@ -657,7 +723,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                     <div>
                       <h2 className="card-title mb-4">Kitchen Details</h2>
                       <div className="row g-3">
-                        {/* Step 1 fields remain unchanged */}
                         {id && <div className="col-12 mb-3"></div>}
                         <div className="col-md-6">
                           <div className="form-group">
@@ -670,6 +735,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.kitchen_name ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.kitchen_name && (
                               <div className="invalid-feedback">
@@ -691,6 +757,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.kitchen_owner_name ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.kitchen_owner_name && (
                               <div className="invalid-feedback">
@@ -710,6 +777,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.owner_email ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.owner_email && (
                               <div className="invalid-feedback">
@@ -731,6 +799,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.owner_phone_number ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.owner_phone_number && (
                               <div className="invalid-feedback">
@@ -752,6 +821,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.restaurant_type ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.restaurant_type && (
                               <div className="invalid-feedback">
@@ -770,6 +840,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-select ${
                                 errors.kitchen_type ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             >
                               <option value="">Select Kitchen Type</option>
                               <option value="Veg">Veg</option>
@@ -796,6 +867,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               className={`form-control ${
                                 errors.kitchen_phone_number ? "is-invalid" : ""
                               }`}
+                              disabled={loading}
                             />
                             {errors.kitchen_phone_number && (
                               <div className="invalid-feedback">
@@ -816,6 +888,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               }
                               value={formData.kitchen_image}
                               error={errors.kitchen_image}
+                              disabled={loading}
                             />
                           </div>
                         </div>
@@ -826,18 +899,11 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               <select
                                 name="category"
                                 value={formData.category}
-                                onChange={(e) => {
-                                  const selectedCategory = e.target.value;
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    category: selectedCategory,
-                                    subcategoryName: "",
-                                  }));
-                                  setCategoryId(selectedCategory);
-                                }}
+                                onChange={handleChange}
                                 className={`form-select ${
                                   errors.category ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               >
                                 <option value="">Select Category</option>
                                 {categories?.map((cat) => (
@@ -851,9 +917,9 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   {errors.category}
                                 </div>
                               )}
-                              {!categories.length && (
+                              {!categories.length && !loading && (
                                 <div className="text-muted mt-1">
-                                  Loading categories...
+                                  No categories available
                                 </div>
                               )}
                             </div>
@@ -863,23 +929,28 @@ export function WizardForm({ initialData }: WizardFormProps) {
                               <label className="form-label">Subcategory</label>
                               <select
                                 name="subcategoryName"
-                                value={formData.subcategoryName}
+                                value={formData.subcategoryName || ""}
                                 onChange={handleChange}
                                 className={`form-select ${
                                   errors.subcategoryName ? "is-invalid" : ""
                                 }`}
-                                disabled={!formData.category}
+                                disabled={loading || !formData.category || subcategories.length === 0}
                               >
                                 <option value="">Select Subcategory</option>
                                 {subcategories.map((sub) => (
                                   <option key={sub._id} value={sub._id}>
-                                    {sub?.subcategoryName}
+                                    {sub.subcategoryName}
                                   </option>
                                 ))}
                               </select>
                               {errors.subcategoryName && (
                                 <div className="invalid-feedback">
                                   {errors.subcategoryName}
+                                </div>
+                              )}
+                              {formData.category && !subcategories.length && !loading && (
+                                <div className="text-muted mt-1">
+                                  No subcategories available
                                 </div>
                               )}
                             </div>
@@ -900,6 +971,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-select ${
                                     errors.address_type ? "is-invalid" : ""
                                   }`}
+                                  disabled={loading}
                                 >
                                   <option value="">Select</option>
                                   <option value="Home">Home</option>
@@ -926,6 +998,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.street_address ? "is-invalid" : ""
                                   }`}
+                                  disabled={loading}
                                 />
                                 {errors.street_address && (
                                   <div className="invalid-feedback">
@@ -944,6 +1017,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.country ? "is-invalid" : ""
                                   }`}
+                                  disabled={loading}
                                 >
                                   <option value="">Select Country</option>
                                   {countries.map((country) => (
@@ -972,7 +1046,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.state ? "is-invalid" : ""
                                   }`}
-                                  disabled={!formData.country}
+                                  disabled={!formData.country || loading}
                                 >
                                   <option value="">Select State</option>
                                   {states.map((state) => (
@@ -998,7 +1072,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.district ? "is-invalid" : ""
                                   }`}
-                                  disabled={!formData.state}
+                                  disabled={!formData.state || loading}
                                 >
                                   <option value="">Select District</option>
                                   {districts.map((district) => (
@@ -1027,7 +1101,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.city ? "is-invalid" : ""
                                   }`}
-                                  disabled={!formData.state}
+                                  disabled={!formData.state || loading}
                                 >
                                   <option value="">Select City</option>
                                   {cities.map((city) => (
@@ -1054,6 +1128,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                   className={`form-control ${
                                     errors.pincode ? "is-invalid" : ""
                                   }`}
+                                  disabled={loading}
                                 />
                                 {errors.pincode && (
                                   <div className="invalid-feedback">
@@ -1073,7 +1148,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                       <h2 className="card-title mb-4">
                         PAN, GST & FSSAI Details
                       </h2>
-                      {/* Step 2 fields remain unchanged */}
                       <div className="mb-4">
                         <h3 className="h5 mb-3">PAN Details</h3>
                         <div className="row g-3">
@@ -1090,6 +1164,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 className={`form-control ${
                                   errors.pan_card_number ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.pan_card_number && (
                                 <div className="invalid-feedback">
@@ -1114,6 +1189,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 className={`form-control ${
                                   errors.pan_card_user_name ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.pan_card_user_name && (
                                 <div className="invalid-feedback">
@@ -1136,6 +1212,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 }
                                 value={formData.pan_card_image}
                                 error={errors.pan_card_image}
+                                disabled={loading}
                               />
                             </div>
                           </div>
@@ -1155,6 +1232,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 className={`form-control ${
                                   errors.gst_number ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.gst_number && (
                                 <div className="invalid-feedback">
@@ -1179,6 +1257,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 className={`form-control ${
                                   errors.gst_expiry_date ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.gst_expiry_date && (
                                 <div className="invalid-feedback">
@@ -1201,6 +1280,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 }
                                 value={formData.gst_certificate_image}
                                 error={errors.gst_certificate_image}
+                                disabled={loading}
                               />
                             </div>
                           </div>
@@ -1224,6 +1304,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                     ? "is-invalid"
                                     : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.ffsai_certificate_number && (
                                 <div className="invalid-feedback">
@@ -1250,6 +1331,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                     ? "is-invalid"
                                     : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.ffsai_card_owner_name && (
                                 <div className="invalid-feedback">
@@ -1271,6 +1353,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 className={`form-control ${
                                   errors.ffsai_expiry_date ? "is-invalid" : ""
                                 }`}
+                                disabled={loading}
                               />
                               {errors.ffsai_expiry_date && (
                                 <div className="invalid-feedback">
@@ -1293,6 +1376,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 }
                                 value={formData.ffsai_certificate_image}
                                 error={errors.ffsai_certificate_image}
+                                disabled={loading}
                               />
                             </div>
                           </div>
@@ -1331,6 +1415,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 >
                                   <option value="">Select Day</option>
                                   {[
@@ -1381,6 +1466,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                     )
                                   }
                                   className="form-select"
+                                  disabled={loading}
                                 >
                                   <option value="true">Open</option>
                                   <option value="false">Closed</option>
@@ -1408,7 +1494,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
-                                  disabled={!day.is_open}
+                                  disabled={!day.is_open || loading}
                                 />
                                 {errors[
                                   `working_days.${index}.open_time` as keyof FormData
@@ -1444,7 +1530,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
-                                  disabled={!day.is_open}
+                                  disabled={!day.is_open || loading}
                                 />
                                 {errors[
                                   `working_days.${index}.close_time` as keyof FormData
@@ -1466,6 +1552,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 onClick={() =>
                                   removeArrayItem("working_days", index)
                                 }
+                                disabled={loading}
                               >
                                 ×
                               </button>
@@ -1481,7 +1568,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           type="button"
                           className="btn btn-outline-primary mt-2"
                           onClick={() => addArrayItem("working_days")}
-                          disabled={formData.working_days.length >= 7}
+                          disabled={formData.working_days.length >= 7 || loading}
                         >
                           Add Working Day
                         </button>
@@ -1514,6 +1601,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 >
                                   <option value="">Select Day</option>
                                   {formData.working_days
@@ -1557,6 +1645,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 >
                                   <option value="">Select Meal Type</option>
                                   {["breakfast", "lunch", "tea", "dinner"]
@@ -1616,6 +1705,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 />
                                 {errors[
                                   `pre_ordering_options.${index}.pre_order_start_time` as keyof FormData
@@ -1651,6 +1741,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 />
                                 {errors[
                                   `pre_ordering_options.${index}.pre_order_close_time` as keyof FormData
@@ -1688,6 +1779,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                       ? "is-invalid"
                                       : ""
                                   }`}
+                                  disabled={loading}
                                 />
                                 {errors[
                                   `pre_ordering_options.${index}.delivery_time` as keyof FormData
@@ -1716,6 +1808,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                     )
                                   }
                                   className="form-select"
+                                  disabled={loading}
                                 >
                                   <option value="true">Active</option>
                                   <option value="false">Inactive</option>
@@ -1729,6 +1822,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                 onClick={() =>
                                   removeArrayItem("pre_ordering_options", index)
                                 }
+                                disabled={loading}
                               >
                                 ×
                               </button>
@@ -1741,9 +1835,8 @@ export function WizardForm({ initialData }: WizardFormProps) {
                           onClick={() => addArrayItem("pre_ordering_options")}
                           disabled={
                             formData.pre_ordering_options.length >=
-                            formData.working_days.filter((wd) => wd.is_open)
-                              .length *
-                              4
+                              formData.working_days.filter((wd) => wd.is_open)
+                                .length * 4 || loading
                           }
                         >
                           Add Pre-order Option
@@ -1758,6 +1851,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                         type="button"
                         onClick={handleBack}
                         className="btn btn-outline-secondary d-flex align-items-center"
+                        disabled={loading}
                       >
                         <ChevronLeft className="me-2" />
                         Back
