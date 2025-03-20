@@ -45,3 +45,11 @@ export const getAllCollaborations = async () => {
   }
 };
 
+export const getCollaborationById = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(apiConfig.collab.getCollaborationById(id));
+    return response.data;
+  } catch (error: any) {
+    throw new Error(extractErrorMessage(error));
+  }
+};

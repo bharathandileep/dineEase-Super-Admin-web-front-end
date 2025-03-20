@@ -1,3 +1,4 @@
+import { listItems } from "../../server/admin/items";
 
 export const apiConfig = {
   token: {
@@ -87,6 +88,7 @@ export const apiConfig = {
       `/organization/all?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
       `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
       `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
+      
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
@@ -167,10 +169,9 @@ export const apiConfig = {
       `/sub-menu-category/subcategories/${id}/toggle-status`,
 
     createItem: "/menu-items/allmenuitems",
-    listItems: (query: any) =>
-      `/menu-items/allmenuitems?page=${query.page}&limit=${query.limit}${
-        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
-      }`,
+    listItems: (query: any) => `/menu-items/allmenuitems?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
+      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
+      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
     getItemById: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     updateItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     deleteItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
@@ -263,5 +264,6 @@ export const apiConfig = {
     collaborateKitchen:"collab/select",
     listCollaboratedKitchens: (orgId: string | undefined) => `collab/organization/${orgId}`,
     getAllCollaborations:"collab/all",
+    getCollaborationById: (id: string | undefined) => `collab/${id}`
    }
 };

@@ -49,15 +49,17 @@ import KitchenNotifications from "../pages/apps/kitchen/notifications/KitchenNot
 
 import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
 import Profile from "../pages/apps/MyAccount/Profile";
-import OrgEmployeeManagement from "../pages/apps/organisationemployee/addorgemployee";
-import OrgEmployeeList from "../pages/apps/organisationemployee/listorgemployee";
-import OrgEmployeeEdit from "../pages/apps/organisationemployee/editorgemployee";
-import OrgEmployeeDetails from "../pages/apps/organisationemployee/orgemployeedetails";
-import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
-import EmployeeList from "../pages/apps/adminemployee/listemployee";
-import EditEmployee from "../pages/apps/adminemployee/editemployee";
-import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+
 import CollaborationsPage from "../pages/apps/colloborations/Colloborationspage";
+import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
+import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
+import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
+import OrgEmployeeDetails from "../pages/apps/Organisationemployee/orgemployeedetails";
+import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
+import EmployeeList from "../pages/apps/Adminemployee/listemployee";
+import EditEmployee from "../pages/apps/Adminemployee/editemployee";
+import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
+import CollaborationDetailsPage from "../pages/apps/colloborations/Colloborationsdetails";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -393,6 +395,11 @@ const organizationsAppRoutes = {
       path:"/apps/colloborated",
       name:"Colloborated kitchens",
       element:<CollaborationsPage/>
+    },
+    {
+      path:"/apps/colloborated/details/:id",
+      name:"Colloboration details",
+      element:<CollaborationDetailsPage/>
     },
   ],
 };

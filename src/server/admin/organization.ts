@@ -10,11 +10,7 @@ const extractErrorMessage = (error: any) => {
 export const getAllOrg = async (query: any) => {
   try {
     const url = apiConfig.organization.getAllOrganization(query);
-
-
     const response = await axiosInstance.get(url);
-
-
     return response.data;
   } catch (error: any) {
     console.error("Error in getAllOrg:", error);

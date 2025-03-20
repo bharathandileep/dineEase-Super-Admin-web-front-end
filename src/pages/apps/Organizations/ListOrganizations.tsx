@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
 import { 
   getAllOrg, 
@@ -8,7 +8,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import debounce from "lodash/debounce";
 
 interface Organization {
   _id: string;
@@ -19,6 +18,7 @@ interface Organization {
   email: string;
   organizationLogo: string;
   no_of_employees: number;
+  slug: string;
   addresses: { 
     street_address: string; 
     city_name: string; 
@@ -28,12 +28,12 @@ interface Organization {
     district_name: string;
     landmark: string;
     address_type: string;
-  }[];
-  categoryDetails: {
+  };
+  categoryInfo: {
     _id: string;
     category_name: string;
   };
-  subcategoryDetails: {
+  subcategoryInfo: {
     _id: string;
     subcategory_name: string;
   };
@@ -61,11 +61,19 @@ function ListOrganizations() {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
-  const isLoadingRef = useRef(false);
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastFetchParams = useRef<string>("");
+
+  const loadingRef = useRef(loading);
+  const loadingMoreRef = useRef(loadingMore);
+  const hasMoreRef = useRef(hasMore);
+  const pageRef = useRef(page);
+
+  useEffect(() => {
+    loadingRef.current = loading;
+    loadingMoreRef.current = loadingMore;
+    hasMoreRef.current = hasMore;
+    pageRef.current = page;
+  }, [loading, loadingMore, hasMore, page]);
 
   // Fetch categories
   useEffect(() => {
@@ -79,12 +87,13 @@ function ListOrganizations() {
           categoryData = response.data.categories;
         } else {
           console.warn("Unexpected categories response structure:", response);
+          toast.error("Unexpected categories response structure");
+          return;
         }
         setCategories(categoryData);
       } catch (error: any) {
         console.error("Error fetching categories:", error);
         toast.error("Failed to load categories: " + error.message);
-        setCategories([]);
       }
     };
     fetchCategories();
@@ -95,6 +104,7 @@ function ListOrganizations() {
     const fetchSubcategories = async () => {
       if (!categoryFilter) {
         setSubcategories([]);
+        setSubcategoryFilter("");
         return;
       }
       try {
@@ -106,115 +116,94 @@ function ListOrganizations() {
           subcategoryData = response.data.subcategories;
         } else {
           console.warn("Unexpected subcategories response structure:", response);
+          toast.error("Unexpected subcategories response structure");
+          return;
         }
         setSubcategories(subcategoryData);
       } catch (error: any) {
         console.error("Error fetching subcategories:", error);
         toast.error("Failed to load subcategories: " + error.message);
-        setSubcategories([]);
       }
     };
     fetchSubcategories();
   }, [categoryFilter]);
 
   // Fetch organizations
-  const fetchOrganizations = useCallback(async (
-    currentPage: number,
-    isNewSearch: boolean = false,
-    searchQuery: string = "",
-    category: string = "",
-    subcategory: string = ""
-  ) => {
-    if (isLoadingRef.current) return;
+  const fetchOrganizations = useCallback(
+    async (currentPage: number, isNewSearch: boolean = false) => {
+      if (
+        loadingRef.current ||
+        loadingMoreRef.current ||
+        (!hasMoreRef.current && !isNewSearch)
+      )
+        return;
 
-    const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
-    if (!isNewSearch && lastFetchParams.current === paramsKey) {
-      return;
-    }
+      isNewSearch ? setLoading(true) : setLoadingMore(true);
 
-    isLoadingRef.current = true;
-    if (isNewSearch) setLoading(true);
-    else setLoadingMore(true);
-
-    try {
-      const params = {
-        page: currentPage,
-        limit: 4, // Adjusted to match UI expectation
-        search: searchQuery.trim(),
-        category: category || "",
-        subcategory: subcategory || "",
-      };
-      const response = await getAllOrg(params);
-      if (response?.status && Array.isArray(response.data?.organizations)) {
-        const { organizations: fetchedOrganizations, totalPages, totalOrganizations, hasMore } = response.data;
-        setOrganizations((prev) => {
-          const existingIds = new Set(prev.map(o => o._id));
-          const uniqueNewOrganizations = fetchedOrganizations.filter((o: Organization) => !existingIds.has(o._id));
-          const updatedList = isNewSearch ? fetchedOrganizations : [...prev, ...uniqueNewOrganizations];
-          return updatedList.sort((a: { organizationName: string; _id: string; }, b: { organizationName: any; _id: any; }) => {
-            const nameCompare = a.organizationName.localeCompare(b.organizationName);
-            return nameCompare !== 0 ? nameCompare : a._id.localeCompare(b._id);
-          });
-        });
-        setTotalItems(totalOrganizations || 0);
-        setHasMore(hasMore || currentPage < totalPages);
-        setPage(currentPage + 1);
-        lastFetchParams.current = paramsKey;
-      } else {
-        console.warn("Invalid response structure:", response);
-        toast.error("Failed to fetch organizations: Invalid response");
+      try {
+        const params = {
+          page: currentPage,
+          limit: 4,
+          search: searchTerm.trim(),
+          category: categoryFilter,
+          subcategory: subcategoryFilter,
+        };
+        const response = await getAllOrg(params);
+        if (response?.status && Array.isArray(response.data?.organizations)) {
+          const { organizations: fetchedOrganizations, hasMore } = response.data;
+          setOrganizations((prev) =>
+            isNewSearch ? fetchedOrganizations : [...prev, ...fetchedOrganizations]
+          );
+          setHasMore(hasMore);
+          setPage(currentPage + 1);
+        } else {
+          toast.error("Failed to fetch organizations: Invalid response");
+          setHasMore(false);
+        }
+      } catch (error: any) {
+        toast.error(error.message || "Error fetching organizations");
         setHasMore(false);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-    } catch (error: any) {
-      console.error("Error fetching organizations:", error);
-      toast.error(error.message || "Error fetching organizations");
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-      isLoadingRef.current = false;
-    }
-  }, []);
+    },
+    [searchTerm, categoryFilter, subcategoryFilter]
+  );
 
-  // Debounced fetch for search and filters
-  const debouncedFetchOrganizations = useCallback(
-    debounce((search, category, subcategory) => {
+  // Handle search and filter changes with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
       setOrganizations([]);
       setPage(1);
-      lastFetchParams.current = "";
-      fetchOrganizations(1, true, search, category, subcategory);
-    }, 500),
-    [fetchOrganizations]
-  );
+      setHasMore(true);
+      fetchOrganizations(1, true);
+    }, 300);
 
-  useEffect(() => {
-    debouncedFetchOrganizations(searchTerm, categoryFilter, subcategoryFilter);
-  }, [searchTerm, categoryFilter, subcategoryFilter, debouncedFetchOrganizations]);
+    return () => clearTimeout(timer);
+  }, [searchTerm, categoryFilter, subcategoryFilter, fetchOrganizations]);
 
-  // Intersection Observer for infinite scroll
-  const lastOrganizationElementRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (loading || loadingMore || !hasMore) return;
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && !isLoadingRef.current) {
-            fetchOrganizations(page, false, searchTerm, categoryFilter, subcategoryFilter);
-          }
-        },
-        { threshold: 0.5 }
-      );
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, loadingMore, hasMore, page, searchTerm, categoryFilter, subcategoryFilter, fetchOrganizations]
-  );
-
-  // Initial fetch on mount
-  useEffect(() => {
-    fetchOrganizations(1, true);
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (
+      scrollTop + clientHeight >= scrollHeight - 10 &&
+      !loadingRef.current &&
+      !loadingMoreRef.current &&
+      hasMoreRef.current
+    ) {
+      fetchOrganizations(pageRef.current);
+    }
   }, [fetchOrganizations]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <>
@@ -245,9 +234,9 @@ function ListOrganizations() {
                     <Form.Group>
                       <Form.Control
                         type='search'
-                        placeholder='Search...'
+                        placeholder='Search ...'
                         value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                         style={{ minWidth: "200px" }}
                       />
                     </Form.Group>
@@ -272,7 +261,9 @@ function ListOrganizations() {
                   <Form.Group>
                     <Form.Select
                       value={subcategoryFilter}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSubcategoryFilter(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setSubcategoryFilter(e.target.value)
+                      }
                       style={{ minWidth: "150px" }}
                       disabled={!categoryFilter || subcategories.length === 0}
                     >
@@ -299,57 +290,51 @@ function ListOrganizations() {
       ) : (
         <Row>
           {organizations.length > 0 ? (
-            organizations.map((item, index) => {
-              const isLastElement = index === organizations.length - 1;
-              return (
-                <Col 
-                  key={item._id} 
-                  md={6} 
-                  xl={3} 
-                  className='mb-3' 
-                  ref={isLastElement ? lastOrganizationElementRef : null}
-                >
-                  <Link to={`/apps/organizations/${item._id}`}>
-                    <Card className='product-box h-100 shadow-sm'>
-                      <Card.Body className='d-flex flex-column'>
-                        <div className='bg-light mb-1'>
-                          <img
-                            src={item.organizationLogo || "https://via.placeholder.com/150"}
-                            alt={item.organizationName}
-                            className='img-fluid'
-                            style={{ width: "100%", height: "200px", objectFit: "contain" }}
-                          />
-                        </div>
-                        <div className='product-info mt-auto'>
-                          <h5 className='font-24 mt-0 sp-line-1 bold'>{item.organizationName}</h5>
-                          <div className='text-muted font-14'>
-                            <div className='d-flex align-items-center mb-1 text-black'>
-                              <i className='mdi mdi-map-marker me-1'></i>
-                              <span>
-                                {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name}, 
-                                {item.addresses[0]?.country_name}
-                              </span>
-                            </div>
-                            <div className='d-flex align-items-center mb-1 text-black'>
-                              <i className='mdi mdi-phone-classic me-1'></i>
-                              <span>{item.contact_number}</span>
-                            </div>
-                            <div className='d-flex align-items-center text-black'>
-                              <i className='mdi mdi-email me-1'></i>
-                              <span>{item.email}</span>
-                            </div>
-                            <div className='d-flex align-items-center text-black'>
-                              <i className='mdi mdi-account-group me-1'></i>
-                              <span>{item.no_of_employees} Employees</span>
-                            </div>
+            organizations.map((item) => (
+              <Col key={item._id} md={6} xl={3} className='mb-3'>
+                <Link to={`/apps/organizations/${item.slug}`}>
+                  <Card className='product-box h-100 shadow-sm'>
+                    <Card.Body className='d-flex flex-column'>
+                      <div className='bg-light mb-1'>
+                        <img
+                          src={item.organizationLogo || "https://via.placeholder.com/150"}
+                          alt={item.organizationName}
+                          className='img-fluid'
+                          style={{ width: "100%", height: "200px", objectFit: "contain" }}
+                        />
+                      </div>
+                      <div className='product-info mt-auto'>
+                        <h5 className='font-24 mt-0 sp-line-1 bold'>{item.organizationName}</h5>
+                        <div className='text-muted font-14'>
+                          <div className='d-flex align-items-center mb-1 text-black'>
+                            <i className='mdi mdi-map-marker me-1'></i>
+                            <span>
+                              {item.addresses?.street_address || "N/A"}, 
+                              {item.addresses?.city_name || "N/A"}, 
+                              {item.addresses?.state_name || "N/A"}, 
+                              {item.addresses?.district_name || "N/A"}, 
+                              {item.addresses?.country_name || "N/A"}
+                            </span>
+                          </div>
+                          <div className='d-flex align-items-center mb-1 text-black'>
+                            <i className='mdi mdi-phone-classic me-1'></i>
+                            <span>{item.contact_number || "N/A"}</span>
+                          </div>
+                          <div className='d-flex align-items-center text-black'>
+                            <i className='mdi mdi-email me-1'></i>
+                            <span>{item.email || "N/A"}</span>
+                          </div>
+                          <div className='d-flex align-items-center text-black'>
+                            <i className='mdi mdi-account-group me-1'></i>
+                            <span>{item.no_of_employees} Employees</span>
                           </div>
                         </div>
-                      </Card.Body>
-                    </Card>
-                  </Link>
-                </Col>
-              );
-            })
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Link>
+              </Col>
+            ))
           ) : (
             <Col>
               <Card>
