@@ -33,11 +33,11 @@ interface Employee {
   pan_image: string;
   address: {
     street_address: string;
-    city_name: string;      // Will be changed to city_name when displaying
-    district_name?: string; // Will be changed to district_name when displaying
-    state_name?: string;    // Will be changed to state_name when displaying
+    city_name: string;      
+    district_name?: string; 
+    state_name?: string;    
     pincode?: string;
-    country_name?: string;  // Will be changed to country_name when displaying
+    country_name?: string;  
   };
 }
 
