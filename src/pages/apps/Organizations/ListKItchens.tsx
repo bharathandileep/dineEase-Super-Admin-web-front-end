@@ -46,7 +46,18 @@ interface Subcategory {
   subcategoryName: string;
   category: string;
 }
-
+ 
+interface Category {
+  _id: string;
+  category: string;
+}
+ 
+interface Subcategory {
+  _id: string;
+  subcategoryName: string;
+  category: string;
+}
+ 
 function ListKitchens() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(false); // Start as false to avoid initial flicker
@@ -63,6 +74,7 @@ function ListKitchens() {
   const isLoadingRef = useRef(false);
   const observer = useRef<IntersectionObserver | null>(null);
   const lastFetchParams = useRef<string>(""); // To track fetch params and avoid duplicates
+ 
 
   // Fetch categories
   useEffect(() => {
@@ -85,6 +97,7 @@ function ListKitchens() {
     };
     fetchCategories();
   }, []);
+ 
 
   // Fetch subcategories
   useEffect(() => {
@@ -111,6 +124,7 @@ function ListKitchens() {
     };
     fetchSubcategories();
   }, [categoryFilter]);
+ 
 
   // Fetch kitchens
   const fetchKitchens = useCallback(async (
@@ -121,6 +135,7 @@ function ListKitchens() {
     subcategory: string = ""
   ) => {
     if (isLoadingRef.current) return;
+ 
 
     const paramsKey = JSON.stringify({ page: currentPage, searchQuery, category, subcategory });
     if (!isNewSearch && lastFetchParams.current === paramsKey) {
@@ -164,6 +179,7 @@ function ListKitchens() {
       isLoadingRef.current = false;
     }
   }, []);
+ 
 
   // Debounced fetch for search and filters
   const debouncedFetchKitchens = useCallback(
@@ -185,7 +201,6 @@ function ListKitchens() {
     (node: HTMLDivElement) => {
       if (loading || loadingMore || !hasMore) return;
       if (observer.current) observer.current.disconnect();
-
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && !isLoadingRef.current) {
@@ -194,17 +209,14 @@ function ListKitchens() {
         },
         { threshold: 0.5 } // Trigger when 50% of the last element is visible
       );
-
       if (node) observer.current.observe(node);
     },
     [loading, loadingMore, hasMore, page, searchTerm, categoryFilter, subcategoryFilter, fetchKitchens]
   );
-
   // Initial fetch on mount
   useEffect(() => {
     fetchKitchens(1, true);
   }, [fetchKitchens]);
-
   return (
     <>
       <PageTitle
@@ -214,6 +226,7 @@ function ListKitchens() {
         ]}
         title={"Kitchens"}
       />
+ 
 
       <div className='mb-3' style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
         <div className='d-flex align-items-center justify-content-between'>
@@ -339,6 +352,7 @@ function ListKitchens() {
                 </Col>
               );
             })
+            
           ) : (
             <Col>
               <Card>
@@ -359,7 +373,7 @@ function ListKitchens() {
           )}
         </Row>
       )}
-
+ 
       {loadingMore && (
         <div className='text-center my-4'>
           <Spinner animation='border' size='sm' /> Loading more...

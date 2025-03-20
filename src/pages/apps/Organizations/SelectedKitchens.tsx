@@ -1,138 +1,130 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getSelectedKitchen } from "../../../server/admin/organization";
+import { listCollaboratedKitchens } from "../../../server/admin/collab";
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 import PageTitle from "../../../components/PageTitle";
 
-interface IKitchen {
-  _id: string;
-  kitchen_name: string;
-  kitchen_image: string;
-  kitchen_owner_name: string;
-  owner_email: string;
-  owner_phone_number: string;
-  status: boolean;
-}
 
 function SelectedKitchensList() {
-  const [selectedKitchen, setSelectedKitchen] = useState<IKitchen | null>(null);
+  const [selectedKitchens, setSelectedKitchens] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const orgId = localStorage.getItem("organizationId") || "";
 
-    // useEffect(() => {
-    //   const fetchSelectedKitchen = async () => {
-    //     setLoading(true);
-    //     try {
-    //       const response = await getSelectedKitchen(orgId);
-    //       if (response?.status) {
-    //         // Store the single kitchen from the response
-    //         setSelectedKitchen(response.data.kitchen);
-    //       } else {
-    //         toast.error(response?.message || "Failed to fetch selected kitchen.");
-    //       }
-    //     } catch (error) {
-    //       console.error("Error fetching selected kitchen:", error);
-    //       toast.error("An error occurred while fetching selected kitchen.");
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   };
+  const accessDetails = getAccessDetailsFromLocalStorage();
+  const orgId = accessDetails?.orgId;
 
-    //   fetchSelectedKitchen();
-    // }, [orgId]);
+  useEffect(() => {
+    const fetchSelectedKitchens = async () => {
+      setLoading(true);
+      try {
+        const response = await listCollaboratedKitchens(orgId);
+        if (response?.status) {
+          setSelectedKitchens(response.data);
+        } else {
+          toast.error(response?.message || "Failed to fetch kitchens.");
+        }
+      } catch (error) {
+        console.error("Error fetching kitchens:", error);
+        toast.error(error || "Failed to fetch kitchens.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (loading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "100vh" }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
+    fetchSelectedKitchens();
+  }, [orgId]);
 
   return (
-    <div className="container-fluid px-4 py-3">
+    <>
       <PageTitle
         breadCrumbItems={[
-          { label: "Organizations", path: "/apps/organizations/list" },
-          { label: "List", path: "/apps/organizations/list", active: true },
+          { label: "Kitchens", path: "/products" },
+          { label: "Selected Collaboration Kitchens", path: "", active: true },
         ]}
-        title={"Organizations"}
+        title={"Collaboration Kitchens"}
       />
 
       <div
         className="mb-3"
         style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
       >
-        <div className="d-flex align-items-center justify-content-between">
-          <h3 className="page-title m-0" style={{ color: "#fff" }}>
-             Selected Kitchens 
-          </h3>
-        </div>
+        <h3 className="page-title m-0" style={{ color: "#fff" }}>
+          Selected Collaboration Kitchens
+        </h3>
       </div>
 
-      <Row className="g-3">
-        {selectedKitchen ? (
-          <Col md={4}>
-            <Card className="h-100 shadow-sm">
-              <Card.Img
-                variant="top"
-                src={selectedKitchen.kitchen_image}
-                alt={selectedKitchen.kitchen_name}
-                style={{ height: "200px", objectFit: "cover" }}
-              />
-              <Card.Body>
-                <Card.Title>{selectedKitchen.kitchen_name}</Card.Title>
-                <Card.Text>
-                  <strong>Owner:</strong> {selectedKitchen.kitchen_owner_name}
-                  <br />
-                  <strong>Email:</strong> {selectedKitchen.owner_email}
-                  <br />
-                  <strong>Phone:</strong> {selectedKitchen.owner_phone_number}
-                  <br />
-                  <strong>Status:</strong>{" "}
-                  <span
-                    className={`text-${
-                      selectedKitchen.status ? "success" : "danger"
-                    }`}
-                  >
-                    {selectedKitchen.status ? "Active" : "Inactive"}
-                  </span>
-                </Card.Text>
-                <div className="d-flex gap-2">
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      navigate(`/apps/kitchen/details/${selectedKitchen._id}`)
-                    }
-                  >
-                    View Details
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ) : (
-          <Col>
-            <div className="alert alert-info">
-              <i className="mdi mdi-information-outline me-2"></i>
-              No collaboration kitchen is currently selected.
-              <br />
-              <Link to="/apps/kitchen/list" className="alert-link">
-                Browse available kitchens
-              </Link>{" "}
-              to select a collaboration partner.
-            </div>
-          </Col>
-        )}
-      </Row>
-    </div>
+      {loading ? (
+        <div className="text-center my-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-2">Loading kitchens...</p>
+        </div>
+      ) : selectedKitchens?.length > 0 ? (
+        <Row>
+          {selectedKitchens.map((kitchen) => (
+            <Col key={kitchen._id} md={6} xl={3} className="mb-3">
+              <Link to={`/apps/kitchen/details/${kitchen._id}`}>
+                <Card className="product-box h-100 shadow-sm">
+                  <Card.Body className="d-flex flex-column">
+                    <div className="bg-light mb-1">
+                      <img
+                        src={kitchen.kitchen_image}
+                        alt={kitchen.kitchen_name}
+                        className="img-fluid"
+                        style={{
+                          width: "100%",
+                          height: "200px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                    <div className="product-info mt-auto">
+                      <h5 className="font-24 mt-0 sp-line-1 bold">
+                        {kitchen.kitchen_name}
+                      </h5>
+                      <div className="text-muted font-14">
+                        <div className="d-flex align-items-center mb-1 text-black">
+                          <i className="mdi mdi-phone-classic me-1"></i>
+                          <span>{kitchen.owner_phone_number}</span>
+                        </div>
+                        <div className="d-flex align-items-center text-black">
+                          <i className="mdi mdi-email me-1"></i>
+                          <span>{kitchen.owner_email}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        <Col>
+          <Card>
+            <Card.Body className="text-center">
+              <i
+                className="mdi mdi-alert-circle-outline text-muted"
+                style={{ fontSize: "48px" }}
+              ></i>
+              <h4 className="mt-3">No Kitchens Found</h4>
+              <p className="text-muted">
+                There are no collaboration kitchens selected yet.
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate("/apps/kitchen/new")}
+              >
+                Add New Kitchen
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      )}
+    </>
   );
 }
 

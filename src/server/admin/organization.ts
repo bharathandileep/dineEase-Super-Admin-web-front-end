@@ -219,29 +219,29 @@ export const getAllKitches = async (query:any) => {
 
 // In server/admin/organization.ts
 
-export const selectKitchen = async (orgId: string, kitchenId: string) => {
-  try {
-    const response = await axiosInstance.post(
-      apiConfig.organization.selectKitchen(orgId),
-      { orgId, kitchenId }
-    );
-    return response.data;
-  } catch (error: any) {
-    throw new Error(extractErrorMessage(error));
-  }
-};
+// export const selectKitchen = async (orgId: string, kitchenId: string) => {
+//   try {
+//     const response = await axiosInstance.post(
+//       apiConfig.organization.selectKitchen(orgId),
+//       { orgId, kitchenId }
+//     );
+//     return response.data;
+//   } catch (error: any) {
+//     throw new Error(extractErrorMessage(error));
+//   }
+// };
 
-export const getSelectedKitchen = async (orgId: string) => {
-  try {
-    const response = await axiosInstance.get(
-      apiConfig.organization.getSelectedKitchen(orgId)
-    );
-    return response.data;
-  } catch (error: any) {
-    // Handle the specific error for no kitchen selected
-    if (error.response && error.response.status === 400) {
-      return { status: false, message: "No kitchen selected", data: { kitchen: null } };
-    }
-    throw new Error(extractErrorMessage(error));
-  }
-};
+// export const getSelectedKitchen = async (orgId: string) => {
+//   try {
+//     const response = await axiosInstance.get(
+//       apiConfig.organization.getSelectedKitchen(orgId)
+//     );
+//     return response.data;
+//   } catch (error: any) {
+//     // Handle the specific error for no kitchen selected
+//     if (error.response && error.response.status === 400) {
+//       return { status: false, message: "No kitchen selected", data: { kitchen: null } };
+//     }
+//     throw new Error(extractErrorMessage(error));
+//   }
+// };

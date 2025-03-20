@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
-import { selectKitchen } from "../../../server/admin/organization"; // Add this import
+import { collaborateKitchen } from "../../../server/admin/collab";
 import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 // Define interface for menu items
@@ -100,12 +100,14 @@ export interface IKitchenDetails {
 }
 
 function KitchensDetailss() {
-  const { id } = useParams();
+  const { id: kitchen_id } = useParams();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
+  const [collabError, setCollabError] = useState<string | null>(null);
+  const [collabSuccess, setCollabSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
@@ -114,7 +116,7 @@ function KitchensDetailss() {
   const handleStatusToggle = async () => {
     setLoading(true);
     try {
-      const response = await toggleKitchenStatus(id);
+      const response = await toggleKitchenStatus(kitchen_id);
       if (response?.status) {
         setStatus(!status);
         toast.success(response.message);
@@ -128,37 +130,71 @@ function KitchensDetailss() {
     }
   };
 
+  // Enhanced collaboration function
   const handleSelectKitchen = async () => {
-    if (!id || !orgId) {
-      toast.error("Missing kitchen or organization information.");
+    // Reset any previous collab states
+    setCollabError(null);
+    setCollabSuccess(false);
+    
+    const accessDetails = getAccessDetailsFromLocalStorage();
+    const organization_id = accessDetails?.orgId;
+    
+    // Validate required data
+    if (!kitchen_id) {
+      setCollabError("Kitchen ID is missing.");
+      toast.error("Kitchen ID is missing.");
+      return;
+    }
+    
+    if (!organization_id) {
+      setCollabError("Organization ID is missing. Please make sure you're logged in.");
+      toast.error("Organization ID is missing. Please make sure you're logged in.");
       return;
     }
 
+    // Set loading state
     setIsSelecting(true);
+    
     try {
-      const response = await selectKitchen(orgId, id);
-      if (response?.status) {
-        toast.success("Kitchen selected successfully!");
-
-        const viewNow = window.confirm(
-          "Kitchen selected successfully! Do you want to view your selected kitchen now?"
-        );
-
-        if (viewNow) {
-          navigate("/apps/organizations/selected-kitchens");
+      const response = await collaborateKitchen(organization_id, kitchen_id);
+      
+      if (response) {
+        if (response.collaboration) {
+          setCollabSuccess(true);
+          toast.success(response.message || "Kitchen selected successfully!");
+          
+          // Ask user if they want to navigate to selected kitchens page
+          const viewNow = window.confirm(
+            "Kitchen selected successfully! Do you want to view your selected kitchens now?"
+          );
+          
+          if (viewNow) {
+            navigate("/apps/organizations/selected-kitchens");
+          }
+        } else {
+          setCollabError(response.message || "Failed to select kitchen.");
+          toast.error(response.message || "Failed to select kitchen.");
         }
       } else {
-        toast.error(response?.message || "Failed to select kitchen.");
+        setCollabError("Received an invalid response from the server.");
+        toast.error("Received an invalid response from the server.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error selecting kitchen:", error);
-      toast.error("An error occurred while selecting the kitchen.");
+      
+      const errorMessage = error.message || "An error occurred while selecting the kitchen.";
+      setCollabError(errorMessage);
+      toast.error(errorMessage);
+      
+      if (errorMessage.includes("already exists")) {
+        toast.info("This kitchen is already in your selected kitchens list.");
+      }
     } finally {
       setIsSelecting(false);
     }
   };
-  const onEdit = () => {
-    navigate(`/apps/kitchen/edit/${id}`);
+   const onEdit = () => {
+    navigate(`/apps/kitchen/edit/${kitchen_id}`);
   };
 
   const onDelete = async () => {
@@ -170,7 +206,7 @@ function KitchensDetailss() {
 
     setLoading(true);
     try {
-      const response = await deletekitchenDetails(id);
+      const response = await deletekitchenDetails(kitchen_id);
 
       if (response?.status) {
         toast.success(response.message);
@@ -217,7 +253,7 @@ function KitchensDetailss() {
     const fetchMenuItems = async () => {
       setLoading(true);
       try {
-        const response = await getMenuItemsByKitchen(id);
+        const response = await getMenuItemsByKitchen(kitchen_id);
         if (response.data && response.data.items_id) {
           const items = response.data.items_id;
           const transformedData = transformFoodData(items);
@@ -237,13 +273,13 @@ function KitchensDetailss() {
     };
 
     fetchMenuItems();
-  }, [id]);
+  }, [kitchen_id]);
 
   useEffect(() => {
     const fetchKitchenDetails = async () => {
       setLoading(true);
       try {
-        const response = await getkitchenDetails(id);
+        const response = await getkitchenDetails(kitchen_id);
         setKitchenData(response.data);
         setStatus(response.data.status);
       } catch (error) {
@@ -254,7 +290,7 @@ function KitchensDetailss() {
       }
     };
     fetchKitchenDetails();
-  }, [id]);
+  }, [kitchen_id]);
 
   if (loading) {
     return (
@@ -285,6 +321,26 @@ function KitchensDetailss() {
           </li>
         </ol>
       </nav>
+      
+      {/* Show collaboration success/error messages if any */}
+      {collabSuccess && (
+        <div className="alert alert-success alert-dismissible fade show mb-3" role="alert">
+          Kitchen collaboration request sent successfully!
+          <button type="button" className="btn-close" 
+            onClick={() => setCollabSuccess(false)} 
+            aria-label="Close"></button>
+        </div>
+      )}
+      
+      {collabError && (
+        <div className="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          {collabError}
+          <button type="button" className="btn-close" 
+            onClick={() => setCollabError(null)} 
+            aria-label="Close"></button>
+        </div>
+      )}
+      
       <div
         className="mb-4 position-relative overflow-hidden"
         style={{
@@ -415,7 +471,7 @@ function KitchensDetailss() {
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
             <div className="d-flex gap-2">
-              {/* Select Kitchen Button */}
+              {/* Collab Kitchen Button */}
               <Button
                 variant="primary"
                 className="d-flex align-items-center gap-1 px-3 py-1"
@@ -426,21 +482,22 @@ function KitchensDetailss() {
                   height: "35px",
                 }}
                 onClick={handleSelectKitchen}
-                disabled={isSelecting}
+                disabled={isSelecting || collabSuccess}
               >
                 {isSelecting ? (
                   <>
-                    <span
-                      className="spinner-border spinner-border-sm"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
-                    <span className="ms-1">Selecting...</span>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span className="ms-1">Processing...</span>
+                  </>
+                ) : collabSuccess ? (
+                  <>
+                    <i className="mdi mdi-check-circle"></i>
+                    Collaboration Sent
                   </>
                 ) : (
                   <>
-                    <i className="mdi mdi-check-circle"></i>
-                    Collab kitchen
+                    <i className="mdi mdi-handshake"></i>
+                    Collab Kitchen
                   </>
                 )}
               </Button>
@@ -448,8 +505,8 @@ function KitchensDetailss() {
           </Col>
         </Row>
       </div>
-
-      {/* Rest of your component remains the same */}
+      
+      {/* Rest of your component */}
       <Row className="mb-4 g-3">
         <Col md={6}>
           <Card className="h-100 shadow-sm">

@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
 import {
   getAllKitches,
@@ -18,6 +13,7 @@ import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 interface Kitchen {
   _id: string;
   kitchen_name: string;
+  slug: string;
   kitchen_owner_name: string;
   kitchen_type: string;
   kitchen_phone_number: string;
@@ -93,7 +89,6 @@ function ListKitchens() {
 
   useEffect(() => {
     const fetchSubcategories = async () => {
-      
       if (!categoryFilter) {
         setSubcategories([]);
         setSubcategoryFilter("");
@@ -103,7 +98,7 @@ function ListKitchens() {
         const response = await kitchensGetSubcategoriesByCategory(
           categoryFilter
         );
-        console.log(response)
+        console.log(response);
         setSubcategories(response.data || []);
       } catch (error: any) {
         toast.error("Failed to load subcategories: " + error.message);
@@ -112,10 +107,13 @@ function ListKitchens() {
     fetchSubcategories();
   }, [categoryFilter]);
 
-
   const fetchKitchens = useCallback(
     async (currentPage: number, isNewSearch: boolean = false) => {
-      if (loadingRef.current || loadingMoreRef.current || (!hasMoreRef.current && !isNewSearch))
+      if (
+        loadingRef.current ||
+        loadingMoreRef.current ||
+        (!hasMoreRef.current && !isNewSearch)
+      )
         return;
 
       isNewSearch ? setLoading(true) : setLoadingMore(true);
@@ -157,7 +155,7 @@ function ListKitchens() {
       setPage(1);
       setHasMore(true);
       fetchKitchens(1, true);
-    }, 300); 
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm, categoryFilter, subcategoryFilter, fetchKitchens]);
@@ -282,7 +280,7 @@ function ListKitchens() {
           {kitchens.length > 0 ? (
             kitchens.map((item) => (
               <Col key={item._id} md={6} xl={3} className="mb-3">
-                <Link to={`/apps/kitchen/${item._id}`}>
+                <Link to={`/apps/kitchen/${item.slug}`}>
                   <Card className="product-box h-100 shadow-sm">
                     <Card.Body className="d-flex flex-column">
                       <div className="bg-light mb-1">
