@@ -4,6 +4,7 @@ import { apiConfig } from "../../helpers/api/apis";
  
  
 export const getAllKitches = async (query: any) => {
+  console.log(query)
   try {
     const url = `${apiConfig.kitchens.getAllkitchens(query)}`;
     const response = await axiosInstance.get(url);

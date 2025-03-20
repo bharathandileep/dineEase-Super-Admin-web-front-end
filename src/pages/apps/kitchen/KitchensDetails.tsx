@@ -136,7 +136,7 @@ function KitchensDetails() {
         item_price: item.item_price || 0,
         ingredients: item.ingredients || [],
         reviews_id: item.reviews_id || [],
-        quantity: 0, // Add quantity property
+        quantity: 0, 
       });
 
       return acc;
@@ -183,7 +183,7 @@ function KitchensDetails() {
           const firstCategory = Object.keys(transformedData)[0];
           if (firstCategory) setActiveKey(firstCategory);
         } else {
-          setGroupedItems({}); // No items found
+          setGroupedItems({});
         }
       } catch (error:any) {
         console.error("Error fetching menu items:", error);

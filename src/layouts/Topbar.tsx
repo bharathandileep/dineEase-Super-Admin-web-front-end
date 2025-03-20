@@ -92,7 +92,7 @@ const ProfileMenus = [
   {
     label: "My Account",
     icon: "fe-user",
-    redirectTo: "#",
+    redirectTo: "/apps/profile/123",
   },
   {
     label: "Settings",
