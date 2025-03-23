@@ -66,7 +66,7 @@ function SelectedKitchensList() {
         <Row>
           {selectedKitchens.map((kitchen) => (
             <Col key={kitchen._id} md={6} xl={3} className="mb-3">
-              <Link to={`/apps/kitchen/details/${kitchen._id}`}>
+              <Link to={`/apps/kitchen/details/${kitchen.slug}`}>
                 <Card className="product-box h-100 shadow-sm">
                   <Card.Body className="d-flex flex-column">
                     <div className="bg-light mb-1">
