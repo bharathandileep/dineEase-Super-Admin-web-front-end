@@ -35,7 +35,7 @@ const Login = () => {
     const organizationViewDetails = {
       role: "Admin",
       adminName: "admin@123",
-      adminId: "67a1083b3c9f01a384e9683c",
+      id: "67a1083b3c9f01a384e9683c",
       slug: "admin",
     };
     localStorage.setItem(

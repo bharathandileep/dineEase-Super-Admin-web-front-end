@@ -343,7 +343,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
           if (response.status) setSubcategories(response.data);
           else toast.error(response.message);
         } catch (error: any) {
-          console.error("Error fetching subcategories:", error);
           toast.error(error.message);
         }
       };
@@ -367,7 +366,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
       await fetchDistricts(value);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
     }
-
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -382,8 +380,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-  
-        // Fetch categories
         const catResponse = await orgGetAllCategories({ page: 1, limit: 100 });
         if (catResponse.status) {
           setCategories(catResponse.data.categories);
@@ -391,29 +387,21 @@ export function WizardForm({ initialData }: WizardFormProps) {
         } else {
           toast.error(catResponse.message);
         }
-  
-    
         await fetchCountries();
-  
+
         if (id) {
-     
           const response = await getOrgDetails(id);
           const orgData = response.data;
-          console.log("Full Org Data:", JSON.stringify(orgData, null, 2));
-  
-     
           const initialCategory =
             orgData?.category?._id ||
             (typeof orgData?.category === "string" ? orgData.category : "") ||
             "";
           const initialSubcategory =
             orgData?.subcategoryName?._id ||
-            (typeof orgData?.subcategoryName === "string" ? orgData.subcategoryName : "") ||
+            (typeof orgData?.subcategoryName === "string"
+              ? orgData.subcategoryName
+              : "") ||
             "";
-          console.log("Initial Category:", initialCategory);
-          console.log("Initial Subcategory:", initialSubcategory);
-  
-      
           setFormData({
             ...initialFormData,
             organizationName: orgData?.organizationName || "",
@@ -436,46 +424,44 @@ export function WizardForm({ initialData }: WizardFormProps) {
             panCardUserName: orgData?.panDetails?.[0]?.pan_card_user_name || "",
             gstNumber: orgData?.gstDetails?.[0]?.gst_number || "",
             expiryDate: orgData?.gstDetails?.[0]?.expiry_date
-              ? new Date(orgData.gstDetails[0].expiry_date).toISOString().split("T")[0]
+              ? new Date(orgData.gstDetails[0].expiry_date)
+                  .toISOString()
+                  .split("T")[0]
               : "",
-            gstCertificateImage: orgData?.gstDetails?.[0]?.gst_certificate_image || "",
+            gstCertificateImage:
+              orgData?.gstDetails?.[0]?.gst_certificate_image || "",
             panCardImage: orgData?.panDetails?.[0]?.pan_card_image || "",
           });
           console.log("Form Data after set:", {
             category: initialCategory,
             subcategoryName: initialSubcategory,
           });
-  
-        
           if (initialCategory) {
             setSelectedCategoryId(initialCategory);
-            const subcatResponse = await orgGetSubcategoriesByCategory(initialCategory);
+            const subcatResponse = await orgGetSubcategoriesByCategory(
+              initialCategory
+            );
             if (subcatResponse.status) {
               const subcatData = subcatResponse.data;
               setSubcategories(subcatData);
-              console.log("Subcategory IDs in fetched data:", subcatData.map((sub: { _id: any; }) => sub._id));
-  
-              const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === initialSubcategory);
-              console.log("Is Valid Subcategory:", isValidSubcategory);
-  
+              const isValidSubcategory = subcatData.some(
+                (sub: { _id: any }) => sub._id === initialSubcategory
+              );
               if (!isValidSubcategory && subcatData.length > 0) {
-                console.warn("Selected subcategory not found in fetched subcategories. Resetting to empty.");
-                setFormData(prev => ({ ...prev, subcategoryName: "" }));
-              } else if (isValidSubcategory) {
-                console.log("Subcategory retained:", initialSubcategory);
-              } else {
-                console.log("No subcategories available for category:", initialCategory);
+                setFormData((prev) => ({ ...prev, subcategoryName: "" }));
               }
             } else {
               toast.error(subcatResponse.message);
               setSubcategories([]);
             }
           } else {
-            console.log("No initial category found, skipping subcategory fetch.");
+            console.log(
+              "No initial category found, skipping subcategory fetch."
+            );
             setSubcategories([]);
           }
-  
-    
+
+          // Fetch address-related data
           if (orgData?.addresses?.[0]?.country_id) {
             await fetchStates(orgData.addresses[0].country_id);
           }
@@ -484,7 +470,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
             await fetchDistricts(orgData.addresses[0].state_id);
           }
         }
-  
+
         setIsOpen(user.role === "Admin" && !initialData);
       } catch (error: any) {
         console.error("Error fetching initial data:", error);
@@ -493,7 +479,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
         setLoading(false);
       }
     };
-  
+
     fetchInitialData();
   }, [id]);
   const handleUserDataChange = (updatedUserData: any) => {

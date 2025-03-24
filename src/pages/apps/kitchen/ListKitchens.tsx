@@ -362,6 +362,7 @@ function ListKitchens() {
           <Spinner animation="border" size="sm" /> Loading more...
         </div>
       )}
+      
     </>
   );
 }

@@ -157,10 +157,11 @@ export const toggleSubcategoryStatus = async (id: string | undefined) => {
 
 export const getMenuItemsByKitchen = async (
   id: string | undefined,
+  role:string
 ) => {
   try {
     const response = await axiosInstance.get(
-      apiConfig.menu.getMenuItemsByKitchen(id)
+      apiConfig.menu.getMenuItemsByKitchen(id,role)
     );
     return response.data;
   } catch (error: any) {

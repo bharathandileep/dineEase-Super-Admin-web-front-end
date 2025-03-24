@@ -450,15 +450,18 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const kitchensFormData = appendToFormData(formData);
       const response = await createNewkitchen(kitchensFormData);
+      console.log(response)
       if (response.status) {
         toast.success(response.message);
         user.role === "Admin"
           ? navigate("/apps/organizations/list-kitchens")
           : navigate("/dashboard/kitchen-list");
       }
+      else{
+        toast.error(response.message)
+      }
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error("Failed to create kitchen");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -474,7 +477,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setFormData((prev) => ({
         ...prev,
         category: value,
-        subcategoryName: "", // Reset subcategory when category changes
+        subcategoryName: "", 
       }));
       await fetchSubcategories(value);
     } else {

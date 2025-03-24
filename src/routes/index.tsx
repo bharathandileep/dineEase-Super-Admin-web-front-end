@@ -38,8 +38,8 @@ import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganiza
 import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
 import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
 
-import ListKItchens from "../pages/apps/Organizations/ListKItchens";
-import KitchensDetailss from "../pages/apps/Organizations/KitchenDetailss";
+
+import KitchensView from "../pages/apps/Organizations/KitchenView";
 
 //import Notification from "../pages/notification/Notification"
 import Notifications from "../pages/uikit/Notifications";
@@ -51,6 +51,10 @@ import SelectedKitchensList from "../pages/apps/Organizations/SelectedKitchens";
 import Profile from "../pages/apps/MyAccount/Profile";
 
 import CollaborationsPage from "../pages/apps/colloborations/Colloborationspage";
+import ListOrgKitchens from "../pages/apps/Organizations/ListOrgKitchens";
+
+
+import CollaborationDetailsPage from "../pages/apps/colloborations/Colloborationsdetails";
 import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
 import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
 import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
@@ -59,7 +63,8 @@ import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
 import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
-import CollaborationDetailsPage from "../pages/apps/colloborations/Colloborationsdetails";
+
+
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -78,7 +83,7 @@ const ForgetPassword2 = React.lazy(
   () => import("../pages/auth2/ForgetPassword2")
 );
 const LockScreen2 = React.lazy(() => import("../pages/auth2/LockScreen2"));
-const SignInSignUp2 = React.lazy(() => import("../pages/auth2/SignInSignUp2"));
+const SignInSignUp2 = React.lazy(() => import("../pages/auth2/SignInSignUp2")); 
 
 // landing
 const Landing = React.lazy(() => import("../pages/landing"));
@@ -384,12 +389,12 @@ const organizationsAppRoutes = {
     {
       path: "/apps/organizations/list-kitchens",
       name: "List of kitcehns",
-      element: <ListKItchens />,
+      element: <ListOrgKitchens />,
     },
     {
       path: "/apps/kitchen/details/:id",
       name: "Kitchen Details",
-      element: <KitchensDetailss />,
+      element: <KitchensView />,
     },
     {
       path:"/apps/colloborated",

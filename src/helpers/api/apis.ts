@@ -178,8 +178,8 @@ export const apiConfig = {
     changeItemStatus: (id: string | undefined) =>
       `/menu-items/allmenuitems/${id}/status`,
 
-    getMenuItemsByKitchen: (id: string | undefined,) =>
-      `menu-items/menu-items/kitchen/${id}`,
+    getMenuItemsByKitchen: (id: string | undefined,role:string) =>
+      `/menu-items/kitchen/${id}?role=${role}`,
   },
 
   designation: {
