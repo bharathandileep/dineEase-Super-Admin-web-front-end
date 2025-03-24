@@ -24,7 +24,7 @@ interface Employee {
   username: string;
   email: string;
   phone_number: string;
-  designation?: { designation_name: string };
+  designation_name?: string;
   employee_status: string;
   profile_picture?: string;
   aadhar_number?: string;
@@ -33,11 +33,11 @@ interface Employee {
   pan_image: string;
   address: {
     street_address: string;
-    city: string;      // Will be changed to city_name when displaying
-    district?: string; // Will be changed to district_name when displaying
-    state?: string;    // Will be changed to state_name when displaying
+    city_name: string;      
+    district_name?: string; 
+    state_name?: string;    
     pincode?: string;
-    country?: string;  // Will be changed to country_name when displaying
+    country_name?: string;  
   };
 }
 
@@ -131,11 +131,11 @@ const OrgEmployeeDetails = () => {
   // Map the address fields to their proper display names
   const addressDisplay = {
     street: orgemployee.address?.street_address || "N/A",
-    city: orgemployee.address?.city || "N/A",
-    district: orgemployee.address?.district || "N/A",
-    state: orgemployee.address?.state || "N/A",
+    city: orgemployee.address?.city_name || "N/A",
+    district: orgemployee.address?.district_name || "N/A",
+    state: orgemployee.address?.state_name || "N/A",
     pincode: orgemployee.address?.pincode || "N/A",
-    country: orgemployee.address?.country || "N/A"
+    country: orgemployee.address?.country_name || "N/A"
   };
 
   return (
@@ -222,7 +222,7 @@ const OrgEmployeeDetails = () => {
                 <div className="d-flex align-items-center mb-2">
                   <Building size={16} className="me-2" />
                   <span>
-                    {orgemployee.designation?.designation_name || "Unknown"}
+                  {orgemployee?.designation_name || "Unknown"}
                   </span>
                 </div>
               </div>

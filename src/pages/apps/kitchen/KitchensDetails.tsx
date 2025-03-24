@@ -178,19 +178,20 @@ function KitchensDetails() {
       setLoading(true);
       try {
         const response = await getMenuItemsByKitchen(id, accessDetails.role);
-        console.log(response);
         if (response.status) {
           const items = response.data.items_id;
-          const transformedData = transformFoodData(items);
-          setGroupedItems(transformedData);
-          const firstCategory = Object.keys(transformedData)[0];
-          if (firstCategory) {
-            setActiveKey(firstCategory);
+          if (items && items.length > 0) {
+            const transformedData = transformFoodData(items);
+            setGroupedItems(transformedData);
+            const firstCategory = Object.keys(transformedData)[0];
+            if (firstCategory) {
+              setActiveKey(firstCategory);
+            }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching menu items:", error);
-        toast.error("Failed to load menu items");
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }

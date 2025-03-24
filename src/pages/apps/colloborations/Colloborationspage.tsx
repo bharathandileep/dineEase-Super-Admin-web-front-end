@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getAllCollaborations } from "../../../server/admin/collab";
-import { Link } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
+import "./Colloborations.scss";
+import { Card, Row, Col, Spinner, Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { LucideHandshake } from "lucide-react";
 
-// Define the structure of a collaboration
 interface Collaboration {
   _id: string;
   organization: {
     _id: string;
-    name: string; 
+    name: string;
     logo: string | null;
   };
   kitchen: {
@@ -16,7 +18,6 @@ interface Collaboration {
     name: string;
     image: string | null;
   };
-  //   status: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,8 +26,8 @@ const CollaborationsPage: React.FC = () => {
   const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Fetch collaborations on component mount
   useEffect(() => {
     const fetchCollaborations = async () => {
       try {
@@ -43,75 +44,168 @@ const CollaborationsPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center">
+        <div className="spinner-border text-success" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-danger">Error: {error}</div>;
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center text-danger">
+        Error: {error}
+      </div>
+    );
   }
 
-  return (
-    <>
-      <PageTitle
-        breadCrumbItems={[
-          { label: "Kitchens", path: "/apps/kitchen/our-menu" },
-          {
-            label: "Our Menu",
-            path: "/apps/kitchen/OurMenu",
-            active: true,
-          },
-        ]}
-        title={"Customers"}
-      />
+  const filteredCollaborations = collaborations.filter(
+    (collab) =>
+      collab.organization.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      collab.kitchen.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
+  return (
+    <React.Fragment>
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="breadcrumb">
+        <ol className="breadcrumb m-2">
+          <li className="breadcrumb-item">
+            <Link to="/apps/colloborated">Colloboration</Link>
+          </li>
+          <li className="breadcrumb-item active" aria-current="page">
+            Colloboration List
+          </li>
+        </ol>
+      </nav>
+
+      {/* Header */}
       <div
         className="mb-3"
         style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
       >
         <div className="d-flex align-items-center justify-content-between">
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
-            Collaborated Kitchens
+          Colloboration List
           </h3>
+          {/* Optional right-aligned content (e.g., a button like EmployeeList) */}
+          {/* Uncomment and adjust if needed */}
+          {/* <Link
+            to="/apps/kitchen/add"
+            className="btn btn-danger waves-effect waves-light"
+          >
+            <i className="mdi mdi-plus-circle me-1"></i> Add New Kitchen
+          </Link> */}
         </div>
       </div>
-      <div className="container-fluid bg-light min-vh-100">
-        <div className="row">
-          {collaborations.length > 0 ? (
-            collaborations.map((collab) => (
-              <div key={collab._id} className="col-md-4 mb-4">
-                <div className="card h-100 shadow-sm">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center mb-3">
-                      {collab.organization.logo && (
-                        <img
-                          src={collab.organization.logo}
-                          alt={`${collab.organization.name} Logo`}
-                          className="img-fluid rounded-circle me-3"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                      )}
-                      <div>
-                        <h2 className="h5 mb-0">{collab.organization.name}</h2>
-                        <p className="text-muted small mb-0">Organization</p>
+
+      {/* Search Component */}
+      <Row>
+        <Col>
+          <Card>
+            <Card.Body>
+              <Row className="justify-content-between">
+                <Col className="col-auto">
+                  <form className="d-flex align-items-center">
+                    <label htmlFor="searchInput" className="visually-hidden">
+                      Search
+                    </label>
+                    <div>
+                      <input
+                        type="search"
+                        className="form-control my-1 my-lg-0"
+                        id="searchInput"
+                        placeholder="Search ..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ minWidth: "200px" }}
+                      />
+                    </div>
+                  </form>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Collaborations Grid */}
+      <Row className="mt-3">
+        {filteredCollaborations.length > 0 ? (
+          filteredCollaborations.map((collab) => (
+            <Col key={collab._id} md={6} lg={4} className="mb-3">
+              <Link
+                to={`/apps/colloborated/details/${collab._id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <div className="card h-100 shadow-sm collaboration-card border-0">
+                  <div className="card-body text-center position-relative">
+                    <div className="d-flex justify-content-center mb-4">
+                      <div className="profile-container">
+                        {/* Decorative rings */}
+                        <div className="profile-ring"></div>
+                        <div className="profile-ring"></div>
+                        <div className="profile-ring"></div>
+
+                        {/* Organization Logo */}
+                        {collab.organization.logo && (
+                          <div className="profile-image left">
+                            <img
+                              src={collab.organization.logo}
+                              alt={`${collab.organization.name} Logo`}
+                            />
+                          </div>
+                        )}
+
+                        {/* Kitchen Image */}
+                        {collab.kitchen.image && (
+                          <div className="profile-image right">
+                            <img
+                              src={collab.kitchen.image}
+                              alt={`${collab.kitchen.name} Image`}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <hr />
-                    <h3 className="h6 mb-2">{collab.kitchen.name}</h3>
-                    <p className="text-muted small mb-2">Kitchen</p>
-                    <p className="small mb-0">
-                      <span className="fw-bold">Created At:</span>{" "}
-                      {new Date(collab.createdAt).toLocaleDateString()}
-                    </p>
+                    <div className="text-center">
+                      <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                        <span className="h3 mb-0 text-black">{collab.kitchen.name}</span>
+                        <span className="text-success"><LucideHandshake /></span>
+                        <span className="h3 mb-0 text-black">{collab.organization.name}</span>
+                      </div>
+                      <p className="text-muted small mb-0">
+                        Established: {new Date(collab.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="card-progress"></div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center">No collaborations found.</p>
-          )}
-        </div>
-      </div>
-    </>
+              </Link>
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <Card>
+              <Card.Body className="text-center">
+                <i
+                  className="mdi mdi-account-off text-muted"
+                  style={{ fontSize: "48px" }}
+                ></i>
+                <h4 className="mt-3">No Collaborations Found</h4>
+                <p className="text-muted">
+                  {searchQuery
+                    ? `No collaborations match your search criteria "${searchQuery}".`
+                    : "There are no collaborations in the system yet."}
+                </p>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+      </Row>
+    </React.Fragment>
   );
 };
 
