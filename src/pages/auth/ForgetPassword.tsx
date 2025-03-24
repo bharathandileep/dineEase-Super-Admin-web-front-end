@@ -137,10 +137,8 @@ const ForgetPassword = () => {
           const emailResponse = await generateForgotPasswordOtp({ 
             email: formData.email! 
           });
-          
-          console.log('Email Response:', emailResponse); // Debug log
-          
-          if (emailResponse.status) { // Adjusted to match API response structure
+              
+          if (emailResponse.status) { 
             setUserEmail(formData.email!);
             setApiSuccess(emailResponse.message || t("OTP sent successfully. Please check your email."));
             setStep('otp');
@@ -182,7 +180,6 @@ const ForgetPassword = () => {
             token: isToken 
           });
           
-          console.log('Password Response:', passwordResponse); // Debug log
           
           if (passwordResponse.status) { 
             setApiSuccess(passwordResponse?.data?.message || t("Password updated successfully!"));

@@ -80,8 +80,6 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({
       }
   
       const data = await response.json();
-      console.log("API response structure:", data); // Check if data.data exists and is an array
-      
       if (!data || !Array.isArray(data.data)) {
         throw new Error("Unexpected API response format");
       }
@@ -106,20 +104,7 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({
       setFoodProducts(foodProductList);
       setFoodProductMap(new Map(foodProductList.map((food) => [food.food_name, food._id])));
     };
-    // const fetchFoodProducts = async () => {
-    //   const foodProductList = await getFoodProducts();
-    //   console.log("Fetched Food Products:", foodProductList);
-  
-    //   setFoodProducts(foodProductList);
-    //   if (Array.isArray(foodProductList)) {
-    //     setFoodProductMap(new Map(foodProductList.map((food) => [food.food_name, food._id])));
-    //   } else {
-    //     console.error("Expected an array for food products, but got:", foodProductList);
-    //   }
-  
-    //   console.log("Food Products State after setting:", foodProducts);
-    // };
-  
+
     fetchEmployees();
     fetchFoodProducts();
   }, []);

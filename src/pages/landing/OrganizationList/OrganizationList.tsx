@@ -35,7 +35,6 @@ const OrganizationList = () => {
           setOrganizations(response.data.organizations);
         } else {
           response = await getUserApprovedOrganizations();
-          console.log(response);
           setOrganizations(response.data.organizations);
         }
         setLoading(false);

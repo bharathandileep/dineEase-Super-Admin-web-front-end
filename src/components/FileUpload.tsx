@@ -6,6 +6,7 @@ interface FileUploadProps {
   onFileSelect: (file: File) => void;
   value?: File;
   error?: string;
+  disabled?: boolean;
 }
 
 export function FileUpload({ onFileSelect, value, error }: FileUploadProps) {

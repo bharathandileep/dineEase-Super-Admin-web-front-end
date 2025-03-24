@@ -37,7 +37,7 @@ function KitchensCategories() {
           search: searchTerm,
           status: statusFilter,
         };
-        console.log("Fetching with Query:", query);
+  
         const response = await kitchensGetAllCategories(query);
         if (response.status) {
           setMenuItems(response.data.categories);
@@ -57,13 +57,11 @@ function KitchensCategories() {
   }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-    console.log("Updating Search Term:", searchValue);
     setSearchTerm(searchValue);
     setCurrentPage(1);
   };
 
   const handleStatusFilterChange = (filterValue: string) => {
-    console.log("Updating Status Filter:", filterValue);
     setStatusFilter(filterValue);
     setCurrentPage(1);
   };

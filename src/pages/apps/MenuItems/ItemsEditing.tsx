@@ -29,7 +29,6 @@ const EditFoodItem = () => {
     const fetchItemDetails = async () => {
       try {
         const response = await getItemById(id);
-        console.log("Item response:", response);
         if (response.status) {
           setItem(response.data);
           setSelectedCategoryId(
@@ -53,7 +52,6 @@ const EditFoodItem = () => {
     const fetchCategories = async () => {
       try {
         const response = await getAllCategories({ page: 1, limit: 100 });
-        console.log("Categories response:", response);
         if (response.status) {
           setCategories(response.data.categories || []);
         } else {
@@ -72,7 +70,6 @@ const EditFoodItem = () => {
       const fetchSubcategories = async () => {
         try {
           const response = await getSubcategoriesByCategory(selectedCategoryId);
-          console.log("Subcategories response:", response);
           if (response && response.status) {
             setSubcategories(response.data || []);
           } else {

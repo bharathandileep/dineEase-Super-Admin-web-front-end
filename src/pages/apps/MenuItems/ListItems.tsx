@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { listItems, deleteItem, changeItemStatus } from "../../../server/admin/items";
+import { listItems, deleteItem } from "../../../server/admin/items";
 import PageTitle from "../../../components/PageTitle";
 
 interface Item {
@@ -15,112 +15,101 @@ interface Item {
   subcategory?: { _id: string; subcategoryName: string };
 }
 
-const FoodItemsList = () => {
+function FoodItemsList() {
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [subcategoryFilter, setSubcategoryFilter] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
-  const isLoadingRef = useRef(false);
+  const loadingRef = useRef(loading);
+  const loadingMoreRef = useRef(loadingMore);
+  const hasMoreRef = useRef(hasMore);
+  const pageRef = useRef(page);
 
-  const fetchItems = async (
-    currentPage: number,
-    isNewSearch: boolean = false,
-    searchQuery: string = ""
-  ) => {
-    if (isLoadingRef.current) {
-      console.log("Fetch skipped: Already loading");
-      return;
-    }
+  useEffect(() => {
+    loadingRef.current = loading;
+    loadingMoreRef.current = loadingMore;
+    hasMoreRef.current = hasMore;
+    pageRef.current = page;
+  }, [loading, loadingMore, hasMore, page]);
 
-    if (isNewSearch) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-    isLoadingRef.current = true;
+  const fetchItems = useCallback(
+    async (currentPage: number, isNewSearch: boolean = false) => {
+      if (
+        loadingRef.current ||
+        loadingMoreRef.current ||
+        (!hasMoreRef.current && !isNewSearch)
+      )
+        return;
 
-    try {
-      const params = {
-        page: currentPage,
-        limit: 4, // Fixed limit of 4 items per page
-        search: searchQuery,
-      };
-      console.log("Fetching items with params:", params);
+      isNewSearch ? setLoading(true) : setLoadingMore(true);
 
-      const response = await listItems(params);
-      if (response.status) {
-        const { items: newItems, pagination } = response.data;
-        console.log("Fetched items:", newItems);
-        console.log("Pagination data:", pagination);
-
-        if (isNewSearch) {
-          setItems(newItems);
+      try {
+        const params = {
+          page: currentPage,
+          limit: 4,
+          search: searchTerm.trim(),
+          category: categoryFilter,
+          subcategory: subcategoryFilter,
+        };
+        const response = await listItems(params);
+        if (response?.status && Array.isArray(response.data?.items)) {
+          const { items: fetchedItems, hasMore } = response.data;
+          setItems((prev) =>
+            isNewSearch ? fetchedItems : [...prev, ...fetchedItems]
+          );
+          setHasMore(hasMore);
+          setPage(currentPage + 1);
         } else {
-          setItems((prev) => {
-            const existingIds = new Set(prev.map((item) => item._id));
-            const uniqueNewItems = newItems.filter(
-              (item: Item) => !existingIds.has(item._id)
-            );
-            console.log("Appending unique items:", uniqueNewItems);
-            return [...prev, ...uniqueNewItems];
-          });
+          toast.error("Failed to fetch items: Invalid response");
+          setHasMore(false);
         }
-
-        setTotalItems(pagination.totalItems);
-        setHasMore(currentPage < pagination.totalPages);
-        setPage(currentPage + 1); // Increment page after successful fetch
-        console.log("Updated page to:", currentPage + 1);
-        console.log("Has more items:", currentPage < pagination.totalPages);
-      } else {
-        toast.error(response.message);
+      } catch (error: any) {
+        toast.error(error.message || "Error fetching items");
         setHasMore(false);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-    } catch (error: any) {
-      console.error("Error fetching items:", error);
-      toast.error(error.message);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-      isLoadingRef.current = false;
-    }
-  };
+    },
+    [searchTerm, categoryFilter, subcategoryFilter]
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      setItems([]);
       setPage(1);
-      fetchItems(1, true, searchTerm);
-    }, 500); // Debounce search by 500ms
+      setHasMore(true);
+      fetchItems(1, true);
+    }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, categoryFilter, subcategoryFilter, fetchItems]);
+
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (
+      scrollTop + clientHeight >= scrollHeight - 10 &&
+      !loadingRef.current &&
+      !loadingMoreRef.current &&
+      hasMoreRef.current
+    ) {
+      fetchItems(pageRef.current);
+    }
+  }, [fetchItems]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (isLoadingRef.current || !hasMore) {
-        console.log("Scroll skipped: Loading or no more items");
-        return;
-      }
-
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
-
-      console.log("Scroll position:", { scrollTop, scrollHeight, clientHeight });
-
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        console.log("Triggering fetch for page:", page);
-        fetchItems(page, false, searchTerm);
-      }
-    };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, page, searchTerm]);
+  }, [handleScroll]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   const handleEdit = (id: string) => {
     navigate(`/apps/menu-item/editing/${id}`);
@@ -133,7 +122,6 @@ const FoodItemsList = () => {
         if (response.status) {
           toast.success("Item deleted successfully!");
           setItems((prevItems) => prevItems.filter((item) => item._id !== id));
-          setTotalItems((prev) => prev - 1);
         } else {
           toast.error(response.message);
         }
@@ -145,7 +133,7 @@ const FoodItemsList = () => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <PageTitle
         breadCrumbItems={[
           { label: "Kitchen", path: "/apps/menu-item/new" },
@@ -172,23 +160,47 @@ const FoodItemsList = () => {
         <Col>
           <Card>
             <Card.Body>
-              <Row className="justify-content-between">
+              <Row className="justify-content-between align-items-center">
                 <Col className="col-auto">
-                  <form className="d-flex align-items-center">
-                    <label htmlFor="inputPassword2" className="visually-hidden">
-                      Search
-                    </label>
-                    <div>
-                      <input
+                  <Form className="d-flex align-items-center gap-2">
+                    <Form.Group>
+                      <Form.Control
                         type="search"
-                        className="form-control my-1 my-lg-0"
-                        id="inputPassword2"
-                        placeholder="Search..."
+                        placeholder="Search by name, description, category, or subcategory..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
+                        style={{ minWidth: "200px" }}
                       />
-                    </div>
-                  </form>
+                    </Form.Group>
+                  </Form>
+                </Col>
+                <Col className="col-auto d-flex gap-2">
+                  <Form.Group>
+                    <Form.Select
+                      value={categoryFilter}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        setCategoryFilter(e.target.value);
+                        setSubcategoryFilter("");
+                      }}
+                      style={{ minWidth: "150px" }}
+                    >
+                      <option value="">All Categories</option>
+                      {/* Add category options here if you fetch them */}
+                    </Form.Select>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Select
+                      value={subcategoryFilter}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setSubcategoryFilter(e.target.value)
+                      }
+                      style={{ minWidth: "150px" }}
+                      disabled={!categoryFilter}
+                    >
+                      <option value="">All Subcategories</option>
+                      {/* Add subcategory options here if you fetch them */}
+                    </Form.Select>
+                  </Form.Group>
                 </Col>
               </Row>
             </Card.Body>
@@ -196,7 +208,7 @@ const FoodItemsList = () => {
         </Col>
       </Row>
 
-      {loading ? (
+      {loading && items.length === 0 ? (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -285,8 +297,8 @@ const FoodItemsList = () => {
                   ></i>
                   <h4 className="mt-3">No Food Items Found</h4>
                   <p className="text-muted">
-                    {searchTerm
-                      ? `No food items match your search criteria "${searchTerm}".`
+                    {searchTerm || categoryFilter || subcategoryFilter
+                      ? "No food items match your search criteria."
                       : "There are no food items in the system yet."}
                   </p>
                   <Button
@@ -307,8 +319,8 @@ const FoodItemsList = () => {
           <Spinner animation="border" size="sm" /> Loading more...
         </div>
       )}
-    </React.Fragment>
+    </>
   );
-};
+}
 
 export default FoodItemsList;

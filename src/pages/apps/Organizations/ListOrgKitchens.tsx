@@ -48,7 +48,7 @@ interface Subcategory {
   category: string;
 }
 
-function ListKitchens() {
+function ListOrgKitchens() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -280,7 +280,7 @@ function ListKitchens() {
           {kitchens.length > 0 ? (
             kitchens.map((item) => (
               <Col key={item._id} md={6} xl={3} className="mb-3">
-                <Link to={`/apps/kitchen/${item.slug}`}>
+                <Link to={`/apps/kitchen/details/${item.slug}`}>
                   <Card className="product-box h-100 shadow-sm">
                     <Card.Body className="d-flex flex-column">
                       <div className="bg-light mb-1">
@@ -366,4 +366,4 @@ function ListKitchens() {
   );
 }
 
-export default ListKitchens;
+export default ListOrgKitchens;

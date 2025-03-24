@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
 
+
 // actions
 import { resetAuth, loginUser, emploginUser } from "../../redux/actions";
 
@@ -18,6 +19,7 @@ import { VerticalForm, FormInput } from "../../components/";
 
 import AuthLayout from "./AuthLayout";
 import { toast } from "react-toastify";
+import { getAccessDetailsFromLocalStorage } from "../../helpers/api/utils";
 
 interface UserData {
   username: string;
@@ -44,6 +46,7 @@ const Login2 = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const userInfo = getAccessDetailsFromLocalStorage();
 
   const { userLoggedIn, user, loading } = useSelector(
     (state: RootState) => state.Auth
@@ -53,18 +56,6 @@ const Login2 = () => {
     dispatch(resetAuth());
   }, [dispatch]);
 
-  // const { loading, userLoggedIn, user, error } = useSelector(
-  //   (state: RootState) => ({
-  //     loading: state.Auth.loading,
-  //     user: state.Auth.user,
-  //     error: state.Auth.error,
-  //     userLoggedIn: state.Auth.userLoggedIn,
-  //   })
-  // );
-
-  /*
-   * form validation schema
-   */
   const schemaResolver = yupResolver(
     yup.object().shape({
       username: yup.string().required(t("Please enter Username")),
@@ -85,7 +76,7 @@ const Login2 = () => {
 
   useEffect(() => {
     if (userLoggedIn && user) {
-      navigate("/");
+      navigate(`/apps/${userInfo.slug}`);
     }
   }, [userLoggedIn, user, navigate]);
 

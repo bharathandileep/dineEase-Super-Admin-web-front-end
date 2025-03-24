@@ -141,7 +141,6 @@ const ManageTickets: React.FC = () => {
 
   const onAddStaff = async (newStaff: Staffs) => {
     try {
-      console.log('New Staff:', newStaff); // Add this line to verify the structure
 
       setStaffs((prevStaffs) => [...prevStaffs, newStaff]);
       setToastMessage(`${newStaff.name??'Unknown Staff'}  has been added successfully!`);    } catch (error:any) {
@@ -159,40 +158,7 @@ const ManageTickets: React.FC = () => {
     setShowUpdateModal(true);
   };
 
-  // const handleDelete = (id: string) => {
-  //   setShowConfirmDelete(id); // Show confirmation box
-  // };
-
-  // const confirmDelete = async () => {
-  //   if (showConfirmDelete) {
-  //     console.log('Deleting Staffs with ID:', showConfirmDelete);
-  //     setDeleteLoading(true);
-      
-  // // Simulate a delay before deleting
-  // setTimeout(async () => {
-  //    try {
-  //     await deleteStaffApi(showConfirmDelete);
-  //     setStaffs(staffs.filter(staffs => staffs._id !== showConfirmDelete));
-  //     setToastMessage("staffs deleted successfully");
-  //     setShowToast(true);
-  //       // setIsProcessing(true);
-  //       // await deleteStaffApi(showConfirmDelete);
-  //       // const response = await fetchStaffsApi(currentPage, itemsPerPage);
-  //       // setStaffs(response.data);
-  //       // setTotalPages(response.pagination.totalPages);
-  //       // setToastMessage('Staff deleted successfully');
-  //     } catch (error:any) {
-  //       console.error('Error deleting staff:', error);
-  //       setToastMessage('Error deleting staff');
-  //       setShowToast(true);
-  //     } finally {
-  //       setIsProcessing(false);
-  //       setShowToast(true);
-  //       setShowConfirmDelete(null); // Hide confirmation box
-  //     }
-  //   },2000)
-  //   }
-  // };
+ 
   const handleDelete = (id: string) => {
     setShowConfirmDelete(id); // Show confirmation box
   };
@@ -202,7 +168,6 @@ const ManageTickets: React.FC = () => {
       const staffToDelete = staffs.find(staff => staff._id === showConfirmDelete);
       const staffName = `${staffToDelete?.name}`;
   
-      console.log('Deleting Staffs with ID:', showConfirmDelete);
       setDeleteLoading(true);
   
       // Simulate a delay before deleting

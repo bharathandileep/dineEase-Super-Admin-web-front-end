@@ -35,8 +35,10 @@ export const AuthAdminCredentials = async (adminCredentials: UserData) => {
       `${apiConfig.admin.login}`,
       adminCredentials
     );
+    toast.success(response.data.message);
     return response.data;
   } catch (error: any) {
+    toast.error(error.response?.data.message);
     console.error("Login Error:", error.response?.data || error.message);
   }
 };
@@ -164,7 +166,8 @@ export const loginUserWithPhone = async (phonenimber: any) => {};
 export const checkUserIspresent = async (userData: any) => {
   try {
     const response = await axiosInstance.post(
-      `${apiConfig.auth.checkUserExistence}`,userData
+      `${apiConfig.auth.checkUserExistence}`,
+      userData
     );
     return response.data;
   } catch (error: any) {
@@ -174,7 +177,8 @@ export const checkUserIspresent = async (userData: any) => {
 export const createNewUser = async (userData: any) => {
   try {
     const response = await axiosInstance.post(
-      `${apiConfig.auth.createUser}`,userData
+      `${apiConfig.auth.createUser}`,
+      userData
     );
     return response.data;
   } catch (error: any) {

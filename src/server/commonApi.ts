@@ -14,18 +14,14 @@ export const commonapi = async (
   };
 
   try {
-    console.log('Making API Request with config:', reqConfig);
     const result = await axios(reqConfig);
     if (result) {
-      console.log('API Call Successful:', result); 
-      console.log('Response Data:', result.data); // Log the response data specifically
       return result;
     } else {
       console.error('API call succeeded but no result was returned.');
       return null;
     }
   } catch (error: any) {
-    console.log(error)
     if (axios.isAxiosError(error)) {
       console.error('API Call Error:', error.response ? error.response.data : error.message);
     } else {

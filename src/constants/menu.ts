@@ -5,7 +5,7 @@ export interface MenuItemTypes {
   label: string;
   isTitle?: boolean;
   icon?: string;
-  access?:any
+  access?: any;
   url?: string;
   badge?: {
     variant: string;
@@ -16,7 +16,7 @@ export interface MenuItemTypes {
   children?: MenuItemTypes[];
 }
 
-const userAccessDetails  = getAccessDetailsFromLocalStorage()
+const userAccessDetails = getAccessDetailsFromLocalStorage();
 
 const MENU_ITEMS: MenuItemTypes[] = [
   {
@@ -24,7 +24,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Dashboard",
     isTitle: false,
     icon: "airplay",
-    access:["Admin","User","Organization","Kitchen","Employee"],
+    access: ["Admin", "User", "Organization", "Kitchen", "Employee"],
     url: `/apps/${userAccessDetails.slug}`,
   },
   {
@@ -32,91 +32,90 @@ const MENU_ITEMS: MenuItemTypes[] = [
     label: "Kitchens",
     isTitle: false,
     icon: "coffee",
-    access:["Admin","User","Organization","Kitchen","Employee"],
+    access: ["Admin", "User", "Organization", "Kitchen", "Employee"],
     children: [
       {
         key: "kitchen-list",
         label: "• List of Kitchens",
         url: "/apps/kitchen/list",
-        access:["Admin"],
+        access: ["Admin"],
         parentKey: "apps-kitchen",
       },
       {
-        key:"List-kitchens", 
-        label:"• List of Kitchens",
-        access:["Organization","Employee"],
-        url:"/apps/organizations/list-kitchens",
-        parentKey:"apps-Organizations",
+        key: "List-kitchens",
+        label: "• List of Kitchens",
+        access: ["Organization", "Employee"],
+        url: "/apps/organizations/list-kitchens",
+        parentKey: "apps-Organizations",
       },
-   
+
       {
-        key:"Kitchen-menu",
-        label:"• Kitchen Menus",
-        access:["Kitchen"],
-        url:"/apps/kitchen/kitchen-menu",
-        parentKey:"apps-kitchen",
+        key: "Kitchen-menu",
+        label: "• Kitchen Menus",
+        access: ["Kitchen"],
+        url: "/apps/kitchen/kitchen-menu",
+        parentKey: "apps-kitchen",
       },
       {
-        key:"requested-kitchen",
-        label:"• Requested Kitchens",
-        access:["Admin"],
-        url:"/apps/kitchen/requested-kitchens",
-        parentKey:"apps-kitchen",
+        key: "requested-kitchen",
+        label: "• Requested Kitchens",
+        access: ["Admin"],
+        url: "/apps/kitchen/requested-kitchens",
+        parentKey: "apps-kitchen",
       },
     ],
   },
-  
+
   {
     key: "apps-Organizations",
     label: "Organizations",
     isTitle: false,
     icon: "command",
-    access:["Admin","User","Organization","Kitchen"],
+    access: ["Admin", "User", "Organization", "Kitchen"],
     children: [
       {
         key: "Organizations-list",
         label: "• List of Organizations",
-        access:["Admin","Kitchen"],
+        access: ["Admin", "Kitchen"],
         url: "/apps/organizations/list",
         parentKey: "apps-Organizations",
       },
       {
         key: "Organization-employadd",
         label: "• Employees",
-        access:["Organization"],
+        access: ["Organization"],
         url: "/apps/organizations/employee/list",
         parentKey: "apps-Organizations",
       },
       {
-        key:"requested-organization",
-        label:"• Requested Organizations",
-        access:["Admin"],
-        url:"/apps/organizations/requested-organizations",
-        parentKey:"apps-Organizations",
+        key: "requested-organization",
+        label: "• Requested Organizations",
+        access: ["Admin"],
+        url: "/apps/organizations/requested-organizations",
+        parentKey: "apps-Organizations",
       },
       {
-        key:"selected-kitchens",
-        label:"• Selected Kitchens",
-        access:["Organization"],
-        url:"/apps/organizations/selected-kitchens",
-        parentKey:"apps-organizations"
-      }
-      
+        key: "selected-kitchens",
+        label: "• Selected Kitchens",
+        access: ["Organization"],
+        url: "/apps/organizations/selected-kitchens",
+        parentKey: "apps-organizations",
+      },
     ],
   },
- 
+
   {
     key: "apps-menu",
     label: "Master",
     isTitle: false,
-    access:["Admin"],
+    access: ["Admin"],
     icon: "slack",
     children: [
       {
         key: "menu-list",
         label: "Menu",
         icon: "archive",
-        access:["Admin"],
+        access: ["Admin"],
         url: "/apps/menu/category",
         parentKey: "apps-menu",
         children: [
@@ -124,14 +123,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
             key: "category",
             label: "• Category",
             url: "/apps/menu/category",
-            access:["Admin"],
+            access: ["Admin"],
             parentKey: "menu-list",
           },
           {
             key: "subcategory",
             label: "• Subcategory",
             url: "/apps/menu/subcategory",
-            access:["Admin"],
+            access: ["Admin"],
             parentKey: "menu-list",
           },
         ],
@@ -179,11 +178,11 @@ const MENU_ITEMS: MenuItemTypes[] = [
         ],
       },
       {
-        key:"apps-menu-items",
-        label:"Menu items",
+        key: "apps-menu-items",
+        label: "Menu items",
         icon: "shopping-bag",
-        parentKey:"apps-menu",
-        url:"/apps/menu-items/list",
+        parentKey: "apps-menu",
+        url: "/apps/menu-items/list",
       },
       {
         key: "apps-employee",
@@ -196,10 +195,18 @@ const MENU_ITEMS: MenuItemTypes[] = [
   {
     key: "apps-Designations",
     label: "Designations",
-    access:["Admin"],
+    access: ["Admin"],
     isTitle: false,
     icon: "trello",
     url: "/apps/designations",
+  },
+  {
+    key: "appp-colloborated-kitchens",
+    label: "Colloborations",
+    icon: "users"  ,
+    access: ["Admin"],
+    url: "/apps/colloborated",
+    parentKey: "apps-organizations",
   },
 ];
 
@@ -571,10 +578,10 @@ const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [
         parentKey: "base-ui",
       },
       {
-        key:"base-ui-allnotification",
-        label:"All-Notifications",
-        url:"/ui/allnotifications",
-        parentKey:"base-ui",
+        key: "base-ui-allnotification",
+        label: "All-Notifications",
+        url: "/ui/allnotifications",
+        parentKey: "base-ui",
       },
       {
         key: "base-ui-offcanvas",

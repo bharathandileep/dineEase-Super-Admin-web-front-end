@@ -15,9 +15,7 @@ import {
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
 import { createEmployee } from "../../../server/admin/employeemanagment";
-
-
-
+import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
@@ -38,6 +36,7 @@ const EmployeeManagement = () => {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
+  const userInfo = getAccessDetailsFromLocalStorage();
 
   const [formData, setFormData] = useState({
     country: "",
@@ -60,7 +59,7 @@ const EmployeeManagement = () => {
 
         // Fetch countries
         await fetchCountries();
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching initial data:", error);
         toast.error(error.message);
       } finally {
@@ -78,7 +77,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setCountries(data.data);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching countries:", error);
     }
   };
@@ -89,7 +88,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setStates(data.data);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching states:", error);
     }
   };
@@ -100,7 +99,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setCities(data.data);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -111,7 +110,7 @@ const EmployeeManagement = () => {
       if (data?.success) {
         setDistricts(data.data);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching districts:", error);
     }
   };
@@ -160,8 +159,8 @@ const EmployeeManagement = () => {
 
       const formDataObj = new FormData();
 
-      formDataObj.append("entity_id", "67a1083b3c9f01a384e9683c");
-      formDataObj.append("entity_type", "admin");
+      formDataObj.append("entity_id", userInfo.id);
+      formDataObj.append("entity_type", userInfo.role);
       formDataObj.append("designation", data.designation);
       formDataObj.append("username", data.username);
       formDataObj.append("email", data.email);
@@ -195,7 +194,7 @@ const EmployeeManagement = () => {
       } else {
         toast.error(response.message || "Failed to add employee.");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error adding employee:", error);
       toast.error(error.message);
     } finally {
@@ -429,7 +428,6 @@ const EmployeeManagement = () => {
 
                   {/* District Selection */}
 
-
                   <Col md={6}>
                     <FormInput
                       name="pincode"
@@ -521,7 +519,7 @@ const EmployeeManagement = () => {
             <Button
               variant="danger"
               className="me-2"
-              onClick={() => navigate("/apps/organizations/employ/list")}
+              onClick={() => navigate("/apps/employee/list")}
             >
               Cancel
             </Button>

@@ -26,7 +26,6 @@ const ItemDetails = () => {
         const response = await getItemById(id);
         if (response.status) {
           setItem(response.data);
-          console.log("Item data:", response.data); // For debugging
         } else {
           toast.error(response.message);
         }

@@ -151,7 +151,7 @@ const OrgEmployeeManagement = () => {
 
     try {
       const formDataObj = new FormData();
-      formDataObj.append("entity_id", userInfo?.orgId);
+      formDataObj.append("entity_id", userInfo.orgId);
       formDataObj.append("entity_type", "Organization");
       formDataObj.append("designation", data.designation);
       formDataObj.append("username", data.username);
