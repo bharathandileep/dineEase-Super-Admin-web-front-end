@@ -174,34 +174,6 @@ function FoodItemsList() {
                     </Form.Group>
                   </Form>
                 </Col>
-                <Col className="col-auto d-flex gap-2">
-                  <Form.Group>
-                    <Form.Select
-                      value={categoryFilter}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setCategoryFilter(e.target.value);
-                        setSubcategoryFilter("");
-                      }}
-                      style={{ minWidth: "150px" }}
-                    >
-                      <option value="">All Categories</option>
-                      {/* Add category options here if you fetch them */}
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Select
-                      value={subcategoryFilter}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                        setSubcategoryFilter(e.target.value)
-                      }
-                      style={{ minWidth: "150px" }}
-                      disabled={!categoryFilter}
-                    >
-                      <option value="">All Subcategories</option>
-                      {/* Add subcategory options here if you fetch them */}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
               </Row>
             </Card.Body>
           </Card>
