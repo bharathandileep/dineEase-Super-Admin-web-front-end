@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
 import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
-
+ 
 interface Kitchen {
   _id: string;
   kitchen_name: string;
@@ -36,18 +36,18 @@ interface Kitchen {
     category: string;
   };
 }
-
+ 
 interface Category {
   _id: string;
   category: string;
 }
-
+ 
 interface Subcategory {
   _id: string;
   subcategoryName: string;
   category: string;
 }
-
+ 
 function ListKitchens() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,19 +61,19 @@ function ListKitchens() {
   const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
   const userInfo = getAccessDetailsFromLocalStorage();
-
+ 
   const loadingRef = useRef(loading);
   const loadingMoreRef = useRef(loadingMore);
   const hasMoreRef = useRef(hasMore);
   const pageRef = useRef(page);
-
+ 
   useEffect(() => {
     loadingRef.current = loading;
     loadingMoreRef.current = loadingMore;
     hasMoreRef.current = hasMore;
     pageRef.current = page;
   }, [loading, loadingMore, hasMore, page]);
-
+ 
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
@@ -86,7 +86,7 @@ function ListKitchens() {
     };
     fetchCategories();
   }, []);
-
+ 
   useEffect(() => {
     const fetchSubcategories = async () => {
       if (!categoryFilter) {
@@ -106,7 +106,7 @@ function ListKitchens() {
     };
     fetchSubcategories();
   }, [categoryFilter]);
-
+ 
   const fetchKitchens = useCallback(
     async (currentPage: number, isNewSearch: boolean = false) => {
       if (
@@ -115,9 +115,9 @@ function ListKitchens() {
         (!hasMoreRef.current && !isNewSearch)
       )
         return;
-
+ 
       isNewSearch ? setLoading(true) : setLoadingMore(true);
-
+ 
       try {
         const params = {
           page: currentPage,
@@ -148,7 +148,7 @@ function ListKitchens() {
     },
     [searchTerm, categoryFilter, subcategoryFilter]
   );
-
+ 
   useEffect(() => {
     const timer = setTimeout(() => {
       setKitchens([]);
@@ -156,10 +156,10 @@ function ListKitchens() {
       setHasMore(true);
       fetchKitchens(1, true);
     }, 300);
-
+ 
     return () => clearTimeout(timer);
   }, [searchTerm, categoryFilter, subcategoryFilter, fetchKitchens]);
-
+ 
   const handleScroll = useCallback(() => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
     if (
@@ -171,16 +171,16 @@ function ListKitchens() {
       fetchKitchens(pageRef.current);
     }
   }, [fetchKitchens]);
-
+ 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
-
+ 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-
+ 
   return (
     <>
       <PageTitle
@@ -190,7 +190,7 @@ function ListKitchens() {
         ]}
         title={"Kitchens"}
       />
-
+ 
       <div
         className="mb-3"
         style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
@@ -207,7 +207,7 @@ function ListKitchens() {
           </Link>
         </div>
       </div>
-
+ 
       <Row>
         <Col>
           <Card>
@@ -267,7 +267,7 @@ function ListKitchens() {
           </Card>
         </Col>
       </Row>
-
+ 
       {loading && kitchens.length === 0 ? (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
@@ -356,7 +356,7 @@ function ListKitchens() {
           )}
         </Row>
       )}
-
+ 
       {loadingMore && (
         <div className="text-center my-4">
           <Spinner animation="border" size="sm" /> Loading more...
@@ -365,5 +365,5 @@ function ListKitchens() {
     </>
   );
 }
-
+ 
 export default ListKitchens;
