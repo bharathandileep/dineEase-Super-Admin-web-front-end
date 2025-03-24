@@ -43,7 +43,6 @@ export default function MenuDetails() {
   const handleSave = async () => {
     setLoading(true);
     setFood(editedFood);
-    console.log(editedFood);
     setIsEditing(false);
     setPreviewUrl(null);
 
@@ -166,12 +165,11 @@ export default function MenuDetails() {
           ...response.data,
           ingredients: response.data.ingredients || [],
           price: response.data.price || null,
-          viewType: response.data.viewType || "both",
+          viewType: response.data.viewType || "Both",
           priceOrganization: response.data.price_organization || 0.0,
           priceUser: response.data.price_user || 0.0,
         });
       } catch (error: any) {
-        console.log(error);
       }
     };
     fetchMenuItemDetails();
@@ -299,18 +297,18 @@ export default function MenuDetails() {
                       <div className="form-check">
                         <input
                           type="checkbox"
-                          id="organization"
-                          checked={editedFood.viewType === "organization"}
+                          id="Organization"
+                          checked={editedFood.viewType === "Organization"}
                           onChange={() =>
                             setEditedFood((prev: any) => ({
                               ...prev,
-                              viewType: "organization",
+                              viewType: "Organization",
                             }))
                           }
                           className="form-check-input"
                         />
                         <label
-                          htmlFor="organization"
+                          htmlFor="Organization"
                           className="form-check-label"
                         >
                           Organization
@@ -319,34 +317,34 @@ export default function MenuDetails() {
                       <div className="form-check">
                         <input
                           type="checkbox"
-                          id="user"
-                          checked={editedFood.viewType === "user"}
+                          id="User"
+                          checked={editedFood.viewType === "User"}
                           onChange={() =>
                             setEditedFood((prev: any) => ({
                               ...prev,
-                              viewType: "user",
+                              viewType: "User",
                             }))
                           }
                           className="form-check-input"
                         />
-                        <label htmlFor="user" className="form-check-label">
+                        <label htmlFor="User" className="form-check-label">
                           User
                         </label>
                       </div>
                       <div className="form-check">
                         <input
                           type="checkbox"
-                          id="both"
-                          checked={editedFood.viewType === "both"}
+                          id="Both"
+                          checked={editedFood.viewType === "Both"}
                           onChange={() =>
                             setEditedFood((prev: any) => ({
                               ...prev,
-                              viewType: "both",
+                              viewType: "Both",
                             }))
                           }
                           className="form-check-input"
                         />
-                        <label htmlFor="both" className="form-check-label">
+                        <label htmlFor="Both" className="form-check-label">
                           Both
                         </label>
                       </div>
@@ -376,7 +374,7 @@ export default function MenuDetails() {
                     <h2 className="fs-5 fw-semibold mb-2">Price</h2>
                     {isEditing ? (
                       <>
-                        {editedFood.viewType === "organization" && (
+                        {editedFood.viewType === "Organization" && (
                           <input
                             type="number"
                             value={editedFood.priceOrganization || ""}
@@ -390,10 +388,10 @@ export default function MenuDetails() {
                             }
                             className="form-control w-auto mb-2"
                             step="0.01"
-                            placeholder="Enter price for organization"
+                            placeholder="Enter price for Organization"
                           />
                         )}
-                        {editedFood.viewType === "user" && (
+                        {editedFood.viewType === "User" && (
                           <input
                             type="number"
                             value={editedFood.priceUser || ""}
@@ -407,10 +405,10 @@ export default function MenuDetails() {
                             }
                             className="form-control w-auto mb-2"
                             step="0.01"
-                            placeholder="Enter price for user"
+                            placeholder="Enter price for User"
                           />
                         )}
-                        {editedFood.viewType === "both" && (
+                        {editedFood.viewType === "Both" && (
                           <>
                             <input
                               type="number"
@@ -447,7 +445,7 @@ export default function MenuDetails() {
                       </>
                     ) : (
                       <>
-                        {editedFood.viewType === "organization" && (
+                        {editedFood.viewType === "Organization" && (
                           <p className="fs-4 fw-bold text-success">
                             {editedFood.priceOrganization
                               ? `$${Number(
@@ -456,14 +454,14 @@ export default function MenuDetails() {
                               : "No price set for organization"}
                           </p>
                         )}
-                        {editedFood.viewType === "user" && (
+                        {editedFood.viewType === "User" && (
                           <p className="fs-4 fw-bold text-success">
                             {editedFood.priceUser
                               ? `$${Number(editedFood.priceUser).toFixed(2)}`
                               : "No price set for user"}
                           </p>
                         )}
-                        {editedFood.viewType === "both" && (
+                        {editedFood.viewType === "Both" && (
                           <>
                             <p className="fs-4 fw-bold text-success">
                               {editedFood.priceOrganization

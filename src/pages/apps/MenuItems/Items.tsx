@@ -53,7 +53,6 @@ const AddFoodItem = () => {
           const response = await getSubcategoriesByCategory(selectedCategoryId);
           if (response.status) {
             setSubcategories(response.data);
-            console.log(response.data);
           } else {
             toast.error(response.message);
           }

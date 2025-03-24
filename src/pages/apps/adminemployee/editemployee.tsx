@@ -45,11 +45,8 @@ const EditEmployee = () => {
     country: "",
     state: "",
     city: "",
-    district: ""
+    district: "",
   });
-  
-  const [addressDataLoaded, setAddressDataLoaded] = useState(false);
-  const [EmpLoading, setEmpLoading] = useState(false);
 
   // Validation Schema
   const schema = yup.object().shape({
@@ -60,7 +57,7 @@ const EditEmployee = () => {
     street_address: yup.string().required("Street address is required"),
     city: yup.string().required("City is required"),
     pincode: yup.string().required("Pincode is required"),
-    district: yup.string().required("district is required"),
+    district: yup.string().required("District is required"),
     state: yup.string().required("State is required"),
     country: yup.string().required("Country is required"),
     aadhar_number: yup.string().required("Aadhaar number is required"),
@@ -75,39 +72,97 @@ const EditEmployee = () => {
     setValue,
   } = useForm({ resolver: yupResolver(schema) });
 
-  // Fetch employee data
+  // Fetch initial data (countries and designations)
   useEffect(() => {
-    const fetchEmployeeData = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
       try {
-        if (id) {
-          const response = await getEmployeeById(id);
-          if (response.status) {
-            setEmployee(response.data);
-            if (response.data.profile_picture) {
-              setImagePreview(response.data.profile_picture);
+        // Fetch designations
+        const designationResponse = await getAllDesignations({ page: 1, limit: 100 });
+        if (designationResponse.status) {
+          setDesignations(designationResponse.data.designations);
+        } else {
+          toast.error("Failed to load designations.");
+        }
+
+        // Fetch countries
+        const countryResponse = await getAllCountries();
+        if (countryResponse?.success) {
+          setCountries(countryResponse.data);
+        } else {
+          toast.error("Failed to load countries.");
+        }
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+        toast.error("An error occurred while loading initial data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, []);
+
+  // Fetch employee data and populate form
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      if (!id) {
+        toast.error("Invalid employee ID.");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await getEmployeeById(id);
+        if (response.status) {
+          const empData = response.data;
+          setEmployee(empData);
+
+          // Set basic fields
+          setValue("username", empData.username || "");
+          setValue("email", empData.email || "");
+          setValue("phone_number", empData.phone_number || "");
+          setValue("designation", empData.designation_id || empData.designation_id || "");
+          setValue("aadhar_number", empData.aadhar_number || "");
+          setValue("pan_number", empData.pan_number || "");
+
+          // Set image previews
+          if (empData.profile_picture) setImagePreview(empData.profile_picture);
+          if (empData.aadhar_image) setAadharImagePreview(empData.aadhar_image);
+          if (empData.pan_image) setPanImagePreview(empData.pan_image);
+
+          // Handle address fields
+          if (empData.address) {
+            setValue("street_address", empData.address.street_address || "");
+            setValue("pincode", empData.address.pincode || "");
+
+            // Use IDs from the address object (assuming getEmployeeById returns IDs)
+            const countryId = empData.address.country_id || "";
+            const stateId = empData.address.state_id || "";
+            const cityId = empData.address.city_id || "";
+            const districtId = empData.address.district_id || "";
+
+            setFormData({
+              country: countryId,
+              state: stateId,
+              city: cityId,
+              district: districtId,
+            });
+
+            // Set form values with IDs
+            setValue("country", countryId);
+            if (countryId) {
+              await fetchStates(countryId);
+              setValue("state", stateId);
             }
-            if (response.data.aadhar_image) {
-              setAadharImagePreview(response.data.aadhar_image);
+            if (stateId) {
+              await fetchCities(stateId);
+              await fetchDistricts(stateId);
+              setValue("city", cityId);
+              setValue("district", districtId);
             }
-            if (response.data.pan_image) {
-              setPanImagePreview(response.data.pan_image);
-            }
-            
-            // Set formData for address dropdowns
-            if (response.data.address) {
-              setFormData({
-                country: response.data.address.country || "",
-                state: response.data.address.state || "",
-                city: response.data.address.city || "",
-                district: response.data.address.district || ""
-              });
-            }
-          } else {
-            toast.error("Failed to load employee data.");
           }
         } else {
-          toast.error("Invalid employee ID.");
+          toast.error("Failed to load employee data.");
         }
       } catch (error) {
         console.error("Error fetching employee:", error);
@@ -117,90 +172,12 @@ const EditEmployee = () => {
       }
     };
     fetchEmployeeData();
-  }, [id]);
-
-  // Fetch designations and countries on component mount
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        const response = await getAllDesignations({page:1,limit:100});
-        if (response.status) {
-          setDesignations(response.data.designations);
-        } else {
-          toast.error("Failed to load designations.");
-        }
-        
-        // Fetch countries
-        await fetchCountries();
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-        toast.error("An error occurred while loading initial data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchInitialData();
-  }, []);
-
-  // Load address data and set form values when employee and designations are available
-  useEffect(() => {
-    if (employee && designations.length > 0) {
-      setValue("username", employee.username);
-      setValue("email", employee.email);
-      setValue("phone_number", employee.phone_number);
-      // Set the designation value using the _id from the employee data
-      setValue("designation", employee.designation?._id || employee.designation);
-      
-      if (employee.address) {
-        setValue("street_address", employee.address.street_address || "");
-        setValue("city", employee.address.city || "");
-        setValue("district", employee.address.district || "");
-        setValue("pincode", employee.address.pincode || "");
-      }
-      setValue("aadhar_number", employee.aadhar_number || "");
-      setValue("pan_number", employee.pan_number || "");
-
-      // Load address data
-      const loadAddressData = async () => {
-        if (!addressDataLoaded) {
-          setAddressDataLoaded(true);
-          try {
-            if (employee.address.country) {
-              await fetchStates(employee.address.country);
-              setValue("country", employee.address.country);
-            }
-            if (employee.address.state) {
-              await fetchCities(employee.address.state);
-              await fetchDistricts(employee.address.state);
-              setValue("state", employee.address.state);
-            }
-          } catch (error) {
-            console.error("Error loading address data:", error);
-            toast.error("Failed to load address details.");
-          }
-        }
-      };
-      loadAddressData();
-    }
-  }, [employee, designations, setValue, addressDataLoaded]);
+  }, [id, setValue]);
 
   // Location data fetching functions
-  const fetchCountries = async () => {
+  const fetchStates = async (countryId: string) => {
     try {
-      const data = await getAllCountries(); 
-      if (data?.success) {
-        setCountries(data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching countries:", error);
-    }
-  };
-  
-  const fetchStates = async (countryName: string) => {
-    try {
-      const data = await getStatesByCountry(countryName); 
+      const data = await getStatesByCountry(countryId);
       if (data?.success) {
         setStates(data.data);
       }
@@ -208,10 +185,10 @@ const EditEmployee = () => {
       console.error("Error fetching states:", error);
     }
   };
-  
-  const fetchCities = async (stateName: string) => {
+
+  const fetchCities = async (stateId: string) => {
     try {
-      const data = await getCitiesByState(stateName);
+      const data = await getCitiesByState(stateId);
       if (data?.success) {
         setCities(data.data);
       }
@@ -219,7 +196,7 @@ const EditEmployee = () => {
       console.error("Error fetching cities:", error);
     }
   };
-  
+
   const fetchDistricts = async (stateId: string) => {
     try {
       const data = await getDistrictsByState(stateId);
@@ -240,17 +217,24 @@ const EditEmployee = () => {
     setValue(name, value);
 
     if (name === "country") {
-      await fetchStates(value);
+      setStates([]);
+      setCities([]);
+      setDistricts([]);
       setFormData((prev) => ({ ...prev, state: "", city: "", district: "" }));
       setValue("state", "");
       setValue("city", "");
       setValue("district", "");
+      if (value) await fetchStates(value);
     } else if (name === "state") {
-      await fetchCities(value);
-      await fetchDistricts(value);
+      setCities([]);
+      setDistricts([]);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
       setValue("city", "");
       setValue("district", "");
+      if (value) {
+        await fetchCities(value);
+        await fetchDistricts(value);
+      }
     }
   };
 
@@ -258,38 +242,32 @@ const EditEmployee = () => {
   const onSubmit = async (data: any) => {
     try {
       setAdminEmpLoading(true);
-      const formData = new FormData();
+      const formDataToSubmit = new FormData();
 
-      formData.append("entity_id", "67a1083b3c9f01a384e9683c");
-      formData.append("entity_type", "admin");
-      formData.append("designation", data.designation);
-      formData.append("username", data.username);
-      formData.append("email", data.email);
-      formData.append("phone_number", data.phone_number);
-      formData.append("role", "Employee");
-      formData.append("employee_status", "Active");
-      formData.append("aadhar_number", data.aadhar_number);
-      formData.append("pan_number", data.pan_number);
+      formDataToSubmit.append("entity_id", "67a1083b3c9f01a384e9683c");
+      formDataToSubmit.append("entity_type", "admin");
+      formDataToSubmit.append("designation", data.designation);
+      formDataToSubmit.append("username", data.username);
+      formDataToSubmit.append("email", data.email);
+      formDataToSubmit.append("phone_number", data.phone_number);
+      formDataToSubmit.append("role", "Employee");
+      formDataToSubmit.append("employee_status", "Active");
+      formDataToSubmit.append("aadhar_number", data.aadhar_number);
+      formDataToSubmit.append("pan_number", data.pan_number);
 
-      formData.append("street_address", data.street_address);
-      formData.append("city", data.city);
-      formData.append("district", data.district);
-      formData.append("pincode", data.pincode);
-      formData.append("state", data.state);
-      formData.append("country", data.country);
+      formDataToSubmit.append("street_address", data.street_address);
+      formDataToSubmit.append("city", data.city);
+      formDataToSubmit.append("district", data.district);
+      formDataToSubmit.append("pincode", data.pincode);
+      formDataToSubmit.append("state", data.state);
+      formDataToSubmit.append("country", data.country);
 
-      if (profileImage) {
-        formData.append("profile_picture", profileImage);
-      }
-      if (aadharImage) {
-        formData.append("aadhar_image", aadharImage);
-      }
-      if (panImage) {
-        formData.append("pan_image", panImage);
-      }
+      if (profileImage) formDataToSubmit.append("profile_picture", profileImage);
+      if (aadharImage) formDataToSubmit.append("aadhar_image", aadharImage);
+      if (panImage) formDataToSubmit.append("pan_image", panImage);
 
       if (id) {
-        const response = await updateEmployee(id, formData);
+        const response = await updateEmployee(id, formDataToSubmit);
         if (response.status) {
           toast.success("Employee updated successfully!");
           navigate("/apps/employee/list");
@@ -307,13 +285,12 @@ const EditEmployee = () => {
     }
   };
 
-  // Handle file upload
+  // Handle file uploads
   const handleFileUpload = (files: File[]) => {
     if (files.length > 0) {
       const file = files[0];
       setProfileImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -321,8 +298,7 @@ const EditEmployee = () => {
     if (files.length > 0) {
       const file = files[0];
       setAadharImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setAadharImagePreview(previewUrl);
+      setAadharImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -330,8 +306,7 @@ const EditEmployee = () => {
     if (files.length > 0) {
       const file = files[0];
       setPanImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setPanImagePreview(previewUrl);
+      setPanImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -390,11 +365,8 @@ const EditEmployee = () => {
                   type="select"
                 >
                   <option value="">Select Designation</option>
-                  {designations?.map((designation) => (
-                    <option
-                      key={designation._id}
-                      value={designation._id}
-                    >
+                  {designations.map((designation) => (
+                    <option key={designation._id} value={designation._id}>
                       {designation.designation_name}
                     </option>
                   ))}
@@ -450,7 +422,6 @@ const EditEmployee = () => {
                       control={control}
                     />
                   </Col>
-                  
                   {/* Country Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -460,16 +431,11 @@ const EditEmployee = () => {
                         name="country"
                         value={formData.country}
                         onChange={handleChange}
-                        className={`form-control ${
-                          errors.country ? "is-invalid" : ""
-                        }`}
+                        className={`form-control ${errors.country ? "is-invalid" : ""}`}
                       >
                         <option value="">Select Country</option>
                         {countries.map((country) => (
-                          <option 
-                            key={country._id} 
-                            value={country.id}
-                          >
+                          <option key={country._id} value={country.id}>
                             {country.name}
                           </option>
                         ))}
@@ -479,7 +445,6 @@ const EditEmployee = () => {
                       )}
                     </div>
                   </Col>
-                  
                   {/* State Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -489,17 +454,12 @@ const EditEmployee = () => {
                         name="state"
                         value={formData.state}
                         onChange={handleChange}
-                        className={`form-control ${
-                          errors.state ? "is-invalid" : ""
-                        }`}
+                        className={`form-control ${errors.state ? "is-invalid" : ""}`}
                         disabled={!formData.country}
                       >
                         <option value="">Select State</option>
                         {states.map((state) => (
-                          <option 
-                            key={state._id} 
-                            value={state.id}
-                          >
+                          <option key={state._id} value={state.id}>
                             {state.name}
                           </option>
                         ))}
@@ -509,37 +469,6 @@ const EditEmployee = () => {
                       )}
                     </div>
                   </Col>
-                  
-                  {/* City Selection */}
-                  <Col md={6}>
-                    <div className="mb-3">
-                      <label className="form-label">City</label>
-                      <select
-                        {...register("city")}
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className={`form-control ${
-                          errors.city ? "is-invalid" : ""
-                        }`}
-                        disabled={!formData.state}
-                      >
-                        <option value="">Select City</option>
-                        {cities.map((city) => (
-                          <option 
-                            key={city._id} 
-                            value={city.id}
-                          >
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.city && (
-                        <div className="invalid-feedback">{errors.city.message}</div>
-                      )}
-                    </div>
-                  </Col>
-                  
                   {/* District Selection */}
                   <Col md={6}>
                     <div className="mb-3">
@@ -549,17 +478,12 @@ const EditEmployee = () => {
                         name="district"
                         value={formData.district}
                         onChange={handleChange}
-                        className={`form-control ${
-                          errors.district ? "is-invalid" : ""
-                        }`}
+                        className={`form-control ${errors.district ? "is-invalid" : ""}`}
                         disabled={!formData.state}
                       >
                         <option value="">Select District</option>
                         {districts.map((district) => (
-                          <option 
-                            key={district._id} 
-                            value={district.id}
-                          >
+                          <option key={district._id} value={district.id}>
                             {district.name}
                           </option>
                         ))}
@@ -569,7 +493,30 @@ const EditEmployee = () => {
                       )}
                     </div>
                   </Col>
-                  
+                  {/* City Selection */}
+                  <Col md={6}>
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <select
+                        {...register("city")}
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`form-control ${errors.city ? "is-invalid" : ""}`}
+                        disabled={!formData.state}
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city) => (
+                          <option key={city._id} value={city.id}>
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city && (
+                        <div className="invalid-feedback">{errors.city.message}</div>
+                      )}
+                    </div>
+                  </Col>
                   <Col md={6}>
                     <FormInput
                       name="pincode"
@@ -586,6 +533,8 @@ const EditEmployee = () => {
             </Card>
           </Col>
         </Row>
+
+        {/* Identification Details */}
         <Row>
           <Col lg={12}>
             <Card className="mt-3">

@@ -21,7 +21,7 @@ export const getOrgEmployeeById = async (id: string | undefined) => {
     const response = await axiosInstance.get(apiConfig.orgemployee.getOrgEmployeeById(id));
     const Employee = response.data;
 
-    // Extract address information from the organization employee data
+
     const address = Employee.address || {};
 
     return {

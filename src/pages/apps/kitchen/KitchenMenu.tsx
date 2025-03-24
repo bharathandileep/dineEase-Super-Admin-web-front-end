@@ -66,7 +66,6 @@ function OurMenu() {
   }, [isRemoved]);
 
   const handleEdit = (itemId: string) => {
-    console.log("Edit item:", itemId);
   };
 
   const handleDelete = async (itemId: string) => {
