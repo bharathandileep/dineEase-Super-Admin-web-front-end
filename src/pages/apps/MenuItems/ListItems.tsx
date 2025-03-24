@@ -166,7 +166,7 @@ function FoodItemsList() {
                     <Form.Group>
                       <Form.Control
                         type="search"
-                        placeholder="Search by name, description, category, or subcategory..."
+                        placeholder="Search..."
                         value={searchTerm}
                         onChange={handleSearchChange}
                         style={{ minWidth: "200px" }}

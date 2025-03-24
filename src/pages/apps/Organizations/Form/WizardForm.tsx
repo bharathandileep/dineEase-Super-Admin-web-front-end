@@ -392,16 +392,16 @@ export function WizardForm({ initialData }: WizardFormProps) {
           toast.error(catResponse.message);
         }
   
-        // Fetch countries
+    
         await fetchCountries();
   
         if (id) {
-          // Fetch organization details
+     
           const response = await getOrgDetails(id);
           const orgData = response.data;
           console.log("Full Org Data:", JSON.stringify(orgData, null, 2));
   
-          // Extract category and subcategory IDs with flexible handling
+     
           const initialCategory =
             orgData?.category?._id ||
             (typeof orgData?.category === "string" ? orgData.category : "") ||
@@ -413,7 +413,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
           console.log("Initial Category:", initialCategory);
           console.log("Initial Subcategory:", initialSubcategory);
   
-          // Set form data
+      
           setFormData({
             ...initialFormData,
             organizationName: orgData?.organizationName || "",
@@ -446,14 +446,13 @@ export function WizardForm({ initialData }: WizardFormProps) {
             subcategoryName: initialSubcategory,
           });
   
-          // Fetch subcategories if category exists
+        
           if (initialCategory) {
             setSelectedCategoryId(initialCategory);
             const subcatResponse = await orgGetSubcategoriesByCategory(initialCategory);
             if (subcatResponse.status) {
               const subcatData = subcatResponse.data;
               setSubcategories(subcatData);
-              console.log("Subcategories after fetch:", subcatData);
               console.log("Subcategory IDs in fetched data:", subcatData.map((sub: { _id: any; }) => sub._id));
   
               const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === initialSubcategory);
@@ -476,7 +475,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
             setSubcategories([]);
           }
   
-          // Fetch address-related data
+    
           if (orgData?.addresses?.[0]?.country_id) {
             await fetchStates(orgData.addresses[0].country_id);
           }

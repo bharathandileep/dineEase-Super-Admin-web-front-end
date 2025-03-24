@@ -48,7 +48,7 @@ const LockScreen2 = () => {
    * handle form submission
    */
   const onSubmit = (formData: UserData) => {
-    console.log(formData);
+
   };
 
   return (

@@ -14,7 +14,7 @@ export const getAllDesignations = async (query: any) => {
 };
 
 
-// ✅ Get a single designation by ID
+
 export const getDesignationById = async (id: string) => {
   try {
     const response = await axiosInstance.get(apiConfig.designation.getDesignationById(id));
@@ -25,7 +25,7 @@ export const getDesignationById = async (id: string) => {
   }
 };
 
-// ✅ Create a new designation
+
 export const createDesignation = async (data: { designation_name: string; created_by: string }) => {
   try {
     const response = await axiosInstance.post(apiConfig.designation.createDesignation, data);
@@ -36,7 +36,7 @@ export const createDesignation = async (data: { designation_name: string; create
   }
 };
 
-// ✅ Update designation details
+
 export const updateDesignation = async (id: string, data: any) => {
   try {
     const response = await axiosInstance.put(apiConfig.designation.updateDesignation(id), data);
@@ -47,7 +47,7 @@ export const updateDesignation = async (id: string, data: any) => {
   }
 };
 
-// ✅ Toggle designation status (Activate/Deactivate)
+
 export const toggleDesignationStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.patch(apiConfig.designation.toggleDesignationStatus(id));
@@ -58,7 +58,7 @@ export const toggleDesignationStatus = async (id: string | undefined) => {
   }
 };
 
-// ✅ Delete a designation
+
 export const deleteDesignation = async (id: string) => {
   try {
     const response = await axiosInstance.delete(apiConfig.designation.deleteDesignation(id));

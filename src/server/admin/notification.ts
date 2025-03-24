@@ -9,7 +9,7 @@ export const generateKitchenNotification = async (userId: string | undefined, ki
             `${apiConfig.notification.generateKitchenNotification}?userId=${userId}&kitchenName=${encodeURIComponent(kitchenName || '')}`
           );
       
-      console.log("Notification generated successfully");
+
       return response.data;
     } catch (error: any) {
       console.log("error", error.response?.data || error.message);
