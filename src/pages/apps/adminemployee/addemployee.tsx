@@ -45,7 +45,6 @@ const EmployeeManagement = () => {
     district: "",
   });
 
-  // Fetch designations and countries on component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -70,7 +69,6 @@ const EmployeeManagement = () => {
     fetchInitialData();
   }, []);
 
-  // Location data fetching functions
   const fetchCountries = async () => {
     try {
       const data = await getAllCountries();
@@ -115,7 +113,6 @@ const EmployeeManagement = () => {
     }
   };
 
-  // Handle location selection changes
   const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -279,8 +276,6 @@ const EmployeeManagement = () => {
               </Card.Body>
             </Card>
           </Col>
-
-          {/* Right Column - Profile Picture Upload */}
           <Col lg={6}>
             <Card>
               <Card.Body className="text-center">
@@ -290,20 +285,10 @@ const EmployeeManagement = () => {
                     handleFileUpload(Array.from(files), setProfileImage)
                   }
                 />
-                {profileImage && (
-                  <Image
-                    src={URL.createObjectURL(profileImage)}
-                    alt="Profile Preview"
-                    className="mt-3"
-                    style={{ maxWidth: "100%", maxHeight: "200px" }}
-                  />
-                )}
               </Card.Body>
             </Card>
           </Col>
         </Row>
-
-        {/* Address Information */}
         <Row>
           <Col lg={12}>
             <Card className="mt-3">
@@ -471,14 +456,6 @@ const EmployeeManagement = () => {
                           handleFileUpload(Array.from(files), setAadharImage)
                         }
                       />
-                      {aadharImage && (
-                        <Image
-                          src={URL.createObjectURL(aadharImage)}
-                          alt="Aadhaar Preview"
-                          className="mt-3"
-                          style={{ maxWidth: "100%", maxHeight: "200px" }}
-                        />
-                      )}
                     </div>
                   </Col>
                   <Col md={6}>
@@ -498,14 +475,6 @@ const EmployeeManagement = () => {
                           handleFileUpload(Array.from(files), setPanImage)
                         }
                       />
-                      {panImage && (
-                        <Image
-                          src={URL.createObjectURL(panImage)}
-                          alt="PAN Preview"
-                          className="mt-3"
-                          style={{ maxWidth: "100%", maxHeight: "200px" }}
-                        />
-                      )}
                     </div>
                   </Col>
                 </Row>
