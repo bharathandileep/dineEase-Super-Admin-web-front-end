@@ -71,7 +71,7 @@ const CollaborationsPage: React.FC = () => {
                       <p className="text-muted small mb-0">Organization</p>
                     </div>
                   </div>
-                  <hr />
+                  <hr/>
                   <h3 className="h6 mb-2">{collab.kitchen.name}</h3>
                   <p className="text-muted small mb-2">Kitchen</p>
                   {/* <p className="small mb-1">
@@ -91,5 +91,4 @@ const CollaborationsPage: React.FC = () => {
     </div>
   );
 };
-
 export default CollaborationsPage;

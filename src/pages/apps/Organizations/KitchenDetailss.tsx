@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -34,7 +36,22 @@ interface MenuItem {
     isAvailable: boolean;
     custom_image: string;
     reviews_id: any[];
+    category: {
+      _id: string;
+      category: string;
+    };
+    subcategory: {
+      _id: string;
+      subcategoryName: string;
+    };
   };
+  item_name: string;
+  description: string;
+  custom_image: string;
+  ingredients: string[];
+  reviews_id: { comment: string; rating: number }[];
+  price_organization?: string;
+  price_user?: string;
 }
 
 interface CartItem extends MenuItem {
@@ -106,8 +123,6 @@ function KitchensDetailss() {
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
-  const [collabError, setCollabError] = useState<string | null>(null);
-  const [collabSuccess, setCollabSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
@@ -129,62 +144,46 @@ function KitchensDetailss() {
     }
   };
 
-  // Enhanced collaboration function
   const handleSelectKitchen = async () => {
-    // Reset any previous collab states
-    setCollabError(null);
-    setCollabSuccess(false);
-    
     const accessDetails = getAccessDetailsFromLocalStorage();
     const organization_id = accessDetails?.orgId;
-    
-    // Validate required data
+  
     if (!kitchen_id) {
-      setCollabError("Kitchen ID is missing.");
       toast.error("Kitchen ID is missing.");
       return;
     }
-    
+  
     if (!organization_id) {
-      setCollabError("Organization ID is missing. Please make sure you're logged in.");
       toast.error("Organization ID is missing. Please make sure you're logged in.");
       return;
     }
-
-    // Set loading state
+  
     setIsSelecting(true);
-    
+  
     try {
       const response = await collaborateKitchen(organization_id, kitchen_id);
-      
+  
       if (response) {
         if (response.collaboration) {
-          setCollabSuccess(true);
-          toast.success(response.message || "Kitchen selected successfully!");
-          
-          // Ask user if they want to navigate to selected kitchens page
-          const viewNow = window.confirm(
-            "Kitchen selected successfully! Do you want to view your selected kitchens now?"
-          );
-          
-          if (viewNow) {
-            navigate("/apps/organizations/selected-kitchens");
-          }
+          // Success toast with green background
+          toast.success(response.message || "Kitchen selected successfully!", {
+            style: { backgroundColor: '#4caf50', color: '#fff' }, // Green background for success
+          });
+  
+          // Navigate to the selected kitchens page after successful collaboration
+          navigate("/apps/organizations/selected-kitchens");
         } else {
-          setCollabError(response.message || "Failed to select kitchen.");
           toast.error(response.message || "Failed to select kitchen.");
         }
       } else {
-        setCollabError("Received an invalid response from the server.");
         toast.error("Received an invalid response from the server.");
       }
     } catch (error: any) {
       console.error("Error selecting kitchen:", error);
-      
+  
       const errorMessage = error.message || "An error occurred while selecting the kitchen.";
-      setCollabError(errorMessage);
       toast.error(errorMessage);
-      
+  
       if (errorMessage.includes("already exists")) {
         toast.info("This kitchen is already in your selected kitchens list.");
       }
@@ -192,7 +191,8 @@ function KitchensDetailss() {
       setIsSelecting(false);
     }
   };
-   const onEdit = () => {
+
+  const onEdit = () => {
     navigate(`/apps/kitchen/edit/${kitchen_id}`);
   };
 
@@ -222,8 +222,9 @@ function KitchensDetailss() {
 
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
-      const categoryName = item.category?.category || "Allitems";
-      const subcategoryName = item.subcategory?.subcategoryName || "Allitems";
+      // Extract category and subcategory from the nested item_id structure
+      const categoryName = item.item_id?.category?.category || "Allitems";
+      const subcategoryName = item.item_id?.subcategory?.subcategoryName || "Allitems";
 
       if (!acc[categoryName]) {
         acc[categoryName] = {};
@@ -233,11 +234,12 @@ function KitchensDetailss() {
         acc[categoryName][subcategoryName] = [];
       }
 
+      // Push the item data into the appropriate category/subcategory
       acc[categoryName][subcategoryName].push({
         item_name: item.item_name,
         description: item.description,
         custom_image: item.custom_image,
-        item_price: item.item_price || 0,
+        item_price: parseFloat(item.price_organization || item.price_user || 0),
         ingredients: item.ingredients || [],
         reviews_id: item.reviews_id || [],
       });
@@ -253,9 +255,15 @@ function KitchensDetailss() {
       setLoading(true);
       try {
         const response = await getMenuItemsByKitchen(kitchen_id);
+        console.log("API Response:", response); // Log the full response
+        
         if (response.data && response.data.items_id) {
           const items = response.data.items_id;
+          console.log("Items to transform:", items); // Log items before transformation
+          
           const transformedData = transformFoodData(items);
+          console.log("Transformed data:", transformedData); // Log after transformation
+          
           setGroupedItems(transformedData);
 
           const firstCategory = Object.keys(transformedData)[0];
@@ -320,25 +328,6 @@ function KitchensDetailss() {
           </li>
         </ol>
       </nav>
-      
-      {/* Show collaboration success/error messages if any */}
-      {collabSuccess && (
-        <div className="alert alert-success alert-dismissible fade show mb-3" role="alert">
-          Kitchen collaboration request sent successfully!
-          <button type="button" className="btn-close" 
-            onClick={() => setCollabSuccess(false)} 
-            aria-label="Close"></button>
-        </div>
-      )}
-      
-      {collabError && (
-        <div className="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-          {collabError}
-          <button type="button" className="btn-close" 
-            onClick={() => setCollabError(null)} 
-            aria-label="Close"></button>
-        </div>
-      )}
       
       <div
         className="mb-4 position-relative overflow-hidden"
@@ -470,7 +459,6 @@ function KitchensDetailss() {
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
             <div className="d-flex gap-2">
-              {/* Collab Kitchen Button */}
               <Button
                 variant="primary"
                 className="d-flex align-items-center gap-1 px-3 py-1"
@@ -481,17 +469,12 @@ function KitchensDetailss() {
                   height: "35px",
                 }}
                 onClick={handleSelectKitchen}
-                disabled={isSelecting || collabSuccess}
+                disabled={isSelecting}
               >
                 {isSelecting ? (
                   <>
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     <span className="ms-1">Processing...</span>
-                  </>
-                ) : collabSuccess ? (
-                  <>
-                    <i className="mdi mdi-check-circle"></i>
-                    Collaboration Sent
                   </>
                 ) : (
                   <>
@@ -505,7 +488,6 @@ function KitchensDetailss() {
         </Row>
       </div>
       
-      {/* Rest of your component */}
       <Row className="mb-4 g-3">
         <Col md={6}>
           <Card className="h-100 shadow-sm">
@@ -610,224 +592,35 @@ function KitchensDetailss() {
         </Col>
       </Row>
       
-      {Object.keys(groupedItems).length !== 0 ? (
-        <Card className="shadow-sm mb-4">
-          <Card.Body>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h4 className="mb-0">Choose Menu</h4>
-              <Button
-                variant="light"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "bg-success",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
-              >
-                Our menu
-              </Button>
-            </div>
+      <Card className="shadow-sm mb-4">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="mb-0">Our Menu</h4>
+            <Button
+              variant="light"
+              className="d-flex align-items-center gap-1 px-3 py-1"
+              style={{
+                backgroundColor: "bg-success",
+                border: "none",
+                fontSize: "0.9rem",
+                height: "35px",
+              }}
+              onClick={() => navigate(`/apps/kitchen/kitchen-menu`)}
+            >
+              Our menu
+            </Button>
+          </div>
 
-            {loading ? (
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ height: "100px" }}
-              >
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
+          {loading ? (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "100px" }}
+            >
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
               </div>
-            ) : (
-              <Tabs
-                activeKey={activeKey}
-                onSelect={(k: any) => setActiveKey(k)}
-              >
-                {Object.keys(groupedItems).length === 0 ? (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      fontSize: "18px",
-                      color: "#666",
-                    }}
-                  >
-                    No menus are chosen.
-                  </div>
-                ) : (
-                  Object.entries(groupedItems).map(
-                    ([category, subcategories]) => (
-                      <Tab eventKey={category} title={category} key={category}>
-                        <Accordion>
-                          {Object.entries(subcategories).map(
-                            ([subcategory, items]) => (
-                              <Accordion.Item
-                                key={subcategory}
-                                eventKey={subcategory}
-                              >
-                                <Accordion.Header>
-                                  {subcategory}
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                  {items.length === 0 ? (
-                                    <div
-                                      style={{
-                                        textAlign: "center",
-                                        fontSize: "16px",
-                                        color: "#888",
-                                      }}
-                                    >
-                                      No menus are chosen.
-                                    </div>
-                                  ) : (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        gap: "15px",
-                                      }}
-                                    >
-                                      {items.map((item, idx) => (
-                                        <div
-                                          key={idx}
-                                          style={{
-                                            flex: "1 1 300px",
-                                            maxWidth: "300px",
-                                            border: "1px solid #ddd",
-                                            borderRadius: "8px",
-                                            padding: "15px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            textAlign: "center",
-                                            boxShadow:
-                                              "0 4px 8px rgba(0, 0, 0, 0.1)",
-                                            backgroundColor: "#fff",
-                                          }}
-                                        >
-                                          <div
-                                            style={{
-                                              width: "150px",
-                                              height: "150px",
-                                              marginBottom: "10px",
-                                            }}
-                                          >
-                                            <img
-                                              src={
-                                                item.custom_image ||
-                                                "https://via.placeholder.com/150"
-                                              }
-                                              alt={item.item_name}
-                                              style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "cover",
-                                                borderRadius: "8px",
-                                              }}
-                                            />
-                                          </div>
-                                          <h6
-                                            style={{
-                                              marginBottom: "5px",
-                                              fontSize: "18px",
-                                            }}
-                                          >
-                                            {item.item_name}
-                                          </h6>
-                                          <small
-                                            style={{
-                                              color: "#666",
-                                              marginBottom: "10px",
-                                            }}
-                                          >
-                                            {item.description}
-                                          </small>
-                                          <div style={{ marginBottom: "10px" }}>
-                                            <strong>Price:</strong> $
-                                            {item.item_price?.toFixed(2) ||
-                                              "N/A"}
-                                          </div>
-                                          <div
-                                            style={{
-                                              marginBottom: "10px",
-                                              width: "100%",
-                                            }}
-                                          >
-                                            <strong>Ingredients:</strong>
-                                            {item.ingredients &&
-                                            item.ingredients.length > 0 ? (
-                                              <span
-                                                style={{ textAlign: "center" }}
-                                              >
-                                                {item.ingredients.join(", ")}
-                                              </span>
-                                            ) : (
-                                              <span className="text-muted">
-                                                No ingredients available
-                                              </span>
-                                            )}
-                                          </div>
-
-                                          <div
-                                            style={{
-                                              marginBottom: "10px",
-                                              width: "100%",
-                                            }}
-                                          >
-                                            <strong>Reviews:</strong>
-                                            {item.reviews_id &&
-                                            item.reviews_id.length > 0 ? (
-                                              <span
-                                                style={{
-                                                  textAlign: "center",
-                                                  fontSize: "0.85rem",
-                                                }}
-                                              >
-                                                {item.reviews_id
-                                                  .map(
-                                                    (review) =>
-                                                      `"${
-                                                        review.comment
-                                                      }" (${Array(review.rating)
-                                                        .fill("★")
-                                                        .join("")}${Array(
-                                                        5 - review.rating
-                                                      )
-                                                        .fill("☆")
-                                                        .join("")})`
-                                                  )
-                                                  .join(", ")}
-                                              </span>
-                                            ) : (
-                                              <span className="text-muted">
-                                                No reviews yet.
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </Accordion.Body>
-                              </Accordion.Item>
-                            )
-                          )}
-                        </Accordion>
-                      </Tab>
-                    )
-                  )
-                )}
-              </Tabs>
-            )}
-          </Card.Body>
-        </Card>
-      ) : (
-        <Card className="shadow-sm mb-4">
-          <Card.Body>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h4 className="mb-0">Choose Menu</h4>
             </div>
+          ) : Object.keys(groupedItems).length === 0 ? (
             <div
               style={{
                 textAlign: "center",
@@ -836,11 +629,169 @@ function KitchensDetailss() {
                 color: "#666",
               }}
             >
-              No items found
+              No menus are chosen.
             </div>
-          </Card.Body>
-        </Card>
-      )}
+          ) : (
+            <Tabs
+              activeKey={activeKey}
+              onSelect={(k: any) => setActiveKey(k)}
+            >
+              {Object.entries(groupedItems).map(([category, subcategories]) => (
+                <Tab eventKey={category} title={category} key={category}>
+                  <Accordion defaultActiveKey="0">
+                    {Object.entries(subcategories).map(([subcategory, items], index) => (
+                      <Accordion.Item key={subcategory} eventKey={String(index)}>
+                        <Accordion.Header>{subcategory}</Accordion.Header>
+                        <Accordion.Body>
+                          {items.length === 0 ? (
+                            <div
+                              style={{
+                                textAlign: "center",
+                                fontSize: "16px",
+                                color: "#888",
+                              }}
+                            >
+                              No items found in this subcategory
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "15px",
+                              }}
+                            >
+                              {items.map((item, idx) => (
+                                <div
+                                  key={idx}
+                                  style={{
+                                    flex: "1 1 300px",
+                                    maxWidth: "300px",
+                                    border: "1px solid #ddd",
+                                    borderRadius: "8px",
+                                    padding: "15px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    textAlign: "center",
+                                    boxShadow:
+                                      "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                    backgroundColor: "#fff",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: "150px",
+                                      height: "150px",
+                                      marginBottom: "10px",
+                                    }}
+                                  >
+                                    <img
+                                      src={
+                                        item.custom_image ||
+                                        "https://via.placeholder.com/150"
+                                      }
+                                      alt={item.item_name}
+                                      style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                        borderRadius: "8px",
+                                      }}
+                                    />
+                                  </div>
+                                  <h6
+                                    style={{
+                                      marginBottom: "5px",
+                                      fontSize: "18px",
+                                    }}
+                                  >
+                                    {item.item_name}
+                                  </h6>
+                                  <small
+                                    style={{
+                                      color: "#666",
+                                      marginBottom: "10px",
+                                    }}
+                                  >
+                                    {item.description}
+                                  </small>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <strong>Price:</strong> $
+                                    {item.item_price?.toFixed(2) ||
+                                      "N/A"}
+                                  </div>
+                                  <div
+                                    style={{
+                                      marginBottom: "10px",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <strong>Ingredients:</strong>
+                                    {item.ingredients &&
+                                    item.ingredients.length > 0 ? (
+                                      <span
+                                        style={{ textAlign: "center" }}
+                                      >
+                                        {item.ingredients.join(", ")}
+                                      </span>
+                                    ) : (
+                                      <span className="text-muted">
+                                        No ingredients available
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      marginBottom: "10px",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <strong>Reviews:</strong>
+                                    {item.reviews_id &&
+                                    item.reviews_id.length > 0 ? (
+                                      <span
+                                        style={{
+                                          textAlign: "center",
+                                          fontSize: "0.85rem",
+                                        }}
+                                      >
+                                        {item.reviews_id
+                                          .map(
+                                            (review) =>
+                                              `"${
+                                                review.comment
+                                              }" (${Array(review.rating)
+                                                .fill("★")
+                                                .join("")}${Array(
+                                                5 - review.rating
+                                              )
+                                                .fill("☆")
+                                                .join("")})`
+                                          )
+                                          .join(", ")}
+                                      </span>
+                                    ) : (
+                                      <span className="text-muted">
+                                        No reviews yet.
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    ))}
+                  </Accordion>
+                </Tab>
+              ))}
+            </Tabs>
+          )}
+        </Card.Body>
+      </Card>
     </div>
   );
 }

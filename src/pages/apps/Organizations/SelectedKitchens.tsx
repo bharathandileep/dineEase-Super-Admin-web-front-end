@@ -51,7 +51,7 @@ function SelectedKitchensList() {
         style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
       >
         <h3 className="page-title m-0" style={{ color: "#fff" }}>
-          Selected Collaboration Kitchens
+          colloborated Kitchens
         </h3>
       </div>
 

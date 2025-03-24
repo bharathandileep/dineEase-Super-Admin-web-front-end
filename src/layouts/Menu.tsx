@@ -48,13 +48,11 @@ const MenuItemWithChildren = ({
     return false;
   };
 
-  // Filter children based on user role
   const accessibleChildren = (item.children || []).filter((child) => {
     if (!child.access) return true;
     return child.access.includes(userRole);
   });
 
-  // If no accessible children, don't render this menu item
   if (accessibleChildren.length === 0) return null;
 
   return (
