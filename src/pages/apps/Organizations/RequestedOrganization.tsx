@@ -14,6 +14,7 @@ interface UnapprovedOrganization {
   contact_number: string;
   email: string;
   organizationLogo: string;
+  slug: string;
   addresses: {
     street_address: string;
     city_name: string;
@@ -26,7 +27,9 @@ interface UnapprovedOrganization {
 }
 
 function RequestedOrganization() {
-  const [organizations, setOrganizations] = useState<UnapprovedOrganization[]>([]);
+  const [organizations, setOrganizations] = useState<UnapprovedOrganization[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +39,10 @@ function RequestedOrganization() {
   const navigate = useNavigate();
   const isLoadingRef = useRef(false);
 
-  const fetchUnapprovedOrganizations = async (currentPage: number, isNewSearch: boolean = false) => {
+  const fetchUnapprovedOrganizations = async (
+    currentPage: number,
+    isNewSearch: boolean = false
+  ) => {
     if (isLoadingRef.current) return;
     isNewSearch ? setLoading(true) : setLoadingMore(true);
     isLoadingRef.current = true;
@@ -47,14 +53,23 @@ function RequestedOrganization() {
 
       if (response.status) {
         const { organizations, totalPages, totalOrganizations } = response.data;
-        setOrganizations(prev => isNewSearch ? organizations : [...prev, ...organizations.filter((item:any) => !prev.some(p => p._id === item._id))]);
+        setOrganizations((prev) =>
+          isNewSearch
+            ? organizations
+            : [
+                ...prev,
+                ...organizations.filter(
+                  (item: any) => !prev.some((p) => p._id === item._id)
+                ),
+              ]
+        );
         setTotalItems(totalOrganizations);
         setHasMore(currentPage < totalPages);
         setPage(currentPage + 1);
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -71,8 +86,10 @@ function RequestedOrganization() {
   useEffect(() => {
     const handleScroll = () => {
       if (isLoadingRef.current || !hasMore) return;
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100) fetchUnapprovedOrganizations(page);
+      const { scrollTop, scrollHeight, clientHeight } =
+        document.documentElement;
+      if (scrollTop + clientHeight >= scrollHeight - 100)
+        fetchUnapprovedOrganizations(page);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -84,12 +101,14 @@ function RequestedOrganization() {
       const response = await approveOrganisation(orgId);
       if (response?.status) {
         toast.success(response.message);
-        fetchUnapprovedOrganizations(1, true); // Refresh the list after approval
+        fetchUnapprovedOrganizations(1, true);
       } else {
         toast.error(response?.message);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "An error occurred while approving.");
+      toast.error(
+        error?.response?.data?.message || "An error occurred while approving."
+      );
     }
   };
 
@@ -97,39 +116,46 @@ function RequestedOrganization() {
     <>
       <PageTitle
         breadCrumbItems={[
-          { label: "Unapproved Organizations", path: "/apps/organizations/requested-organizations" },
-          { label: "List", path: "/apps/organizations/unapproved", active: true },
+          {
+            label: "Unapproved Organizations",
+            path: "/apps/organizations/requested-organizations",
+          },
+          {
+            label: "List",
+            path: "/apps/organizations/unapproved",
+            active: true,
+          },
         ]}
         title={"Unapproved Organizations"}
       />
 
-      <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
-        <h3 className="page-title m-0" style={{ color: "#fff" }}>Unapproved Organizations</h3>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
+        <h3 className="page-title m-0" style={{ color: "#fff" }}>
+          Unapproved Organizations
+        </h3>
       </div>
 
       <Row>
         <Col>
           <Card>
             <Card.Body>
-              <Row className='justify-content-between'>
-                <Col className='col-auto'>
-                  <form className='d-flex align-items-center'>
+              <Row className="justify-content-between">
+                <Col className="col-auto">
+                  <form className="d-flex align-items-center">
                     <div>
                       <input
-                        type='search'
-                        className='form-control my-1 my-lg-0'
-                        placeholder='Search'
+                        type="search"
+                        className="form-control my-1 my-lg-0"
+                        placeholder="Search"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
                   </form>
                 </Col>
-                {/* <Col className='col-auto'>
-                  <p className="text-muted mt-2">
-                    Total Unapproved Organizations: {totalItems}
-                  </p>
-                </Col> */}
               </Row>
             </Card.Body>
           </Card>
@@ -150,17 +176,29 @@ function RequestedOrganization() {
                   <Card.Body className="d-flex flex-column">
                     <div className="bg-light mb-3">
                       <img
-                        src={item.organizationLogo || "https://via.placeholder.com/150"}
+                        src={
+                          item.organizationLogo ||
+                          "https://via.placeholder.com/150"
+                        }
                         alt={item.organizationName}
                         className="img-fluid"
-                        style={{ width: "100%", height: "200px", objectFit: "contain" }}
+                        style={{
+                          width: "100%",
+                          height: "200px",
+                          objectFit: "contain",
+                        }}
                       />
                     </div>
                     <div className="product-info mt-auto">
-                      <h5 className="font-16 mt-0 text-dark">{item.organizationName}</h5>
+                      <h5 className="font-16 mt-0 text-dark">
+                        {item.organizationName}
+                      </h5>
                       <p className="text-muted">
                         <i className="mdi mdi-map-marker me-1"></i>
-                        {item.addresses[0]?.street_address}, {item.addresses[0]?.city_name}, {item.addresses[0]?.state_name}, {item.addresses[0]?.country_name}
+                        {item.addresses[0]?.street_address},{" "}
+                        {item.addresses[0]?.city_name},{" "}
+                        {item.addresses[0]?.state_name},{" "}
+                        {item.addresses[0]?.country_name}
                       </p>
                       <p className="text-muted">
                         <i className="mdi mdi-phone-classic me-1"></i>
@@ -174,15 +212,19 @@ function RequestedOrganization() {
                         <i className="mdi mdi-account-group me-1"></i>
                         {item.no_of_employees} Employees
                       </p>
-                      {/* <p className="text-muted">
-                        <i className="mdi mdi-domain me-1"></i>
-                        {item.categoryDetails[0]?.name || 'Uncategorized'}
-                      </p> */}
                       <div className="d-flex justify-content-between mt-3">
-                        <Button variant="outline-info" onClick={() => navigate(`/apps/organizations/${item._id}`)}>
+                        <Button
+                          variant="outline-info"
+                          onClick={() =>
+                            navigate(`/apps/organizations/${item.slug}`)
+                          }
+                        >
                           View Details
                         </Button>
-                        <Button variant="success" onClick={() => handleApproveOrganization(item._id)}>
+                        <Button
+                          variant="success"
+                          onClick={() => handleApproveOrganization(item._id)}
+                        >
                           Approve
                         </Button>
                       </div>
@@ -195,10 +237,15 @@ function RequestedOrganization() {
             <Col>
               <Card>
                 <Card.Body className="text-center">
-                  <i className="mdi mdi-domain-off text-muted" style={{ fontSize: "48px" }}></i>
+                  <i
+                    className="mdi mdi-domain-off text-muted"
+                    style={{ fontSize: "48px" }}
+                  ></i>
                   <h4 className="mt-3">No Unapproved Organizations Found</h4>
                   <p className="text-muted">
-                    {searchTerm ? `No unapproved organizations match your search criteria "${searchTerm}".` : "There are no unapproved organizations in the system yet."}
+                    {searchTerm
+                      ? `No unapproved organizations match your search criteria "${searchTerm}".`
+                      : "There are no unapproved organizations in the system yet."}
                   </p>
                 </Card.Body>
               </Card>

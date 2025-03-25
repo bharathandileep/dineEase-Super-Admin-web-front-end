@@ -121,7 +121,7 @@ function ListKitchens() {
       try {
         const params = {
           page: currentPage,
-          limit: 4,
+          limit: 8,
           search: searchTerm.trim(),
           category: categoryFilter,
           subcategory: subcategoryFilter,
