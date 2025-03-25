@@ -16,9 +16,6 @@ interface FileUploaderProps {
 const FileUploader = (props: FileUploaderProps) => {
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
-  /**
-   * Handled the accepted files and shows the preview
-   */
   const handleAcceptedFiles = (files: FileType[]) => {
     var allFiles = files;
 
@@ -130,6 +127,12 @@ const FileUploader = (props: FileUploaderProps) => {
                       </Link>
                     </Col>
                   </Row>
+                  <img
+                    src={f.preview}
+                    alt="Profile Preview"
+                    className="mt-3"
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />
                 </div>
               </Card>
             );

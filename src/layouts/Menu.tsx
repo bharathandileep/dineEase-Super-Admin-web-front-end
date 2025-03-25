@@ -9,8 +9,6 @@ import { findAllParent, findMenuItem } from "../helpers/menu";
 
 // constants
 import { MenuItemTypes } from "../constants/menu";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
 
 interface SubMenus {
@@ -52,17 +50,17 @@ const MenuItemWithChildren = ({
     if (!child.access) return true;
     return child.access.includes(userRole);
   });
-
+  console.log(accessibleChildren,"child.");
   if (accessibleChildren.length === 0) return null;
 
   return (
-    <li className={classNames("menu-item", { "menuitem-active": open })}>
+    <li className={classNames("menu-item ps-3", { "menuitem-active": open })}>
       <Link
         to="#"
         onClick={toggleMenuItem}
         data-menu-key={item.key}
         aria-expanded={open}
-        className={classNames("menu-link", linkClassName, {
+        className={classNames("menu-link ", linkClassName, {
           "menuitem-active": activeMenuItems!.includes(item.key)
             ? "active"
             : "",
@@ -73,7 +71,7 @@ const MenuItemWithChildren = ({
             <FeatherIcon icon={item.icon} />{" "}
           </span>
         )}
-        <span className="menu-text"> {item.label} </span>
+        <span className="menu-text "> {item.label} </span>
         {!item.badge ? (
           <span className="menu-arrow"></span>
         ) : (
@@ -138,7 +136,7 @@ const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
   }
 
   return (
-    <li className={classNames("menu-item", className)}>
+    <li className={classNames("menu-item ", className)}>
       <MenuItemLink item={item} className={linkClassName} />
     </li>
   );
@@ -149,7 +147,7 @@ const MenuItemLink = ({ item, className }: SubMenus) => {
     <Link
       to={item.url!}
       target={item.target}
-      className={classNames("side-nav-link-ref menu-link", className)}
+      className={classNames("side-nav-link-ref menu-link ", className)}
       data-menu-key={item.key}
     >
       {item.icon && (
@@ -179,13 +177,13 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const menuRef: any = useRef(null);
   const accessDetails = getAccessDetailsFromLocalStorage();
   const [activeMenuItems, setActiveMenuItems] = useState<Array<string>>([]);
-  
+
   // Get the current user role from localStorage
   const userRole = accessDetails?.role || "";
 
   /*
    * toggle the menus
-   */
+  */
   const toggleMenu = (menuItem: MenuItemTypes, show: boolean) => {
     if (show)
       setActiveMenuItems([
@@ -247,7 +245,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
             <React.Fragment key={idx}>
               {item.isTitle ? (
                 <li
-                  className={classNames("menu-title", {
+                  className={classNames("menu-title ", {
                     "mt-2": idx !== 0,
                   })}
                 >
@@ -261,12 +259,12 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
                       toggleMenu={toggleMenu}
                       subMenuClassNames="sub-menu"
                       activeMenuItems={activeMenuItems}
-                      linkClassName="menu-link"
+                      linkClassName="menu-link "
                     />
                   ) : (
                     <MenuItem
                       item={item}
-                      linkClassName="menu-link"
+                      linkClassName="menu-link "
                       className={
                         activeMenuItems!.includes(item.key)
                           ? "menuitem-active"

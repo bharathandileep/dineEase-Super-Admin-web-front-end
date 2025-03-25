@@ -65,8 +65,7 @@ function OurMenu() {
     fetchKitchenMenu();
   }, [isRemoved]);
 
-  const handleEdit = (itemId: string) => {
-  };
+  const handleEdit = (itemId: string) => {};
 
   const handleDelete = async (itemId: string) => {
     try {
@@ -103,8 +102,6 @@ function OurMenu() {
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
             Our Menu
           </h3>
-
-          {/* Add Food Item Button */}
           <Link
             to={`/apps/kitchen/${userInfo.kitchenId}/our-menu`}
             className="btn btn-danger"
@@ -115,91 +112,99 @@ function OurMenu() {
       </div>
 
       <Row>
-        {kitchenMenuItems?.map((menu) =>
-          menu?.items_id.map((item, index) => (
-            <Col
-              key={`${menu._id}-${item._id}-${index}`}
-              md={6}
-              xl={3}
-              className="mb-3"
-            >
-              <Link
-                to={`/apps/kitchen/${userInfo.kitchenId}/item-details/${item?.item_id._id}`}
+        {kitchenMenuItems && kitchenMenuItems.length > 0 ? (
+          kitchenMenuItems.map((menu) =>
+            menu?.items_id.map((item, index) => (
+              <Col
+                key={`${menu._id}-${item._id}-${index}`}
+                md={6}
+                xl={3}
+                className="mb-3"
               >
-                <Card className="product-box h-100">
-                  <Card.Body className="d-flex flex-column position-relative">
-                    <div className="product-action position-absolute top-0 end-0 m-2">
-                      <Link
-                        to="#"
-                        className="btn btn-success btn-xs waves-effect waves-light me-1"
-                        onClick={() => handleEdit(item.item_id._id)}
-                      >
-                        <i className="mdi mdi-pencil"></i>
-                      </Link>
-                      <Link
-                        to="#"
-                        className="btn btn-danger btn-xs waves-effect waves-light"
-                        onClick={() => handleDelete(item?.item_id._id)}
-                      >
-                        <i className="mdi mdi-close"></i>
-                      </Link>
-                    </div>
-                    <div className="bg-light mb-3">
-                      <img
-                        src={item.custom_image || item.item_id.item_image}
-                        alt={item.item_id.item_name}
-                        className="img-fluid"
-                        style={{
-                          width: "100%",
-                          height: "200px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
+                <Link
+                  to={`/apps/kitchen/${userInfo.kitchenId}/item-details/${item?.item_id._id}`}
+                >
+                  <Card className="product-box h-100">
+                    <Card.Body className="d-flex flex-column position-relative">
+                      <div className="product-action position-absolute top-0 end-0 m-2">
+                        <Link
+                          to="#"
+                          className="btn btn-success btn-xs waves-effect waves-light me-1"
+                          onClick={() => handleEdit(item.item_id._id)}
+                        >
+                          <i className="mdi mdi-pencil"></i>
+                        </Link>
+                        <Link
+                          to="#"
+                          className="btn btn-danger btn-xs waves-effect waves-light"
+                          onClick={() => handleDelete(item?.item_id._id)}
+                        >
+                          <i className="mdi mdi-close"></i>
+                        </Link>
+                      </div>
+                      <div className="bg-light mb-3">
+                        <img
+                          src={item.custom_image || item.item_id.item_image}
+                          alt={item.item_id.item_name}
+                          className="img-fluid"
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
 
-                    {/* Product Info */}
-                    <div className="product-info mt-auto">
-                      <div className="row align-items-center">
-                        <div className="col">
-                          <h5 className="font-16 mt-0 sp-line-1">
-                            <Link to="#" className="text-dark">
-                              {item.item_id.item_name}
-                            </Link>
-                          </h5>
-                          <div className="text-warning mb-2 font-13">
-                            <i className="fa fa-star me-1"></i>
-                            <i className="fa fa-star me-1"></i>
-                            <i className="fa fa-star me-1"></i>
-                            <i className="fa fa-star me-1"></i>
-                            <i className="fa fa-star"></i>
+                      {/* Product Info */}
+                      <div className="product-info mt-auto">
+                        <div className="row align-items-center">
+                          <div className="col">
+                            <h5 className="font-16 mt-0 sp-line-1">
+                              <Link to="#" className="text-dark">
+                                {item.item_id.item_name}
+                              </Link>
+                            </h5>
+                            <div className="text-warning mb-2 font-13">
+                              <i className="fa fa-star me-1"></i>
+                              <i className="fa fa-star me-1"></i>
+                              <i className="fa fa-star me-1"></i>
+                              <i className="fa fa-star me-1"></i>
+                              <i className="fa fa-star"></i>
+                            </div>
+
+                            <div className="d-flex align-items-center mb-1">
+                              <i className="mdi mdi-tag-outline me-1"></i>
+                              <span className="text-muted">
+                                {item?.item_id?.category?.category}
+                              </span>
+                            </div>
+                            <h5 className="m-0">
+                              <span className="text-muted">
+                                Status:{" "}
+                                {item.isAvailable
+                                  ? "Available"
+                                  : "Not Available"}
+                              </span>
+                            </h5>
                           </div>
 
-                          <div className="d-flex align-items-center mb-1">
-                            <i className="mdi mdi-tag-outline me-1"></i>
-                            <span className="text-muted">
-                              {item?.item_id?.category?.category}
-                            </span>
+                          <div className="col-12 mt-2">
+                            <p className="text-muted mb-0 font-13 text-truncate">
+                              {item.item_id.item_description}
+                            </p>
                           </div>
-                          <h5 className="m-0">
-                            <span className="text-muted">
-                              Status:{" "}
-                              {item.isAvailable ? "Available" : "Not Available"}
-                            </span>
-                          </h5>
-                        </div>
-
-                        <div className="col-12 mt-2">
-                          <p className="text-muted mb-0 font-13 text-truncate">
-                            {item.item_id.item_description}
-                          </p>
                         </div>
                       </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Link>
-            </Col>
-          ))
+                    </Card.Body>
+                  </Card>
+                </Link>
+              </Col>
+            ))
+          )
+        ) : (
+          <Col className="text-center mt-5 ">
+            <h4>No menu items are selected.</h4>
+          </Col>
         )}
       </Row>
 
