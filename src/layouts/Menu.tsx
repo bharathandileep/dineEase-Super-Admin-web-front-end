@@ -51,7 +51,6 @@ const MenuItemWithChildren = ({
     if (!child.access) return true;
     return child.access.includes(userRole);
   });
-  console.log(accessibleChildren,"child.");
   if (accessibleChildren.length === 0) return null;
 
   return (

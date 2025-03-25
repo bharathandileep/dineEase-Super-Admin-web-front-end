@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { useParams } from "react-router-dom";
@@ -51,15 +51,21 @@ function OurMenu() {
   const [kitchenMenuItems, setKitchenMenuItems] = useState<Menu[]>([]);
   const [isRemoved, setIsRemoved] = useState(false);
   const userInfo = getAccessDetailsFromLocalStorage();
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
+    setLoader(true);
     const fetchKitchenMenu = async () => {
       try {
         const kitchenId = userInfo.kitchenId;
         const response = await getKitchenMenus(kitchenId);
         setKitchenMenuItems(response.data);
+        setLoader(false);
       } catch (error: any) {
+        setLoader(false);
         console.error("Error fetching kitchen details:", error);
+      } finally {
+        setLoader(false);
       }
     };
     fetchKitchenMenu();
@@ -79,6 +85,17 @@ function OurMenu() {
       console.error("Error fetching kitchen details:", error);
     }
   };
+
+  if (loader) {
+    return (
+      <div className="text-center my-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+        <p className="mt-2">Loading kitchens...</p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -74,7 +74,6 @@ function ListOrgKitchens() {
     pageRef.current = page;
   }, [loading, loadingMore, hasMore, page]);
 
-  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -98,7 +97,6 @@ function ListOrgKitchens() {
         const response = await kitchensGetSubcategoriesByCategory(
           categoryFilter
         );
-        console.log(response);
         setSubcategories(response.data || []);
       } catch (error: any) {
         toast.error("Failed to load subcategories: " + error.message);
@@ -275,86 +273,84 @@ function ListOrgKitchens() {
           </Spinner>
           <p className="mt-2">Loading kitchens...</p>
         </div>
-      ) : (
+      ) : kitchens.length > 0 ? (
         <Row>
-          {kitchens.length > 0 ? (
-            kitchens.map((item) => (
-              <Col key={item._id} md={6} xl={3} className="mb-3">
-                <Link to={`/apps/kitchen/details/${item.slug}`}>
-                  <Card className="product-box h-100 shadow-sm">
-                    <Card.Body className="d-flex flex-column">
-                      <div className="bg-light mb-1">
-                        <img
-                          src={
-                            item.kitchen_image ||
-                            "https://via.placeholder.com/150"
-                          }
-                          alt={item.kitchen_name}
-                          className="img-fluid"
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </div>
-                      <div className="product-info mt-auto">
-                        <h5 className="font-24 mt-0 sp-line-1 bold">
-                          {item.kitchen_name}
-                        </h5>
-                        <div className="text-muted font-14">
-                          <div className="d-flex align-items-center mb-1 text-black">
-                            <i className="mdi mdi-map-marker me-1"></i>
-                            <span>
-                              {item.addresses?.street_address},{" "}
-                              {item.addresses?.city_name},
-                              {item.addresses?.country_name}
-                            </span>
-                          </div>
-                          <div className="d-flex align-items-center mb-1 text-black">
-                            <i className="mdi mdi-phone-classic me-1"></i>
-                            <span>{item.kitchen_phone_number}</span>
-                          </div>
-                          <div className="d-flex align-items-center text-black">
-                            <i className="mdi mdi-email me-1"></i>
-                            <span>{item.owner_email}</span>
-                          </div>
-                          <div className="d-flex align-items-center text-black">
-                            <i className="mdi mdi-home-variant me-1"></i>
-                            <span>{item.kitchen_type}</span>
-                          </div>
+          {kitchens.map((item) => (
+            <Col key={item._id} md={6} xl={3} className="mb-3">
+              <Link to={`/apps/kitchen/details/${item.slug}`}>
+                <Card className="product-box h-100 shadow-sm">
+                  <Card.Body className="d-flex flex-column">
+                    <div className="bg-light mb-1">
+                      <img
+                        src={
+                          item.kitchen_image ||
+                          "https://via.placeholder.com/150"
+                        }
+                        alt={item.kitchen_name}
+                        className="img-fluid"
+                        style={{
+                          width: "100%",
+                          height: "200px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                    <div className="product-info mt-auto">
+                      <h5 className="font-24 mt-0 sp-line-1 bold">
+                        {item.kitchen_name}
+                      </h5>
+                      <div className="text-muted font-14">
+                        <div className="d-flex align-items-center mb-1 text-black">
+                          <i className="mdi mdi-map-marker me-1"></i>
+                          <span>
+                            {item.addresses?.street_address},{" "}
+                            {item.addresses?.city_name},
+                            {item.addresses?.country_name}
+                          </span>
+                        </div>
+                        <div className="d-flex align-items-center mb-1 text-black">
+                          <i className="mdi mdi-phone-classic me-1"></i>
+                          <span>{item.kitchen_phone_number}</span>
+                        </div>
+                        <div className="d-flex align-items-center text-black">
+                          <i className="mdi mdi-email me-1"></i>
+                          <span>{item.owner_email}</span>
+                        </div>
+                        <div className="d-flex align-items-center text-black">
+                          <i className="mdi mdi-home-variant me-1"></i>
+                          <span>{item.kitchen_type}</span>
                         </div>
                       </div>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </Col>
-            ))
-          ) : (
-            <Col>
-              <Card>
-                <Card.Body className="text-center">
-                  <i
-                    className="mdi mdi-alert-circle-outline text-muted"
-                    style={{ fontSize: "48px" }}
-                  ></i>
-                  <h4 className="mt-3">No Kitchens Found</h4>
-                  <p className="text-muted">
-                    {searchTerm || categoryFilter || subcategoryFilter
-                      ? "No kitchens match your search criteria."
-                      : "There are no kitchens in the system yet."}
-                  </p>
-                  <Button
-                    variant="primary"
-                    onClick={() => navigate("/apps/kitchen/new")}
-                  >
-                    Add New Kitchen
-                  </Button>
-                </Card.Body>
-              </Card>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
-          )}
+          ))}
         </Row>
+      ) : (
+        <Col>
+          <Card>
+            <Card.Body className="text-center">
+              <i
+                className="mdi mdi-alert-circle-outline text-muted"
+                style={{ fontSize: "48px" }}
+              ></i>
+              <h4 className="mt-3">No Kitchens Found</h4>
+              <p className="text-muted">
+                {searchTerm || categoryFilter || subcategoryFilter
+                  ? "No kitchens match your search criteria."
+                  : "There are no kitchens in the system yet."}
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate("/apps/kitchen/new")}
+              >
+                Add New Kitchen
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
       )}
 
       {loadingMore && (
