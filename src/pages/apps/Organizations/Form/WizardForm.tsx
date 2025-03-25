@@ -383,7 +383,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
         const catResponse = await orgGetAllCategories({ page: 1, limit: 100 });
         if (catResponse.status) {
           setCategories(catResponse.data.categories);
-          console.log("Fetched Categories:", catResponse.data.categories);
         } else {
           toast.error(catResponse.message);
         }
@@ -432,10 +431,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
               orgData?.gstDetails?.[0]?.gst_certificate_image || "",
             panCardImage: orgData?.panDetails?.[0]?.pan_card_image || "",
           });
-          console.log("Form Data after set:", {
-            category: initialCategory,
-            subcategoryName: initialSubcategory,
-          });
           if (initialCategory) {
             setSelectedCategoryId(initialCategory);
             const subcatResponse = await orgGetSubcategoriesByCategory(
@@ -455,9 +450,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
               setSubcategories([]);
             }
           } else {
-            console.log(
-              "No initial category found, skipping subcategory fetch."
-            );
             setSubcategories([]);
           }
 

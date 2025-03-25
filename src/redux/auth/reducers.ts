@@ -50,7 +50,6 @@ const Auth = (state: State = INIT_STATE, action: AuthActionType): any => {
     case AuthActionTypes.API_RESPONSE_SUCCESS:
       switch (action.payload.actionType) {
         case AuthActionTypes.LOGIN_USER: {
-          console.log("Reducer updating state for LOGIN_USER");
           const newState = {
             ...state,
             user: action.payload.data,

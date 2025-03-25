@@ -387,14 +387,10 @@ export function WizardForm({ initialData }: WizardFormProps) {
   const fetchSubcategories = async (catId: string) => {
     try {
       setLoading(true);
-      console.log("Fetching subcategories for category ID:", catId);
       const response = await kitchensGetSubcategoriesByCategory(catId);
-      console.log("Raw subcategory response:", response);
       const subcatData = Array.isArray(response.data) ? response.data : response.data?.data || [];
-      console.log("Processed subcategories:", subcatData);
       setSubcategories(subcatData);
       if (subcatData.length === 0) {
-        console.warn("No subcategories found for category ID:", catId);
         toast.warn("No subcategories available for this category.");
       }
       return subcatData; // Return the data for use in fetchInitialData
@@ -450,7 +446,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       const kitchensFormData = appendToFormData(formData);
       const response = await createNewkitchen(kitchensFormData);
-      console.log(response)
       if (response.status) {
         toast.success(response.message);
         user.role === "Admin"
@@ -557,30 +552,20 @@ export function WizardForm({ initialData }: WizardFormProps) {
       (option) => option.day === day && option.meal_type
     ).length;
   };
-// Replace the useEffect in your WizardForm.tsx with this:
+
 useEffect(() => {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-
-      // Fetch categories
       await fetchCategories();
 
       if (id) {
-        // Fetch kitchen details
         const kitchenResponse = await getkitchenDetails(id);
         const kitchenData = kitchenResponse.data;
-        console.log("Full Kitchen Data:", JSON.stringify(kitchenData, null, 2));
-
-        // Determine initial subcategory value (use subcategoryName._id)
         const initialSubcategory =
-          kitchenData?.subcategoryName?._id || // Correct field name
+          kitchenData?.subcategoryName?._id ||
           (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
           "";
-
-        console.log("Initial Subcategory Value:", initialSubcategory);
-
-        // Set initial form data
         setFormData({
           ...initialFormData,
           kitchen_name: kitchenData?.kitchen_name || "",
@@ -624,31 +609,19 @@ useEffect(() => {
         if (kitchenData?.category?._id) {
           setCategoryId(kitchenData.category._id);
           const subcatData = await fetchSubcategories(kitchenData.category._id);
-          console.log("Subcategories after fetch:", subcatData);
 
           // Use subcategoryName._id for validation
           const selectedSubcategoryId =
             kitchenData?.subcategoryName?._id ||
             (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
             "";
-          console.log("Selected Subcategory ID from kitchenData:", selectedSubcategoryId);
-          console.log("Subcategory IDs in fetched data:", subcatData.map((sub: { _id: any; }) => sub._id));
 
           const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === selectedSubcategoryId);
-          console.log("Is Valid Subcategory:", isValidSubcategory);
 
           if (!isValidSubcategory && subcatData.length > 0) {
-            console.warn("Selected subcategory not found in fetched subcategories. Resetting to empty.");
             setFormData(prev => ({ ...prev, subcategoryName: "" }));
-          } else if (!subcatData.length) {
-            console.warn("No subcategories fetched for category. Keeping initial subcategory value.");
-          } else {
-            console.log("Subcategory found and retained:", selectedSubcategoryId);
-          }
-        } else {
-          console.log("No category ID found in kitchenData. Skipping subcategory fetch.");
-        }
-
+          } 
+        } 
         // Fetch address-related data
         if (kitchenData?.addresses?.[0]?.country_id) {
           await fetchStates(kitchenData.addresses[0].country_id);
