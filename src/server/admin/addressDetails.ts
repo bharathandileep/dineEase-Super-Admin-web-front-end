@@ -10,8 +10,7 @@ export const getAllCountries = async()=>{
         return response.data;
     }
     catch(error:any){
-        console.log("error on getting countries",error.response.data || error.message);
-        
+        console.log("error on getting countries",error.response.data || error.message); 
     }
 };
 

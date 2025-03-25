@@ -8,8 +8,6 @@ export const generateKitchenNotification = async (userId: string | undefined, ki
         const response = await axiosInstance.get(
             `${apiConfig.notification.generateKitchenNotification}?userId=${userId}&kitchenName=${encodeURIComponent(kitchenName || '')}`
           );
-      
-      console.log("Notification generated successfully");
       return response.data;
     } catch (error: any) {
       console.log("error", error.response?.data || error.message);
@@ -48,8 +46,6 @@ export const getAllNotifications = async (query:any)=>{
             const response = await axiosInstance.get(
                 `${apiConfig.notification.generateOrganizationNotification}?userId=${userId}&organizationName=${encodeURIComponent(organizationName || '')}`
               );
-          
-          console.log("Notification generated successfully");
           return response.data;
         } catch (error: any) {
           console.log("error", error.response?.data || error.message);
