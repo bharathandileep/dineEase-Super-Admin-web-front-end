@@ -11,7 +11,7 @@ export const setStoreReference = (store: any) => {
 };
 
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 15 * 60 * 1000;
+const REFRESH_INTERVAL = 10 * 1000;
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -118,7 +118,6 @@ const getTimeUntilExpiration = (token: string): number => {
   }
 };
 
-// Setup token refresh interval
 const setupTokenRefreshInterval = () => {
   if (window._tokenRefreshInterval) {
     clearInterval(window._tokenRefreshInterval);
@@ -126,39 +125,19 @@ const setupTokenRefreshInterval = () => {
 
   window._tokenRefreshInterval = setInterval(async () => {
     const token = getUserFromCookie();
-    console.log(token, "token");
-    await refreshTokenLogic();
-    // if (token) {
-    //   const timeUntilExpiration = getTimeUntilExpiration(token);
-    //   if (timeUntilExpiration < 120 && timeUntilExpiration > 0) {
-    //     try {
-    //       await refreshTokenLogic();
-    //     } catch (error) {}
-    //   } else if (timeUntilExpiration <= 0) {
-    //     try {
-
-    //     } catch (error) {
-    //       console.error("Token refresh failed:", error);
-    //     }
-    //   }
-    // }
-  }, REFRESH_INTERVAL);
-
-  const immediateCheck = async () => {
-    const token = getUserFromCookie();
     if (token) {
       const timeUntilExpiration = getTimeUntilExpiration(token);
-      if (timeUntilExpiration < 300) {
+      if (timeUntilExpiration < 300 && timeUntilExpiration > 0) {
         try {
           await refreshTokenLogic();
         } catch (error) {
-          console.error("Initial token refresh failed:", error);
+          console.error("Token refresh failed:", error);
+          localStorage.removeItem(AUTH_SESSION_KEY);
+          window.location.href = "/login";
         }
       }
     }
-  };
-
-  immediateCheck();
+  }, REFRESH_INTERVAL);
 };
 
 class APICore {
@@ -227,9 +206,7 @@ class APICore {
     try {
       const decoded: any = jwtDecode(token);
       const currentTime = Date.now() / 1000;
-
-      // Return true if the token is valid for more than 2 minutes
-      return decoded.exp > currentTime + 120;
+      return decoded.exp > currentTime;
     } catch (error) {
       console.error("Error decoding token:", error);
       return false;

@@ -179,8 +179,6 @@ const KitchenMenu = () => {
         ]}
         title={"Add Menu Items"}
       />
-
-      {/* Head Bar */}
       <div className="container-fluid px-4">
         <div
           className="mb-3"
@@ -198,8 +196,6 @@ const KitchenMenu = () => {
             </Button>
           </div>
         </div>
-
-        {/* Card Below Head Bar */}
         <Card className="shadow-sm">
           <Card.Body>
             {loading && !Object.keys(groupedItems).length ? (

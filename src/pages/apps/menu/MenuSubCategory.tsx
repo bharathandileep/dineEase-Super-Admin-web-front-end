@@ -37,7 +37,7 @@ function MenuSubCategory() {
           search: searchTerm,
           status: statusFilter,
         };
-       
+
         const response = await getSubcategories(query);
         if (response.status) {
           setMenuItems(response.data.categories);
@@ -57,7 +57,6 @@ function MenuSubCategory() {
   }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-
     setSearchTerm(searchValue);
     setCurrentPage(1);
   };
@@ -74,14 +73,18 @@ function MenuSubCategory() {
         const item = menuItems.find((d) => d._id === id);
         const newStatus = !item.status;
 
-        toast.success(`Subcategory status changed to ${newStatus ? "Active" : "Inactive"}`);
+        toast.success(
+          `Subcategory status changed to ${newStatus ? "Active" : "Inactive"}`
+        );
 
         if (statusFilter !== "all") {
           if (
             (statusFilter === "active" && !newStatus) ||
             (statusFilter === "inactive" && newStatus)
           ) {
-            setMenuItems((prevItems) => prevItems.filter((item) => item._id !== id));
+            setMenuItems((prevItems) =>
+              prevItems.filter((item) => item._id !== id)
+            );
             setTotalItems((prev) => prev - 1);
             const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
             setTotalPages(newTotalPages);
@@ -120,7 +123,8 @@ function MenuSubCategory() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this subcategory?")) return;
+    if (!window.confirm("Are you sure you want to delete this subcategory?"))
+      return;
     try {
       const response = await deleteSubcategory(id);
       if (response.status) {
@@ -156,7 +160,6 @@ function MenuSubCategory() {
     setCurrentPage(1);
   };
 
-  /* Column render functions */
   const NumberColumn = ({ row }: { row: any }) => {
     const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
     return <span className="fw-bold">{rowNumber}</span>;
@@ -208,7 +211,11 @@ function MenuSubCategory() {
 
   const columns = [
     { Header: "No.", accessor: "number", Cell: NumberColumn },
-    { Header: "Sub Category", accessor: "subcategoryName", Cell: SubCategoryColumn },
+    {
+      Header: "Sub Category",
+      accessor: "subcategoryName",
+      Cell: SubCategoryColumn,
+    },
     { Header: "Category", accessor: "category", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
     { Header: "Status", accessor: "status", Cell: StatusColumn },
@@ -227,11 +234,18 @@ function MenuSubCategory() {
         <PageTitle
           breadCrumbItems={[
             { label: "Menu", path: "/apps/menu/subcategory" },
-            { label: "Sub Category", path: "/apps/menu/subcategory", active: true },
+            {
+              label: "Sub Category",
+              path: "/apps/menu/subcategory",
+              active: true,
+            },
           ]}
           title={"Customers"}
         />
-        <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
+        <div
+          className="mb-3"
+          style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+        >
           <div className="d-flex align-items-center justify-content-between">
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
               Menu Sub Category
@@ -255,7 +269,10 @@ function MenuSubCategory() {
                 <Row className="justify-content-between">
                   <Col className="col-auto">
                     <form className="d-flex align-items-center">
-                      <label htmlFor="inputPassword2" className="visually-hidden">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="visually-hidden"
+                      >
                         Search
                       </label>
                       <div>
@@ -279,7 +296,11 @@ function MenuSubCategory() {
                         <Form.Select
                           className="w-auto"
                           value={statusFilter}
-                          onChange={(e) => handleStatusFilterChange((e.target as HTMLSelectElement).value)}
+                          onChange={(e) =>
+                            handleStatusFilterChange(
+                              (e.target as HTMLSelectElement).value
+                            )
+                          }
                         >
                           <option value="all">All</option>
                           <option value="active">Active</option>

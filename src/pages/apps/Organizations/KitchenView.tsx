@@ -108,7 +108,6 @@ function KitchenView() {
 
   const handleSelectKitchen = async () => {
     const organization_id = accessDetails?.orgId;
-
     if (!kitchen_id) {
       toast.error("Kitchen ID is missing.");
       return;
@@ -123,27 +122,15 @@ function KitchenView() {
 
     try {
       const response = await collaborateKitchen(organization_id, kitchen_id);
-
-      if (response) {
-        if (response.collaboration) {
-          toast.success(
-            response.message || "Kitchen selected successfully!",
-            {}
-          );
-          navigate("/apps/organizations/selected-kitchens");
-        } else {
-          toast.error(response.message || "Failed to select kitchen.");
-        }
+      if (response.status) {
+        toast.success(response.message);
       } else {
-        toast.error("Received an invalid response from the server.");
+        toast.error(response.message);
       }
     } catch (error: any) {
       const errorMessage =
         error.message || "An error occurred while selecting the kitchen.";
       toast.error(errorMessage);
-      if (errorMessage.includes("already exists")) {
-        toast.info("This kitchen is already in your selected kitchens list.");
-      }
     } finally {
       setIsSelecting(false);
     }
