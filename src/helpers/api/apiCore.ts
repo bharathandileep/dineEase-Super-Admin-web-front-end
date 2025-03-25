@@ -11,7 +11,7 @@ export const setStoreReference = (store: any) => {
 };
 
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 10 * 1000;
+const REFRESH_INTERVAL = 14 * 60 * 1000;
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -106,18 +106,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Calculate time until token expiration in seconds
-const getTimeUntilExpiration = (token: string): number => {
-  try {
-    const decoded: any = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    return decoded.exp - currentTime;
-  } catch (error) {
-    console.error("Error calculating token expiration:", error);
-    return -1;
-  }
-};
-
 const setupTokenRefreshInterval = () => {
   if (window._tokenRefreshInterval) {
     clearInterval(window._tokenRefreshInterval);
@@ -126,15 +114,12 @@ const setupTokenRefreshInterval = () => {
   window._tokenRefreshInterval = setInterval(async () => {
     const token = getUserFromCookie();
     if (token) {
-      const timeUntilExpiration = getTimeUntilExpiration(token);
-      if (timeUntilExpiration < 300 && timeUntilExpiration > 0) {
-        try {
-          await refreshTokenLogic();
-        } catch (error) {
-          console.error("Token refresh failed:", error);
-          localStorage.removeItem(AUTH_SESSION_KEY);
-          window.location.href = "/login";
-        }
+      try {
+        await refreshTokenLogic();
+      } catch (error) {
+        console.error("Token refresh failed:", error);
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        window.location.href = "/";
       }
     }
   }, REFRESH_INTERVAL);
@@ -198,17 +183,18 @@ class APICore {
     return null;
   };
 
-  isUserAuthenticated = () => {
+  isUserAuthenticated = (): boolean => {
     const token = this.getLoggedInUser();
     if (!token) {
       return false;
     }
     try {
       const decoded: any = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
+      const currentTimeWithBuffer = Date.now() / 1000 + 5;
+      const isValid = decoded.exp > currentTimeWithBuffer;
+      return isValid;
     } catch (error) {
-      console.error("Error decoding token:", error);
+      console.error("Token decoding failed:", error);
       return false;
     }
   };

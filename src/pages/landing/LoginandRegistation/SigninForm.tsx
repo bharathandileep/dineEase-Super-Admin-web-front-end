@@ -88,7 +88,6 @@ const SigninForm: React.FC = () => {
   useEffect(() => {
     if (userLoggedIn && user) {
       navigate("/");
-      window.location.reload();
     }
   }, [userLoggedIn, user, navigate]);
 
