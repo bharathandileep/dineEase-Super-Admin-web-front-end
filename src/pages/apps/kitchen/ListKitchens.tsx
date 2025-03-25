@@ -74,7 +74,7 @@ function ListKitchens() {
     pageRef.current = page;
   }, [loading, loadingMore, hasMore, page]);
 
-  // Fetch categories
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -362,7 +362,7 @@ function ListKitchens() {
           <Spinner animation="border" size="sm" /> Loading more...
         </div>
       )}
-      
+
     </>
   );
 }
