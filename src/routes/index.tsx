@@ -61,6 +61,8 @@ import EmployeeManagement from "../pages/apps/adminemployee/addemployee";
 import EmployeeList from "../pages/apps/adminemployee/listemployee";
 import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
+import SelectedKitchen from "../pages/apps/kitchen/SelectedKitchenDetails";
+import SelectedKitchenDetails from "../pages/apps/kitchen/SelectedKitchenDetails";
 
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
@@ -397,6 +399,11 @@ const organizationsAppRoutes = {
       path:"/apps/colloborated",
       name:"Colloborated kitchens",
       element:<CollaborationsPage/>
+    },
+    {
+      path:"/apps/selected-kitchen/:kitchen/collab",
+      name:"Colloborated kitchens",
+      element:<SelectedKitchenDetails/>
     },
     {
       path:"/apps/colloborated/details/:id",
