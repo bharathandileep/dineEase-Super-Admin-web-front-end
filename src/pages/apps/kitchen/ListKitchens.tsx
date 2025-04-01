@@ -98,7 +98,6 @@ function ListKitchens() {
         const response = await kitchensGetSubcategoriesByCategory(
           categoryFilter
         );
-        console.log(response);
         setSubcategories(response.data || []);
       } catch (error: any) {
         toast.error("Failed to load subcategories: " + error.message);

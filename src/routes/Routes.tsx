@@ -83,7 +83,7 @@ const AllRoutes = (props: IRoutesProps) => {
             <Route
               path={route.path}
               element={
-                api.isUserAuthenticated() === false ? (
+                !api.isUserAuthenticated() ? (
                   <Navigate
                     to={{
                       pathname: "/",
@@ -91,7 +91,7 @@ const AllRoutes = (props: IRoutesProps) => {
                   />
                 ) : (
                   route.layout === false ?route.element:
-                  <PrivateRoute roles={route.roles}>
+                  <PrivateRoute roles={route.roles}>  
                     <Layout {...props}>{route.element}</Layout>
                   </PrivateRoute>
                 )

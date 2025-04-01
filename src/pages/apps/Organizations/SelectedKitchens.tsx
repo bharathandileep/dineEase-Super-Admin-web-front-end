@@ -6,7 +6,6 @@ import { listCollaboratedKitchens } from "../../../server/admin/collab";
 import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 import PageTitle from "../../../components/PageTitle";
 
-
 function SelectedKitchensList() {
   const [selectedKitchens, setSelectedKitchens] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -66,7 +65,7 @@ function SelectedKitchensList() {
         <Row>
           {selectedKitchens.map((kitchen) => (
             <Col key={kitchen._id} md={6} xl={3} className="mb-3">
-              <Link to={`/apps/kitchen/details/${kitchen.slug}`}>
+              <Link to={`/apps/selected-kitchen/${kitchen.slug}/collab`}>
                 <Card className="product-box h-100 shadow-sm">
                   <Card.Body className="d-flex flex-column">
                     <div className="bg-light mb-1">

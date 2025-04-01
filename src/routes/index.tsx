@@ -55,6 +55,8 @@ import ListOrgKitchens from "../pages/apps/Organizations/ListOrgKitchens";
 
 
 import CollaborationDetailsPage from "../pages/apps/colloborations/Colloborationsdetails";
+import SelectedKitchen from "../pages/apps/kitchen/SelectedKitchenDetails";
+import SelectedKitchenDetails from "../pages/apps/kitchen/SelectedKitchenDetails";
 import OrgEmployeeManagement from "../pages/apps/Organisationemployee/addorgemployee";
 import OrgEmployeeList from "../pages/apps/Organisationemployee/listorgemployee";
 import OrgEmployeeEdit from "../pages/apps/Organisationemployee/editorgemployee";
@@ -63,7 +65,6 @@ import EmployeeManagement from "../pages/apps/Adminemployee/addemployee";
 import EmployeeList from "../pages/apps/Adminemployee/listemployee";
 import EditEmployee from "../pages/apps/Adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/Adminemployee/employeedetails";
-
 
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
@@ -400,6 +401,11 @@ const organizationsAppRoutes = {
       path:"/apps/colloborated",
       name:"Colloborated kitchens",
       element:<CollaborationsPage/>
+    },
+    {
+      path:"/apps/selected-kitchen/:kitchen/collab",
+      name:"Colloborated kitchens",
+      element:<SelectedKitchenDetails/>
     },
     {
       path:"/apps/colloborated/details/:id",

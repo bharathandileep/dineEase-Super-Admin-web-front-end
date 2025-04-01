@@ -8,6 +8,7 @@ const api = new APICore();
 
 const INIT_STATE = {
   user: api.getLoggedInUserInfo() as UserData | {},
+  userLoggedIn: false,
   loading: false,
 };
 
@@ -39,6 +40,7 @@ interface AuthActionType {
 
 interface State {
   user?: UserData | {};
+  userLoggedIn: boolean;
   loading?: boolean;
   value?: boolean;
 }
@@ -48,12 +50,13 @@ const Auth = (state: State = INIT_STATE, action: AuthActionType): any => {
     case AuthActionTypes.API_RESPONSE_SUCCESS:
       switch (action.payload.actionType) {
         case AuthActionTypes.LOGIN_USER: {
-          return {
+          const newState = {
             ...state,
             user: action.payload.data,
             userLoggedIn: true,
             loading: false,
           };
+          return newState;
         }
         case AuthActionTypes.EMP_LOGIN_USER: {
           return {
