@@ -245,7 +245,7 @@ const EditEmployee = () => {
       const formDataToSubmit = new FormData();
 
       formDataToSubmit.append("entity_id", "67a1083b3c9f01a384e9683c");
-      formDataToSubmit.append("entity_type", "admin");
+      formDataToSubmit.append("entity_type", "Admin");
       formDataToSubmit.append("designation", data.designation);
       formDataToSubmit.append("username", data.username);
       formDataToSubmit.append("email", data.email);
