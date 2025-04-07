@@ -18,7 +18,7 @@ import {
 import { toast } from "react-toastify";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import { formatDateToDDMMYY, getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 // Define interfaces
 type FoodItem = {
@@ -443,7 +443,7 @@ function KitchensDetails() {
                 </p>
                 <p className="mb-2">
                   <strong>Expiry Date:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.expiry_date}
+                  {formatDateToDDMMYY(kitchenData?.fssaiDetails[0]?.expiry_date)}
                 </p>
               </div>
               {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
@@ -510,7 +510,7 @@ function KitchensDetails() {
                 </p>
                 <p className="mb-2">
                   <strong>Expiry Date:</strong>{" "}
-                  {kitchenData?.gstDetails[0]?.expiry_date}
+                  {formatDateToDDMMYY(kitchenData?.gstDetails[0]?.expiry_date)}
                 </p>
               </div>
               {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (

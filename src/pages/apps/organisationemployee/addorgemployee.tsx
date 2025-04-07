@@ -289,14 +289,6 @@ const OrgEmployeeManagement = () => {
                     handleFileUpload(Array.from(files), setProfileImage)
                   }
                 />
-                {profileImage && (
-                  <Image
-                    src={URL.createObjectURL(profileImage)}
-                    alt="Profile Preview"
-                    className="mt-3"
-                    style={{ maxWidth: "100%", maxHeight: "200px" }}
-                  />
-                )}
               </Card.Body>
             </Card>
           </Col>
@@ -465,7 +457,13 @@ const OrgEmployeeManagement = () => {
                       containerClass="mb-3"
                       register={register}
                       errors={formErrors}
-                      validation={{ required: "Aadhaar number is required" }}
+                      validation={{
+                        required: "Aadhaar number is required",
+                        pattern: {
+                          value: /^\d{12}$/,
+                          message: "Aadhaar must be exactly 12 digits",
+                        },
+                      }}
                     />
                     <div className="mb-3">
                       <label className="form-label">Aadhaar Card Image</label>
@@ -474,14 +472,6 @@ const OrgEmployeeManagement = () => {
                           handleFileUpload(Array.from(files), setAadharImage)
                         }
                       />
-                      {aadharImage && (
-                        <Image
-                          src={URL.createObjectURL(aadharImage)}
-                          alt="Aadhaar Preview"
-                          className="mt-3"
-                          style={{ maxWidth: "100%", maxHeight: "200px" }}
-                        />
-                      )}
                     </div>
                   </Col>
                   <Col md={6}>
@@ -492,7 +482,14 @@ const OrgEmployeeManagement = () => {
                       containerClass="mb-3"
                       register={register}
                       errors={formErrors}
-                      validation={{ required: "PAN number is required" }}
+                      validation={{
+                        required: "PAN number is required",
+                        pattern: {
+                          value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                          message:
+                            "Invalid PAN number format (e.g., ABCDE1234F)",
+                        },
+                      }}
                     />
                     <div className="mb-3">
                       <label className="form-label">PAN Card Image</label>
@@ -501,14 +498,6 @@ const OrgEmployeeManagement = () => {
                           handleFileUpload(Array.from(files), setPanImage)
                         }
                       />
-                      {panImage && (
-                        <Image
-                          src={URL.createObjectURL(panImage)}
-                          alt="PAN Preview"
-                          className="mt-3"
-                          style={{ maxWidth: "100%", maxHeight: "200px" }}
-                        />
-                      )}
                     </div>
                   </Col>
                 </Row>
@@ -521,7 +510,7 @@ const OrgEmployeeManagement = () => {
             <Button
               variant="danger"
               className="me-2"
-              onClick={() => navigate("/apps/organizations/employ/list")}
+              onClick={() => navigate("/apps/organizations/employee/list")}
             >
               Cancel
             </Button>

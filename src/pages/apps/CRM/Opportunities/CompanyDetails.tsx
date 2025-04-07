@@ -126,17 +126,6 @@ const CompanyDetails = (props: CompanyDetailsProps) => {
                 </div>
               </form>
             </Col>
-            {/* <Col lg={4}>
-              <div className="text-lg-end mt-3 mt-lg-0">
-                <Button
-                  variant="danger"
-                  className="waves-effect waves-light"
-                  onClick={onOpenModal}
-                >
-                  <i className="mdi mdi-plus-circle me-1"></i> Add New
-                </Button>
-              </div>
-            </Col> */}
           </Row>
         </Card.Body>
       </Card>

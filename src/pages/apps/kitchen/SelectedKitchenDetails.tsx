@@ -61,7 +61,6 @@ function SelectedKitchenDetails() {
       setLoading(true);
       try {
         const response = await getkitchenDetails(kitchen);
-        console.log(response);
         setKitchenData(response.data);
       } catch (error: any) {
         console.error("Error fetching kitchen details:", error);

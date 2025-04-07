@@ -447,11 +447,18 @@ const EmployeeManagement = () => {
                       containerClass="mb-3"
                       register={register}
                       errors={formErrors}
-                      validation={{ required: "Aadhaar number is required" }}
+                      validation={{
+                        required: "Aadhaar number is required",
+                        pattern: {
+                          value: /^\d{12}$/,
+                          message: "Aadhaar must be exactly 12 digits",
+                        },
+                      }}
                     />
                     <div className="mb-3">
                       <label className="form-label">Aadhaar Card Image</label>
                       <FileUploader
+                        // multiple={false}
                         onFileUpload={(files) =>
                           handleFileUpload(Array.from(files), setAadharImage)
                         }
@@ -466,7 +473,14 @@ const EmployeeManagement = () => {
                       containerClass="mb-3"
                       register={register}
                       errors={formErrors}
-                      validation={{ required: "PAN number is required" }}
+                      validation={{
+                        required: "PAN number is required",
+                        pattern: {
+                          value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                          message:
+                            "Invalid PAN number format (e.g., ABCDE1234F)",
+                        },
+                      }}
                     />
                     <div className="mb-3">
                       <label className="form-label">PAN Card Image</label>

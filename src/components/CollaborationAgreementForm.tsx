@@ -94,7 +94,7 @@ function CollaborationQuotationForm() {
       <h1 className="mb-2 fs-2">Meal Service Quotation Form</h1>
       <div className="row justify-content-center">
         {!showPreview ? (
-          <div className="col-md-8">
+          <div>
             <form className="bg-white p-4 rounded shadow-sm">
               <h3 className="mb-3">Organization Details</h3>
               <div className="mb-3">
@@ -254,7 +254,7 @@ function CollaborationQuotationForm() {
             </form>
           </div>
         ) : (
-          <div className="col-md-8">
+          <div>
             <div className="bg-white p-4 rounded shadow-sm">
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3>Quotation Preview</h3>

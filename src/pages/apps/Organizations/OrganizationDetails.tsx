@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { formatDateToDDMMYY } from "../../../helpers/api/utils";
 
 export interface IOrganizationDetails {
   _id: string;
@@ -365,8 +366,8 @@ function OrganizationDetails() {
                   {organization?.gstDetails[0].gst_number}
                 </p>
                 <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}
-                  {organization?.gstDetails[0].expiry_date}
+                  <strong text-xl>Expiry Date:</strong>{" "}                
+                  {formatDateToDDMMYY(organization?.gstDetails[0].expiry_date)}
                 </p>
               </div>
               <img
