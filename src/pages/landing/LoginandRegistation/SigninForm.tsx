@@ -180,6 +180,7 @@ const SigninForm: React.FC = () => {
       if (response.status) {
         toast.success(response.message);
         navigate("/");
+        window.location.reload()
       } else {
         toast.error(response.message || "OTP verification failed");
       }
@@ -393,15 +394,18 @@ const SigninForm: React.FC = () => {
         )}
       </div>
 
-      <div className="d-grid mb-3">
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={otpTimer === 0}
-        >
-          {showLoader ? <Spinner color="light" /> : "Verify OTP"}
-        </button>
-      </div>
+      {otpTimer !== 0 && (
+        <div className="d-grid mb-3">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={otpTimer === 0}
+          >
+            {showLoader ? <Spinner color="light" /> : "Verify OTP"}
+          </button>
+        </div>
+      )}
+
       <div className="d-grid">
         <button
           type="button"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Card } from "react-bootstrap";
 import Dropzone from "react-dropzone";
@@ -17,24 +17,19 @@ const FileUploader = (props: FileUploaderProps) => {
   const [selectedFiles, setSelectedFiles] = useState<FileType[]>([]);
 
   const handleAcceptedFiles = (files: FileType[]) => {
-    var allFiles = files;
+    const imageFile = files.find((file) => file.type.startsWith("image/"));
+    if (!imageFile) return;
 
     if (props.showPreview) {
-      (files || []).map((file) =>
-        Object.assign(file, {
-          preview:
-            file["type"].split("/")[0] === "image"
-              ? URL.createObjectURL(file)
-              : null,
-          formattedSize: formatBytes(file.size),
-        })
-      );
-      allFiles = [...selectedFiles];
-      allFiles.push(...files);
-      setSelectedFiles(allFiles);
+      Object.assign(imageFile, {
+        preview: URL.createObjectURL(imageFile),
+        formattedSize: formatBytes(imageFile.size),
+      });
     }
 
-    if (props.onFileUpload) props.onFileUpload(allFiles);
+    setSelectedFiles([imageFile]);
+
+    if (props.onFileUpload) props.onFileUpload([imageFile]);
   };
 
   /**
@@ -60,10 +55,24 @@ const FileUploader = (props: FileUploaderProps) => {
     if (props.onFileUpload) props.onFileUpload(newFiles);
   };
 
+  /*
+   * Clean up previews on unmount
+   */
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach((file) => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+    };
+  }, [selectedFiles]);
+
   return (
     <>
       <Dropzone
-        {...props}
+        accept="image/*"
+        multiple={false}
         onDrop={(acceptedFiles) => handleAcceptedFiles(acceptedFiles)}
       >
         {({ getRootProps, getInputProps }) => (
@@ -71,62 +80,61 @@ const FileUploader = (props: FileUploaderProps) => {
             <div className="dz-message needsclick" {...getRootProps()}>
               <input {...getInputProps()} />
               <i className="h3 text-muted dripicons-cloud-upload"></i>
-              <h4>Drop files here or click to upload.</h4>
+              <h4>Drop image here or click to upload.</h4>
               <span className="text-muted font-13">
-                (This is just a demo dropzone. Selected files are{" "}
-                <strong>not</strong> actually uploaded.)
+                Only one image allowed. (This is a demo; files are not
+                uploaded.)
               </span>
             </div>
           </div>
         )}
       </Dropzone>
 
-      {props.showPreview && (
+      {props.showPreview && selectedFiles.length > 0 && (
         <div className="dropzone-previews mt-3" id="uploadPreviewTemplate">
-          {(selectedFiles || []).map((f, i) => {
-            return (
-              <Card className="mt-1 mb-0 shadow-none border" key={i + "-file"}>
-                <div className="p-2">
-                  <Row className="align-items-center">
-                    {f.preview && (
-                      <Col className="col-auto">
-                        <img
-                          data-dz-thumbnail=""
-                          className="avatar-sm rounded bg-light"
-                          alt={f.name}
-                          src={f.preview}
-                        />
-                      </Col>
-                    )}
-                    {!f.preview && (
-                      <Col className="col-auto">
-                        <div className="avatar-sm">
-                          <span className="avatar-title bg-primary rounded">
-                            {f.type.split("/")[0]}
-                          </span>
-                        </div>
-                      </Col>
-                    )}
-                    <Col className="ps-0">
-                      <Link to="#" className="text-muted fw-bold">
-                        {f.name}
-                      </Link>
-                      <p className="mb-0">
-                        <strong>{f.formattedSize}</strong>
-                      </p>
+          {selectedFiles.map((f, i) => (
+            <Card className="mt-1 mb-0 shadow-none border" key={i + "-file"}>
+              <div className="p-2">
+                <Row className="align-items-center">
+                  {f.preview ? (
+                    <Col className="col-auto">
+                      <img
+                        data-dz-thumbnail=""
+                        className="avatar-sm rounded bg-light"
+                        alt={f.name}
+                        src={f.preview}
+                      />
                     </Col>
-                    <Col className="text-end">
-                      <Link
-                        to="#"
-                        className="btn btn-link btn-lg text-muted shadow-none"
-                      >
-                        <i
-                          className="dripicons-cross"
-                          onClick={() => removeFile(i)}
-                        ></i>
-                      </Link>
+                  ) : (
+                    <Col className="col-auto">
+                      <div className="avatar-sm">
+                        <span className="avatar-title bg-primary rounded">
+                          {f.type.split("/")[0]}
+                        </span>
+                      </div>
                     </Col>
-                  </Row>
+                  )}
+                  <Col className="ps-0">
+                    <Link to="#" className="text-muted fw-bold">
+                      {f.name}
+                    </Link>
+                    <p className="mb-0">
+                      <strong>{f.formattedSize}</strong>
+                    </p>
+                  </Col>
+                  <Col className="text-end">
+                    <Link
+                      to="#"
+                      className="btn btn-link btn-lg text-muted shadow-none"
+                    >
+                      <i
+                        className="dripicons-cross"
+                        onClick={() => removeFile(i)}
+                      ></i>
+                    </Link>
+                  </Col>
+                </Row>
+                <div className="w-100 d-flex justify-content-center">
                   <img
                     src={f.preview}
                     alt="Profile Preview"
@@ -134,9 +142,9 @@ const FileUploader = (props: FileUploaderProps) => {
                     style={{ maxWidth: "100%", maxHeight: "200px" }}
                   />
                 </div>
-              </Card>
-            );
-          })}
+              </div>
+            </Card>
+          ))}
         </div>
       )}
     </>

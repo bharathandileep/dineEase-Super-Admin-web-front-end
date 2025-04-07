@@ -1,8 +1,6 @@
 import React from "react";
 
 import AllRoutes from "./routes/Routes";
-
-// For Default import Default.scss
 import "./assets/scss/Default.scss";
 
 // Other
@@ -18,5 +16,4 @@ const App = () => {
     </>
   );
 };
-
 export default App;

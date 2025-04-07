@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Navbar from "./Navbar";
 import Slider from "react-slick";
+import axios from "axios";
 
 function index() {
   const testimonialSettings = {
@@ -18,6 +19,12 @@ function index() {
     arrows: true,
   };
 
+  const demo = async () => {
+    const response = await axios.post(
+      "http://localhost:5000/api/v1/auth/new/access-token"
+    );
+    console.log(response.data);
+  };
   const testimonials = [
     {
       text: "DineEas transformed our cafeteria operations. The efficiency gains are remarkable.",
@@ -55,7 +62,10 @@ function index() {
                 Elevate your dining operations with smart management, real-time
                 analytics, and seamless ordering systems
               </p>
-              <button className="btn btn-primary btn-lg rounded-pill px-5">
+              <button
+                className="btn btn-primary btn-lg rounded-pill px-5"
+                onClick={demo}
+              >
                 Schedule a Demo
               </button>
             </div>

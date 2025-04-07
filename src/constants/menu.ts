@@ -120,14 +120,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
         parentKey: "apps-menu",
         children: [
           {
-            key: "category",
+            key: "Menu-category",
             label: "• Category",
             url: "/apps/menu/category",
             access: ["Admin"],
             parentKey: "menu-list",
           },
           {
-            key: "subcategory",
+            key: "Menu-subcategory",
             label: "• Subcategory",
             url: "/apps/menu/subcategory",
             access: ["Admin"],
@@ -143,13 +143,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
         parentKey: "apps-menu",
         children: [
           {
-            key: "category",
+            key: "Organization-category",
             label: "• Category",
             url: "/apps/organizations/category",
             parentKey: "app-orgaization-category",
           },
           {
-            key: "sub-category",
+            key: "Organization-sub-category",
             label: "• Subcategory",
             url: "/apps/organizations/subcategory",
             parentKey: "app-orgaization-category",
@@ -163,14 +163,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
         parentKey: "apps-menu",
         children: [
           {
-            key: "category",
+            key: "Kitchens-category",
             icon: "mdi-circle-medium",
             label: "• Category",
             url: "/apps/kitchen/category",
             parentKey: "app-menu-category",
           },
           {
-            key: "sub-category",
+            key: "Kitchens-sub-category",
             label: "• Subcategory",
             url: "/apps/kitchen/subcategory",
             parentKey: "app-menu-category",
