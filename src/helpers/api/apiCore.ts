@@ -75,23 +75,23 @@ const refreshTokenLogic = async (): Promise<string> => {
   }
 };
 
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-//       try {
-//         const token = await refreshTokenLogic();
-//         originalRequest.headers["Authorization"] = `Bearer ${token}`;
-//         return axiosInstance(originalRequest);
-//       } catch (refreshError) {
-//         return Promise.reject(refreshError);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const token = await refreshTokenLogic();
+        originalRequest.headers["Authorization"] = `Bearer ${token}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Request interceptor
 
@@ -106,24 +106,24 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// const setupTokenRefreshInterval = () => {
-//   if (window._tokenRefreshInterval) {
-//     clearInterval(window._tokenRefreshInterval);
-//   }
+const setupTokenRefreshInterval = () => {
+  if (window._tokenRefreshInterval) {
+    clearInterval(window._tokenRefreshInterval);
+  }
 
-//   window._tokenRefreshInterval = setInterval(async () => {
-//     const token = getUserFromCookie();
-//     if (token) {
-//       try {
-//         await refreshTokenLogic();
-//       } catch (error) {
-//         console.error("Token refresh failed:", error);
-//         localStorage.removeItem(AUTH_SESSION_KEY);
-//         window.location.href = "/";
-//       }
-//     }
-//   }, REFRESH_INTERVAL);
-// };
+  window._tokenRefreshInterval = setInterval(async () => {
+    const token = getUserFromCookie();
+    if (token) {
+      try {
+        await refreshTokenLogic();
+      } catch (error) {
+        console.error("Token refresh failed:", error);
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        window.location.href = "/";
+      }
+    }
+  }, REFRESH_INTERVAL);
+};
 
 class APICore {
   get = (url: string, params: any) => {
@@ -236,7 +236,7 @@ const initializeAxios = () => {
       console.error("Error updating Redux store on init:", error);
     }
   }
-  // setupTokenRefreshInterval();
+  setupTokenRefreshInterval();
 };
 
 // Initialize immediately instead of with a timeout
