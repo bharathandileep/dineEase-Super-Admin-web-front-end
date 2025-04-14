@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -32,6 +31,7 @@ import logoDark2 from "../assets/images/logo-dark-2.png";
 import logoLight from "../assets/images/logo-light.png";
 import logoLight2 from "../assets/images/logo-light-2.png";
 import { useViewport } from "../hooks/useViewPort";
+import { getContext } from "../helpers/api/utils";
 
 export interface NotificationItem {
   id: number;
@@ -42,6 +42,7 @@ export interface NotificationItem {
   bgColor?: string;
   message?: string;
 }
+const authContextDetails = getContext();
 
 // get the notifications
 const Notifications: NotificationItem[] = [
@@ -92,17 +93,7 @@ const ProfileMenus = [
   {
     label: "My Account",
     icon: "fe-user",
-    redirectTo: "/apps/profile/123",
-  },
-  {
-    label: "Settings",
-    icon: "fe-settings",
-    redirectTo: "#",
-  },
-  {
-    label: "Lock Screen",
-    icon: "fe-lock",
-    redirectTo: "/auth/lock-screen",
+    redirectTo: `/apps/profile/${authContextDetails?.slug}`,
   },
   {
     label: "Logout",
@@ -228,30 +219,29 @@ const Topbar = ({
     leftSideBarType: state.Layout.leftSideBarType,
   }));
 
-
   /**
    * Toggle the leftmenu when having mobile screen
    */
   const handleLeftMenuCallBack = () => {
     if (width < 1140) {
-      if (leftSideBarType === 'full') {
+      if (leftSideBarType === "full") {
         showLeftSideBarBackdrop();
-        document.getElementsByTagName("html")[0].classList.add("sidebar-enable");
-      }
-      else {
+        document
+          .getElementsByTagName("html")[0]
+          .classList.add("sidebar-enable");
+      } else {
         dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_FULL));
       }
     } else if (leftSideBarType === "condensed") {
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_DEFAULT));
-    } else if (leftSideBarType === 'full') {
+    } else if (leftSideBarType === "full") {
       showLeftSideBarBackdrop();
       document.getElementsByTagName("html")[0].classList.add("sidebar-enable");
-    } else if (leftSideBarType === 'fullscreen') {
+    } else if (leftSideBarType === "fullscreen") {
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_DEFAULT));
       // showLeftSideBarBackdrop();
       document.getElementsByTagName("html")[0].classList.add("sidebar-enable");
-    }
-    else {
+    } else {
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_CONDENSED));
     }
   };
@@ -274,7 +264,9 @@ const Topbar = ({
     }
 
     backdrop.addEventListener("click", function (e) {
-      document.getElementsByTagName("html")[0].classList.remove("sidebar-enable");
+      document
+        .getElementsByTagName("html")[0]
+        .classList.remove("sidebar-enable");
       dispatch(changeSidebarType(SideBarTypes.LEFT_SIDEBAR_TYPE_FULL));
       hideLeftSideBarBackdrop();
     });
@@ -356,7 +348,7 @@ const Topbar = ({
             {/* <div className="dropdown d-none d-xl-block">
               <CreateNew otherOptions={otherOptions} />
             </div> */}
-            
+
             {/* <div className="dropdown dropdown-mega d-none d-xl-block">
               <MegaMenu subMenus={MegaMenuOptions} />
             </div> */}
@@ -398,7 +390,6 @@ const Topbar = ({
               </button>
             </li> */}
           </ul>
-          
         </div>
       </div>
     </React.Fragment>

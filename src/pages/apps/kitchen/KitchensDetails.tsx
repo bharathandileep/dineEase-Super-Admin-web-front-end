@@ -18,7 +18,14 @@ import {
 import { toast } from "react-toastify";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
-import { formatDateToDDMMYY, getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import {
+  formatDateToDDMMYY,
+  getAccessDetailsFromLocalStorage,
+  getContext,
+} from "../../../helpers/api/utils";
+import PANDetailsModal from "../../../components/PANDetailsModal";
+import GSTDetailsModal from "../../../components/GSTDetailsModal";
+import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
 
 // Define interfaces
 type FoodItem = {
@@ -31,7 +38,7 @@ type FoodItem = {
   reviews_id: { comment: string; rating: number }[];
 };
 
-type TransformedData = Record<string, Record<string, FoodItem[]>>;
+export type TransformedData = Record<string, Record<string, FoodItem[]>>;
 
 export interface IKitchenDetails {
   _id: string;
@@ -99,8 +106,14 @@ function KitchensDetails() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<FoodItem[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
+  const [showPanModal, setShowPanModal] = useState(false);
+  const [showGSTModal, setShowGSTModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const fssaiDetails = kitchenData?.fssaiDetails?.[0];
+  const panDetails = kitchenData?.panDetails[0];
+  const gstDetails = kitchenData?.gstDetails[0];
   const accessDetails = getAccessDetailsFromLocalStorage();
-
+  const authContextDetails = getContext();
   const onEdit = () => navigate(`/apps/kitchen/edit/${id}`);
 
   const onDelete = async () => {
@@ -354,12 +367,14 @@ function KitchensDetails() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                          badge === "Active" || badge === "Inactive"
+                          accessDetails.role === "Admin" &&
+                          (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",
                       }}
                       onClick={
-                        badge === "Active" || badge === "Inactive"
+                        accessDetails.role === "Admin" &&
+                        (badge === "Active" || badge === "Inactive")
                           ? () => handleStatusToggle()
                           : undefined
                       }
@@ -382,77 +397,73 @@ function KitchensDetails() {
               </div>
             </div>
           </Col>
-          <Col
-            xs={12}
-            md={3}
-            className="d-flex justify-content-md-end mt-4 mt-md-0"
-          >
-            <div className="d-flex gap-2">
-              <Button
-                variant="light"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={onEdit}
-              >
-                <i className="mdi mdi-pencil"></i>
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "rgba(220, 53, 69, 0.9)",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={onDelete}
-              >
-                <i className="mdi mdi-delete"></i>
-                Delete
-              </Button>
-            </div>
-          </Col>
+          {(accessDetails.role === "Admin" ||
+            authContextDetails?.contextId === kitchenData._id) && (
+            <Col
+              xs={12}
+              md={3}
+              className="d-flex justify-content-md-end mt-4 mt-md-0"
+            >
+              <div className="d-flex gap-2">
+                <Button
+                  variant="light"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onEdit}
+                >
+                  <i className="mdi mdi-pencil"></i>
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(220, 53, 69, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onDelete}
+                >
+                  <i className="mdi mdi-delete"></i>
+                  Delete
+                </Button>
+              </div>
+            </Col>
+          )}
         </Row>
       </div>
       <Row className="mb-4 g-3">
         <Col md={6}>
-          <Card className="h-100 shadow-sm">
+          <Card
+            className="h-100 shadow-sm"
+            style={{
+              cursor: fssaiDetails?.ffsai_certificate_image
+                ? "pointer"
+                : "default",
+            }}
+            onClick={() => {
+              if (fssaiDetails?.ffsai_certificate_image) setShowModal(true);
+            }}
+          >
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">
                   FSSAI License
                 </h5>
-                <VerificationButton
-                  isVerified={kitchenData?.isapproved || false}
-                />
               </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>Certificate Number:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.ffsai_certificate_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Licence owner:</strong>{" "}
-                  {kitchenData?.fssaiDetails[0]?.ffsai_card_owner_name}
-                </p>
-                <p className="mb-2">
-                  <strong>Expiry Date:</strong>{" "}
-                  {formatDateToDDMMYY(kitchenData?.fssaiDetails[0]?.expiry_date)}
-                </p>
-              </div>
-              {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
+              {fssaiDetails?.ffsai_certificate_image && (
                 <img
-                  src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
+                  src={fssaiDetails.ffsai_certificate_image}
                   alt="FSSAI Certificate"
                   className="img-fluid rounded"
                   style={{
-                    maxHeight: "150px",
+                    maxHeight: "250px",
                     objectFit: "cover",
                     width: "100%",
                   }}
@@ -463,68 +474,73 @@ function KitchensDetails() {
         </Col>
 
         <Col md={6}>
-          <Card className="h-100 shadow-sm">
+          <Card
+            className="h-100 shadow-sm"
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowPanModal(true)}
+          >
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">PAN Details</h5>
-                <VerificationButton
-                  isVerified={kitchenData?.isapproved || false}
-                />
+                {accessDetails.role === "Admin" && (
+                  <VerificationButton
+                    isVerified={kitchenData?.isapproved || false}
+                  />
+                )}
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong>PAN Number:</strong>{" "}
-                  {kitchenData?.panDetails[0]?.pan_card_number}
+                  <strong>PAN Number:</strong> {panDetails?.pan_card_number}
                 </p>
                 <p className="mb-2">
-                  <strong>Card Holder:</strong>{" "}
-                  {kitchenData?.panDetails[0]?.pan_card_user_name}
+                  <strong>Card Holder:</strong> {panDetails?.pan_card_user_name}
                 </p>
               </div>
-              {kitchenData?.panDetails?.[0]?.pan_card_image && (
-                <img
-                  src={kitchenData.panDetails[0].pan_card_image}
-                  alt="PAN Card"
-                  className="img-fluid rounded"
-                  style={{ maxHeight: "150px", objectFit: "cover" }}
-                />
-              )}
+              <img
+                src={panDetails?.pan_card_image}
+                alt="PAN Card"
+                className="img-fluid rounded"
+                style={{ maxHeight: "150px", objectFit: "cover" }}
+              />
             </Card.Body>
           </Card>
         </Col>
         <Col md={6}>
-          <Card className="h-100 shadow-sm">
+          <Card
+            className="h-100 shadow-sm"
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowGSTModal(true)}
+          >
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">
                   GST Registration
                 </h5>
-                <VerificationButton
-                  isVerified={kitchenData?.isapproved || false}
-                />
+                {accessDetails.role === "Admin" && (
+                  <VerificationButton
+                    isVerified={kitchenData?.isapproved || false}
+                  />
+                )}
               </div>
               <div className="mb-3">
                 <p className="mb-2">
-                  <strong>GST Number:</strong>{" "}
-                  {kitchenData?.gstDetails[0]?.gst_number}
+                  <strong>GST Number:</strong> {gstDetails?.gst_number}
                 </p>
                 <p className="mb-2">
                   <strong>Expiry Date:</strong>{" "}
-                  {formatDateToDDMMYY(kitchenData?.gstDetails[0]?.expiry_date)}
+                  {formatDateToDDMMYY(gstDetails?.expiry_date)}
                 </p>
               </div>
-              {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
-                <img
-                  src={kitchenData.gstDetails[0].gst_certificate_image}
-                  alt="GST Certificate"
-                  className="img-fluid rounded"
-                  style={{
-                    maxHeight: "150px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                />
-              )}
+              <img
+                src={gstDetails?.gst_certificate_image}
+                alt="GST Certificate"
+                className="img-fluid rounded"
+                style={{
+                  maxHeight: "150px",
+                  objectFit: "cover",
+                  width: "100%",
+                }}
+              />
             </Card.Body>
           </Card>
         </Col>
@@ -800,6 +816,22 @@ function KitchensDetails() {
           </Card.Body>
         </Card>
       )}
+      <PANDetailsModal
+        show={showPanModal}
+        onHide={() => setShowPanModal(false)}
+        panDetails={panDetails}
+      />
+      <GSTDetailsModal
+        show={showGSTModal}
+        onHide={() => setShowGSTModal(false)}
+        gstDetails={gstDetails}
+        formatDateToDDMMYY={formatDateToDDMMYY}
+      />
+      <FSSAILicenseModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        fssaiDetails={fssaiDetails}
+      />
     </div>
   );
 }

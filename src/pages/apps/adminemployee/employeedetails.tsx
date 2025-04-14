@@ -32,7 +32,7 @@ interface Employee {
 }
 
 const EmployeeDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>(); 
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();

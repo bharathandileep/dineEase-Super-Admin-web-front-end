@@ -448,7 +448,7 @@ export default function MenuDetails() {
                         {editedFood.viewType === "Organization" && (
                           <p className="fs-4 fw-bold text-success">
                             {editedFood.priceOrganization
-                              ? `$${Number(
+                              ? `₹${Number(
                                   editedFood.priceOrganization
                                 ).toFixed(2)}`
                               : "No price set for organization"}
@@ -457,7 +457,7 @@ export default function MenuDetails() {
                         {editedFood.viewType === "User" && (
                           <p className="fs-4 fw-bold text-success">
                             {editedFood.priceUser
-                              ? `$${Number(editedFood.priceUser).toFixed(2)}`
+                              ? `₹${Number(editedFood.priceUser).toFixed(2)}`
                               : "No price set for user"}
                           </p>
                         )}
@@ -465,14 +465,14 @@ export default function MenuDetails() {
                           <>
                             <p className="fs-4 fw-bold text-success">
                               {editedFood.priceOrganization
-                                ? `$${Number(
+                                ? `₹${Number(
                                     editedFood.priceOrganization
                                   ).toFixed(2)}`
                                 : "No price set for organization"}
                             </p>
                             <p className="fs-4 fw-bold text-success">
                               {editedFood.priceUser
-                                ? `$${Number(editedFood.priceUser).toFixed(2)}`
+                                ? `₹${Number(editedFood.priceUser).toFixed(2)}`
                                 : "No price set for user"}
                             </p>
                           </>

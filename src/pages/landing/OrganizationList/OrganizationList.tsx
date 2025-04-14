@@ -5,6 +5,7 @@ import { getUserApprovedOrganizations } from "../../../server/admin/organization
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
+import { setContext } from "../../../helpers/api/utils";
 
 interface Organization {
   id: number;
@@ -38,7 +39,7 @@ const OrganizationList = () => {
           setOrganizations(response.data.organizations);
         }
         setLoading(false);
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching organizations:", error);
         setLoading(false);
       }
@@ -53,7 +54,11 @@ const OrganizationList = () => {
       orgId: organization.id,
       slug: organization.slug,
     };
-
+    setContext({
+      contextId: organization.id,
+      contextType: "Organization",
+      slug: organization.slug,
+    });
     if (user.role === "Employee") {
       organizationViewDetails.role = "Employee";
     }
@@ -85,11 +90,11 @@ const OrganizationList = () => {
   return (
     <>
       <DashboardNavbar />
-      <div className='py-5 bg-white'>
-        <h2 className='text-center mb-5 fw-bold' style={{ color: "#2c3e50" }}>
+      <div className="py-5 bg-white">
+        <h2 className="text-center mb-5 fw-bold" style={{ color: "#2c3e50" }}>
           Partner Organizations
           <div
-            className='w-25 mx-auto mt-2'
+            className="w-25 mx-auto mt-2"
             style={{
               height: "3px",
               background:
@@ -97,12 +102,12 @@ const OrganizationList = () => {
             }}
           ></div>
         </h2>
-        <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5'>
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5">
           {organizations.map((org) => (
-            <div key={org.id} className='col'>
-              <div className='card h-100 border-0 shadow-sm hover-card'>
+            <div key={org.id} className="col">
+              <div className="card h-100 border-0 shadow-sm hover-card">
                 <div
-                  className='position-relative'
+                  className="position-relative"
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
                 >
                   <img
@@ -133,32 +138,32 @@ const OrganizationList = () => {
                   </div>
                 </div>
                 <div
-                  className='card-body'
+                  className="card-body"
                   style={{
                     background: "linear-gradient(to bottom, #ffffff, #f8f9fa)",
                   }}
                 >
-                  <h5 className='card-title fw-bold mb-3'>{org.name}</h5>
+                  <h5 className="card-title fw-bold mb-3">{org.name}</h5>
                   <p
-                    className='card-text text-muted mb-2'
+                    className="card-text text-muted mb-2"
                     style={{ fontSize: "0.9rem" }}
                   >
-                    <i className='bi bi-geo-alt-fill me-2 text-primary'></i>
+                    <i className="bi bi-geo-alt-fill me-2 text-primary"></i>
                     {org.address}
                   </p>
-                  <div className='mb-3'>
+                  <div className="mb-3">
                     {(org.industry || []).map((type, index) => (
                       <span
                         key={index}
-                        className='badge bg-soft-primary me-2 mb-1'
+                        className="badge bg-soft-primary me-2 mb-1"
                         style={{ color: "#9e9e9e" }}
                       >
                         {type}
                       </span>
                     ))}
                   </div>
-                  <p className='small text-muted mb-3'>
-                    <i className='bi bi-people-fill me-2 text-success'></i>
+                  <p className="small text-muted mb-3">
+                    <i className="bi bi-people-fill me-2 text-success"></i>
                     Employees: {org.employees || "Not specified"}
                   </p>
                   <button
@@ -175,7 +180,7 @@ const OrganizationList = () => {
 
         <div className="text-center mt-5">
           <button
-            className='btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button'
+            className="btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button"
             style={{
               borderWidth: "2px",
               fontSize: "1.1rem",
@@ -183,10 +188,10 @@ const OrganizationList = () => {
             }}
             onClick={() => navigate("/request/organization")}
           >
-            <i className='bi bi-building-add me-2'></i>
+            <i className="bi bi-building-add me-2"></i>
             Add Your Organization
           </button>
-          <p className='text-muted mt-3'>
+          <p className="text-muted mt-3">
             Join our network of partner organizations
           </p>
         </div>
