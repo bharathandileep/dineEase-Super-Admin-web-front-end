@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { APICore } from "../helpers/api/apiCore";
-import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
+import { getAccessDetailsFromLocalStorage, getContext } from "../helpers/api/utils";
 
 interface PrivateRouteProps {
   roles?: string[];
@@ -20,7 +20,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
   const location = useLocation();
   
   const isAuthenticated = api.isUserAuthenticated();
-  const user = getAccessDetailsFromLocalStorage()
+  const user = getContext()
   const loggedInUser = api.getLoggedInUserInfo() as LoggedInUser | null;
   if (!loggedInUser) {
     return <Navigate to="/" />;
@@ -32,7 +32,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
         (role) => role.toLowerCase() === loggedInUser?.role.toLowerCase()
       )
     ) {
-      return <Navigate to={`/apps/${user.slug}`} replace />;
+      return <Navigate to={`/apps/${user?.slug}`} replace />;
     }
   }
 

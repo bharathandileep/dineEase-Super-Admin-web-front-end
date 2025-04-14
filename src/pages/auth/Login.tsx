@@ -11,6 +11,7 @@ import AuthLayout from "./AuthLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { loginUser } from "../../redux/actions";
+import { setContext } from "../../helpers/api/utils";
 
 interface UserData {
   userName: string;
@@ -38,6 +39,11 @@ const Login = () => {
       id: "67a1083b3c9f01a384e9683c",
       slug: "admin",
     };
+    setContext({
+      contextId: "67a1083b3c9f01a384e9683c",
+      contextType: "Admin",
+      slug: "admin",
+    });
     localStorage.setItem(
       "accessDetails",
       JSON.stringify(organizationViewDetails)

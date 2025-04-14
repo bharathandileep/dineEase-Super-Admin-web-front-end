@@ -11,7 +11,7 @@ export const setStoreReference = (store: any) => {
 };
 
 const AUTH_SESSION_KEY = "Session_token";
-const REFRESH_INTERVAL = 10 * 1000;
+const REFRESH_INTERVAL = 14*60 * 1000;
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({

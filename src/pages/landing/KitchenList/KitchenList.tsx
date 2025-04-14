@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
+import { setContext } from "../../../helpers/api/utils";
 
 const KitchenList = () => {
   interface Kitchen {
@@ -42,8 +43,14 @@ const KitchenList = () => {
       kitchenId: kitchen.id,
       slug: kitchen.slug,
     };
+
     if (kitchen.isapproved === "approved") {
       localStorage.setItem("accessDetails", JSON.stringify(kitchenViewDetails));
+      setContext({
+        contextId: kitchen.id,
+        contextType: "Kitchen",
+        slug: kitchen.slug,
+      });
       navigate(`/apps/${kitchen.slug}`);
     }
   };

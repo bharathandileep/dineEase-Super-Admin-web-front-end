@@ -5,7 +5,7 @@ interface DownloadFile {
   bom: any;
 }
 
-const downloadFile = ({ data, filename, mime, bom }: DownloadFile) => {
+export const downloadFile = ({ data, filename, mime, bom }: DownloadFile) => {
   var blobData = typeof bom !== "undefined" ? [bom, data] : [data];
   var blob = new Blob(blobData, { type: mime || "application/octet-stream" });
 
@@ -53,4 +53,50 @@ export const getAccessDetailsFromLocalStorage = () => {
   const data = localStorage.getItem("accessDetails");
   return data ? JSON.parse(data) : null;
 };
-export { downloadFile };
+
+// utils/contextStorage.ts
+
+export type ContextType = "Organization" | "Kitchen" | "Admin";
+
+export interface Context {
+  contextId: string | number;
+  contextType: ContextType;
+  slug: String;
+}
+
+const CONTEXT_KEY = "context";
+
+/**
+ * Save selected context to localStorage
+ */
+export function setContext(context: Context): void {
+  try {
+    localStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
+  } catch (err) {
+    console.error("Failed to save context", err);
+  }
+}
+
+/**
+ * Get context from localStorage
+ */
+export function getContext(): Context | null {
+  try {
+    const context = localStorage.getItem(CONTEXT_KEY);
+    return context ? (JSON.parse(context) as Context) : null;
+  } catch (err) {
+    console.error("Failed to parse context", err);
+    return null;
+  }
+}
+
+/**
+ * Clear context from localStorage
+ */
+export function clearContext(): void {
+  try {
+    localStorage.removeItem(CONTEXT_KEY);
+  } catch (err) {
+    console.error("Failed to remove context", err);
+  }
+}

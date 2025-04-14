@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 import { collaborateKitchen } from "../../../server/admin/collab";
 import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
 
 type FoodItem = {
   item_name: string;
@@ -88,6 +89,8 @@ function KitchenView() {
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string>("");
   const accessDetails = getAccessDetailsFromLocalStorage();
+  const [showModal, setShowModal] = useState(false);
+  const fssaiDetails = kitchenData?.fssaiDetails?.[0];
 
   const handleStatusToggle = async () => {
     setLoading(true);
@@ -334,12 +337,14 @@ function KitchenView() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                          badge === "Active" || badge === "Inactive"
+                          accessDetails.role === "Admin" &&
+                          (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",
                       }}
                       onClick={
-                        badge === "Active" || badge === "Inactive"
+                        accessDetails.role === "Admin" &&
+                        (badge === "Active" || badge === "Inactive")
                           ? () => handleStatusToggle()
                           : undefined
                       }
@@ -403,20 +408,30 @@ function KitchenView() {
 
       <Row className="mb-4 g-3">
         <Col md={6}>
-          <Card className="h-100 shadow-sm">
+          <Card
+            className="h-100 shadow-sm"
+            style={{
+              cursor: fssaiDetails?.ffsai_certificate_image
+                ? "pointer"
+                : "default",
+            }}
+            onClick={() => {
+              if (fssaiDetails?.ffsai_certificate_image) setShowModal(true);
+            }}
+          >
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">
                   FSSAI License
                 </h5>
               </div>
-              {kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image && (
+              {fssaiDetails?.ffsai_certificate_image && (
                 <img
-                  src={kitchenData.fssaiDetails[0].ffsai_certificate_image}
+                  src={fssaiDetails.ffsai_certificate_image}
                   alt="FSSAI Certificate"
                   className="img-fluid rounded"
                   style={{
-                    maxHeight: "150px",
+                    maxHeight: "250px",
                     objectFit: "cover",
                     width: "100%",
                   }}
@@ -425,49 +440,6 @@ function KitchenView() {
             </Card.Body>
           </Card>
         </Col>
-
-        <Col md={6}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">PAN Details</h5>
-              </div>
-              {kitchenData?.panDetails?.[0]?.pan_card_image && (
-                <img
-                  src={kitchenData.panDetails[0].pan_card_image}
-                  alt="PAN Card"
-                  className="img-fluid rounded"
-                  style={{ maxHeight: "150px", objectFit: "cover" }}
-                />
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  GST Registration
-                </h5>
-              </div>
-              {kitchenData?.gstDetails?.[0]?.gst_certificate_image && (
-                <img
-                  src={kitchenData.gstDetails[0].gst_certificate_image}
-                  alt="GST Certificate"
-                  className="img-fluid rounded"
-                  style={{
-                    maxHeight: "150px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                />
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
@@ -690,6 +662,11 @@ function KitchenView() {
           )}
         </Card.Body>
       </Card>
+      <FSSAILicenseModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        fssaiDetails={fssaiDetails}
+      />
     </div>
   );
 }

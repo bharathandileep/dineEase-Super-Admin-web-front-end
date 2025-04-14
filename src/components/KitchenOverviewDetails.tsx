@@ -15,12 +15,18 @@ import {
   toggleKitchenStatus,
 } from "../server/admin/kitchens";
 import { toast } from "react-toastify";
+import {
+  getAccessDetailsFromLocalStorage,
+  getContext,
+} from "../helpers/api/utils";
 
 function KitchenOverviewDetails({ kitchenData }: any) {
   const { kitchen } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
+  const accessDetails = getAccessDetailsFromLocalStorage();
+  const authContextDetails = getContext();
 
   const onEdit = () => navigate(`/apps/kitchen/edit/${kitchen}`);
 
@@ -153,12 +159,14 @@ function KitchenOverviewDetails({ kitchenData }: any) {
                       fontSize: "0.75rem",
                       fontWeight: "500",
                       cursor:
-                        badge === "Active" || badge === "Inactive"
+                        accessDetails.role === "Admin" &&
+                        (badge === "Active" || badge === "Inactive")
                           ? "pointer"
                           : "default",
                     }}
                     onClick={
-                      badge === "Active" || badge === "Inactive"
+                      accessDetails.role === "Admin" &&
+                      (badge === "Active" || badge === "Inactive")
                         ? () => handleStatusToggle()
                         : undefined
                     }
@@ -181,41 +189,61 @@ function KitchenOverviewDetails({ kitchenData }: any) {
             </div>
           </div>
         </Col>
+
         <Col
           xs={12}
           md={3}
           className="d-flex justify-content-md-end mt-4 mt-md-0"
         >
-          <div className="d-flex gap-2">
-            <Button
-              variant="light"
-              className="d-flex align-items-center gap-1 px-3 py-1"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                border: "none",
-                fontSize: "0.9rem",
-                height: "35px",
-              }}
-              onClick={onEdit}
-            >
-              <i className="mdi mdi-pencil"></i>
-              Edit
-            </Button>
-            <Button
-              variant="danger"
-              className="d-flex align-items-center gap-1 px-3 py-1"
-              style={{
-                backgroundColor: "rgba(220, 53, 69, 0.9)",
-                border: "none",
-                fontSize: "0.9rem",
-                height: "35px",
-              }}
-              //   onClick={onDelete}
-            >
-              <i className="mdi mdi-delete"></i>
-              Delete
-            </Button>
-          </div>
+          {accessDetails.role === "Admin" ||
+            (authContextDetails?.contextId === kitchenData?._id ? (
+              <div className="d-flex gap-2">
+                <Button
+                  variant="light"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onEdit}
+                >
+                  <i className="mdi mdi-pencil"></i>
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(220, 53, 69, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onDelete}
+                >
+                  <i className="mdi mdi-delete"></i>
+                  Delete
+                </Button>
+              </div>
+            ) : (
+              <div className="d-flex gap-2">
+                <Button
+                  variant="primary"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "#007bff",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                >
+                  <i className="mdi mdi-handshake"></i>
+                  Collab Kitchen
+                </Button>
+              </div>
+            ))}
         </Col>
       </Row>
     </div>

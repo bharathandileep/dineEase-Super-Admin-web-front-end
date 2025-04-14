@@ -8,10 +8,16 @@ import {
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { formatDateToDDMMYY } from "../../../helpers/api/utils";
+import {
+  formatDateToDDMMYY,
+  getAccessDetailsFromLocalStorage,
+  getContext,
+} from "../../../helpers/api/utils";
+import PANDetailsModal from "../../../components/PANDetailsModal";
+import GSTDetailsModal from "../../../components/GSTDetailsModal";
 
 export interface IOrganizationDetails {
-  _id: string;
+  _id: string | number;
   user_id: string;
   address_id: string[];
   organizationName: string;
@@ -88,24 +94,6 @@ interface Product {
 }
 
 function OrganizationDetails() {
-  const [product] = useState<Product>({
-    name: "Smart Wireless Headphones",
-    brand: "SoundTech",
-    description:
-      "Experience high-quality sound with active noise cancellation and long battery life.",
-    price: 250,
-    discount: 15,
-    rating: 4.7,
-    status: "In Stock",
-    features: [
-      "Bluetooth 5.0 Connectivity",
-      "Active Noise Cancellation",
-      "20 Hours Battery Life",
-      "Comfortable Over-Ear Fit",
-      "Fast Charging Support",
-    ],
-  });
-  
   const { id } = useParams();
   const [organization, setOrgData] = useState<IOrganizationDetails | null>(
     null
@@ -113,6 +101,12 @@ function OrganizationDetails() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [status, setStatus] = useState<boolean>(true);
+  const accessDetails = getAccessDetailsFromLocalStorage();
+  const authContextDetails = getContext();
+  const [showPanModal, setShowPanModal] = useState(false);
+  const [showGSTModal, setShowGSTModal] = useState(false);
+  const panDetails = organization?.panDetails[0];
+  const gstDetails = organization?.gstDetails[0];
 
   useEffect(() => {
     const fetchOrgDetails = async () => {
@@ -120,7 +114,7 @@ function OrganizationDetails() {
         const response = await getOrgDetails(id);
         setOrgData(response.data);
         setStatus(response.data.status);
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching organization details:", error);
       } finally {
         setLoading(false);
@@ -137,9 +131,9 @@ function OrganizationDetails() {
       const response = await deleteOrgDetails(id);
       if (response.status) {
         toast.success(response.message);
-        navigate("/apps/organizations/list")
+        navigate("/apps/organizations/list");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error deleting  details:", error);
       toast.error(error.message);
     } finally {
@@ -166,7 +160,7 @@ function OrganizationDetails() {
   if (loading || !organization) {
     return <div>Loading...</div>;
   }
-  return (       
+  return (
     <div className="container-fluid px-4 py-3">
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="breadcrumb m-0">
@@ -269,9 +263,14 @@ function OrganizationDetails() {
                       : "rgba(200, 200, 200, 0.9)",
                     fontSize: "0.75rem",
                     fontWeight: "500",
-                    cursor: "pointer",
+                    cursor:
+                      accessDetails.role === "Admin" ? "pointer" : "default",
                   }}
-                  onClick={handleStatusToggle}
+                  onClick={
+                    accessDetails.role === "Admin"
+                      ? handleStatusToggle
+                      : undefined
+                  }
                 >
                   <i
                     className={`mdi mdi-${
@@ -290,99 +289,116 @@ function OrganizationDetails() {
             md={3}
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
-            <div className="d-flex gap-2">
-              <Button
-                variant="light"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={onEdit}
-              >
-                <i className="mdi mdi-pencil"></i>
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                className="d-flex align-items-center gap-1 px-3 py-1"
-                style={{
-                  backgroundColor: "rgba(220, 53, 69, 0.9)",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  height: "35px",
-                }}
-                onClick={onDelete}
-              >
-                <i className="mdi mdi-delete"></i>
-                Delete
-              </Button>
-            </div>
+            {(accessDetails.role === "Admin" ||
+              authContextDetails?.contextId === organization?._id) && (
+              <div className="d-flex gap-2">
+                <Button
+                  variant="light"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onEdit}
+                >
+                  <i className="mdi mdi-pencil"></i>
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  className="d-flex align-items-center gap-1 px-3 py-1"
+                  style={{
+                    backgroundColor: "rgba(220, 53, 69, 0.9)",
+                    border: "none",
+                    fontSize: "0.9rem",
+                    height: "35px",
+                  }}
+                  onClick={onDelete}
+                >
+                  <i className="mdi mdi-delete"></i>
+                  Delete
+                </Button>
+              </div>
+            )}
           </Col>
         </Row>
       </div>
       <Row className="mb-4 g-3">
-        <Col md={6}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">PAN Details</h5>
-                <VerificationButton />
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong text-xl>PAN Number:</strong>{" "}
-                  {organization?.panDetails[0].pan_card_number}
-                </p>
-                <p className="mb-2">
-                  <strong text-xl>Card Holder:</strong>{" "}
-                  {organization?.panDetails[0].pan_card_user_name}
-                </p>
-              </div>
-              <img
-                src={organization?.panDetails[0].pan_card_image}
-                alt="Cake"
-                className="img-fluid rounded"
-                style={{ maxHeight: "150px", objectFit: "cover" }}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
+        {(accessDetails.role === "Admin" ||
+          authContextDetails?.contextId === organization._id) && (
+          <>
+            <Col md={6}>
+              <Card
+                className="h-100 shadow-sm"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowPanModal(true)}
+              >
+                <Card.Body>
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <h5 className="card-title text-bold text-black">
+                      PAN Details
+                    </h5>
+                    {accessDetails.role === "Admin" && <VerificationButton />}
+                  </div>
+                  <div className="mb-3">
+                    <p className="mb-2">
+                      <strong>PAN Number:</strong> {panDetails?.pan_card_number}
+                    </p>
+                    <p className="mb-2">
+                      <strong>Card Holder:</strong>{" "}
+                      {panDetails?.pan_card_user_name}
+                    </p>
+                  </div>
+                  <img
+                    src={panDetails?.pan_card_image}
+                    alt="PAN Card"
+                    className="img-fluid rounded"
+                    style={{ maxHeight: "150px", objectFit: "cover" }}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
 
-        <Col md={6}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  GST Registration
-                </h5>
-                <VerificationButton />
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong text-xl>GST Number:</strong>{" "}
-                  {organization?.gstDetails[0].gst_number}
-                </p>
-                <p className="mb-2">
-                  <strong text-xl>Expiry Date:</strong>{" "}                
-                  {formatDateToDDMMYY(organization?.gstDetails[0].expiry_date)}
-                </p>
-              </div>
-              <img
-                src={organization?.gstDetails[0].gst_certificate_image}
-                alt="GST Dashboard"
-                className="img-fluid rounded"
-                style={{
-                  maxHeight: "150px",
-                  objectFit: "cover",
-                  width: "100%",
-                }}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
+            <Col md={6}>
+              <Card
+                className="h-100 shadow-sm"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowGSTModal(true)}
+              >
+                <Card.Body>
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <h5 className="card-title text-bold text-black">
+                      GST Registration
+                    </h5>
+                    {accessDetails.role === "Admin" && <VerificationButton />}
+                  </div>
+                  <div className="mb-3">
+                    <p className="mb-2">
+                      <strong>GST Number:</strong> {gstDetails?.gst_number}
+                    </p>
+                    <p className="mb-2">
+                      <strong>Expiry Date:</strong>{" "}
+                      {formatDateToDDMMYY(gstDetails?.expiry_date)}
+                    </p>
+                  </div>
+                  <img
+                    src={gstDetails?.gst_certificate_image}
+                    alt="GST Certificate"
+                    className="img-fluid rounded"
+                    style={{
+                      maxHeight: "150px",
+                      objectFit: "cover",
+                      width: "100%",
+                    }}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+          </>
+        )}
+
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
@@ -415,6 +431,17 @@ function OrganizationDetails() {
           </Card>
         </Col>
       </Row>
+      <PANDetailsModal
+        show={showPanModal}
+        onHide={() => setShowPanModal(false)}
+        panDetails={panDetails}
+      />
+      <GSTDetailsModal
+        show={showGSTModal}
+        onHide={() => setShowGSTModal(false)}
+        gstDetails={gstDetails}
+        formatDateToDDMMYY={formatDateToDDMMYY}
+      />
     </div>
   );
 }

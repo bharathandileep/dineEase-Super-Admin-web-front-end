@@ -84,7 +84,7 @@ function SelectedKitchenDetails() {
         </ol>
       </nav>
       <KitchenOverviewDetails kitchenData={kitchenData} />
-      <CollaborationAgreementForm />
+      <CollaborationAgreementForm kitchenData={kitchenData} />
     </div>
   );
 }
