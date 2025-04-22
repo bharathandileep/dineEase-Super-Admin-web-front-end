@@ -38,7 +38,6 @@ import RequestedOrganization from "../pages/apps/Organizations/RequestedOrganiza
 import RequestedKitchen from "../pages/apps/kitchen/RequestedKitchen";
 import KitchenEdit from "../pages/landing/KitchenList/KitchenEdit";
 
-
 import KitchensView from "../pages/apps/Organizations/KitchenView";
 
 //import Notification from "../pages/notification/Notification"
@@ -63,7 +62,8 @@ import EditEmployee from "../pages/apps/adminemployee/editemployee";
 import EmployeeDetails from "../pages/apps/adminemployee/employeedetails";
 import SelectedKitchen from "../pages/apps/kitchen/SelectedKitchenDetails";
 import SelectedKitchenDetails from "../pages/apps/kitchen/SelectedKitchenDetails";
-
+import NewDesignation from "../pages/apps/Designations/NewDesignation";
+import OrgMenuSelect from "../pages/apps/menu/OrgMenuSelect";
 
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const Logout = React.lazy(() => import("../pages/auth/Logout"));
@@ -82,7 +82,7 @@ const ForgetPassword2 = React.lazy(
   () => import("../pages/auth2/ForgetPassword2")
 );
 const LockScreen2 = React.lazy(() => import("../pages/auth2/LockScreen2"));
-const SignInSignUp2 = React.lazy(() => import("../pages/auth2/SignInSignUp2")); 
+const SignInSignUp2 = React.lazy(() => import("../pages/auth2/SignInSignUp2"));
 
 // landing
 const Landing = React.lazy(() => import("../pages/landing"));
@@ -299,7 +299,7 @@ export interface RoutesProps {
   element?: RouteProps["element"];
   route?: any;
   exact?: boolean;
-  icon?: string;  
+  icon?: string;
   header?: string;
   roles?: string[];
   children?: RoutesProps[];
@@ -389,26 +389,37 @@ const organizationsAppRoutes = {
       path: "/apps/organizations/list-kitchens",
       name: "List of kitcehns",
       element: <ListOrgKitchens />,
+      route: PrivateRoute,
     },
     {
       path: "/apps/kitchen/details/:id",
       name: "Kitchen Details",
       element: <KitchensView />,
+      route: PrivateRoute,
     },
     {
-      path:"/apps/colloborated",
-      name:"Colloborated kitchens",
-      element:<CollaborationsPage/>
+      path: "/apps/colloborated",
+      name: "Colloborated kitchens",
+      element: <CollaborationsPage />,
+      route: PrivateRoute,
     },
     {
-      path:"/apps/selected-kitchen/:kitchen/collab",
-      name:"Colloborated kitchens",
-      element:<SelectedKitchenDetails/>
+      path: "/apps/selected-kitchen/:kitchen/collab",
+      name: "Colloborated kitchens",
+      element: <SelectedKitchenDetails />,
+      route: PrivateRoute,
     },
     {
-      path:"/apps/colloborated/details/:id",
-      name:"Colloboration details",
-      element:<CollaborationDetailsPage/>
+      path: "/apps/colloborated/details/:id",
+      name: "Colloboration details",
+      element: <CollaborationDetailsPage />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/select-menu",
+      name: "Org select menu",
+      element: <OrgMenuSelect />,
+      route: PrivateRoute,
     },
   ],
 };
@@ -579,7 +590,13 @@ const menuAppRoutes = {
 const designationRoutes = {
   path: "/apps/designations",
   name: "List designations",
-  element: <Designations />,
+  element: <NewDesignation />,
+  route: PrivateRoute,
+};
+const newDesignationRoutes = {
+  path: "/apps/designations",
+  name: "new designations",
+  element: <NewDesignation />,
   route: PrivateRoute,
 };
 
@@ -604,7 +621,7 @@ const employeeRoutes = {
     {
       path: "/apps/employee/edit/:id",
       name: "Employee edit",
-      element: <EditEmployee  />,
+      element: <EditEmployee />,
       route: PrivateRoute,
     },
     {
@@ -1638,6 +1655,7 @@ const appRoutes = [
   kitchenAppRoutes,
   itemAppRoutes,
   designationRoutes,
+  newDesignationRoutes,
   employeeRoutes,
   menuAppRoutes,
   crmAppRoutes,

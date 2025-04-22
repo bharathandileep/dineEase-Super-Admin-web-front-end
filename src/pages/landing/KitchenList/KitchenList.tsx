@@ -3,6 +3,10 @@ import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
 import { setContext } from "../../../helpers/api/utils";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { getUserInfo } from "../../../server/admin/auth";
+import { toast } from "react-toastify";
 
 const KitchenList = () => {
   interface Kitchen {
@@ -20,6 +24,7 @@ const KitchenList = () => {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.Auth);
 
   useEffect(() => {
     const fetchUserKitchens = async () => {
@@ -36,7 +41,9 @@ const KitchenList = () => {
     fetchUserKitchens();
   }, []);
 
-  const handleNavigateKitchen = (kitchen: Kitchen) => {
+  const handleNavigateKitchen = async (kitchen: Kitchen) => {
+    const response = await getUserInfo(user.id);
+    if (!response.status) toast.error("Somthing went wrong");
     const kitchenViewDetails = {
       role: "Kitchen",
       kitchenName: kitchen.name,
@@ -50,6 +57,7 @@ const KitchenList = () => {
         contextId: kitchen.id,
         contextType: "Kitchen",
         slug: kitchen.slug,
+        role: response.data?.role_id || "",
       });
       navigate(`/apps/${kitchen.slug}`);
     }

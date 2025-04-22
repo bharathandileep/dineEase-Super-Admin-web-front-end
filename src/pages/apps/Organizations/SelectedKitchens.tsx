@@ -3,22 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { listCollaboratedKitchens } from "../../../server/admin/collab";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 import PageTitle from "../../../components/PageTitle";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 function SelectedKitchensList() {
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const [selectedKitchens, setSelectedKitchens] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const orgId = accessDetails?.orgId;
 
   useEffect(() => {
     const fetchSelectedKitchens = async () => {
       setLoading(true);
       try {
-        const response = await listCollaboratedKitchens(orgId);
+        const response = await listCollaboratedKitchens((context?.contextId ?? "").toString());
         if (response?.status) {
           setSelectedKitchens(response.data);
         } else {
@@ -33,7 +31,7 @@ function SelectedKitchensList() {
     };
 
     fetchSelectedKitchens();
-  }, [orgId]);
+  }, [context?.contextId]);
 
   return (
     <>

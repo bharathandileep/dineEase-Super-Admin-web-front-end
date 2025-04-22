@@ -189,3 +189,24 @@ export const createNewUser = async (userData: any) => {
     throw error.response?.data || error;
   }
 };
+export const getRoleAndAccessById = async (roleId: any) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.roleAndAccess.getRoleAndAccess(roleId)
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const getUserInfo = async (userId: any) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.auth.getUserInfo(userId)
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || error;
+  }
+};

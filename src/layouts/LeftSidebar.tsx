@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 
-import { getMenuItems } from "../helpers/menu";
+import { getMenuItems, getMenuKitchenItems, getMenuOrgItems, getMenuSuperAdminItems } from "../helpers/menu";
 import dineEas from "../assets/images/dineeasLogo/logo (1).png"
 // store
 import { useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import AppMenu from "./Menu";
 
 import profileImg from "../assets/images/users/user-1.jpg";
 import logoSm from "../assets/images/logo-sm.png";
+import { useAuthDetails } from "../hooks/useAuthDetails";
 
 /* user box */
 const UserBox = () => {
@@ -94,18 +95,32 @@ const UserBox = () => {
 
 /* sidebar content */
 const SideBarContent = () => {
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
+
+  const menuItems = (() => {
+    switch (true) {
+      case isSuperAdmin:
+        return getMenuSuperAdminItems();
+
+      case isContext && context?.contextType === "Organization":
+        return getMenuOrgItems();
+
+      case isContext && context?.contextType === "Kitchen":
+        return getMenuKitchenItems();
+
+      default:
+        return getMenuItems();
+    }
+  })();
   return (
     <>
       <UserBox />
-
-      {/* <div id="sidebar-menu"> */}
-      <AppMenu menuItems={getMenuItems()} />
-      {/* </div> */}
-
+      <AppMenu menuItems={menuItems} />
       <div className="clearfix" />
     </>
   );
 };
+
 
 interface LeftSidebarProps {
   isCondensed: boolean;

@@ -43,6 +43,7 @@ const Login = () => {
       contextId: "67a1083b3c9f01a384e9683c",
       contextType: "Admin",
       slug: "admin",
+      role:"680475eb6093fe72c0494c6b"
     });
     localStorage.setItem(
       "accessDetails",

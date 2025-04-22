@@ -6,7 +6,10 @@ import { toast } from "react-toastify";
 
 import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components";
-import { createOrgEmployee } from "../../../server/admin/orgemployeemanagment";
+import {
+  createOrgEmployee,
+  getDesignation,
+} from "../../../server/admin/orgemployeemanagment";
 import { getAllDesignations } from "../../../server/admin/designations";
 import {
   getAllCountries,
@@ -14,24 +17,23 @@ import {
   getCitiesByState,
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 const OrgEmployeeManagement = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
-  const [designations, setDesignations] = useState<
-    { _id: string; designation_name: string }[]
-  >([]);
+  const [designations, setDesignations] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [orgEmpLoading, setOrgEmpLoading] = useState(false);
+  const { context } = useAuthDetails();
 
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  const userInfo = getAccessDetailsFromLocalStorage();
+  
 
   const [formData, setFormData] = useState({
     country: "",
@@ -42,16 +44,17 @@ const OrgEmployeeManagement = () => {
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
     {}
   );
-  const [organizationDetails, setOrganizationsDetails] = useState(
-    getAccessDetailsFromLocalStorage()
-  );
+
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({ page: 1, limit: 10 });
+        const response = await getDesignation(
+          context?.contextId,
+          context?.contextType
+        );
         if (response.status) {
-          setDesignations(response.data.designations);
+          setDesignations(response.data);
         } else {
           toast.error(response.message);
         }
@@ -139,6 +142,7 @@ const OrgEmployeeManagement = () => {
 
   const onSubmit = async (data: any) => {
     const locationErrors: { [key: string]: string } = {};
+    const selectedDesignation = JSON.parse(data.designation);
     if (!formData.country) locationErrors.country = "Country is required";
     if (!formData.state) locationErrors.state = "State is required";
     if (!formData.city) locationErrors.city = "City is required";
@@ -151,14 +155,13 @@ const OrgEmployeeManagement = () => {
 
     try {
       const formDataObj = new FormData();
-      formDataObj.append("entity_id", userInfo.orgId);
-      formDataObj.append("entity_type", "Organization");
-      formDataObj.append("designation", data.designation);
-      formDataObj.append("username", data.username);
+      formDataObj.append("entity_id", String(context?.contextId ?? ""));
+      formDataObj.append("entity_type", String(context?.contextType ?? ""));
+      formDataObj.append("roleId", selectedDesignation.id);
+      formDataObj.append("fullName", data.fullName);
       formDataObj.append("email", data.email);
       formDataObj.append("phone_number", data.phone_number);
-      formDataObj.append("role", "Employee");
-      formDataObj.append("employee_status", "Active");
+      formDataObj.append("roleName",selectedDesignation.name);
       formDataObj.append("aadhar_number", data.aadhar_number);
       formDataObj.append("pan_number", data.pan_number);
       formDataObj.append("street_address", data.street_address);
@@ -226,7 +229,7 @@ const OrgEmployeeManagement = () => {
                   General Information
                 </h5>
                 <FormInput
-                  name="username"
+                  name="fullName"
                   label="Employee Name"
                   placeholder="Enter full name"
                   containerClass="mb-3"
@@ -269,9 +272,15 @@ const OrgEmployeeManagement = () => {
                   validation={{ required: "Designation is required" }}
                 >
                   <option value="">Select Designation</option>
-                  {designations.map((designation) => (
-                    <option key={designation._id} value={designation._id}>
-                      {designation.designation_name}
+                  {designations.map((designation: any) => (
+                    <option
+                      key={designation._id}
+                      value={JSON.stringify({
+                        id: designation._id,
+                        name: designation.roleName,
+                      })}
+                    >
+                      {designation.roleName}
                     </option>
                   ))}
                 </FormInput>

@@ -5,7 +5,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import classNames from "classnames";
 
 
 // actions
@@ -19,10 +18,10 @@ import { VerticalForm, FormInput } from "../../components/";
 
 import AuthLayout from "./AuthLayout";
 import { toast } from "react-toastify";
-import { getAccessDetailsFromLocalStorage } from "../../helpers/api/utils";
+import { useAuthDetails } from "../../hooks/useAuthDetails";
 
 interface UserData {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -46,7 +45,7 @@ const Login2 = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const userInfo = getAccessDetailsFromLocalStorage();
+  const { context } = useAuthDetails();
 
   const { userLoggedIn, user, loading } = useSelector(
     (state: RootState) => state.Auth
@@ -58,14 +57,14 @@ const Login2 = () => {
 
   const schemaResolver = yupResolver(
     yup.object().shape({
-      username: yup.string().required(t("Please enter Username")),
+      email: yup.string().required(t("Please enter email")),
       password: yup.string().required(t("Please enter Password")),
     })
   );
 
   const onSubmit = async (formData: UserData) => {
     try {
-      dispatch(emploginUser(formData["username"], formData["password"]));
+      dispatch(emploginUser(formData["email"], formData["password"]));
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "An unexpected error occurred.";
@@ -73,12 +72,11 @@ const Login2 = () => {
       console.error("Error:", error);
     }
   };
-
   useEffect(() => {
-    if (userLoggedIn && user) {
-      navigate(`/apps/${userInfo.slug}`);
+    if (userLoggedIn && user && context?.slug) {
+      navigate(`/apps/${context.slug}`);
     }
-  }, [userLoggedIn, user, navigate]);
+  }, [userLoggedIn, user, context, navigate]);
 
   return (
     <>
@@ -91,13 +89,13 @@ const Login2 = () => {
         <VerticalForm
           onSubmit={onSubmit}
           resolver={schemaResolver}
-          defaultValues={{ username: "", password: "" }}
+          defaultValues={{ email: "", password: "" }}
         >
           <FormInput
-            label={t("Username")}
+            label={t("email")}
             type="text"
-            name="username"
-            placeholder={t("Enter your Username")}
+            name="email"
+            placeholder={t("Enter your email")}
             containerClass={"mb-3"}
           />
           <FormInput

@@ -10,11 +10,10 @@ import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 import {
   formatDateToDDMMYY,
-  getAccessDetailsFromLocalStorage,
-  getContext,
 } from "../../../helpers/api/utils";
 import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 export interface IOrganizationDetails {
   _id: string | number;
@@ -82,18 +81,10 @@ const VerificationButton = () => (
   </Button>
 );
 
-interface Product {
-  name: string;
-  brand: string;
-  description: string;
-  price: number;
-  discount: number;
-  rating: number;
-  status: string;
-  features: string[];
-}
+
 
 function OrganizationDetails() {
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const { id } = useParams();
   const [organization, setOrgData] = useState<IOrganizationDetails | null>(
     null
@@ -101,8 +92,6 @@ function OrganizationDetails() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [status, setStatus] = useState<boolean>(true);
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const authContextDetails = getContext();
   const [showPanModal, setShowPanModal] = useState(false);
   const [showGSTModal, setShowGSTModal] = useState(false);
   const panDetails = organization?.panDetails[0];
@@ -264,10 +253,10 @@ function OrganizationDetails() {
                     fontSize: "0.75rem",
                     fontWeight: "500",
                     cursor:
-                      accessDetails.role === "Admin" ? "pointer" : "default",
+                      user?.role === "Admin" ? "pointer" : "default",
                   }}
                   onClick={
-                    accessDetails.role === "Admin"
+                    user?.role === "Admin"
                       ? handleStatusToggle
                       : undefined
                   }
@@ -289,8 +278,8 @@ function OrganizationDetails() {
             md={3}
             className="d-flex justify-content-md-end mt-4 mt-md-0"
           >
-            {(accessDetails.role === "Admin" ||
-              authContextDetails?.contextId === organization?._id) && (
+            {(user?.role === "Admin" ||
+              context?.contextId === organization?._id) && (
               <div className="d-flex gap-2">
                 <Button
                   variant="light"
@@ -326,8 +315,8 @@ function OrganizationDetails() {
         </Row>
       </div>
       <Row className="mb-4 g-3">
-        {(accessDetails.role === "Admin" ||
-          authContextDetails?.contextId === organization._id) && (
+        {(user?.role === "Admin" ||
+          context?.contextId === organization._id) && (
           <>
             <Col md={6}>
               <Card
@@ -340,7 +329,7 @@ function OrganizationDetails() {
                     <h5 className="card-title text-bold text-black">
                       PAN Details
                     </h5>
-                    {accessDetails.role === "Admin" && <VerificationButton />}
+                    {user?.role === "Admin" && <VerificationButton />}
                   </div>
                   <div className="mb-3">
                     <p className="mb-2">
@@ -372,7 +361,7 @@ function OrganizationDetails() {
                     <h5 className="card-title text-bold text-black">
                       GST Registration
                     </h5>
-                    {accessDetails.role === "Admin" && <VerificationButton />}
+                    {user?.role === "Admin" && <VerificationButton />}
                   </div>
                   <div className="mb-3">
                     <p className="mb-2">

@@ -62,6 +62,7 @@ export interface Context {
   contextId: string | number;
   contextType: ContextType;
   slug: String;
+  role?:string
 }
 
 const CONTEXT_KEY = "context";

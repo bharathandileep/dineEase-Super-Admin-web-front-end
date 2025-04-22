@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { createOrgEmployee } from "../../../server/admin/orgemployeemanagment";
 import {
   getAllOrgEmployees,
   deleteOrgEmployee,
   toggleOrgEmployeeStatus,
 } from "../../../server/admin/orgemployeemanagment";
-import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
+import { Pencil, Trash, } from "lucide-react";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 interface OrgEmployee {
   _id: string;
@@ -30,6 +30,7 @@ const OrgEmployeeList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const isLoadingRef = useRef(false);
+  const { context } = useAuthDetails();
 
   const fetchEmployees = async (
     currentPage: number,
@@ -52,7 +53,7 @@ const OrgEmployeeList = () => {
         search: searchQuery,
       };
 
-      const response = await getAllOrgEmployees(params);
+      const response = await getAllOrgEmployees(context?.contextId, params);
       if (response.status) {
         const { orgEmployees, totalPages, totalEmployees } = response.data;
 
@@ -74,7 +75,7 @@ const OrgEmployeeList = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching employees:", error);
       toast.error(error.message);
     } finally {
@@ -123,7 +124,7 @@ const OrgEmployeeList = () => {
         } else {
           toast.error(response.message);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
@@ -149,7 +150,7 @@ const OrgEmployeeList = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error updating employee status:", error);
       toast.error(error.message);
     }

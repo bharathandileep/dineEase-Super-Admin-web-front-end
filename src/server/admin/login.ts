@@ -1,9 +1,10 @@
 import { toast } from "react-toastify";
 import { APICore, axiosInstance } from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
+import { setContext } from "../../helpers/api/utils";
 
 interface UserData {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -23,7 +24,12 @@ export const authAccessCredentials = async (adminCredentials: UserData) => {
       id: employeeDetails.entity_id,
       slug: employeeDetails.entity_type === "Admin" ? "admin" : slug,
     };
-
+    setContext({
+      contextId: employeeDetails.entity_id,
+      contextType: employeeDetails.entity_type,
+      slug: slug,
+      role: employeeDetails.roleId,
+    });
     localStorage.setItem(
       "accessDetails",
       JSON.stringify(organizationViewDetails)

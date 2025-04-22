@@ -8,7 +8,7 @@ import {
   removeKitchenMenus,
 } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 // TypeScript interfaces
 interface MenuItem {
@@ -47,17 +47,16 @@ interface Menu {
 }
 
 function OurMenu() {
-  const { id } = useParams();
+  const { context } = useAuthDetails();
   const [kitchenMenuItems, setKitchenMenuItems] = useState<Menu[]>([]);
   const [isRemoved, setIsRemoved] = useState(false);
-  const userInfo = getAccessDetailsFromLocalStorage();
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     setLoader(true);
     const fetchKitchenMenu = async () => {
       try {
-        const kitchenId = userInfo.kitchenId;
+        const kitchenId = (context?.contextId ?? "").toString();
         const response = await getKitchenMenus(kitchenId);
         setKitchenMenuItems(response.data);
         setLoader(false);
@@ -75,7 +74,7 @@ function OurMenu() {
 
   const handleDelete = async (itemId: string) => {
     try {
-      const kitchenId = userInfo.kitchenId;
+      const kitchenId = (context?.contextId ?? "").toString();
       const response = await removeKitchenMenus(itemId, kitchenId);
       if (response.status) {
         toast.success(response.message);
@@ -120,7 +119,7 @@ function OurMenu() {
             Our Menu
           </h3>
           <Link
-            to={`/apps/kitchen/${userInfo.kitchenId}/our-menu`}
+            to={`/apps/kitchen/${context?.contextId}/our-menu`}
             className="btn btn-danger"
           >
             <i className="mdi mdi-plus me-1"></i> Add Food Item
@@ -139,7 +138,7 @@ function OurMenu() {
                 className="mb-3"
               >
                 <Link
-                  to={`/apps/kitchen/${userInfo.kitchenId}/item-details/${item?.item_id._id}`}
+                  to={`/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`}
                 >
                   <Card className="product-box h-100">
                     <Card.Body className="d-flex flex-column position-relative">

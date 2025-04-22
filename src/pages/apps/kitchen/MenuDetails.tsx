@@ -17,7 +17,7 @@ import {
 } from "../../../server/admin/kitchensMenuCreation";
 import { appendToFormData } from "../../../helpers/formdataAppend";
 import { toast } from "react-toastify";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+
 
 export default function MenuDetails() {
   const { kitchenId, id } = useParams();
@@ -38,7 +38,7 @@ export default function MenuDetails() {
   });
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const userInfo = getAccessDetailsFromLocalStorage();
+
 
   const handleSave = async () => {
     setLoading(true);

@@ -15,10 +15,11 @@ import {
   getDistrictsByState,
 } from "../../../server/admin/addressDetails";
 import { createEmployee } from "../../../server/admin/employeemanagment";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
+  const { context } = useAuthDetails();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
@@ -36,7 +37,6 @@ const EmployeeManagement = () => {
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  const userInfo = getAccessDetailsFromLocalStorage();
 
   const [formData, setFormData] = useState({
     country: "",
@@ -156,8 +156,11 @@ const EmployeeManagement = () => {
 
       const formDataObj = new FormData();
 
-      formDataObj.append("entity_id", userInfo.id);
-      formDataObj.append("entity_type", userInfo.role);
+      formDataObj.append("entity_id", (context?.contextId ?? "").toString());
+      formDataObj.append(
+        "entity_type",
+        (context?.contextType ?? "").toString()
+      );
       formDataObj.append("designation", data.designation);
       formDataObj.append("username", data.username);
       formDataObj.append("email", data.email);

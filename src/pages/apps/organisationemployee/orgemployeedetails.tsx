@@ -24,7 +24,7 @@ interface Employee {
   username: string;
   email: string;
   phone_number: string;
-  designation_name?: string;
+  roleName?: string;
   employee_status: string;
   profile_picture?: string;
   aadhar_number?: string;
@@ -33,11 +33,11 @@ interface Employee {
   pan_image: string;
   address: {
     street_address: string;
-    city_name: string;      
-    district_name?: string; 
-    state_name?: string;    
+    city_name: string;
+    district_name?: string;
+    state_name?: string;
     pincode?: string;
-    country_name?: string;  
+    country_name?: string;
   };
 }
 
@@ -58,7 +58,7 @@ const OrgEmployeeDetails = () => {
             toast.error(response.message);
           }
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching employee details:", error);
         toast.error(error.message);
       } finally {
@@ -75,12 +75,12 @@ const OrgEmployeeDetails = () => {
           const response = await deleteOrgEmployee(id);
           if (response.status) {
             toast.success("Employee deleted successfully!");
-            navigate("/apps/organizations/employee/list"); 
+            navigate("/apps/organizations/employee/list");
           } else {
             toast.error(response.message);
           }
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
@@ -106,7 +106,7 @@ const OrgEmployeeDetails = () => {
           toast.error(response.message);
         }
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error updating employee status:", error);
       toast.error(error.message);
     }
@@ -135,7 +135,7 @@ const OrgEmployeeDetails = () => {
     district: orgemployee.address?.district_name || "N/A",
     state: orgemployee.address?.state_name || "N/A",
     pincode: orgemployee.address?.pincode || "N/A",
-    country: orgemployee.address?.country_name || "N/A"
+    country: orgemployee.address?.country_name || "N/A",
   };
 
   return (
@@ -221,9 +221,7 @@ const OrgEmployeeDetails = () => {
                 </div>
                 <div className="d-flex align-items-center mb-2">
                   <Building size={16} className="me-2" />
-                  <span>
-                  {orgemployee?.designation_name || "Unknown"}
-                  </span>
+                  <span>{orgemployee?.roleName || "Unknown"}</span>
                 </div>
               </div>
             </Card.Body>
@@ -283,8 +281,7 @@ const OrgEmployeeDetails = () => {
             <Card.Body>
               <h5 className="card-title mb-3">Address Details</h5>
               <p>
-                <MapPin size={16} className="me-2" />{" "}
-                {addressDisplay.street}
+                <MapPin size={16} className="me-2" /> {addressDisplay.street}
               </p>
               <p>
                 {addressDisplay.city}, {addressDisplay.district}
@@ -292,9 +289,7 @@ const OrgEmployeeDetails = () => {
               <p>
                 {addressDisplay.state}, {addressDisplay.pincode}
               </p>
-              <p>
-                {addressDisplay.country}
-              </p>
+              <p>{addressDisplay.country}</p>
             </Card.Body>
           </Card>
         </Col>

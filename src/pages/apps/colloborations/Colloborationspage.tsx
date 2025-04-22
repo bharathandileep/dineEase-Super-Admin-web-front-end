@@ -63,7 +63,9 @@ const CollaborationsPage: React.FC = () => {
 
   const filteredCollaborations = collaborations.filter(
     (collab) =>
-      collab.organization.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      collab.organization.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       collab.kitchen.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -88,23 +90,13 @@ const CollaborationsPage: React.FC = () => {
       >
         <div className="d-flex align-items-center justify-content-between">
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
-          Colloboration List
+            Colloboration List
           </h3>
-          {/* Optional right-aligned content (e.g., a button like EmployeeList) */}
-          {/* Uncomment and adjust if needed */}
-          {/* <Link
-            to="/apps/kitchen/add"
-            className="btn btn-danger waves-effect waves-light"
-          >
-            <i className="mdi mdi-plus-circle me-1"></i> Add New Kitchen
-          </Link> */}
         </div>
       </div>
-
-      {/* Search Component */}
       <Row>
         <Col>
-          <Card>
+          <Card>  
             <Card.Body>
               <Row className="justify-content-between">
                 <Col className="col-auto">
@@ -172,12 +164,19 @@ const CollaborationsPage: React.FC = () => {
                     </div>
                     <div className="text-center">
                       <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
-                        <span className="h3 mb-0 text-black">{collab.kitchen.name}</span>
-                        <span className="text-success"><LucideHandshake /></span>
-                        <span className="h3 mb-0 text-black">{collab.organization.name}</span>
+                        <span className="h3 mb-0 text-black">
+                          {collab.kitchen.name}
+                        </span>
+                        <span className="text-success">
+                          <LucideHandshake />
+                        </span>
+                        <span className="h3 mb-0 text-black">
+                          {collab.organization.name}
+                        </span>
                       </div>
                       <p className="text-muted small mb-0">
-                        Established: {new Date(collab.createdAt).toLocaleDateString()}
+                        Established:{" "}
+                        {new Date(collab.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="card-progress"></div>

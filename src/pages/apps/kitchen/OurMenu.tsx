@@ -5,7 +5,7 @@ import { listItems } from "../../../server/admin/items";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import PageTitle from "../../../components/PageTitle";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 interface FoodItem {
   name: string;
@@ -20,12 +20,13 @@ type TransformedData = Record<string, Record<string, FoodItem[]>>;
 
 const KitchenMenu = () => {
   const { id } = useParams();
+  const { context } = useAuthDetails();
+
   const navigate = useNavigate();
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [cartItems, setCartItems] = useState<FoodItem[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const userInfo = getAccessDetailsFromLocalStorage();
 
   const transformFoodData = (items: any[]): TransformedData => {
     const transformed = items.reduce((acc: TransformedData, item) => {
@@ -112,7 +113,7 @@ const KitchenMenu = () => {
     setLoading(true);
     try {
       const response = await createNewkitchenMenu(
-        userInfo.kitchenId,
+        (context?.contextId ?? "").toString(),
         cartItems
       );
       if (response && response.status) {
@@ -148,7 +149,6 @@ const KitchenMenu = () => {
           alignItems: "center",
         }}
       >
-        
         <div>
           <span className="fw-bold">
             {cartItems.reduce(
@@ -352,7 +352,7 @@ const KitchenMenu = () => {
           </Card>
         </div>
       )}
-  <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
+      <CheckoutBar cartItems={cartItems} onProceed={handleProceedToCheckout} />
     </>
   );
 };

@@ -3,13 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Collapse } from "react-bootstrap";
 import classNames from "classnames";
 import FeatherIcon from "feather-icons-react";
-
-
 import { findAllParent, findMenuItem } from "../helpers/menu";
-
-
 import { MenuItemTypes } from "../constants/menu";
-import { getAccessDetailsFromLocalStorage } from "../helpers/api/utils";
+import { useAuthDetails } from "../hooks/useAuthDetails";
+import { getRoleAndAccessById } from "../server/admin/auth";
 
 interface SubMenus {
   item: MenuItemTypes;
@@ -28,8 +25,7 @@ const MenuItemWithChildren = ({
   toggleMenu,
 }: SubMenus) => {
   const [open, setOpen] = useState<boolean>(activeMenuItems.includes(item.key));
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const userRole = accessDetails?.role || "";
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
 
   useEffect(() => {
     setOpen(activeMenuItems.includes(item.key));
@@ -44,13 +40,13 @@ const MenuItemWithChildren = ({
   };
   const accessibleChildren = (item.children || []).filter((child) => {
     if (!child.access) return true;
-    return child.access.includes(userRole);
+    return child.access.includes(context?.contextType);
   });
 
   if (accessibleChildren.length === 0) return null;
 
   return (
-    <li className={classNames("menu-item ps-3", { "menuitem-active": open })}>
+    <li className={classNames("menu-item", { "menuitem-active": open })}>
       <Link
         to="#"
         onClick={toggleMenuItem}
@@ -116,10 +112,9 @@ const MenuItemWithChildren = ({
 };
 
 const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const userRole = accessDetails?.role || "";
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
 
-  if (item.access && !item.access.includes(userRole)) {
+  if (item.access && !item.access.includes(context?.contextType)) {
     return null;
   }
 
@@ -160,19 +155,43 @@ interface AppMenuProps {
 const AppMenu = ({ menuItems }: AppMenuProps) => {
   const location = useLocation();
   const menuRef = useRef<HTMLUListElement>(null);
-  const accessDetails = getAccessDetailsFromLocalStorage();
   const [activeMenuItems, setActiveMenuItems] = useState<string[]>([]);
-  const userRole = accessDetails?.role || "";
+  const [userAccess, setUserAccess] = useState<any>([]);
+  const [userHasFullAccess, setUserhasFullAccess] = useState<boolean>(false);
+  const { user, context, isContext, isSuperAdmin, loading } = useAuthDetails();
+  useEffect(() => {
+    const fetchUserRoleAndAccess = async () => {
+      try {
+        const response = await getRoleAndAccessById(context?.role);
+        if (response.data) {
+          setUserAccess(response.data.permissions);
+          setUserhasFullAccess(response.data.hasFullAccess);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserRoleAndAccess();
+  }, []);
 
-  const toggleMenu = useCallback((menuItem: MenuItemTypes, show: boolean) => {
-    if (show) {
-      setActiveMenuItems((prev) => [
-        ...new Set([menuItem.key, ...findAllParent(menuItems, menuItem), ...prev]),
-      ]);
-    } else {
-      setActiveMenuItems((prev) => prev.filter((item) => item !== menuItem.key));
-    }
-  }, [menuItems]);
+  const toggleMenu = useCallback(
+    (menuItem: MenuItemTypes, show: boolean) => {
+      if (show) {
+        setActiveMenuItems((prev) => [
+          ...new Set([
+            menuItem.key,
+            ...findAllParent(menuItems, menuItem),
+            ...prev,
+          ]),
+        ]);
+      } else {
+        setActiveMenuItems((prev) =>
+          prev.filter((item) => item !== menuItem.key)
+        );
+      }
+    },
+    [menuItems]
+  );
 
   const activeMenu = useCallback(() => {
     const div = document.getElementById("main-side-menu");
@@ -180,14 +199,17 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
 
     if (div) {
       const items = div.getElementsByClassName("side-nav-link-ref");
-      
+
       for (let i = 0; i < items.length; i++) {
         const item = items[i] as HTMLAnchorElement;
-        const trimmedURL = location.pathname.replace(process.env.PUBLIC_URL || "", "");
-        const itemPath = new URL(item.href, window.location.origin).pathname.replace(
+        const trimmedURL = location.pathname.replace(
           process.env.PUBLIC_URL || "",
           ""
         );
+        const itemPath = new URL(
+          item.href,
+          window.location.origin
+        ).pathname.replace(process.env.PUBLIC_URL || "", "");
 
         if (trimmedURL === itemPath) {
           matchingMenuItem = item;
@@ -215,8 +237,10 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   }, [activeMenu]);
 
   const filteredMenuItems = menuItems.filter((item) => {
-    if (!item.access) return true;
-    return item.access.includes(userRole);
+    if (!item.key) return true;
+    if (userHasFullAccess) return item;
+    console.log(Object.keys(userAccess).includes(item.key));
+    return Object.keys(userAccess).includes(item.key);
   });
 
   return (

@@ -20,12 +20,11 @@ import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 import {
   formatDateToDDMMYY,
-  getAccessDetailsFromLocalStorage,
-  getContext,
 } from "../../../helpers/api/utils";
 import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
 import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 // Define interfaces
 type FoodItem = {
@@ -99,12 +98,12 @@ const VerificationButton = () => (
 
 function KitchensDetails() {
   const { id } = useParams();
+  const { context,user } = useAuthDetails();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<FoodItem[]>([]);
   const [activeKey, setActiveKey] = useState<string>("");
   const [showPanModal, setShowPanModal] = useState(false);
   const [showGSTModal, setShowGSTModal] = useState(false);
@@ -112,8 +111,6 @@ function KitchensDetails() {
   const fssaiDetails = kitchenData?.fssaiDetails?.[0];
   const panDetails = kitchenData?.panDetails[0];
   const gstDetails = kitchenData?.gstDetails[0];
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const authContextDetails = getContext();
   const onEdit = () => navigate(`/apps/kitchen/edit/${id}`);
 
   const onDelete = async () => {
@@ -190,7 +187,10 @@ function KitchensDetails() {
     const fetchMenuItems = async () => {
       setLoading(true);
       try {
-        const response = await getMenuItemsByKitchen(id, accessDetails.role);
+        const response = await getMenuItemsByKitchen(
+          id,
+          (context?.contextType ?? "").toString()
+        );
         if (response.status) {
           const items = response.data.items_id;
           if (items && items.length > 0) {
@@ -367,13 +367,13 @@ function KitchensDetails() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                          accessDetails.role === "Admin" &&
+                        user?.role === "Admin" &&
                           (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",
                       }}
                       onClick={
-                        accessDetails.role === "Admin" &&
+                        user?.role === "Admin" &&
                         (badge === "Active" || badge === "Inactive")
                           ? () => handleStatusToggle()
                           : undefined
@@ -397,8 +397,8 @@ function KitchensDetails() {
               </div>
             </div>
           </Col>
-          {(accessDetails.role === "Admin" ||
-            authContextDetails?.contextId === kitchenData._id) && (
+          {(user?.role === "Admin" ||
+            context?.contextId === kitchenData._id) && (
             <Col
               xs={12}
               md={3}
@@ -482,7 +482,7 @@ function KitchensDetails() {
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <h5 className="card-title text-bold text-black">PAN Details</h5>
-                {accessDetails.role === "Admin" && (
+                {user?.role === "Admin" && (
                   <VerificationButton
                     isVerified={kitchenData?.isapproved || false}
                   />
@@ -516,7 +516,7 @@ function KitchensDetails() {
                 <h5 className="card-title text-bold text-black">
                   GST Registration
                 </h5>
-                {accessDetails.role === "Admin" && (
+                {user?.role === "Admin" && (
                   <VerificationButton
                     isVerified={kitchenData?.isapproved || false}
                   />

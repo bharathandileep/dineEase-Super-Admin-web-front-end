@@ -8,7 +8,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 
 interface Kitchen {
   _id: string;
@@ -60,7 +59,7 @@ function ListKitchens() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
-  const userInfo = getAccessDetailsFromLocalStorage();
+  
 
   const loadingRef = useRef(loading);
   const loadingMoreRef = useRef(loadingMore);

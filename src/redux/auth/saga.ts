@@ -57,11 +57,11 @@ function* login({
 }
 
 function* empLogin({
-  payload: { username, password },
+  payload: { email, password },
   type,
 }: UserData): SagaIterator {
   try {
-    const response = yield call(authAccessCredentials, { username, password });
+    const response = yield call(authAccessCredentials, { email, password });
     const user = response.data;
     api.setLoggedInUser(user);
     setAuthorization(user["token"]);

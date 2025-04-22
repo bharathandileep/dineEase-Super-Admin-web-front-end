@@ -6,10 +6,7 @@ import classNames from "classnames";
 
 import { NotificationItem } from "../layouts/Topbar";
 import { getAllNotifications } from "../server/admin/notification";
-import {
-  getAccessDetailsFromLocalStorage,
-  getContext,
-} from "../helpers/api/utils";
+import { useAuthDetails } from "../hooks/useAuthDetails";
 
 const notificationContainerStyle = {
   maxHeight: "300px",
@@ -31,15 +28,13 @@ interface NotificationContainerStyle {
 }
 
 const NotificationDropdown = (props: NotificationDropdownProps) => {
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [notificationContentStyle, setNotificationContentStyles] =
     useState<NotificationContainerStyle>(notificationContainerStyle);
   const [notifications, setNotifications] = useState<NotificationItem[]>(
     props.notifications || []
   );
-  const userInfo = getAccessDetailsFromLocalStorage();
-  const authContextDetails = getContext();
-
   const [notificationPath, setNotificationPath] = useState<string>("");
   /*c
    * toggle notification-dropdown
@@ -58,7 +53,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
       const allNotifications = await getAllNotifications("");
 
       // Check if the logged-in user is Admin
-      if (userInfo.role === "Admin") {
+      if (context?.contextType === "Admin") {
         setNotifications(allNotifications);
       } else {
         // Set empty or filter out user-specific notifications if needed
@@ -77,7 +72,7 @@ const NotificationDropdown = (props: NotificationDropdownProps) => {
     // if (userInfo.role === "Organization") {
     //   setNotificationPath("/apps/organizations/notifications");
     // }
-    if (userInfo.role === "Admin") {
+    if (context?.contextType === "Admin") {
       setNotificationPath("/ui/allnotifications");
     }
   }, [dropdownOpen]);
