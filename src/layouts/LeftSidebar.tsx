@@ -96,7 +96,6 @@ const UserBox = () => {
 /* sidebar content */
 const SideBarContent = () => {
   const { user, context, isContext, isSuperAdmin } = useAuthDetails();
-
   const menuItems = (() => {
     switch (true) {
       case isSuperAdmin:

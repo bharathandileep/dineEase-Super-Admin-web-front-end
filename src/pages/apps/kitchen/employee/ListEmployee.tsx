@@ -2,26 +2,25 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {
-  getAllOrgEmployees,
-  deleteOrgEmployee,
-  toggleOrgEmployeeStatus,
-} from "../../../server/admin/orgemployeemanagment";
-import { Pencil, Trash, } from "lucide-react";
-import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
+import { useAuthDetails } from "../../../../hooks/useAuthDetails";
+import { deleteKitchenEmployee, getAllKitchenEmployees } from "../../../../server/admin/kitchenEmployeeManagemant";
 
-interface OrgEmployee {
+
+
+interface Employee {
   _id: string;
   username: string;
   email: string;
   phone_number: string;
-  designation: { designation_name: string };
+  roleName: string;
   employee_status: string;
   profile_picture: string;
 }
 
-const OrgEmployeeList = () => {
-  const [orgemployees, setEmployees] = useState<OrgEmployee[]>([]);
+const ListEmployee = () => {
+  const { context } = useAuthDetails();
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
@@ -30,7 +29,6 @@ const OrgEmployeeList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const isLoadingRef = useRef(false);
-  const { context } = useAuthDetails();
 
   const fetchEmployees = async (
     currentPage: number,
@@ -53,16 +51,16 @@ const OrgEmployeeList = () => {
         search: searchQuery,
       };
 
-      const response = await getAllOrgEmployees(context?.contextId, params);
+      const response = await getAllKitchenEmployees(context?.contextId, params);
       if (response.status) {
-        const { orgEmployees, totalPages, totalEmployees } = response.data;
+        const { kitchenEmployees, totalPages, totalEmployees } = response.data;
 
         if (isNewSearch) {
-          setEmployees(orgEmployees);
+          setEmployees(kitchenEmployees);
         } else {
           setEmployees((prev) => {
             const existingIds = new Set(prev.map((item) => item._id));
-            const newItems = orgEmployees.filter(
+            const newItems = employees.filter(
               (item: any) => !existingIds.has(item._id)
             );
             return [...prev, ...newItems];
@@ -84,6 +82,7 @@ const OrgEmployeeList = () => {
       isLoadingRef.current = false;
     }
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
@@ -111,16 +110,15 @@ const OrgEmployeeList = () => {
   }, [hasMore, page, searchTerm]);
 
   const handleEdit = (id: string) => {
-    navigate(`/apps/organizations/employee/edit/${id}`);
+    navigate(`/apps/kitchen/employee/edit/${id}`);
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
-        const response = await deleteOrgEmployee(id);
+        const response = await deleteKitchenEmployee(id);
         if (response.status) {
           toast.success("Employee deleted successfully!");
-          setEmployees(orgemployees.filter((emp) => emp._id !== id));
+          setEmployees(employees.filter((emp) => emp._id !== id));
         } else {
           toast.error(response.message);
         }
@@ -131,40 +129,15 @@ const OrgEmployeeList = () => {
     }
   };
 
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const response = await toggleOrgEmployeeStatus(id);
-      if (response.status) {
-        toast.success("Employee status updated successfully!");
-        setEmployees(
-          orgemployees.map((emp) =>
-            emp._id === id
-              ? {
-                  ...emp,
-                  employee_status:
-                    emp.employee_status === "Active" ? "Inactive" : "Active",
-                }
-              : emp
-          )
-        );
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error: any) {
-      console.error("Error updating employee status:", error);
-      toast.error(error.message);
-    }
-  };
-
   return (
     <React.Fragment>
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb m-2">
           <li className="breadcrumb-item">
-            <Link to="/employees/list">Organisation Employees</Link>
+            <Link to="/employees/list">Employees</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
-            Organisation Employee List
+            Employee List
           </li>
         </ol>
       </nav>
@@ -178,7 +151,7 @@ const OrgEmployeeList = () => {
             Employees
           </h3>
           <Link
-            to="/apps/organizations/employee/add"
+            to="/apps/kitchen/employee/new"
             className="btn btn-danger waves-effect waves-light"
           >
             <i className="mdi mdi-plus-circle me-1"></i> Add New Employee
@@ -219,8 +192,8 @@ const OrgEmployeeList = () => {
         </div>
       ) : (
         <Row>
-          {orgemployees.length > 0 ? (
-            orgemployees.map((employee) => (
+          {employees.length > 0 ? (
+            employees.map((employee) => (
               <Col md={6} xl={3} className="mb-3" key={employee._id}>
                 <Card
                   className="product-box h-100"
@@ -229,9 +202,7 @@ const OrgEmployeeList = () => {
                     cursor: "pointer",
                   }}
                   onClick={() =>
-                    navigate(
-                      `/apps/organizations/employee/details/${employee._id}`
-                    )
+                    navigate(`/apps/kitchen/empolyee/details/${employee._id}`)
                   }
                 >
                   <Card.Body className="d-flex flex-column h-100">
@@ -270,7 +241,7 @@ const OrgEmployeeList = () => {
                         style={{
                           width: "100%",
                           height: "180px",
-                          objectFit: "cover",
+                          objectFit: "contain",
                         }}
                       />
                     </div>
@@ -292,8 +263,7 @@ const OrgEmployeeList = () => {
                       </h5>
                       <h5 className="m-0">
                         <span className="text-muted">
-                          Designation:{" "}
-                          {employee.designation?.designation_name || "Unknown"}
+                          Designation: {employee.roleName || "Unknown"}
                         </span>
                       </h5>
                     </div>
@@ -317,7 +287,7 @@ const OrgEmployeeList = () => {
                   </p>
                   <Button
                     variant="primary"
-                    onClick={() => navigate("/apps/organizations/employee/add")}
+                    onClick={() => navigate("/apps/kitchen/employee/new")}
                   >
                     Add New Employee
                   </Button>
@@ -337,4 +307,4 @@ const OrgEmployeeList = () => {
   );
 };
 
-export default OrgEmployeeList;
+export default ListEmployee;

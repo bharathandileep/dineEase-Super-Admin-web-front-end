@@ -196,7 +196,7 @@ export const getRoleAndAccessById = async (roleId: any) => {
     );
     return response.data;
   } catch (error: any) {
-    throw new Error(error);
+    return error.response.data;
   }
 };
 

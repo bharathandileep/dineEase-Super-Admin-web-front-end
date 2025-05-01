@@ -6,12 +6,12 @@ import {
   getAllEmployees,
   deleteEmployee,
   toggleEmployeeStatus,
-} from "../../../server/admin/employeemanagment";
+} from "../../../../server/admin/employeemanagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface Employee {
   _id: string;
-  username: string;
+  fullName: string;
   email: string;
   phone_number: string;
   designation: { designation_name: string };
@@ -73,7 +73,7 @@ const EmployeeList = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching employees:", error);
       toast.error(error.message);
     } finally {
@@ -110,7 +110,7 @@ const EmployeeList = () => {
   }, [hasMore, page, searchTerm]);
 
   const handleEdit = (id: string) => {
-    navigate(`/apps/employee/edit/${id}`);
+    navigate(`/apps/admin/edit-employee/${id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -123,35 +123,10 @@ const EmployeeList = () => {
         } else {
           toast.error(response.message);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
-    }
-  };
-
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const response = await toggleEmployeeStatus(id);
-      if (response.status) {
-        toast.success("Employee status updated successfully!");
-        setEmployees(
-          employees.map((emp) =>
-            emp._id === id
-              ? {
-                  ...emp,
-                  employee_status:
-                    emp.employee_status === "Active" ? "Inactive" : "Active",
-                }
-              : emp
-          )
-        );
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error:any) {
-      console.error("Error updating employee status:", error);
-      toast.error(error.message);
     }
   };
 
@@ -177,7 +152,7 @@ const EmployeeList = () => {
             Employees
           </h3>
           <Link
-            to="/apps/employee/add"
+            to="/apps/admin/add-employee"
             className="btn btn-danger waves-effect waves-light"
           >
             <i className="mdi mdi-plus-circle me-1"></i> Add New Employee
@@ -228,7 +203,7 @@ const EmployeeList = () => {
                     cursor: "pointer",
                   }}
                   onClick={() =>
-                    navigate(`/apps/employee/details/${employee._id}`)
+                    navigate(`/apps/admin/employee/${employee._id}`)
                   }
                 >
                   <Card.Body className="d-flex flex-column h-100">
@@ -262,7 +237,7 @@ const EmployeeList = () => {
                           employee.profile_picture ||
                           "https://via.placeholder.com/150"
                         }
-                        alt={employee.username}
+                        alt={employee.fullName}
                         className="img-fluid"
                         style={{
                           width: "100%",
@@ -274,7 +249,7 @@ const EmployeeList = () => {
                     <div className="product-info d-flex flex-column flex-grow-1">
                       <h5 className="font-16 mt-0 sp-line-1">
                         <Link to="#" className="text-dark">
-                          {employee.username}
+                          {employee.fullName}
                         </Link>
                       </h5>
                       <h5 className="m-0">
@@ -314,7 +289,7 @@ const EmployeeList = () => {
                   </p>
                   <Button
                     variant="primary"
-                    onClick={() => navigate("/apps/employee/add")}
+                    onClick={() => navigate("/apps/admin/add-employee")}
                   >
                     Add New Employee
                   </Button>

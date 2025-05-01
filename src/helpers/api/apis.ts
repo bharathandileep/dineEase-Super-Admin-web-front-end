@@ -227,17 +227,17 @@ export const apiConfig = {
     toggleDesignationStatus: (id: string | undefined) =>
       `/designation/designations/${id}/toggle-status`,
   },
-  employee: {
-    createEmployee: "/employee/employees",
+  adminEmployee: {
+    createEmployee: "/admin-employee/employees",
     getAllEmployees: (query: any) =>
-      `/employee/employees/all?page=${query.page}&limit=${query.limit}&search=${
+      `/admin-employee/employees/all?page=${query.page}&limit=${query.limit}&search=${
         query.search || ""
       }`,
-    getEmployeeById: (id: string | undefined) => `/employee/employees/${id}`,
-    updateEmployee: (id: string | undefined) => `/employee/employees/${id}`,
-    deleteEmployee: (id: string | undefined) => `/employee/employees/${id}`,
+    getEmployeeById: (id: string | undefined) => `/admin-employee/employees/${id}`,
+    updateEmployee: (id: string | undefined) => `/admin-employee/employees/${id}`,
+    deleteEmployee: (id: string | undefined) => `/admin-employee/employees/${id}`,
     toggleEmployeeStatus: (id: string | undefined) =>
-      `/employee/employees/${id}/toggle-status`,
+      `/admin-employee/employees/${id}/toggle-status`,
   },
   orgemployee: {
     createOrgEmployee: "/org-employee/orgemployee",
@@ -255,6 +255,21 @@ export const apiConfig = {
       `/org-employee/orgemployee/${id}/toggle-status`,
     getEmployeeOrg: (email: string | undefined) =>
       `/org-employee/employee/org?email=${email}`,
+  },
+  kitchenEmployee: {
+    createEmployee: "/kitchen-employee/employees",
+    getAllEmployees: (kitchenId: string | number, query: any) =>
+      `/kitchen-employee/employees-all/${kitchenId}?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
+    getEmployeeById: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    updateEmployee: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    deleteEmployee: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    toggleEmployeeStatus: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}/toggle-status`,
   },
   kitchenMenu: {
     getKitchenMenu: (id: string | undefined) =>
@@ -303,4 +318,3 @@ export const apiConfig = {
     getRoleAndAccess: (roleId: string | number) => `/role-and-access/${roleId}`,
   },
 };
-``

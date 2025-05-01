@@ -14,7 +14,6 @@ export const getAllKitches = async (query: any) => {
     throw error;
   }
 };
-
 export const createNewkitchen = async (kitchenData: any) => {
   try {
     const response = await axiosInstance.post(
@@ -26,7 +25,6 @@ export const createNewkitchen = async (kitchenData: any) => {
     return error.response?.data;
   }
 };
-
 export const getkitchenDetails = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -37,7 +35,6 @@ export const getkitchenDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
 export const updatekitchenDetails = async (
   id: string | undefined,
   kitchenDetails: any
@@ -52,7 +49,6 @@ export const updatekitchenDetails = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
 export const deletekitchenDetails = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -77,7 +73,6 @@ export const toggleKitchenStatus = async (id: string | undefined) => {
     throw error;
   }
 };
-
 export const getUserApprovedKitchens = async () => {
   try {
     const response = await axiosInstance.get(
@@ -92,7 +87,6 @@ export const getUserApprovedKitchens = async () => {
     throw error;
   }
 };
-
 export const kitchenCreateCategory = async (data: any) => {
   try {
     const response = await axiosInstance.post(
@@ -107,7 +101,6 @@ export const kitchenCreateCategory = async (data: any) => {
     );
   }
 };
-
 export const kitchensGetAllCategories = async (query: any) => {
   try {
     const url = `${apiConfig.kitchens.getallCategories(query)}`;
@@ -119,7 +112,6 @@ export const kitchensGetAllCategories = async (query: any) => {
     );
   }
 };
-
 export const kitchensUpdateCategory = async (
   id: string | undefined,
   data: any
@@ -137,7 +129,6 @@ export const kitchensUpdateCategory = async (
     );
   }
 };
-
 export const kitchensDeleteCategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -151,7 +142,6 @@ export const kitchensDeleteCategory = async (id: string | undefined) => {
     );
   }
 };
-
 export const kitchensToggleCategoryStatus = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.patch(
@@ -165,7 +155,6 @@ export const kitchensToggleCategoryStatus = async (id: string | undefined) => {
     );
   }
 };
-
 export const kitchensCreateSubcategory = async (data: any | undefined) => {
   try {
     const response = await axiosInstance.post(
@@ -180,7 +169,6 @@ export const kitchensCreateSubcategory = async (data: any | undefined) => {
     );
   }
 };
-
 export const kitchensGetSubcategoriesByCategory = async (
   categoryId: string | undefined
 ) => {
@@ -196,7 +184,6 @@ export const kitchensGetSubcategoriesByCategory = async (
     );
   }
 };
-
 export const kitchensGetSubcategories = async (query: any) => {
   try {
     const url = `${apiConfig.kitchens.getallSubCategories(query)}`;
@@ -209,7 +196,6 @@ export const kitchensGetSubcategories = async (query: any) => {
     );
   }
 };
-
 export const kitchensGetSubcategoryById = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -222,7 +208,6 @@ export const kitchensGetSubcategoryById = async (id: string | undefined) => {
     );
   }
 };
-
 export const kitchensUpdateSubcategory = async (
   id: string | undefined,
   data: any
@@ -240,7 +225,6 @@ export const kitchensUpdateSubcategory = async (
     );
   }
 };
-
 export const kitchensDeleteSubcategory = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.delete(
@@ -251,7 +235,6 @@ export const kitchensDeleteSubcategory = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
 export const kitchensToggleSubcategoryStatus = async (
   id: string | undefined
 ) => {
@@ -264,7 +247,6 @@ export const kitchensToggleSubcategoryStatus = async (
     console.error("Error:", error.response?.data || error.message);
   }
 };
-
 export const getUnapprovedKitchens = async (query: any) => {
   try {
     const response = await axiosInstance.get(

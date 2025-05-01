@@ -15,6 +15,7 @@ interface SubMenus {
   activeMenuItems?: string[];
   toggleMenu?: (item: MenuItemTypes, status: boolean) => void;
   className?: string;
+  userAccess?:any
 }
 
 const MenuItemWithChildren = ({
@@ -23,7 +24,9 @@ const MenuItemWithChildren = ({
   subMenuClassNames,
   activeMenuItems = [],
   toggleMenu,
+  userAccess
 }: SubMenus) => {
+  console.log(item);
   const [open, setOpen] = useState<boolean>(activeMenuItems.includes(item.key));
   const { user, context, isContext, isSuperAdmin } = useAuthDetails();
 
@@ -42,7 +45,7 @@ const MenuItemWithChildren = ({
     if (!child.access) return true;
     return child.access.includes(context?.contextType);
   });
-
+ 
   if (accessibleChildren.length === 0) return null;
 
   return (
@@ -87,6 +90,7 @@ const MenuItemWithChildren = ({
                       activeMenuItems={activeMenuItems}
                       subMenuClassNames="sub-menu"
                       toggleMenu={toggleMenu}
+                      userAccess={userAccess}
                     />
                   ) : (
                     <MenuItem
@@ -239,7 +243,6 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const filteredMenuItems = menuItems.filter((item) => {
     if (!item.key) return true;
     if (userHasFullAccess) return item;
-    console.log(Object.keys(userAccess).includes(item.key));
     return Object.keys(userAccess).includes(item.key);
   });
 
@@ -265,6 +268,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
                     subMenuClassNames="sub-menu"
                     activeMenuItems={activeMenuItems}
                     linkClassName="menu-link"
+                    userAccess={userAccess}
                   />
                 ) : (
                   <MenuItem

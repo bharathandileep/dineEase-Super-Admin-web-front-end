@@ -165,8 +165,8 @@ function KitchenView() {
 
     return transformed;
   };
-
   useEffect(() => {
+
     const fetchMenuItems = async () => {
       setLoading(true);
       try {
@@ -210,7 +210,6 @@ function KitchenView() {
     };
     fetchKitchenDetails();
   }, [kitchen_id]);
-
   if (loading) {
     return (
       <div
@@ -337,13 +336,13 @@ function KitchenView() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                          user.role === "Admin" &&
+                          user?.role === "Admin" &&
                           (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",
                       }}
                       onClick={
-                        user.role === "Admin" &&
+                        user?.role === "Admin" &&
                         (badge === "Active" || badge === "Inactive")
                           ? () => handleStatusToggle()
                           : undefined

@@ -16,7 +16,6 @@ export const getAllOrgEmployees = async (orgId: any, query: any) => {
     throw error.response?.data || error;
   }
 };
-
 export const getOrgEmployeeById = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(
@@ -38,7 +37,6 @@ export const getOrgEmployeeById = async (id: string | undefined) => {
     throw error.response?.data || error;
   }
 };
-
 export const createOrgEmployee = async (data: any) => {
   try {
     const response = await axiosInstance.post(
@@ -58,7 +56,6 @@ export const createOrgEmployee = async (data: any) => {
     throw error.response?.data || error;
   }
 };
-
 export const updateOrgEmployee = async (id: string, data: FormData) => {
   try {
     const response = await axiosInstance.put(
@@ -75,8 +72,6 @@ export const updateOrgEmployee = async (id: string, data: FormData) => {
     throw error.response?.data || error;
   }
 };
-
-// ✅ Toggle organization employee status (Activate/Deactivate)
 export const toggleOrgEmployeeStatus = async (id: string) => {
   try {
     const response = await axiosInstance.patch(
@@ -91,7 +86,6 @@ export const toggleOrgEmployeeStatus = async (id: string) => {
     throw error.response?.data || error;
   }
 };
-
 export const deleteOrgEmployee = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
@@ -106,7 +100,6 @@ export const deleteOrgEmployee = async (id: string) => {
     throw error.response?.data || error;
   }
 };
-
 export const getEmployeeOrg = async (empEmail: string | undefined) => {
   try {
     const response = await axiosInstance.get(

@@ -18,7 +18,7 @@ interface LoggedInUser {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
   const api = new APICore();
   const location = useLocation();
-  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
+  const { user, context, } = useAuthDetails();
   
   const isAuthenticated = api.isUserAuthenticated();
   const loggedInUser = api.getLoggedInUserInfo() as LoggedInUser | null;

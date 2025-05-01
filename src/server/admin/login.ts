@@ -17,23 +17,13 @@ export const authAccessCredentials = async (adminCredentials: UserData) => {
       adminCredentials
     );
     api.setLoggedInUser(response.data.data);
-    const { employeeDetails, slug } = response.data.data;
-    const organizationViewDetails = {
-      role: employeeDetails.entity_type || "",
-      adminName: employeeDetails.username,
-      id: employeeDetails.entity_id,
-      slug: employeeDetails.entity_type === "Admin" ? "admin" : slug,
-    };
+    const { employeeDetails } = response.data.data;
     setContext({
-      contextId: employeeDetails.entity_id,
-      contextType: employeeDetails.entity_type,
-      slug: slug,
-      role: employeeDetails.roleId,
+      contextId: employeeDetails.contextId,
+      contextType: employeeDetails.contextType,
+      slug: employeeDetails.slug,
+      role: employeeDetails.role,
     });
-    localStorage.setItem(
-      "accessDetails",
-      JSON.stringify(organizationViewDetails)
-    );
     if (response.data.status) {
       toast.success(response.data.message);
     } else {

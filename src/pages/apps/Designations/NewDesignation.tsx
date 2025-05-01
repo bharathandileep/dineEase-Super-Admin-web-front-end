@@ -16,15 +16,19 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
-import { ORG_MENU } from "../../../constants/menu";
 import {
   createNewDesignation,
   getDesignation,
 } from "../../../server/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 import { toast } from "react-toastify";
+import {
+  getMenuItems,
+  getMenuKitchenItems,
+  getMenuOrgItems,
+  getMenuSuperAdminItems,
+} from "../../../helpers/menu";
 
 interface AccessPermission {
   id: string;
@@ -116,7 +120,7 @@ const PermissionControls = ({
 };
 
 function NewDesignation() {
-  const { context } = useAuthDetails();
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const [designations, setDesignations] = useState<any[]>([]);
   const [selectedDesignation, setSelectedDesignation] = useState("");
   const [newDesignation, setNewDesignation] = useState("");
@@ -164,13 +168,11 @@ function NewDesignation() {
       setSelectedDesignation(roleName);
     }
   };
-
   const saveNewDesignation = async (data: {
     roleName: string;
     permissions: Record<string, string[]>;
   }) => {
     try {
-      console.log(data);
       if (!context?.contextId) throw new Error("Context missing");
       const response = await createNewDesignation({
         ...data,
@@ -185,6 +187,21 @@ function NewDesignation() {
     }
   };
 
+  const menuItems = (() => {
+    switch (true) {
+      case isSuperAdmin:
+        return getMenuSuperAdminItems();
+
+      case isContext && context?.contextType === "Organization":
+        return getMenuOrgItems();
+
+      case isContext && context?.contextType === "Kitchen":
+        return getMenuKitchenItems();
+
+      default:
+        return getMenuItems();
+    }
+  })();
   const hasChanges = () => {
     if (!originalDesignation) return true;
     const current = JSON.stringify(selectedPermissions);
@@ -235,7 +252,7 @@ function NewDesignation() {
 
   const getAllPermissionKeys = () => {
     const keys: string[] = [];
-    ORG_MENU.forEach((parent) => {
+    menuItems.forEach((parent) => {
       keys.push(parent.key);
       parent.children?.forEach((child: any) => keys.push(child.key));
     });
@@ -261,7 +278,6 @@ function NewDesignation() {
       setSelectedPermissions(newPerms);
     }
   };
-
   return (
     <div className="min-vh-100 bg-light">
       <PageTitle
@@ -363,7 +379,7 @@ function NewDesignation() {
                   </div>
 
                   <div className="d-flex flex-column gap-3">
-                    {ORG_MENU.map((parent) => {
+                    {menuItems.map((parent) => {
                       const parentId = parent.key;
                       const children = parent.children || [];
                       const isParentExpanded = expandedMenus.includes(parentId);

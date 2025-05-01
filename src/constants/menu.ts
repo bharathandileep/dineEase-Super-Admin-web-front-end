@@ -91,7 +91,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
         key: "requested-organization",
         label: "• Requested Organizations",
         access: ["Admin"],
-        url: "/apps/organizations/requested-organizations",
+        url: "/apps/organizations/requested",
         parentKey: "apps-Organizations",
       },
       {
@@ -201,14 +201,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     url: "/apps/designations",
   },
   {
-    key: "apps-new-designation",
-    label: "New Designations",
-    access: ["Admin", "User", "Organization", "Kitchen"],
-    isTitle: false,
-    icon: "trello",
-    url: "/apps/designations",
-  },
-  {
     key: "apps-org-Menus",
     label: "Menus",
     access: ["Organization"],
@@ -225,10 +217,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     parentKey: "apps-organizations",
   },
 ];
-
-
-
-
 
 const SUPER_ADMIN_MENU: MenuItemTypes[] = [
   {
@@ -271,7 +259,7 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
       {
         key: "requested-organization",
         label: "• Requested Organizations",
-        url: "/apps/organizations/requested-organizations",
+        url: "/apps/organizations/requested",
         parentKey: "apps-Organizations",
       },
     ],
@@ -351,28 +339,26 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
     ],
   },
   {
-    key: "apps-employee",
-    label: "Employee list",
-    icon: "user",
-    url: "/apps/employee/list",
-  },
-  {
-    key: "apps-Designations",
-    label: "Designations",
-    icon: "trello",
-    url: "/apps/designations",
-  },
-  {
-    key: "apps-new-designation",
-    label: "New Designations",
-    icon: "trello",
-    url: "/apps/designations",
-  },
-  {
-    key: "appp-colloborated-kitchens",
-    label: "Colloborations",
-    icon: "users",
-    url: "/apps/colloborated",
+    key: "apps-Employee",
+    label: "Employes",
+    isTitle: false,
+    icon: "command",
+    children: [
+      {
+        key: "apps-list-employee",
+        label: "Employee list",
+        icon: "user",
+        url: "/apps/admin/employees",
+        parentKey: "apps-Employee",
+      },
+      {
+        key: "apps-new-designation",
+        label: "Designations",
+        icon: "trello",
+        url: "/apps/designations",
+        parentKey: "apps-Employee",
+      },
+    ],
   },
 ];
 const ORG_MENU: MenuItemTypes[] = [
@@ -416,10 +402,26 @@ const ORG_MENU: MenuItemTypes[] = [
     ],
   },
   {
-    key: "apps-new-designation",
-    label: "Designations",
-    icon: "trello",
-    url: "/apps/designations",
+    key: "apps-Employee",
+    label: "Employes",
+    isTitle: false,
+    icon: "command",
+    children: [
+      {
+        key: "apps-list-employee",
+        label: "Employee list",
+        icon: "user",
+        url: "/apps/organizations/employee/list",
+        parentKey: "apps-Employee",
+      },
+      {
+        key: "apps-new-designation",
+        label: "Designations",
+        icon: "trello",
+        url: "/apps/designations",
+        parentKey: "apps-Employee",
+      },
+    ],
   },
   {
     key: "apps-org-Menus",
@@ -460,6 +462,12 @@ const KITCHEN_MENU: MenuItemTypes[] = [
         url: "/apps/kitchen/kitchen-menu",
         parentKey: "apps-kitchen",
       },
+      {
+        key: "kitchen-employadd",
+        label: "• Employees",
+        url: "/apps/organizations/employee/list",
+        parentKey: "apps-Organizations",
+      },
     ],
   },
   {
@@ -476,15 +484,28 @@ const KITCHEN_MENU: MenuItemTypes[] = [
     ],
   },
   {
-    key: "apps-new-designation",
-    label: "Designations",
-    icon: "trello",
-    url: "/apps/designations",
+    key: "apps-Employee",
+    label: "Employees",
+    isTitle: false,
+    icon: "command",
+    children: [
+      {
+        key: "apps-list-employee",
+        label: "Employee list",
+        icon: "user",
+        url: "/apps/kitchen/empolyee/list",
+        parentKey: "apps-Employee",
+      },
+      {
+        key: "apps-new-designation",
+        label: "Designations",
+        icon: "trello",
+        url: "/apps/designations",
+        parentKey: "apps-Employee",
+      },
+    ],
   },
 ];
-
-
-
 
 const HORIZONTAL_MENU_ITEMS: MenuItemTypes[] = [
   {

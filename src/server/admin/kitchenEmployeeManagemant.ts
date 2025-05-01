@@ -1,47 +1,10 @@
 import { axiosInstance } from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
 
-export const getAllEmployees = async (query: any) => {
-  try {
-    const response = await axiosInstance.get(
-      `${apiConfig.adminEmployee.getAllEmployees(query)}`
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "Error fetching employees:",
-      error.response?.data || error.message
-    );
-    throw error.response?.data || error;
-  }
-};
-
-export const getEmployeeById = async (id: string | undefined) => {
-  try {
-    const response = await axiosInstance.get(
-      apiConfig.adminEmployee.getEmployeeById(id)
-    );
-    const employee = response.data;
-
-    const address = employee.address || {};
-
-    return {
-      ...employee,
-      address,
-    };
-  } catch (error: any) {
-    console.error(
-      "Error fetching employee:",
-      error.response?.data || error.message
-    );
-    throw error.response?.data || error;
-  }
-};
-
-export const createEmployee = async (data: any) => {
+export const createKitchenEmployee = async (data: any) => {
   try {
     const response = await axiosInstance.post(
-      apiConfig.adminEmployee.createEmployee,
+      apiConfig.kitchenEmployee.createEmployee,
       data,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -51,17 +14,51 @@ export const createEmployee = async (data: any) => {
     return response.data;
   } catch (error: any) {
     console.error(
-      "Error creating employee:",
+      "Error creating organization employee:",
       error.response?.data || error.message
     );
     throw error.response?.data || error;
   }
 };
+export const getAllKitchenEmployees = async (orgId: any, query: any) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiConfig.kitchenEmployee.getAllEmployees(orgId, query)}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Error fetching organization employees:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+export const getKitchenEmployeeById = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.kitchenEmployee.getEmployeeById(id)
+    );
+    const Employee = response.data;
 
-export const updateEmployee = async (id: string, data: FormData) => {
+    const address = Employee.address || {};
+
+    return {
+      ...Employee,
+      address,
+    };
+  } catch (error: any) {
+    console.error(
+      "Error fetching organization employee:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+export const updateKitchenEmployee = async (id: string, data: FormData) => {
   try {
     const response = await axiosInstance.put(
-      apiConfig.adminEmployee.updateEmployee(id),
+      apiConfig.kitchenEmployee.updateEmployee(id),
       data,
       {
         headers: {
@@ -74,31 +71,29 @@ export const updateEmployee = async (id: string, data: FormData) => {
     throw error.response?.data || error;
   }
 };
-
-export const toggleEmployeeStatus = async (id: string) => {
+export const toggleKitchenEmployeeStatus = async (id: string) => {
   try {
     const response = await axiosInstance.patch(
-      apiConfig.adminEmployee.toggleEmployeeStatus(id)
+      apiConfig.kitchenEmployee.toggleEmployeeStatus(id)
     );
     return response.data;
   } catch (error: any) {
     console.error(
-      "Error toggling employee status:",
+      "Error toggling organization employee status:",
       error.response?.data || error.message
     );
     throw error.response?.data || error;
   }
 };
-
-export const deleteEmployee = async (id: string) => {
+export const deleteKitchenEmployee = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
-      apiConfig.adminEmployee.deleteEmployee(id)
+      apiConfig.kitchenEmployee.deleteEmployee(id)
     );
     return response.data;
   } catch (error: any) {
     console.error(
-      "Error deleting employee:",
+      "Error deleting organization employee:",
       error.response?.data || error.message
     );
     throw error.response?.data || error;

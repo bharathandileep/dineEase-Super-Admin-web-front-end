@@ -4,27 +4,28 @@ import { Row, Col, Card, Button, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import FileUploader from "../../../components/FileUploader";
-import { FormInput } from "../../../components";
+import FileUploader from "../../../../components/FileUploader";
+import { FormInput } from "../../../../components";
 
-import { getAllDesignations } from "../../../server/admin/designations";
+import { getAllDesignations } from "../../../../server/admin/designations";
 import {
   getAllCountries,
   getStatesByCountry,
   getCitiesByState,
   getDistrictsByState,
-} from "../../../server/admin/addressDetails";
-import { createEmployee } from "../../../server/admin/employeemanagment";
-import { useAuthDetails } from "../../../hooks/useAuthDetails";
+} from "../../../../server/admin/addressDetails";
+import { createEmployee } from "../../../../server/admin/employeemanagment";
+import { useAuthDetails } from "../../../../hooks/useAuthDetails";
+import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
 
-const EmployeeManagement = () => {
+const AddEmployee = () => {
   const navigate = useNavigate();
   const { context } = useAuthDetails();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
   const [designations, setDesignations] = useState<
-    { _id: string; designation_name: string }[]
+    { _id: string; roleName: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [orgEmpLoading, setOrgEmpLoading] = useState(false);
@@ -49,14 +50,15 @@ const EmployeeManagement = () => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({ page: 1, limit: 100 });
+        const response = await getDesignation(
+          context?.contextId,
+          context?.contextType
+        );
         if (response.status) {
-          setDesignations(response.data.designations);
+          setDesignations(response.data);
         } else {
           toast.error(response.message);
         }
-
-        // Fetch countries
         await fetchCountries();
       } catch (error: any) {
         console.error("Error fetching initial data:", error);
@@ -127,7 +129,6 @@ const EmployeeManagement = () => {
       await fetchDistricts(value);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
     }
-
     if (errors[name as keyof typeof formData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -141,6 +142,7 @@ const EmployeeManagement = () => {
 
   const onSubmit = async (data: any) => {
     const locationErrors: { [key: string]: string } = {};
+    const selectedDesignation = JSON.parse(data.designation);
     if (!formData.country) locationErrors.country = "Country is required";
     if (!formData.state) locationErrors.state = "State is required";
     if (!formData.city) locationErrors.city = "City is required";
@@ -161,8 +163,9 @@ const EmployeeManagement = () => {
         "entity_type",
         (context?.contextType ?? "").toString()
       );
-      formDataObj.append("designation", data.designation);
-      formDataObj.append("username", data.username);
+      formDataObj.append("roleName", selectedDesignation.name);
+      formDataObj.append("roleId", selectedDesignation.id);
+      formDataObj.append("fullName", data.fullName);
       formDataObj.append("email", data.email);
       formDataObj.append("phone_number", data.phone_number);
       formDataObj.append("role", "Employee");
@@ -190,7 +193,7 @@ const EmployeeManagement = () => {
 
       if (response.status) {
         toast.success("Employee added successfully!");
-        navigate("/apps/employee/list");
+        navigate("/apps/admin/employees");
       } else {
         toast.error(response.message || "Failed to add employee.");
       }
@@ -227,7 +230,7 @@ const EmployeeManagement = () => {
                   General Information
                 </h5>
                 <FormInput
-                  name="username"
+                  name="fullName"
                   label="Employee Name"
                   placeholder="Enter full name"
                   containerClass="mb-3"
@@ -270,9 +273,15 @@ const EmployeeManagement = () => {
                   validation={{ required: "Designation is required" }}
                 >
                   <option value="">Select Designation</option>
-                  {designations.map((designation) => (
-                    <option key={designation._id} value={designation._id}>
-                      {designation.designation_name}
+                  {designations.map((designation: any) => (
+                    <option
+                      key={designation._id}
+                      value={JSON.stringify({
+                        id: designation._id,
+                        name: designation.roleName,
+                      })}
+                    >
+                      {designation.roleName}
                     </option>
                   ))}
                 </FormInput>
@@ -533,4 +542,4 @@ const EmployeeManagement = () => {
   );
 };
 
-export default EmployeeManagement;
+export default AddEmployee;
