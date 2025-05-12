@@ -83,7 +83,7 @@ const KitchenList = () => {
       <DashboardNavbar />
       <div className="py-5 bg-white">
         <h2 className="text-center mb-5 fw-bold" style={{ color: "#2c3e50" }}>
-          Featured Kitchens
+          Partner Kitchens
           <div
             className="w-25 mx-auto mt-2"
             style={{

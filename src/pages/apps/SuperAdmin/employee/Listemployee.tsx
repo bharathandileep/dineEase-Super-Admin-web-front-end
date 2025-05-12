@@ -14,7 +14,7 @@ interface Employee {
   fullName: string;
   email: string;
   phone_number: string;
-  designation: { designation_name: string };
+  roleName: string;
   employee_status: string;
   profile_picture: string;
 }
@@ -264,8 +264,7 @@ const EmployeeList = () => {
                       </h5>
                       <h5 className="m-0">
                         <span className="text-muted">
-                          Designation:{" "}
-                          {employee.designation?.designation_name || "Unknown"}
+                          Designation: {employee.roleName || "Unknown"}
                         </span>
                       </h5>
                     </div>

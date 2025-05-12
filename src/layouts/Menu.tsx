@@ -15,8 +15,31 @@ interface SubMenus {
   activeMenuItems?: string[];
   toggleMenu?: (item: MenuItemTypes, status: boolean) => void;
   className?: string;
-  userAccess?:any
+  userAccess?: Record<string, string[]>;
+  userHasFullAccess?: boolean;
+  level?: number;
 }
+
+interface Permissions {
+  [key: string]: string[];
+}
+
+const normalizeKey = (key: string) => key.toLowerCase().replace(/-/g, "");
+
+const hasPermission = (
+  key: string | undefined,
+  permissions: Permissions,
+  requiredPermission: string = "view"
+): boolean => {
+  if (!key) return false;
+  const permissionKey = Object.keys(permissions).find(
+    (permKey) => normalizeKey(permKey) === normalizeKey(key)
+  );
+
+  return permissionKey
+    ? permissions[permissionKey].includes(requiredPermission)
+    : false;
+};
 
 const MenuItemWithChildren = ({
   item,
@@ -24,29 +47,32 @@ const MenuItemWithChildren = ({
   subMenuClassNames,
   activeMenuItems = [],
   toggleMenu,
-  userAccess
+  userAccess = {},
+  userHasFullAccess = false,
+  level = 0,
 }: SubMenus) => {
-  console.log(item);
-  const [open, setOpen] = useState<boolean>(activeMenuItems.includes(item.key));
-  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
+  const [open, setOpen] = useState<boolean>(
+    activeMenuItems.includes(item.key || "")
+  );
 
   useEffect(() => {
-    setOpen(activeMenuItems.includes(item.key));
-  }, [activeMenuItems, item]);
+    setOpen(activeMenuItems.includes(item.key || ""));
+  }, [activeMenuItems, item.key]);
 
   const toggleMenuItem = (e: React.MouseEvent) => {
     e.preventDefault();
     const status = !open;
     setOpen(status);
-    if (toggleMenu) toggleMenu(item, status);
+    if (toggleMenu && item.key) toggleMenu(item, status);
     return false;
   };
+
   const accessibleChildren = (item.children || []).filter((child) => {
-    if (!child.access) return true;
-    return child.access.includes(context?.contextType);
+    if (userHasFullAccess) return true;
+    return hasPermission(child.key, userAccess);
   });
- 
-  if (accessibleChildren.length === 0) return null;
+
+  if (!userHasFullAccess && accessibleChildren.length === 0) return null;
 
   return (
     <li className={classNames("menu-item", { "menuitem-active": open })}>
@@ -56,21 +82,24 @@ const MenuItemWithChildren = ({
         data-menu-key={item.key}
         aria-expanded={open}
         className={classNames("menu-link", linkClassName, {
-          active: activeMenuItems.includes(item.key),
+          active: activeMenuItems.includes(item.key || ""),
         })}
+        style={{ paddingLeft: `${12 + level * 16}px` }}
       >
         {item.icon && (
           <span className="menu-icon">
-            <FeatherIcon icon={item.icon} />{" "}
+            <FeatherIcon icon={item.icon} size={16} />
           </span>
         )}
-        <span className="menu-text"> {item.label} </span>
+        <span className="menu-text">{item.label}</span>
         {!item.badge ? (
-          <span className="menu-arrow"></span>
+          <span className="menu-arrow">
+            {/* {item.children && (
+              <FeatherIcon icon={open ? "chevron-up" : "chevron-down"} size={14} />
+            )} */}
+          </span>
         ) : (
-          <span
-            className={`badge bg-${item.badge.variant} rounded-pill ms-auto`}
-          >
+          <span className={`badge bg-${item.badge.variant} rounded-pill ms-auto`}>
             {item.badge.text}
           </span>
         )}
@@ -85,24 +114,31 @@ const MenuItemWithChildren = ({
                     <MenuItemWithChildren
                       item={child}
                       linkClassName={
-                        activeMenuItems.includes(child.key) ? "active" : ""
+                        activeMenuItems.includes(child.key || "")
+                          ? "active"
+                          : ""
                       }
                       activeMenuItems={activeMenuItems}
                       subMenuClassNames="sub-menu"
                       toggleMenu={toggleMenu}
                       userAccess={userAccess}
+                      userHasFullAccess={userHasFullAccess}
+                      level={level + 1}
                     />
                   ) : (
                     <MenuItem
                       item={child}
                       className={
-                        activeMenuItems.includes(child.key)
+                        activeMenuItems.includes(child.key || "")
                           ? "menuitem-active"
                           : ""
                       }
                       linkClassName={
-                        activeMenuItems.includes(child.key) ? "active" : ""
+                        activeMenuItems.includes(child.key || "")
+                          ? "active"
+                          : ""
                       }
+                      level={level + 1}
                     />
                   )}
                 </React.Fragment>
@@ -115,8 +151,8 @@ const MenuItemWithChildren = ({
   );
 };
 
-const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
-  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
+const MenuItem = ({ item, className, linkClassName, level = 0 }: SubMenus) => {
+  const { context } = useAuthDetails();
 
   if (item.access && !item.access.includes(context?.contextType)) {
     return null;
@@ -124,27 +160,28 @@ const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
 
   return (
     <li className={classNames("menu-item", className)}>
-      <MenuItemLink item={item} className={linkClassName} />
+      <MenuItemLink item={item} className={linkClassName} level={level} />
     </li>
   );
 };
 
-const MenuItemLink = ({ item, className }: SubMenus) => {
+const MenuItemLink = ({ item, className, level = 0 }: SubMenus) => {
   return (
     <Link
       to={item.url!}
       target={item.target}
       className={classNames("side-nav-link-ref menu-link", className)}
       data-menu-key={item.key}
+      style={{ paddingLeft: `${12 + level * 16}px` }}
     >
       {item.icon && (
         <span className="menu-icon">
-          <FeatherIcon icon={item.icon} />{" "}
+          <FeatherIcon icon={item.icon} size={16} />
         </span>
       )}
-      <span className="menu-text"> {item.label} </span>
+      <span className="menu-text">{item.label}</span>
       {item.badge && (
-        <span className={`badge bg-${item.badge.variant}`}>
+        <span className={`badge bg-${item.badge.variant} rounded-pill ms-auto`}>
           {item.badge.text}
         </span>
       )}
@@ -160,38 +197,43 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const location = useLocation();
   const menuRef = useRef<HTMLUListElement>(null);
   const [activeMenuItems, setActiveMenuItems] = useState<string[]>([]);
-  const [userAccess, setUserAccess] = useState<any>([]);
+  const [userAccess, setUserAccess] = useState<Permissions>({});
   const [userHasFullAccess, setUserhasFullAccess] = useState<boolean>(false);
-  const { user, context, isContext, isSuperAdmin, loading } = useAuthDetails();
+  const { context } = useAuthDetails();
+
   useEffect(() => {
     const fetchUserRoleAndAccess = async () => {
       try {
-        const response = await getRoleAndAccessById(context?.role);
-        if (response.data) {
-          setUserAccess(response.data.permissions);
-          setUserhasFullAccess(response.data.hasFullAccess);
+        if (context?.role) {
+          const response = await getRoleAndAccessById(context.role);
+          if (response.data) {
+            setUserAccess(response.data.permissions || {});
+            setUserhasFullAccess(response.data.hasFullAccess || false);
+          }
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching user role and access:", error);
       }
     };
     fetchUserRoleAndAccess();
-  }, []);
+  }, [context?.role]);
 
   const toggleMenu = useCallback(
     (menuItem: MenuItemTypes, show: boolean) => {
-      if (show) {
-        setActiveMenuItems((prev) => [
-          ...new Set([
-            menuItem.key,
-            ...findAllParent(menuItems, menuItem),
-            ...prev,
-          ]),
-        ]);
-      } else {
-        setActiveMenuItems((prev) =>
-          prev.filter((item) => item !== menuItem.key)
-        );
+      if (menuItem.key) {
+        if (show) {
+          setActiveMenuItems((prev) => [
+            ...new Set([
+              menuItem.key,
+              ...findAllParent(menuItems, menuItem),
+              ...prev,
+            ]),
+          ]);
+        } else {
+          setActiveMenuItems((prev) =>
+            prev.filter((item) => item !== menuItem.key)
+          );
+        }
       }
     },
     [menuItems]
@@ -227,7 +269,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
           const activeMt = findMenuItem(menuItems, mid);
           if (activeMt) {
             setActiveMenuItems([
-              activeMt.key,
+              activeMt.key || "",
               ...findAllParent(menuItems, activeMt),
             ]);
           }
@@ -242,8 +284,8 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (!item.key) return true;
-    if (userHasFullAccess) return item;
-    return Object.keys(userAccess).includes(item.key);
+    if (userHasFullAccess) return true;
+    return hasPermission(item.key, userAccess);
   });
 
   return (
@@ -269,16 +311,19 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
                     activeMenuItems={activeMenuItems}
                     linkClassName="menu-link"
                     userAccess={userAccess}
+                    userHasFullAccess={userHasFullAccess}
+                    level={0}
                   />
                 ) : (
                   <MenuItem
                     item={item}
                     linkClassName="menu-link"
                     className={
-                      activeMenuItems.includes(item.key)
+                      activeMenuItems.includes(item.key || "")
                         ? "menuitem-active"
                         : ""
                     }
+                    level={0}
                   />
                 )}
               </>

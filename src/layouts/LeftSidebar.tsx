@@ -3,8 +3,13 @@ import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 
-import { getMenuItems, getMenuKitchenItems, getMenuOrgItems, getMenuSuperAdminItems } from "../helpers/menu";
-import dineEas from "../assets/images/dineeasLogo/logo (1).png"
+import {
+  getMenuItems,
+  getMenuKitchenItems,
+  getMenuOrgItems,
+  getMenuSuperAdminItems,
+} from "../helpers/menu";
+import dineEas from "../assets/images/dineeasLogo/logo (1).png";
 // store
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -120,7 +125,6 @@ const SideBarContent = () => {
   );
 };
 
-
 interface LeftSidebarProps {
   isCondensed: boolean;
   hideLogo?: boolean;
@@ -169,7 +173,6 @@ const LeftSidebar = ({ isCondensed, hideLogo }: LeftSidebarProps) => {
               </span>
               <span className="logo-lg">
                 <img
-            
                   src={
                     layoutType === LayoutTypes.LAYOUT_TWO_COLUMN
                       ? dineEas

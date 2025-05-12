@@ -15,7 +15,7 @@ interface OrgEmployee {
   fullName: string;
   email: string;
   phone_number: string;
-  designation: { designation_name: string };
+  roleName: string;
   employee_status: string;
   profile_picture: string;
 }
@@ -128,31 +128,6 @@ const ListEmployee = () => {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
-    }
-  };
-
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const response = await toggleOrgEmployeeStatus(id);
-      if (response.status) {
-        toast.success("Employee status updated successfully!");
-        setEmployees(
-          orgemployees.map((emp) =>
-            emp._id === id
-              ? {
-                  ...emp,
-                  employee_status:
-                    emp.employee_status === "Active" ? "Inactive" : "Active",
-                }
-              : emp
-          )
-        );
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error: any) {
-      console.error("Error updating employee status:", error);
-      toast.error(error.message);
     }
   };
 
@@ -293,7 +268,7 @@ const ListEmployee = () => {
                       <h5 className="m-0">
                         <span className="text-muted">
                           Designation:{" "}
-                          {employee.designation?.designation_name || "Unknown"}
+                          {employee?.roleName || "Unknown"}
                         </span>
                       </h5>
                     </div>

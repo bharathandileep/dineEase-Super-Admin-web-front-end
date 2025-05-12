@@ -35,7 +35,7 @@ const SigninForm: React.FC = () => {
   const [otp, setOTP] = useState("");
   const [showLoader, setShowLoader] = useState(false);
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
-  const [otpTimer, setOTPTimer] = useState(30);
+  const [otpTimer, setOTPTimer] = useState(10);
   const [canResendOTP, setCanResendOTP] = useState(false);
   const otpTimerRef = useRef<any>(null);
   const { userLoggedIn, user, loading } = useSelector(
@@ -82,8 +82,8 @@ const SigninForm: React.FC = () => {
   }, [showOTP]);
 
   const startOTPTimer = () => {
-    setOTPTimer(30);
-    setCanResendOTP(false);
+    setOTPTimer(10);
+    setCanResendOTP(false); 
   };
   useEffect(() => {
     if (userLoggedIn && user) {
@@ -180,7 +180,7 @@ const SigninForm: React.FC = () => {
       if (response.status) {
         toast.success(response.message);
         navigate("/");
-        window.location.reload()
+        window.location.reload();
       } else {
         toast.error(response.message || "OTP verification failed");
       }
@@ -193,11 +193,24 @@ const SigninForm: React.FC = () => {
 
   const handleResendOTP = async () => {
     try {
+      const verificationMethod = isActive
+        ? authMethod === "email"
+          ? authvaliadateOTP
+          : verifyPhoneOTP
+        : authMethod === "email"
+        ? loginOTPVerify
+        : verifyPhoneOTP;
       setShowLoader(true);
-      const response: AuthResponse =
-        authMethod === "email"
+      const response: AuthResponse = !isActive
+        ? authMethod === "email"
           ? await loginUserWithMail({ email: inputValue })
-          : await loginUserWithPhone({ phone: inputValue });
+          : await loginUserWithPhone({ phone: inputValue })
+        : authMethod === "email"
+        ? await authUserWithCredentials({
+            email: emailOrPhone,
+            fullName,
+          })
+        : alert("Sign up using email");
 
       if (response.status) {
         startOTPTimer();

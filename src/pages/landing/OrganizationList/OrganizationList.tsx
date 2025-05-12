@@ -102,8 +102,7 @@ const OrganizationList = () => {
             className="w-25 mx-auto mt-2"
             style={{
               height: "3px",
-              background:
-                "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
+              background: "linear-gradient(to right, #3498db, #2ecc71)",
             }}
           ></div>
         </h2>

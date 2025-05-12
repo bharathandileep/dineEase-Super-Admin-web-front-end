@@ -62,10 +62,7 @@ function index() {
                 Elevate your dining operations with smart management, real-time
                 analytics, and seamless ordering systems
               </p>
-              <button
-                className="btn btn-primary btn-lg rounded-pill px-5"
-                onClick={demo}
-              >
+              <button className="btn btn-primary btn-lg rounded-pill px-5">
                 Schedule a Demo
               </button>
             </div>

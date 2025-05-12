@@ -72,7 +72,7 @@ const PermissionControls = ({
           <div key={itemId} className="mb-3">
             <div className="card border-0 bg-light">
               <div className="card-body p-3">
-                <div className="d-flex justify-content-between align-items-center mb-2">
+                {/* <div className="d-flex justify-content-between align-items-center mb-2">
                   <label className="fw-semibold">{permissionItem.label}</label>
                   <div className="form-check form-switch">
                     <input
@@ -89,9 +89,24 @@ const PermissionControls = ({
                       All
                     </label>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="d-flex flex-wrap gap-4">
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`${itemId}-all`}
+                      checked={isAllChecked}
+                      onChange={() => onAllToggle(itemId)}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`${itemId}-all`}
+                    >
+                      All
+                    </label>
+                  </div>
                   {PERMISSION_TYPES.map((type) => (
                     <div key={type} className="form-check form-check-inline">
                       <input
@@ -133,6 +148,70 @@ function NewDesignation() {
     roleName: string;
     permissions: Record<string, string[]>;
   } | null>(null);
+
+  // Get menu items based on user role/context
+  const menuItems = (() => {
+    switch (true) {
+      case isSuperAdmin:
+        return getMenuSuperAdminItems();
+      case isContext && context?.contextType === "Organization":
+        return getMenuOrgItems();
+      case isContext && context?.contextType === "Kitchen":
+        return getMenuKitchenItems();
+      default:
+        return getMenuItems();
+    }
+  })();
+
+  // Recursively get all menu keys including nested ones
+  const getAllMenuKeys = (items: any[]): string[] => {
+    return items.reduce((keys: string[], item) => {
+      keys.push(item.key);
+      if (item.children) {
+        keys.push(...getAllMenuKeys(item.children));
+      }
+      return keys;
+    }, []);
+  };
+
+  // Get all permission keys
+  const getAllPermissionKeys = () => {
+    return getAllMenuKeys(menuItems);
+  };
+
+  // Toggle permission for an item and its children
+  const handleToggleItem = (item: any) => {
+    setSelectedPermissions((prev) => {
+      const newPerms = { ...prev };
+      const allKeys = [item.key];
+
+      // Recursively collect all child keys
+      const collectKeys = (menuItem: any) => {
+        if (menuItem.children) {
+          menuItem.children.forEach((child: any) => {
+            allKeys.push(child.key);
+            collectKeys(child);
+          });
+        }
+      };
+
+      collectKeys(item);
+
+      // Toggle all collected keys
+      const isCurrentlySelected = !!newPerms[item.key];
+      allKeys.forEach((key) => {
+        if (isCurrentlySelected) {
+          delete newPerms[key];
+        } else {
+          newPerms[key] = [...PERMISSION_TYPES];
+        }
+      });
+
+      return newPerms;
+    });
+  };
+
+  // Toggle specific permission type for a key
   const handleAccessToggle = (permissionId: string, accessType: string) => {
     setSelectedPermissions((prev) => {
       const current = prev[permissionId] || [];
@@ -143,6 +222,8 @@ function NewDesignation() {
       return { ...prev, [permissionId]: updated };
     });
   };
+
+  // Toggle all permission types for a key
   const handleAllToggle = (permissionId: string) => {
     setSelectedPermissions((prev) => {
       const hasAll = PERMISSION_TYPES.every((t) =>
@@ -154,6 +235,15 @@ function NewDesignation() {
       };
     });
   };
+
+  // Toggle menu expansion
+  const toggleExpand = (key: string) => {
+    setExpandedMenus((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  // Add new designation
   const handleAddNewDesignation = () => {
     if (newDesignation.trim()) {
       const roleName = newDesignation.trim();
@@ -168,6 +258,8 @@ function NewDesignation() {
       setSelectedDesignation(roleName);
     }
   };
+
+  // Save designation to backend
   const saveNewDesignation = async (data: {
     roleName: string;
     permissions: Record<string, string[]>;
@@ -187,21 +279,7 @@ function NewDesignation() {
     }
   };
 
-  const menuItems = (() => {
-    switch (true) {
-      case isSuperAdmin:
-        return getMenuSuperAdminItems();
-
-      case isContext && context?.contextType === "Organization":
-        return getMenuOrgItems();
-
-      case isContext && context?.contextType === "Kitchen":
-        return getMenuKitchenItems();
-
-      default:
-        return getMenuItems();
-    }
-  })();
+  // Check if there are unsaved changes
   const hasChanges = () => {
     if (!originalDesignation) return true;
     const current = JSON.stringify(selectedPermissions);
@@ -212,6 +290,25 @@ function NewDesignation() {
     );
   };
 
+  // Toggle select all permissions
+  const handleSelectAllToggle = () => {
+    const allKeys = getAllPermissionKeys();
+    const allSelected = allKeys.every(
+      (key) => selectedPermissions[key]?.length === PERMISSION_TYPES.length
+    );
+
+    if (allSelected) {
+      setSelectedPermissions({});
+    } else {
+      const newPerms: Record<string, string[]> = {};
+      allKeys.forEach((key) => {
+        newPerms[key] = [...PERMISSION_TYPES];
+      });
+      setSelectedPermissions(newPerms);
+    }
+  };
+
+  // Fetch designations on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -228,6 +325,7 @@ function NewDesignation() {
     fetchData();
   }, []);
 
+  // Update permissions when designation changes
   useEffect(() => {
     const selected = designations.find(
       (d) => d.roleName === selectedDesignation
@@ -243,41 +341,87 @@ function NewDesignation() {
       setOriginalDesignation(null);
     }
   }, [selectedDesignation, designations]);
+  const renderPermissionGroup = (item: any, level = 0) => {
+    const isExpanded = expandedMenus.includes(item.key);
+    const itemSelected = selectedPermissions[item.key];
+    const isLeafNode = !item.children || item.children.length === 0;
 
-  const toggleExpand = (key: string) => {
-    setExpandedMenus((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    return (
+      <div
+        key={item.key}
+        className="permission-group"
+        style={{ marginLeft: `${level * 20}px` }}
+      >
+        <div
+          className={`card ${
+            itemSelected?.length
+              ? "border-primary bg-primary bg-opacity-10"
+              : "border"
+          }`}
+        >
+          <div className="card-body p-3">
+            <div className="d-flex align-items-center justify-content-between">
+              <div className="form-check d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  className="form-check-input me-3"
+                  id={item.key}
+                  checked={!!itemSelected}
+                  onChange={() => handleToggleItem(item)}
+                />
+                <label
+                  className="form-check-label fw-semibold"
+                  htmlFor={item.key}
+                >
+                  {item.label}
+                </label>
+              </div>
+              {item.children && (
+                <button
+                  className="btn btn-sm btn-link text-decoration-none"
+                  onClick={() => toggleExpand(item.key)}
+                >
+                  {isExpanded ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </button>
+              )}
+            </div>
+
+            {item.children && isExpanded && (
+              <div className="mt-3">
+                {item.children.map((child: any) =>
+                  renderPermissionGroup(child, level + 1)
+                )}
+
+                {isLeafNode && (
+                  <PermissionControls
+                    items={[item]}
+                    selectedPermissions={selectedPermissions}
+                    onAllToggle={handleAllToggle}
+                    onAccessToggle={handleAccessToggle}
+                  />
+                )}
+              </div>
+            )}
+            {!item.children && (
+              <div className="mt-3">
+                <PermissionControls
+                  items={[item]}
+                  selectedPermissions={selectedPermissions}
+                  onAllToggle={handleAllToggle}
+                  onAccessToggle={handleAccessToggle}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     );
   };
 
-  const getAllPermissionKeys = () => {
-    const keys: string[] = [];
-    menuItems.forEach((parent) => {
-      keys.push(parent.key);
-      parent.children?.forEach((child: any) => keys.push(child.key));
-    });
-    return keys;
-  };
-
-  const handleSelectAllToggle = () => {
-    const allKeys = getAllPermissionKeys();
-    const allSelected = allKeys.every(
-      (key) => selectedPermissions[key]?.length === PERMISSION_TYPES.length
-    );
-
-    if (allSelected) {
-      // Deselect all
-      const cleared: Record<string, string[]> = {};
-      setSelectedPermissions(cleared);
-    } else {
-      // Select all
-      const newPerms: Record<string, string[]> = {};
-      allKeys.forEach((key) => {
-        newPerms[key] = [...PERMISSION_TYPES];
-      });
-      setSelectedPermissions(newPerms);
-    }
-  };
   return (
     <div className="min-vh-100 bg-light">
       <PageTitle
@@ -379,91 +523,7 @@ function NewDesignation() {
                   </div>
 
                   <div className="d-flex flex-column gap-3">
-                    {menuItems.map((parent) => {
-                      const parentId = parent.key;
-                      const children = parent.children || [];
-                      const isParentExpanded = expandedMenus.includes(parentId);
-                      const parentSelected = selectedPermissions[parentId];
-
-                      return (
-                        <div key={parentId} className="permission-group">
-                          <div
-                            className={`card ${
-                              parentSelected?.length
-                                ? "border-primary bg-primary bg-opacity-10"
-                                : "border"
-                            }`}
-                          >
-                            <div className="card-body p-3">
-                              <div className="d-flex align-items-center justify-content-between">
-                                <div className="form-check d-flex align-items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="form-check-input me-3"
-                                    id={parentId}
-                                    checked={!!parentSelected}
-                                    onChange={() => {
-                                      setSelectedPermissions((prev) => {
-                                        const childKeys = children.map(
-                                          (c) => c.key
-                                        );
-                                        const all = [parentId, ...childKeys];
-                                        const newPerms = { ...prev };
-                                        if (newPerms[parentId]) {
-                                          all.forEach(
-                                            (key) => delete newPerms[key]
-                                          );
-                                        } else {
-                                          all.forEach(
-                                            (key) =>
-                                              (newPerms[key] = [
-                                                ...PERMISSION_TYPES,
-                                              ])
-                                          );
-                                        }
-                                        return newPerms;
-                                      });
-                                    }}
-                                  />
-                                  <label
-                                    className="form-check-label fw-semibold"
-                                    htmlFor={parentId}
-                                  >
-                                    {parent.label}
-                                  </label>
-                                </div>
-
-                                {children.length > 0 && (
-                                  <button
-                                    className="btn btn-sm btn-link text-decoration-none"
-                                    onClick={() => toggleExpand(parentId)}
-                                  >
-                                    {isParentExpanded ? (
-                                      <ChevronUp size={18} />
-                                    ) : (
-                                      <ChevronDown size={18} />
-                                    )}
-                                  </button>
-                                )}
-                              </div>
-                              {(children.length > 0 && isParentExpanded) ||
-                              children.length === 0 ? (
-                                <div className="mt-3">
-                                  <PermissionControls
-                                    items={
-                                      children.length > 0 ? children : [parent]
-                                    }
-                                    selectedPermissions={selectedPermissions}
-                                    onAllToggle={handleAllToggle}
-                                    onAccessToggle={handleAccessToggle}
-                                  />
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {menuItems.map((item: any) => renderPermissionGroup(item))}
                   </div>
                 </div>
                 <div className="d-flex justify-content-end pt-4 border-top">

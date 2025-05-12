@@ -498,7 +498,7 @@ const superAdminRoutes = {
       element: <SuperAdminEmployeeList />,
       route: PrivateRoute,
     },
-  {
+    {
       path: "/apps/admin/edit-employee/:id",
       name: "Super Admin Add Employee",
       element: <SuperAdminEditEmployee />,
@@ -732,12 +732,6 @@ const itemAppRoutes = {
 const designationRoutes = {
   path: "/apps/designations",
   name: "List designations",
-  element: <NewDesignation />,
-  route: PrivateRoute,
-};
-const newDesignationRoutes = {
-  path: "/apps/designations",
-  name: "new designations",
   element: <NewDesignation />,
   route: PrivateRoute,
 };
@@ -1798,7 +1792,6 @@ const appRoutes = [
   kitchenAppRoutes,
   itemAppRoutes,
   designationRoutes,
-  newDesignationRoutes,
   // employeeRoutes,
   crmAppRoutes,
   emailAppRoutes,

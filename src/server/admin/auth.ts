@@ -82,6 +82,7 @@ export const authUserWithCredentials = async (userCredentials: any) => {
   }
 };
 export const authvaliadateOTP = async (userCredentials: any) => {
+  
   try {
     const response = await axiosInstance.post(
       "/auth/verify-otp",

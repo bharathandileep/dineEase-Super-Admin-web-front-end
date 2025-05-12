@@ -352,6 +352,10 @@ const EditEmployee = () => {
                     errors={errors}
                     control={control}
                     type="email"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Email cannot be changed"
+                    disabled
                   />
                   <FormInput
                     name="phone_number"

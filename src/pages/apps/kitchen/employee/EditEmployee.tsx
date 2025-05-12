@@ -16,7 +16,10 @@ import {
 
 import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { getKitchenEmployeeById, updateKitchenEmployee } from "../../../../server/admin/kitchenEmployeeManagemant";
+import {
+  getKitchenEmployeeById,
+  updateKitchenEmployee,
+} from "../../../../server/admin/kitchenEmployeeManagemant";
 
 const EditEmployee = () => {
   const navigate = useNavigate();
@@ -354,6 +357,10 @@ const EditEmployee = () => {
                   errors={errors}
                   control={control}
                   type="email"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Email cannot be changed"
+                  disabled
                 />
                 <FormInput
                   name="phone_number"
