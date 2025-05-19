@@ -15,7 +15,6 @@ import FileUploader from "../../../../components/FileUploader";
 import { FormInput } from "../../../../components";
 import { createKitchenEmployee } from "../../../../server/admin/kitchenEmployeeManagemant";
 
-
 const AddEmployee = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -543,4 +542,3 @@ const AddEmployee = () => {
 };
 
 export default AddEmployee;
- 

@@ -33,12 +33,6 @@ const Login = () => {
   );
   const onSubmit = (formData: UserData) => {
     dispatch(loginUser(formData["userName"], formData["password"]));
-    setContext({
-      contextId: "68137e02c7d592791bd6061e",
-      contextType: "Admin",
-      slug: "admin",
-      role: "68137e02c7d592791bd6061c",
-    });
   };
   useEffect(() => {
     if (userLoggedIn && user) {

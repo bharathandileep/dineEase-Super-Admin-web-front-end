@@ -340,7 +340,7 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
   },
   {
     key: "apps-Employee",
-    label: "Employes",
+    label: "Employees",
     isTitle: false,
     icon: "command",
     children: [
@@ -359,6 +359,13 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
         parentKey: "apps-Employee",
       },
     ],
+  },
+  {
+    key: "appp-colloborated-kitchens",
+    label: "Colloborations",
+    icon: "users",
+    url: "/apps/colloborated",
+    parentKey: "apps-organizations",
   },
 ];
 
@@ -389,12 +396,6 @@ const ORG_MENU: MenuItemTypes[] = [
     icon: "command",
     children: [
       {
-        key: "Organization-employadd",
-        label: "Employees",
-        url: "/apps/organizations/employee/list",
-        parentKey: "apps-Organizations",
-      },
-      {
         key: "selected-kitchens",
         label: "Selected Kitchens",
         url: "/apps/organizations/selected-kitchens",
@@ -404,7 +405,7 @@ const ORG_MENU: MenuItemTypes[] = [
   },
   {
     key: "apps-Employee",
-    label: "Employes",
+    label: "Employees",
     isTitle: false,
     icon: "command",
     children: [
@@ -462,12 +463,6 @@ const KITCHEN_MENU: MenuItemTypes[] = [
         label: "Kitchen Menus",
         url: "/apps/kitchen/kitchen-menu",
         parentKey: "apps-kitchen",
-      },
-      {
-        key: "kitchen-employadd",
-        label: "Employees",
-        url: "/apps/organizations/employee/list",
-        parentKey: "apps-Organizations",
       },
     ],
   },

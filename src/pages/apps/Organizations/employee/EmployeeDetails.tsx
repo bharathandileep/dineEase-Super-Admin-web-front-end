@@ -129,7 +129,6 @@ const EmployeeDetails = () => {
     );
   }
 
-  // Map the address fields to their proper display names
   const addressDisplay = {
     street: orgemployee.address?.street_address || "N/A",
     city: orgemployee.address?.city_name || "N/A",

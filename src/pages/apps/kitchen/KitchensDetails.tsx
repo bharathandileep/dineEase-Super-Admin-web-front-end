@@ -18,9 +18,7 @@ import {
 import { toast } from "react-toastify";
 import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
-import {
-  formatDateToDDMMYY,
-} from "../../../helpers/api/utils";
+import { formatDateToDDMMYY } from "../../../helpers/api/utils";
 import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
 import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
@@ -71,18 +69,28 @@ export interface IKitchenDetails {
     ffsai_card_owner_name: string;
   }>;
   panDetails: Array<{
-    pan_card_image: string | undefined;
     _id: string;
+    prepared_by_id: string;
+    entity_type: string;
     pan_card_number: string;
     pan_card_user_name: string;
+    pan_card_image: string;
     is_verified: boolean;
+    is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
   }>;
   gstDetails: Array<{
-    gst_certificate_image: string | undefined;
     _id: string;
+    prepared_by_id: string;
+    entity_type: string;
     gst_number: string;
+    gst_certificate_image: string;
     expiry_date: string;
     is_verified: boolean;
+    is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
   }>;
 }
 
@@ -98,7 +106,7 @@ const VerificationButton = () => (
 
 function KitchensDetails() {
   const { id } = useParams();
-  const { context,user } = useAuthDetails();
+  const { context, user } = useAuthDetails();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -182,7 +190,6 @@ function KitchensDetails() {
 
     return transformed;
   };
-
   useEffect(() => {
     const fetchMenuItems = async () => {
       setLoading(true);
@@ -212,7 +219,6 @@ function KitchensDetails() {
 
     fetchMenuItems();
   }, [id]);
-
   const handleStatusToggle = async () => {
     try {
       const response = await toggleKitchenStatus(id);
@@ -367,7 +373,7 @@ function KitchensDetails() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                        user?.role === "Admin" &&
+                          user?.role === "Admin" &&
                           (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",

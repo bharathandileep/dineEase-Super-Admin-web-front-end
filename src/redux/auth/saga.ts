@@ -20,6 +20,7 @@ import { AuthActionTypes } from "./constants";
 import { googleAuth } from "../../server/admin/auth";
 import jwtDecode from "jwt-decode";
 import { authAccessCredentials } from "../../server/admin/login";
+import { setContext } from "../../helpers/api/utils";
 
 interface UserData {
   payload: {
@@ -35,7 +36,7 @@ const api = new APICore();
 
 /**
  * Login the user
- * @param {*} payload 
+ * @param {*} payload
  */
 
 function* login({
@@ -48,6 +49,12 @@ function* login({
     api.setLoggedInUser(user);
     setAuthorization(user["token"]);
     const loginUser = api.getLoggedInUserInfo();
+    setContext({
+      contextId: user.context.contextId,
+      contextType: user.context.contextType,
+      slug: user.context.slug,
+      role: user.context.role,
+    });
     yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, loginUser));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.LOGIN_USER, error));
@@ -66,7 +73,9 @@ function* empLogin({
     api.setLoggedInUser(user);
     setAuthorization(user["token"]);
     const loginUser = api.getLoggedInUserInfo();
-    yield put(authApiResponseSuccess(AuthActionTypes.EMP_LOGIN_USER, loginUser));
+    yield put(
+      authApiResponseSuccess(AuthActionTypes.EMP_LOGIN_USER, loginUser)
+    );
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.EMP_LOGIN_USER, error));
     api.setLoggedInUser(null);

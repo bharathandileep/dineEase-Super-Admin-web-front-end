@@ -18,7 +18,6 @@ import {
 import { appendToFormData } from "../../../helpers/formdataAppend";
 import { toast } from "react-toastify";
 
-
 export default function MenuDetails() {
   const { kitchenId, id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -39,7 +38,6 @@ export default function MenuDetails() {
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-
   const handleSave = async () => {
     setLoading(true);
     setFood(editedFood);
@@ -51,7 +49,6 @@ export default function MenuDetails() {
       custom_image:
         itemImage instanceof File ? itemImage : editedFood.custom_image,
     };
-
     const formData = appendToFormData(updatedFood);
 
     try {
@@ -169,8 +166,7 @@ export default function MenuDetails() {
           priceOrganization: response.data.price_organization || 0.0,
           priceUser: response.data.price_user || 0.0,
         });
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     };
     fetchMenuItemDetails();
   }, [id, kitchenId]);
@@ -244,7 +240,7 @@ export default function MenuDetails() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-center mb-4">
                     <div className="flex-grow-1">
@@ -480,8 +476,6 @@ export default function MenuDetails() {
                       </>
                     )}
                   </div>
-
-
 
                   <div className="mb-4">
                     <h2 className="fs-5 fw-semibold mb-2">Ingredients</h2>

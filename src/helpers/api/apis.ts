@@ -230,14 +230,20 @@ export const apiConfig = {
   adminEmployee: {
     createEmployee: "/admin-employee/employees",
     getAllEmployees: (query: any) =>
-      `/admin-employee/employees/all?page=${query.page}&limit=${query.limit}&search=${
-        query.search || ""
-      }`,
-    getEmployeeById: (id: string | undefined) => `/admin-employee/employees/${id}`,
-    updateEmployee: (id: string | undefined) => `/admin-employee/employees/${id}`,
-    deleteEmployee: (id: string | undefined) => `/admin-employee/employees/${id}`,
+      `/admin-employee/employees/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
+    getEmployeeById: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
+    updateEmployee: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
+    deleteEmployee: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
     toggleEmployeeStatus: (id: string | undefined) =>
       `/admin-employee/employees/${id}/toggle-status`,
+
+    verifyDocument: (docId: string | undefined, docType: string) =>
+      `/admin/verify/document?documentId=${docId}&documentType=${docType}`,
   },
   orgemployee: {
     createOrgEmployee: "/org-employee/orgemployee",

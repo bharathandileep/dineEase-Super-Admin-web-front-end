@@ -8,12 +8,13 @@ import {
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {
-  formatDateToDDMMYY,
-} from "../../../helpers/api/utils";
+import { formatDateToDDMMYY } from "../../../helpers/api/utils";
 import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import { verifyDocument } from "../../../server/admin/admin";
+import GSTPreview from "../../../components/GSTPreview";
+import PANPreview from "../../../components/PANPreview";
 
 export interface IOrganizationDetails {
   _id: string | number;
@@ -70,19 +71,6 @@ export interface IOrganizationDetails {
   onEdit?: () => void;
   onDelete?: () => void;
 }
-
-const VerificationButton = () => (
-  <Button
-    variant="danger"
-    className="d-flex align-items-center gap-2 px-3 py-2"
-  >
-    <i className="mdi mdi-close-circle-outline"></i>
-    Not Verified
-  </Button>
-);
-
-
-
 function OrganizationDetails() {
   const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const { id } = useParams();
@@ -252,13 +240,10 @@ function OrganizationDetails() {
                       : "rgba(200, 200, 200, 0.9)",
                     fontSize: "0.75rem",
                     fontWeight: "500",
-                    cursor:
-                      user?.role === "Admin" ? "pointer" : "default",
+                    cursor: user?.role === "Admin" ? "pointer" : "default",
                   }}
                   onClick={
-                    user?.role === "Admin"
-                      ? handleStatusToggle
-                      : undefined
+                    user?.role === "Admin" ? handleStatusToggle : undefined
                   }
                 >
                   <i
@@ -318,73 +303,8 @@ function OrganizationDetails() {
         {(user?.role === "Admin" ||
           context?.contextId === organization._id) && (
           <>
-            <Col md={6}>
-              <Card
-                className="h-100 shadow-sm"
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowPanModal(true)}
-              >
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title text-bold text-black">
-                      PAN Details
-                    </h5>
-                    {user?.role === "Admin" && <VerificationButton />}
-                  </div>
-                  <div className="mb-3">
-                    <p className="mb-2">
-                      <strong>PAN Number:</strong> {panDetails?.pan_card_number}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Card Holder:</strong>{" "}
-                      {panDetails?.pan_card_user_name}
-                    </p>
-                  </div>
-                  <img
-                    src={panDetails?.pan_card_image}
-                    alt="PAN Card"
-                    className="img-fluid rounded"
-                    style={{ maxHeight: "150px", objectFit: "cover" }}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6}>
-              <Card
-                className="h-100 shadow-sm"
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowGSTModal(true)}
-              >
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title text-bold text-black">
-                      GST Registration
-                    </h5>
-                    {user?.role === "Admin" && <VerificationButton />}
-                  </div>
-                  <div className="mb-3">
-                    <p className="mb-2">
-                      <strong>GST Number:</strong> {gstDetails?.gst_number}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Expiry Date:</strong>{" "}
-                      {formatDateToDDMMYY(gstDetails?.expiry_date)}
-                    </p>
-                  </div>
-                  <img
-                    src={gstDetails?.gst_certificate_image}
-                    alt="GST Certificate"
-                    className="img-fluid rounded"
-                    style={{
-                      maxHeight: "150px",
-                      objectFit: "cover",
-                      width: "100%",
-                    }}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
+            <PANPreview panDetails={panDetails} />
+            <GSTPreview gstDetails={gstDetails} />
           </>
         )}
 

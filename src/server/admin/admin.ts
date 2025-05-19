@@ -133,3 +133,17 @@ export const deleteEmployee = async (id: string) => {
     throw error.response?.data || error;
   }
 };
+
+export const verifyDocument = async (
+  docId: string | undefined,
+  docType: string
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiConfig.adminEmployee.verifyDocument(docId, docType)
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};

@@ -15,7 +15,7 @@ export const useAuthDetails = () => {
   );
   const context = getContext();
   const isContext = !!context;
-  const isSuperAdmin = true; 
+  const isSuperAdmin = user.role === "Admin";
   return {
     loading,
     user,

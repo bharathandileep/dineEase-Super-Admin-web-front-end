@@ -4,6 +4,7 @@ import { apiConfig } from "../../helpers/api/apis";
 import { firebaseAuth } from "../../firebase.config";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
+import { setContext } from "../../helpers/api/utils";
 
 interface UserData {
   username: string;
@@ -82,7 +83,6 @@ export const authUserWithCredentials = async (userCredentials: any) => {
   }
 };
 export const authvaliadateOTP = async (userCredentials: any) => {
-  
   try {
     const response = await axiosInstance.post(
       "/auth/verify-otp",
