@@ -9,6 +9,8 @@ function login(params: { username: string; password: string }) {
 
 function logout() {
   localStorage.removeItem("Session_token");
+  // later will change
+  localStorage.clear();
   // implimant after logout api set
   // const baseUrl = "/logout/";
   // return api.create(`${baseUrl}`, {});

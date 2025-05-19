@@ -4,6 +4,7 @@ import { apiConfig } from "../../helpers/api/apis";
 import { firebaseAuth } from "../../firebase.config";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
+import { setContext } from "../../helpers/api/utils";
 
 interface UserData {
   username: string;
@@ -186,6 +187,27 @@ export const createNewUser = async (userData: any) => {
       "Error fetching designations:",
       error.response?.data || error.message
     );
+    throw error.response?.data || error;
+  }
+};
+export const getRoleAndAccessById = async (roleId: any) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.roleAndAccess.getRoleAndAccess(roleId)
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+};
+
+export const getUserInfo = async (userId: any) => {
+  try {
+    const response = await axiosInstance.get(
+      apiConfig.auth.getUserInfo(userId)
+    );
+    return response.data;
+  } catch (error: any) {
     throw error.response?.data || error;
   }
 };

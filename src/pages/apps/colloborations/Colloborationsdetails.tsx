@@ -15,10 +15,10 @@ import { getOrgDetails } from "../../../server/admin/organization";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 import {
   formatDateToDDMMYY,
-  getAccessDetailsFromLocalStorage,
 } from "../../../helpers/api/utils";
 import { Button, Accordion, Badge } from "react-bootstrap";
 import { TransformedData } from "../kitchen/KitchensDetails";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 interface Collaboration {
   _id: string;
@@ -39,6 +39,7 @@ interface Collaboration {
 }
 
 const CollaborationDetailsPage: React.FC = () => {
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const { id } = useParams<{ id: string }>();
   const [collaboration, setCollaboration] = useState<any | null>(null);
   const [organization, setOrgData] = useState<any | null>(null);
@@ -48,7 +49,6 @@ const CollaborationDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("collabDetails");
   const [status, setStatus] = useState<boolean>(true);
-  const accessDetails = getAccessDetailsFromLocalStorage();
   const [kitchenData, setKitchenData] = useState<any | null>(null);
   const [collaborationData, setCollaborationData] = useState(null);
   // const {
@@ -90,7 +90,10 @@ const CollaborationDetailsPage: React.FC = () => {
   const fetchMenuItems = async (id: any) => {
     setLoading(true);
     try {
-      const response = await getMenuItemsByKitchen(id, accessDetails.role);
+      const response = await getMenuItemsByKitchen(
+        id,
+        (context?.contextType ?? "").toString()
+      );
       if (response.status) {
         const items = response.data.items_id;
         if (items && items.length > 0) {
@@ -282,50 +285,58 @@ const CollaborationDetailsPage: React.FC = () => {
         }}
         className="mb-3"
       >
+        <Tab eventKey="collabDetails" title="Collab Details" />
         <Tab eventKey="kitchenDetails" title="Kitchen Details" />
         <Tab eventKey="orgDetails" title="Organization Details" />
         <Tab eventKey="kitchenMenu" title="Kitchen Menu" />
-        <Tab eventKey="collabDetails" title="Collab Details" />
       </Tabs>
 
       {/* 👇 Conditional Section Rendering */}
       {activeTab === "collabDetails" && (
-        <div>
-          <h2>Collaboration Details</h2>
-          <div>
-            <h3>Quotation Details</h3>
-            <p>
-              <strong>Date:</strong>{" "}
-              {formatDateToDDMMYY(collaboration?.quotation?.date)}
-            </p>
-            <p>
-              <strong>Meal Type:</strong> {collaboration?.quotation?.mealType}
-            </p>
-            <p>
-              <strong>Meal Count:</strong> {collaboration?.quotation?.mealCount}
-            </p>
-            <p>
-              <strong>Rate per Meal:</strong>{" "}
-              {collaboration?.quotation.ratePerMeal}
-            </p>
-            <p>
-              <strong>Discount Offer:</strong>{" "}
-              {collaboration?.quotation?.discountOffer}
-            </p>
-            <p>
-              <strong>Payment Terms:</strong>{" "}
-              {collaboration?.quotation?.paymentTerms}
-            </p>
-            <p>
-              <strong>Contract Duration:</strong>{" "}
-              {collaboration?.quotation?.contractDuration}
-            </p>
-            <p>
-              <strong>Terms and Conditions:</strong>{" "}
-              {collaboration?.quotation.termsAndConditions}
-            </p>
-          </div>
-        </div>
+        <Card className="shadow-sm">
+          <Card.Body>
+            <h5 className="mb-4 text-bold text-black">Collaboration Details</h5>
+
+            <h6 className="mt-4 mb-3">Quotation Details</h6>
+            <Row className="mb-3">
+              <Col md={6}>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {formatDateToDDMMYY(collaboration?.quotation?.date)}
+                </p>
+                <p>
+                  <strong>Meal Type:</strong>{" "}
+                  {collaboration?.quotation?.mealType}
+                </p>
+                <p>
+                  <strong>Meal Count:</strong>{" "}
+                  {collaboration?.quotation?.mealCount}
+                </p>
+                <p>
+                  <strong>Rate per Meal:</strong>{" "}
+                  {collaboration?.quotation.ratePerMeal}
+                </p>
+              </Col>
+              <Col md={6}>
+                <p>
+                  <strong>Discount Offer:</strong>{" "}
+                  {collaboration?.quotation?.discountOffer}
+                </p>
+                <p>
+                  <strong>Payment Terms:</strong>{" "}
+                  {collaboration?.quotation?.paymentTerms}
+                </p>
+                <p>
+                  <strong>Contract Duration:</strong>{" "}
+                  {collaboration?.quotation?.contractDuration}
+                </p>
+              </Col>
+            </Row>
+
+            <h6 className="mt-4 mb-3">Terms and Conditions</h6>
+            <p>{collaboration?.quotation.termsAndConditions}</p>
+          </Card.Body>
+        </Card>
       )}
 
       {activeTab === "kitchenDetails" && (

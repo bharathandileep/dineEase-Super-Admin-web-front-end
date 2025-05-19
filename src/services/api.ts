@@ -25,6 +25,7 @@ export const getOrganisation = async () => {
 
   }
 };
+
 export const deleteOrganization = async (orgId: string) => {
   try {
     const response = await API.delete(`/organizations/${orgId}`);
@@ -61,6 +62,5 @@ export const updateOrganization = async (
     throw new Error(error.message || "Failed to update the organization.");
   }
 };
-
 
 export default API;

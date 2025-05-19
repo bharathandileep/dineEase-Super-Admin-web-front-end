@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { APICore } from "../helpers/api/apiCore";
-import { getAccessDetailsFromLocalStorage, getContext } from "../helpers/api/utils";
+import { useAuthDetails } from "../hooks/useAuthDetails";
 
 interface PrivateRouteProps {
   roles?: string[];
@@ -18,9 +18,9 @@ interface LoggedInUser {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
   const api = new APICore();
   const location = useLocation();
+  const { user, context, } = useAuthDetails();
   
   const isAuthenticated = api.isUserAuthenticated();
-  const user = getContext()
   const loggedInUser = api.getLoggedInUserInfo() as LoggedInUser | null;
   if (!loggedInUser) {
     return <Navigate to="/" />;
@@ -32,7 +32,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, children }) => {
         (role) => role.toLowerCase() === loggedInUser?.role.toLowerCase()
       )
     ) {
-      return <Navigate to={`/apps/${user?.slug}`} replace />;
+      return <Navigate to={`/apps/${context?.slug}`} replace />;
     }
   }
 

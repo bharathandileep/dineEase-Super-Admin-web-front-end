@@ -5,32 +5,35 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
-
-import FileUploader from "../../../components/FileUploader";
-import { FormInput } from "../../../components";
 import {
+  getAllCountries,
+  getCitiesByState,
+  getDistrictsByState,
+  getStatesByCountry,
+} from "../../../../server/admin/addressDetails";
+import {
+  getDesignation,
   getOrgEmployeeById,
   updateOrgEmployee,
-} from "../../../server/admin/orgemployeemanagment";
-import { getAllDesignations } from "../../../server/admin/designations";
-import { 
-  getAllCountries, 
-  getStatesByCountry, 
-  getCitiesByState, 
-  getDistrictsByState 
-} from "../../../server/admin/addressDetails";
+} from "../../../../server/admin/orgemployeemanagment";
+import { FormInput } from "../../../../components";
+import FileUploader from "../../../../components/FileUploader";
+import { useAuthDetails } from "../../../../hooks/useAuthDetails";
 
-const OrgEmployeeEdit = () => {
+const EditEmployee = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { context } = useAuthDetails();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
-  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(null);
+  const [aadharImagePreview, setAadharImagePreview] = useState<string | null>(
+    null
+  );
   const [panImage, setPanImage] = useState<File | null>(null);
   const [panImagePreview, setPanImagePreview] = useState<string | null>(null);
   const [designations, setDesignations] = useState<
-    { _id: string; designation_name: string }[]
+    { _id: string; roleName: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [orgemployee, setEmployee] = useState<any>(null);
@@ -50,7 +53,7 @@ const OrgEmployeeEdit = () => {
 
   // Validation Schema
   const schema = yup.object().shape({
-    username: yup.string().required("Employee name is required"),
+    fullName: yup.string().required("Employee name is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
     phone_number: yup.string().required("Phone number is required"),
     designation: yup.string().required("Designation is required"),
@@ -77,15 +80,15 @@ const OrgEmployeeEdit = () => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        // Fetch designations
-        const designationResponse = await getAllDesignations({ page: 1, limit: 100 });
-        if (designationResponse.status) {
-          setDesignations(designationResponse.data.designations);
+        const response = await getDesignation(
+          context?.contextId,
+          context?.contextType
+        );
+        if (response.status) {
+          setDesignations(response.data);
         } else {
           toast.error("Failed to load designations.");
         }
-
-        // Fetch countries
         const countryResponse = await getAllCountries();
         if (countryResponse?.success) {
           setCountries(countryResponse.data);
@@ -118,10 +121,10 @@ const OrgEmployeeEdit = () => {
           setEmployee(empData);
 
           // Set basic fields
-          setValue("username", empData.username || "");
+          setValue("fullName", empData.fullName || "");
           setValue("email", empData.email || "");
           setValue("phone_number", empData.phone_number || "");
-          setValue("designation", empData.designation_id || empData.designation_id || "");
+          setValue("designation", empData.roleName);
           setValue("aadhar_number", empData.aadhar_number || "");
           setValue("pan_number", empData.pan_number || "");
 
@@ -242,17 +245,20 @@ const OrgEmployeeEdit = () => {
       setOrgEmpLoading(true);
       const formDataToSubmit = new FormData();
 
-      formDataToSubmit.append("entity_id", "67aae02e315c11088adaf6b7");
-      formDataToSubmit.append("entity_type", "Organization");
+      formDataToSubmit.append(
+        "entity_id",
+        (context?.contextId ?? "").toString()
+      );
+      formDataToSubmit.append(
+        "entity_type",
+        (context?.contextType ?? "").toString()
+      );
       formDataToSubmit.append("designation", data.designation);
-      formDataToSubmit.append("username", data.username);
+      formDataToSubmit.append("fullName", data.fullName);
       formDataToSubmit.append("email", data.email);
       formDataToSubmit.append("phone_number", data.phone_number);
-      formDataToSubmit.append("role", "Employee");
-      formDataToSubmit.append("employee_status", "Active");
       formDataToSubmit.append("aadhar_number", data.aadhar_number);
       formDataToSubmit.append("pan_number", data.pan_number);
-
       formDataToSubmit.append("street_address", data.street_address);
       formDataToSubmit.append("city", data.city);
       formDataToSubmit.append("district", data.district);
@@ -260,7 +266,8 @@ const OrgEmployeeEdit = () => {
       formDataToSubmit.append("state", data.state);
       formDataToSubmit.append("country", data.country);
 
-      if (profileImage) formDataToSubmit.append("profile_picture", profileImage);
+      if (profileImage)
+        formDataToSubmit.append("profile_picture", profileImage);
       if (aadharImage) formDataToSubmit.append("aadhar_image", aadharImage);
       if (panImage) formDataToSubmit.append("pan_image", panImage);
 
@@ -328,7 +335,7 @@ const OrgEmployeeEdit = () => {
                     General Information
                   </h5>
                   <FormInput
-                    name="username"
+                    name="fullName"
                     label="Employee Name"
                     placeholder="Enter full name"
                     containerClass="mb-3"
@@ -345,6 +352,10 @@ const OrgEmployeeEdit = () => {
                     errors={errors}
                     control={control}
                     type="email"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Email cannot be changed"
+                    disabled
                   />
                   <FormInput
                     name="phone_number"
@@ -366,8 +377,11 @@ const OrgEmployeeEdit = () => {
                   >
                     <option value="">Select Designation</option>
                     {designations.map((designation) => (
-                      <option key={designation._id} value={designation._id}>
-                        {designation.designation_name}
+                      <option
+                        key={designation._id}
+                        value={designation.roleName}
+                      >
+                        {designation.roleName}
                       </option>
                     ))}
                   </FormInput>
@@ -393,7 +407,9 @@ const OrgEmployeeEdit = () => {
                     </div>
                   )}
                   <FileUploader
-                    onFileUpload={(files) => handleFileUpload(Array.from(files))}
+                    onFileUpload={(files) =>
+                      handleFileUpload(Array.from(files))
+                    }
                   />
                 </Card.Body>
               </Card>
@@ -429,7 +445,9 @@ const OrgEmployeeEdit = () => {
                           name="country"
                           value={formData.country}
                           onChange={handleChange}
-                          className={`form-control ${errors.country ? "is-invalid" : ""}`}
+                          className={`form-control ${
+                            errors.country ? "is-invalid" : ""
+                          }`}
                         >
                           <option value="">Select Country</option>
                           {countries.map((country) => (
@@ -439,7 +457,9 @@ const OrgEmployeeEdit = () => {
                           ))}
                         </select>
                         {errors.country && (
-                          <div className="invalid-feedback">{errors.country.message}</div>
+                          <div className="invalid-feedback">
+                            {errors.country.message}
+                          </div>
                         )}
                       </div>
                     </Col>
@@ -452,7 +472,9 @@ const OrgEmployeeEdit = () => {
                           name="state"
                           value={formData.state}
                           onChange={handleChange}
-                          className={`form-control ${errors.state ? "is-invalid" : ""}`}
+                          className={`form-control ${
+                            errors.state ? "is-invalid" : ""
+                          }`}
                           disabled={!formData.country}
                         >
                           <option value="">Select State</option>
@@ -463,7 +485,9 @@ const OrgEmployeeEdit = () => {
                           ))}
                         </select>
                         {errors.state && (
-                          <div className="invalid-feedback">{errors.state.message}</div>
+                          <div className="invalid-feedback">
+                            {errors.state.message}
+                          </div>
                         )}
                       </div>
                     </Col>
@@ -476,7 +500,9 @@ const OrgEmployeeEdit = () => {
                           name="district"
                           value={formData.district}
                           onChange={handleChange}
-                          className={`form-control ${errors.district ? "is-invalid" : ""}`}
+                          className={`form-control ${
+                            errors.district ? "is-invalid" : ""
+                          }`}
                           disabled={!formData.state}
                         >
                           <option value="">Select District</option>
@@ -487,7 +513,9 @@ const OrgEmployeeEdit = () => {
                           ))}
                         </select>
                         {errors.district && (
-                          <div className="invalid-feedback">{errors.district.message}</div>
+                          <div className="invalid-feedback">
+                            {errors.district.message}
+                          </div>
                         )}
                       </div>
                     </Col>
@@ -500,7 +528,9 @@ const OrgEmployeeEdit = () => {
                           name="city"
                           value={formData.city}
                           onChange={handleChange}
-                          className={`form-control ${errors.city ? "is-invalid" : ""}`}
+                          className={`form-control ${
+                            errors.city ? "is-invalid" : ""
+                          }`}
                           disabled={!formData.state}
                         >
                           <option value="">Select City</option>
@@ -511,7 +541,9 @@ const OrgEmployeeEdit = () => {
                           ))}
                         </select>
                         {errors.city && (
-                          <div className="invalid-feedback">{errors.city.message}</div>
+                          <div className="invalid-feedback">
+                            {errors.city.message}
+                          </div>
                         )}
                       </div>
                     </Col>
@@ -630,7 +662,9 @@ const OrgEmployeeEdit = () => {
               <Button
                 variant="danger"
                 className="me-2"
-                onClick={() => navigate(`/apps/organizations/employee/details/${id}`)}
+                onClick={() =>
+                  navigate(`/apps/organizations/employee/details/${id}`)
+                }
               >
                 Cancel
               </Button>
@@ -659,4 +693,4 @@ const OrgEmployeeEdit = () => {
   );
 };
 
-export default OrgEmployeeEdit;
+export default EditEmployee;

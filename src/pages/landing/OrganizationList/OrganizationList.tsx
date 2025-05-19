@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
 import { setContext } from "../../../helpers/api/utils";
+import { getUserInfo } from "../../../server/admin/auth";
+import { toast } from "react-toastify";
 
 interface Organization {
   id: number;
@@ -47,7 +49,9 @@ const OrganizationList = () => {
 
     fetchUserOrganizations();
   }, []);
-  const handleNavigateOrg = (organization: Organization) => {
+  const handleNavigateOrg = async (organization: Organization) => {
+    const response = await getUserInfo(user.id);
+    if (!response.status) toast.error("Somthing went wrong");
     let organizationViewDetails = {
       role: "Organization",
       organization: organization.name,
@@ -58,6 +62,7 @@ const OrganizationList = () => {
       contextId: organization.id,
       contextType: "Organization",
       slug: organization.slug,
+      role: response.data?.role_id || "",
     });
     if (user.role === "Employee") {
       organizationViewDetails.role = "Employee";
@@ -97,8 +102,7 @@ const OrganizationList = () => {
             className="w-25 mx-auto mt-2"
             style={{
               height: "3px",
-              background:
-                "linear-gradient(to right,rgb(253, 253, 253),rgb(254, 255, 255))",
+              background: "linear-gradient(to right, #3498db, #2ecc71)",
             }}
           ></div>
         </h2>

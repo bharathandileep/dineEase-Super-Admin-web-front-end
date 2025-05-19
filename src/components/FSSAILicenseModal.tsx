@@ -19,7 +19,7 @@ const FSSAILicenseModal: React.FC<IFSSAILicenseModal> = ({
       </Modal.Header>
       <Modal.Body>
         <img
-          src={fssaiDetails.ffsai_certificate_image}
+          src={fssaiDetails?.ffsai_certificate_image}
           alt="FSSAI Certificate"
           className="img-fluid rounded"
           style={{ maxHeight: "600px", objectFit: "contain", width: "100%" }}

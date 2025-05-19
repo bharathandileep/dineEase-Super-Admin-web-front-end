@@ -1,15 +1,15 @@
 import React from "react";
-import { getContext } from "../../../helpers/api/utils";
 import OrganizationDetails from "../Organizations/OrganizationDetails";
 import KitchensDetails from "../kitchen/KitchensDetails";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 function Profile() {
-  const authContextDetails = getContext();
+  const { context } = useAuthDetails();
   return (
     <div>
-      {authContextDetails?.contextType === "Organization" ? (
+      {context?.contextType === "Organization" ? (
         <OrganizationDetails />
-      ) : authContextDetails?.contextType === "Kitchen" ? (
+      ) : context?.contextType === "Kitchen" ? (
         <KitchensDetails />
       ) : (
         <div className="text-muted text-center py-5">

@@ -118,7 +118,7 @@ function RequestedOrganization() {
         breadCrumbItems={[
           {
             label: "Unapproved Organizations",
-            path: "/apps/organizations/requested-organizations",
+            path: "/apps/organizations/requested",
           },
           {
             label: "List",

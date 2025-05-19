@@ -23,6 +23,7 @@ export const apiConfig = {
     accessAccount: "/user/access/login",
     checkUserExistence: "/auth/user/present",
     createUser: "/auth/user/new",
+    getUserInfo: (userId: string | number) => `/auth/user/${userId}`,
   },
   users: {
     getUser: "/users/:id",
@@ -35,10 +36,18 @@ export const apiConfig = {
       `/kitchens/update/${kitchenId}`,
     deletekitchens: (kitchenId: string | undefined) =>
       `/kitchens/delete/${kitchenId}`,
-    getAllkitchens: (query: any) => 
-      `/kitchens/all?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
-      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
-      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
+    getAllkitchens: (query: any) =>
+      `/kitchens/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${encodeURIComponent(query.search || "")}` +
+      `${
+        query.category ? `&category=${encodeURIComponent(query.category)}` : ""
+      }` +
+      `${
+        query.subcategory
+          ? `&subcategory=${encodeURIComponent(query.subcategory)}`
+          : ""
+      }`,
     getkitchensById: (kitchenId: string | undefined) =>
       `/kitchens/${kitchenId}`,
     toggleKitchenStatus: (id: string | undefined) => `/kitchens/status/${id}`,
@@ -85,10 +94,18 @@ export const apiConfig = {
     deleteOrganization: (orgId: string | undefined) =>
       `/organization/delete/${orgId}`,
     getAllOrganization: (query: any) =>
-      `/organization/all?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
-      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
-      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
-      
+      `/organization/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${encodeURIComponent(query.search || "")}` +
+      `${
+        query.category ? `&category=${encodeURIComponent(query.category)}` : ""
+      }` +
+      `${
+        query.subcategory
+          ? `&subcategory=${encodeURIComponent(query.subcategory)}`
+          : ""
+      }`,
+
     getOrganizationById: (orgId: string | undefined) =>
       `/organization/${orgId}`,
     getAllCategoriesByStatus: "/organization/category/status",
@@ -99,7 +116,9 @@ export const apiConfig = {
     getAllCategories: (query: any) =>
       `/organization/categories/all?page=${query.page}&limit=${query.limit}` +
       `${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}` +
-      `${query.status && query.status !== "all" ? `&status=${query.status}` : ""}`,
+      `${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     updateCategory: (id: string | undefined) =>
       `/organization/categories/${id}`,
     deleteCategory: (id: string | undefined) =>
@@ -111,7 +130,9 @@ export const apiConfig = {
     getAllSubCategories: (query: any) =>
       `/organization/subcategories/all?page=${query.page}&limit=${query.limit}` +
       `${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}` +
-      `${query.status && query.status !== "all" ? `&status=${query.status}` : ""}`,
+      `${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
       `/organization/categories/${categoryId}/subcategories`,
     getSubcategoryById: (id: string | undefined) =>
@@ -132,7 +153,6 @@ export const apiConfig = {
     // selectKitchen:(orgId: string | undefined)=>`/organization/select`,
     // getSelectedKitchen:(orgId: string | undefined)=>`/organization/${orgId}/selcted-kitchens`
   },
-
   menu: {
     createCategory: "/menu-category/categories",
     getAllCategories: (query: any) =>
@@ -169,19 +189,27 @@ export const apiConfig = {
       `/sub-menu-category/subcategories/${id}/toggle-status`,
 
     createItem: "/menu-items/allmenuitems",
-    listItems: (query: any) => `/menu-items/allmenuitems?page=${query.page}&limit=${query.limit}&search=${encodeURIComponent(query.search || "")}` +
-      `${query.category ? `&category=${encodeURIComponent(query.category)}` : ""}` +
-      `${query.subcategory ? `&subcategory=${encodeURIComponent(query.subcategory)}` : ""}`,
+    listItems: (query: any) =>
+      `/menu-items/allmenuitems?page=${query.page}&limit=${
+        query.limit
+      }&search=${encodeURIComponent(query.search || "")}` +
+      `${
+        query.category ? `&category=${encodeURIComponent(query.category)}` : ""
+      }` +
+      `${
+        query.subcategory
+          ? `&subcategory=${encodeURIComponent(query.subcategory)}`
+          : ""
+      }`,
     getItemById: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     updateItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     deleteItem: (id: string | undefined) => `/menu-items/allmenuitems/${id}`,
     changeItemStatus: (id: string | undefined) =>
       `/menu-items/allmenuitems/${id}/status`,
 
-    getMenuItemsByKitchen: (id: string | undefined,role:string) =>
+    getMenuItemsByKitchen: (id: string | undefined, role: string) =>
       `/menu-items/kitchen/${id}?role=${role}`,
   },
-
   designation: {
     createDesignation: "/designation/designations",
     getAllDesignations: (query: any) =>
@@ -199,23 +227,28 @@ export const apiConfig = {
     toggleDesignationStatus: (id: string | undefined) =>
       `/designation/designations/${id}/toggle-status`,
   },
-
-  employee: {
-    createEmployee: "/employee/employees",
+  adminEmployee: {
+    createEmployee: "/admin-employee/employees",
     getAllEmployees: (query: any) =>
-      `/employee/employees/all?page=${query.page}&limit=${query.limit}&search=${
-        query.search || ""
-      }`,
-    getEmployeeById: (id: string | undefined) => `/employee/employees/${id}`,
-    updateEmployee: (id: string | undefined) => `/employee/employees/${id}`,
-    deleteEmployee: (id: string | undefined) => `/employee/employees/${id}`,
+      `/admin-employee/employees/all?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
+    getEmployeeById: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
+    updateEmployee: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
+    deleteEmployee: (id: string | undefined) =>
+      `/admin-employee/employees/${id}`,
     toggleEmployeeStatus: (id: string | undefined) =>
-      `/employee/employees/${id}/toggle-status`,
+      `/admin-employee/employees/${id}/toggle-status`,
+
+    verifyDocument: (docId: string | undefined, docType: string) =>
+      `/admin/verify/document?documentId=${docId}&documentType=${docType}`,
   },
   orgemployee: {
     createOrgEmployee: "/org-employee/orgemployee",
-    getAllOrgEmployees: (query: any) =>
-      `/org-employee/orgemployee/all?page=${query.page}&limit=${
+    getAllOrgEmployees: (id: string | number, query: any) =>
+      `/org-employee/orgemployee/all/${id}?page=${query.page}&limit=${
         query.limit
       }&search=${query.search || ""}`,
     getOrgEmployeeById: (id: string | undefined) =>
@@ -229,7 +262,21 @@ export const apiConfig = {
     getEmployeeOrg: (email: string | undefined) =>
       `/org-employee/employee/org?email=${email}`,
   },
-
+  kitchenEmployee: {
+    createEmployee: "/kitchen-employee/employees",
+    getAllEmployees: (kitchenId: string | number, query: any) =>
+      `/kitchen-employee/employees-all/${kitchenId}?page=${query.page}&limit=${
+        query.limit
+      }&search=${query.search || ""}`,
+    getEmployeeById: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    updateEmployee: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    deleteEmployee: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}`,
+    toggleEmployeeStatus: (id: string | undefined) =>
+      `/kitchen-employee/employees/${id}/toggle-status`,
+  },
   kitchenMenu: {
     getKitchenMenu: (id: string | undefined) =>
       `/kitchens-menu/kitchen-menu/${id}`,
@@ -244,7 +291,6 @@ export const apiConfig = {
       itemId: string | undefined
     ) => `/kitchens-menu/${kitchenId}/menu-item/${itemId}`,
   },
-
   addressDetails: {
     getAllCountries: "/addressDetails/allcountries",
     getStatesByCountry: (countryName: string | undefined) =>
@@ -260,12 +306,21 @@ export const apiConfig = {
     getAllNotifications: "/notification/all",
     generateOrganizationNotification: "/notification/generate-organization",
   },
-  collab:{
-    collaborateKitchen:"collab/select",
-    listCollaboratedKitchens: (orgId: string | undefined) => `collab/organization/${orgId}`,
-    getAllCollaborations:"collab/all",
+  collab: {
+    collaborateKitchen: "collab/select",
+    listCollaboratedKitchens: (orgId: string | undefined) =>
+      `collab/organization/${orgId}`,
+    getAllCollaborations: "collab/all",
     getCollaborationById: (id: string | undefined) => `collab/${id}`,
-    requestCollaboration:"/collab/request/add-new-collab",
-    getCollaborationDetails:"/collab/get-collaboration-details"
-   }
+    requestCollaboration: "/collab/request/add-new-collab",
+    getCollaborationDetails: "/collab/get-collaboration-details",
+  },
+  roleAndAccess: {
+    newDesignation: "/role-and-access/new",
+    getDesignation: (entity_id: string | number, entity_type: string) =>
+      `/role-and-access?entity_id=${encodeURIComponent(
+        String(entity_id)
+      )}&entity_type=${encodeURIComponent(entity_type)}`,
+    getRoleAndAccess: (roleId: string | number) => `/role-and-access/${roleId}`,
+  },
 };

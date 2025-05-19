@@ -59,9 +59,10 @@ export const getAccessDetailsFromLocalStorage = () => {
 export type ContextType = "Organization" | "Kitchen" | "Admin";
 
 export interface Context {
-  contextId: string | number;
+  contextId: string | number; 
   contextType: ContextType;
   slug: String;
+  role?:string
 }
 
 const CONTEXT_KEY = "context";

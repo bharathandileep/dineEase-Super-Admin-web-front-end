@@ -1,12 +1,18 @@
 // menu.ts (helpers)
 import {
   MENU_ITEMS,
+  SUPER_ADMIN_MENU,
+  ORG_MENU,
+  KITCHEN_MENU,
   HORIZONTAL_MENU_ITEMS,
   TWO_COl_MENU_ITEMS,
   MenuItemTypes,
 } from "../constants/menu";
 
 const getMenuItems = () => MENU_ITEMS;
+const getMenuOrgItems = () => ORG_MENU;
+const getMenuKitchenItems = () => KITCHEN_MENU;
+const getMenuSuperAdminItems = () => SUPER_ADMIN_MENU;
 const getHorizontalMenuItems = () => HORIZONTAL_MENU_ITEMS;
 const getTwoColumnMenuItems = () => TWO_COl_MENU_ITEMS;
 
@@ -43,6 +49,9 @@ const findMenuItem = (
 
 export {
   getMenuItems,
+  getMenuOrgItems,
+  getMenuKitchenItems,
+  getMenuSuperAdminItems,
   getHorizontalMenuItems,
   getTwoColumnMenuItems,
   findAllParent,

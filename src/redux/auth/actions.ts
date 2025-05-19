@@ -53,11 +53,11 @@ export const loginUser = (
   payload: { username, password },
 });
 export const emploginUser = (
-  username: string,
+  email: string,
   password: string
 ): AuthActionType => ({
   type: AuthActionTypes.EMP_LOGIN_USER,
-  payload: { username, password },
+  payload: { email, password },
 });
 
 export const logoutUser = (): AuthActionType => ({

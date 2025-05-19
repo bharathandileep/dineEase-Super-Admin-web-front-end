@@ -18,8 +18,8 @@ import {
 import { toast } from "react-toastify";
 import { getMenuItemsByKitchen } from "../../../server/admin/menu";
 import { collaborateKitchen } from "../../../server/admin/collab";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
 import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 type FoodItem = {
   item_name: string;
@@ -81,6 +81,7 @@ export interface IKitchenDetails {
 
 function KitchenView() {
   const { id: kitchen_id } = useParams();
+  const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const [kitchenData, setKitchenData] = useState<IKitchenDetails | null>(null);
   const [groupedItems, setGroupedItems] = useState<TransformedData>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -88,7 +89,6 @@ function KitchenView() {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string>("");
-  const accessDetails = getAccessDetailsFromLocalStorage();
   const [showModal, setShowModal] = useState(false);
   const fssaiDetails = kitchenData?.fssaiDetails?.[0];
 
@@ -110,7 +110,7 @@ function KitchenView() {
   };
 
   const handleSelectKitchen = async () => {
-    const organization_id = accessDetails?.orgId;
+    const organization_id = (context?.contextId ?? "").toString();
     if (!kitchen_id) {
       toast.error("Kitchen ID is missing.");
       return;
@@ -165,14 +165,14 @@ function KitchenView() {
 
     return transformed;
   };
-
   useEffect(() => {
+
     const fetchMenuItems = async () => {
       setLoading(true);
       try {
         const response = await getMenuItemsByKitchen(
           kitchen_id,
-          accessDetails.role
+          (context?.contextType ?? "").toString()
         );
         if (response.data && response.data.items_id) {
           const items = response.data.items_id;
@@ -210,7 +210,6 @@ function KitchenView() {
     };
     fetchKitchenDetails();
   }, [kitchen_id]);
-
   if (loading) {
     return (
       <div
@@ -337,13 +336,13 @@ function KitchenView() {
                         fontSize: "0.75rem",
                         fontWeight: "500",
                         cursor:
-                          accessDetails.role === "Admin" &&
+                          user?.role === "Admin" &&
                           (badge === "Active" || badge === "Inactive")
                             ? "pointer"
                             : "default",
                       }}
                       onClick={
-                        accessDetails.role === "Admin" &&
+                        user?.role === "Admin" &&
                         (badge === "Active" || badge === "Inactive")
                           ? () => handleStatusToggle()
                           : undefined

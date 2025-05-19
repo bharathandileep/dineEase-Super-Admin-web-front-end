@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {
-  getOrgEmployeeById,
-  deleteOrgEmployee,
-  toggleOrgEmployeeStatus,
-} from "../../../server/admin/orgemployeemanagment";
+
 import {
   Pencil,
   Trash,
@@ -18,14 +14,20 @@ import {
   MapPin,
   Building,
 } from "lucide-react";
+import {
+  deleteOrgEmployee,
+  getOrgEmployeeById,
+  toggleOrgEmployeeStatus,
+} from "../../../../server/admin/orgemployeemanagment";
+import { toggleKitchenEmployeeStatus } from "../../../../server/admin/kitchenEmployeeManagemant";
 
 interface Employee {
   _id: string;
-  username: string;
+  fullName: string;
   email: string;
   phone_number: string;
-  designation_name?: string;
-  employee_status: string;
+  roleName?: string;
+  employee_status: boolean;
   profile_picture?: string;
   aadhar_number?: string;
   pan_number?: string;
@@ -33,15 +35,15 @@ interface Employee {
   pan_image: string;
   address: {
     street_address: string;
-    city_name: string;      
-    district_name?: string; 
-    state_name?: string;    
+    city_name: string;
+    district_name?: string;
+    state_name?: string;
     pincode?: string;
-    country_name?: string;  
+    country_name?: string;
   };
 }
 
-const OrgEmployeeDetails = () => {
+const EmployeeDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [orgemployee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ const OrgEmployeeDetails = () => {
             toast.error(response.message);
           }
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching employee details:", error);
         toast.error(error.message);
       } finally {
@@ -75,12 +77,12 @@ const OrgEmployeeDetails = () => {
           const response = await deleteOrgEmployee(id);
           if (response.status) {
             toast.success("Employee deleted successfully!");
-            navigate("/apps/organizations/employee/list"); 
+            navigate("/apps/organizations/employee/list");
           } else {
             toast.error(response.message);
           }
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
@@ -90,25 +92,24 @@ const OrgEmployeeDetails = () => {
   const handleToggleStatus = async () => {
     try {
       if (id) {
-        const response = await toggleOrgEmployeeStatus(id);
+        const response = await toggleKitchenEmployeeStatus(id);
         if (response.status) {
-          toast.success("Employee status updated successfully!");
+          toast.success(response.message);
           setEmployee((prev) =>
             prev
               ? {
                   ...prev,
-                  employee_status:
-                    prev.employee_status === "Active" ? "Inactive" : "Active",
+                  employee_status: !prev.employee_status,
                 }
               : null
           );
         } else {
-          toast.error(response.message);
+          toast.error("Failed to update status.");
         }
       }
-    } catch (error:any) {
+    } catch (error) {
       console.error("Error updating employee status:", error);
-      toast.error(error.message);
+      toast.error("An error occurred while updating status.");
     }
   };
 
@@ -128,14 +129,13 @@ const OrgEmployeeDetails = () => {
     );
   }
 
-  // Map the address fields to their proper display names
   const addressDisplay = {
     street: orgemployee.address?.street_address || "N/A",
     city: orgemployee.address?.city_name || "N/A",
     district: orgemployee.address?.district_name || "N/A",
     state: orgemployee.address?.state_name || "N/A",
     pincode: orgemployee.address?.pincode || "N/A",
-    country: orgemployee.address?.country_name || "N/A"
+    country: orgemployee.address?.country_name || "N/A",
   };
 
   return (
@@ -183,7 +183,7 @@ const OrgEmployeeDetails = () => {
                   orgemployee.profile_picture ||
                   "https://via.placeholder.com/150"
                 }
-                alt={orgemployee.username}
+                alt={orgemployee.fullName}
                 className="rounded-circle mb-3"
                 style={{
                   width: "150px",
@@ -192,24 +192,18 @@ const OrgEmployeeDetails = () => {
                 }}
               />
 
-              {/* Employee Name */}
               <h4 className="mb-2 text-2xl font-bold">
-                {orgemployee.username}
+                {orgemployee.fullName}
               </h4>
               <Badge
-                bg={
-                  orgemployee.employee_status === "Active"
-                    ? "success"
-                    : "danger"
-                }
+                bg={orgemployee.employee_status ? "success" : "danger"}
                 className="mb-3"
                 onClick={handleToggleStatus}
-                style={{ cursor: "pointer" }} // Add this to indicate the badge is clickable
+                style={{ cursor: "pointer" }}
               >
-                {orgemployee.employee_status}
+                {orgemployee.employee_status ? "Active" : "Deactive"}
               </Badge>
 
-              {/* Contact Information */}
               <div className="text-start">
                 <div className="d-flex align-items-center mb-2">
                   <Mail size={16} className="me-2" />
@@ -221,9 +215,7 @@ const OrgEmployeeDetails = () => {
                 </div>
                 <div className="d-flex align-items-center mb-2">
                   <Building size={16} className="me-2" />
-                  <span>
-                  {orgemployee?.designation_name || "Unknown"}
-                  </span>
+                  <span>{orgemployee?.roleName || "Unknown"}</span>
                 </div>
               </div>
             </Card.Body>
@@ -283,8 +275,7 @@ const OrgEmployeeDetails = () => {
             <Card.Body>
               <h5 className="card-title mb-3">Address Details</h5>
               <p>
-                <MapPin size={16} className="me-2" />{" "}
-                {addressDisplay.street}
+                <MapPin size={16} className="me-2" /> {addressDisplay.street}
               </p>
               <p>
                 {addressDisplay.city}, {addressDisplay.district}
@@ -292,9 +283,7 @@ const OrgEmployeeDetails = () => {
               <p>
                 {addressDisplay.state}, {addressDisplay.pincode}
               </p>
-              <p>
-                {addressDisplay.country}
-              </p>
+              <p>{addressDisplay.country}</p>
             </Card.Body>
           </Card>
         </Col>
@@ -303,4 +292,4 @@ const OrgEmployeeDetails = () => {
   );
 };
 
-export default OrgEmployeeDetails;
+export default EmployeeDetails;

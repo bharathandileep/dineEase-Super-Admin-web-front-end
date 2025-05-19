@@ -4,34 +4,40 @@ import { Row, Col, Card, Button, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import FileUploader from "../../../components/FileUploader";
-import { FormInput } from "../../../components";
-import { createOrgEmployee } from "../../../server/admin/orgemployeemanagment";
-import { getAllDesignations } from "../../../server/admin/designations";
+import FileUploader from "../../../../components/FileUploader";
+import { FormInput } from "../../../../components";
+
+import { getAllDesignations } from "../../../../server/admin/designations";
 import {
   getAllCountries,
   getStatesByCountry,
   getCitiesByState,
   getDistrictsByState,
-} from "../../../server/admin/addressDetails";
-import { getAccessDetailsFromLocalStorage } from "../../../helpers/api/utils";
+} from "../../../../server/admin/addressDetails";
+import { createEmployee } from "../../../../server/admin/employeemanagment";
+import { useAuthDetails } from "../../../../hooks/useAuthDetails";
+import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
 
-const OrgEmployeeManagement = () => {
+const AddEmployee = () => {
   const navigate = useNavigate();
+  const { context } = useAuthDetails();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [aadharImage, setAadharImage] = useState<File | null>(null);
   const [panImage, setPanImage] = useState<File | null>(null);
   const [designations, setDesignations] = useState<
-    { _id: string; designation_name: string }[]
+    { _id: string; roleName: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [orgEmpLoading, setOrgEmpLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
 
+  // Location state management
   const [countries, setCountries] = useState<any[]>([]);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
-  const userInfo = getAccessDetailsFromLocalStorage();
 
   const [formData, setFormData] = useState({
     country: "",
@@ -39,24 +45,23 @@ const OrgEmployeeManagement = () => {
     city: "",
     district: "",
   });
-  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
-  const [organizationDetails, setOrganizationsDetails] = useState(
-    getAccessDetailsFromLocalStorage()
-  );
+
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await getAllDesignations({ page: 1, limit: 10 });
+        const response = await getDesignation(
+          context?.contextId,
+          context?.contextType
+        );
         if (response.status) {
-          setDesignations(response.data.designations);
+          setDesignations(response.data);
         } else {
           toast.error(response.message);
         }
         await fetchCountries();
       } catch (error: any) {
+        console.error("Error fetching initial data:", error);
         toast.error(error.message);
       } finally {
         setLoading(false);
@@ -110,7 +115,6 @@ const OrgEmployeeManagement = () => {
     }
   };
 
-  // Handle location selection changes
   const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -125,7 +129,6 @@ const OrgEmployeeManagement = () => {
       await fetchDistricts(value);
       setFormData((prev) => ({ ...prev, city: "", district: "" }));
     }
-
     if (errors[name as keyof typeof formData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -139,6 +142,7 @@ const OrgEmployeeManagement = () => {
 
   const onSubmit = async (data: any) => {
     const locationErrors: { [key: string]: string } = {};
+    const selectedDesignation = JSON.parse(data.designation);
     if (!formData.country) locationErrors.country = "Country is required";
     if (!formData.state) locationErrors.state = "State is required";
     if (!formData.city) locationErrors.city = "City is required";
@@ -150,11 +154,18 @@ const OrgEmployeeManagement = () => {
     }
 
     try {
+      setOrgEmpLoading(true);
+
       const formDataObj = new FormData();
-      formDataObj.append("entity_id", userInfo.orgId);
-      formDataObj.append("entity_type", "Organization");
-      formDataObj.append("designation", data.designation);
-      formDataObj.append("username", data.username);
+
+      formDataObj.append("entity_id", (context?.contextId ?? "").toString());
+      formDataObj.append(
+        "entity_type",
+        (context?.contextType ?? "").toString()
+      );
+      formDataObj.append("roleName", selectedDesignation.name);
+      formDataObj.append("roleId", selectedDesignation.id);
+      formDataObj.append("fullName", data.fullName);
       formDataObj.append("email", data.email);
       formDataObj.append("phone_number", data.phone_number);
       formDataObj.append("role", "Employee");
@@ -178,24 +189,18 @@ const OrgEmployeeManagement = () => {
         formDataObj.append("pan_image", panImage);
       }
 
-      setOrgEmpLoading(true);
-      try {
-        const response = await createOrgEmployee(formDataObj);
-        if (response.status) {
-          toast.success("Employee added successfully!");
-          navigate("/apps/organizations/employee/list");
-        } else {
-          toast.error(response.message || "Failed to add employee.");
-        }
-      } catch (error: any) {
-        console.error("Error adding employee:", error);
-        toast.error(error.message);
-      } finally {
-        setOrgEmpLoading(false);
+      const response = await createEmployee(formDataObj);
+
+      if (response.status) {
+        toast.success("Employee added successfully!");
+        navigate("/apps/admin/employees");
+      } else {
+        toast.error(response.message || "Failed to add employee.");
       }
     } catch (error: any) {
-      console.error("Unexpected error:", error);
+      console.error("Error adding employee:", error);
       toast.error(error.message);
+    } finally {
       setOrgEmpLoading(false);
     }
   };
@@ -212,13 +217,12 @@ const OrgEmployeeManagement = () => {
     <div className="container py-2">
       <Card className="mb-2">
         <Card.Body>
-          <h3 className="text-uppercase">Add Organisation Employee</h3>
+          <h3 className="text-uppercase">Add Employee</h3>
         </Card.Body>
       </Card>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Row>
-          {/* Left Column - Employee Details */}
           <Col lg={6}>
             <Card>
               <Card.Body>
@@ -226,7 +230,7 @@ const OrgEmployeeManagement = () => {
                   General Information
                 </h5>
                 <FormInput
-                  name="username"
+                  name="fullName"
                   label="Employee Name"
                   placeholder="Enter full name"
                   containerClass="mb-3"
@@ -269,17 +273,21 @@ const OrgEmployeeManagement = () => {
                   validation={{ required: "Designation is required" }}
                 >
                   <option value="">Select Designation</option>
-                  {designations.map((designation) => (
-                    <option key={designation._id} value={designation._id}>
-                      {designation.designation_name}
+                  {designations.map((designation: any) => (
+                    <option
+                      key={designation._id}
+                      value={JSON.stringify({
+                        id: designation._id,
+                        name: designation.roleName,
+                      })}
+                    >
+                      {designation.roleName}
                     </option>
                   ))}
                 </FormInput>
               </Card.Body>
             </Card>
           </Col>
-
-          {/* Right Column - Profile Picture Upload */}
           <Col lg={6}>
             <Card>
               <Card.Body className="text-center">
@@ -293,8 +301,6 @@ const OrgEmployeeManagement = () => {
             </Card>
           </Col>
         </Row>
-
-        {/* Address Information */}
         <Row>
           <Col lg={12}>
             <Card className="mt-3">
@@ -365,7 +371,6 @@ const OrgEmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-
                   <Col md={6}>
                     <div className="mb-3">
                       <label className="form-label">District</label>
@@ -380,10 +385,7 @@ const OrgEmployeeManagement = () => {
                       >
                         <option value="">Select District</option>
                         {districts.map((district) => (
-                          <option
-                            key={district._id}
-                            value={district.district_name}
-                          >
+                          <option key={district._id} value={district.id}>
                             {district.name}
                           </option>
                         ))}
@@ -395,7 +397,7 @@ const OrgEmployeeManagement = () => {
                       )}
                     </div>
                   </Col>
-
+                  {/* City Selection */}
                   <Col md={6}>
                     <div className="mb-3">
                       <label className="form-label">City</label>
@@ -468,6 +470,7 @@ const OrgEmployeeManagement = () => {
                     <div className="mb-3">
                       <label className="form-label">Aadhaar Card Image</label>
                       <FileUploader
+                        // multiple={false}
                         onFileUpload={(files) =>
                           handleFileUpload(Array.from(files), setAadharImage)
                         }
@@ -505,12 +508,13 @@ const OrgEmployeeManagement = () => {
             </Card>
           </Col>
         </Row>
+
         <Row className="mt-3 mb-4">
           <Col className="text-end">
             <Button
               variant="danger"
               className="me-2"
-              onClick={() => navigate("/apps/organizations/employee/list")}
+              onClick={() => navigate("/apps/employee/list")}
             >
               Cancel
             </Button>
@@ -538,4 +542,4 @@ const OrgEmployeeManagement = () => {
   );
 };
 
-export default OrgEmployeeManagement;
+export default AddEmployee;

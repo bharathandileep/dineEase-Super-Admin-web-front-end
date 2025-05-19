@@ -3,13 +3,13 @@ import { FileText, Printer } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import jsPDF from "jspdf";
 import { requestCollaboration } from "../server/admin/collab";
-import { getContext } from "../helpers/api/utils";
 import { toast } from "react-toastify";
+import { useAuthDetails } from "../hooks/useAuthDetails";
 
 function CollaborationQuotationForm({ kitchenData }: any) {
+  const { context } = useAuthDetails();
   const [terms, setTerms] = useState("");
   const [loading, setLoading] = useState(false);
-  const userInfo = getContext();
 
   const generatePDF = (openInNewTab: boolean = false) => {
     const doc = new jsPDF();
@@ -63,7 +63,7 @@ function CollaborationQuotationForm({ kitchenData }: any) {
   const handleSendRequest = async () => {
     setLoading(true);
     const payload = {
-      organization_id: userInfo?.contextId,
+      organization_id: context?.contextId,
       kitchen_id: kitchenData?._id,
       kitchenName: kitchenData?.kitchen_name,
       contactPerson: kitchenData?.owner_phone_number,

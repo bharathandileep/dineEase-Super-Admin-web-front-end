@@ -33,21 +33,6 @@ const Login = () => {
   );
   const onSubmit = (formData: UserData) => {
     dispatch(loginUser(formData["userName"], formData["password"]));
-    const organizationViewDetails = {
-      role: "Admin",
-      adminName: "admin@123",
-      id: "67a1083b3c9f01a384e9683c",
-      slug: "admin",
-    };
-    setContext({
-      contextId: "67a1083b3c9f01a384e9683c",
-      contextType: "Admin",
-      slug: "admin",
-    });
-    localStorage.setItem(
-      "accessDetails",
-      JSON.stringify(organizationViewDetails)
-    );
   };
   useEffect(() => {
     if (userLoggedIn && user) {

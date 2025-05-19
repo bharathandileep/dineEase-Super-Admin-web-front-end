@@ -2,24 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import {
-  getAllEmployees,
-  deleteEmployee,
-  toggleEmployeeStatus,
-} from "../../../server/admin/employeemanagment";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
+import { useAuthDetails } from "../../../../hooks/useAuthDetails";
+import { deleteKitchenEmployee, getAllKitchenEmployees } from "../../../../server/admin/kitchenEmployeeManagemant";
+
+
 
 interface Employee {
   _id: string;
   username: string;
   email: string;
   phone_number: string;
-  designation: { designation_name: string };
+  roleName: string;
   employee_status: string;
   profile_picture: string;
 }
 
-const EmployeeList = () => {
+const ListEmployee = () => {
+  const { context } = useAuthDetails();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -51,12 +51,12 @@ const EmployeeList = () => {
         search: searchQuery,
       };
 
-      const response = await getAllEmployees(params);
+      const response = await getAllKitchenEmployees(context?.contextId, params);
       if (response.status) {
-        const { employees, totalPages, totalEmployees } = response.data;
+        const { kitchenEmployees, totalPages, totalEmployees } = response.data;
 
         if (isNewSearch) {
-          setEmployees(employees);
+          setEmployees(kitchenEmployees);
         } else {
           setEmployees((prev) => {
             const existingIds = new Set(prev.map((item) => item._id));
@@ -73,7 +73,7 @@ const EmployeeList = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error fetching employees:", error);
       toast.error(error.message);
     } finally {
@@ -110,48 +110,22 @@ const EmployeeList = () => {
   }, [hasMore, page, searchTerm]);
 
   const handleEdit = (id: string) => {
-    navigate(`/apps/employee/edit/${id}`);
+    navigate(`/apps/kitchen/employee/edit/${id}`);
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
-        const response = await deleteEmployee(id);
+        const response = await deleteKitchenEmployee(id);
         if (response.status) {
           toast.success("Employee deleted successfully!");
           setEmployees(employees.filter((emp) => emp._id !== id));
         } else {
           toast.error(response.message);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error deleting employee:", error);
         toast.error(error.message);
       }
-    }
-  };
-
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const response = await toggleEmployeeStatus(id);
-      if (response.status) {
-        toast.success("Employee status updated successfully!");
-        setEmployees(
-          employees.map((emp) =>
-            emp._id === id
-              ? {
-                  ...emp,
-                  employee_status:
-                    emp.employee_status === "Active" ? "Inactive" : "Active",
-                }
-              : emp
-          )
-        );
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error:any) {
-      console.error("Error updating employee status:", error);
-      toast.error(error.message);
     }
   };
 
@@ -177,7 +151,7 @@ const EmployeeList = () => {
             Employees
           </h3>
           <Link
-            to="/apps/employee/add"
+            to="/apps/kitchen/employee/new"
             className="btn btn-danger waves-effect waves-light"
           >
             <i className="mdi mdi-plus-circle me-1"></i> Add New Employee
@@ -228,7 +202,7 @@ const EmployeeList = () => {
                     cursor: "pointer",
                   }}
                   onClick={() =>
-                    navigate(`/apps/employee/details/${employee._id}`)
+                    navigate(`/apps/kitchen/empolyee/details/${employee._id}`)
                   }
                 >
                   <Card.Body className="d-flex flex-column h-100">
@@ -289,8 +263,7 @@ const EmployeeList = () => {
                       </h5>
                       <h5 className="m-0">
                         <span className="text-muted">
-                          Designation:{" "}
-                          {employee.designation?.designation_name || "Unknown"}
+                          Designation: {employee.roleName || "Unknown"}
                         </span>
                       </h5>
                     </div>
@@ -314,7 +287,7 @@ const EmployeeList = () => {
                   </p>
                   <Button
                     variant="primary"
-                    onClick={() => navigate("/apps/employee/add")}
+                    onClick={() => navigate("/apps/kitchen/employee/new")}
                   >
                     Add New Employee
                   </Button>
@@ -334,4 +307,4 @@ const EmployeeList = () => {
   );
 };
 
-export default EmployeeList;
+export default ListEmployee;

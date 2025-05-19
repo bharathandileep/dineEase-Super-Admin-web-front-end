@@ -15,18 +15,15 @@ import {
   toggleKitchenStatus,
 } from "../server/admin/kitchens";
 import { toast } from "react-toastify";
-import {
-  getAccessDetailsFromLocalStorage,
-  getContext,
-} from "../helpers/api/utils";
+import { useAuthDetails } from "../hooks/useAuthDetails";
 
 function KitchenOverviewDetails({ kitchenData }: any) {
+   const { user, context, isContext, isSuperAdmin } = useAuthDetails();
   const { kitchen } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<boolean>(true);
-  const accessDetails = getAccessDetailsFromLocalStorage();
-  const authContextDetails = getContext();
+
 
   const onEdit = () => navigate(`/apps/kitchen/edit/${kitchen}`);
 
@@ -159,13 +156,13 @@ function KitchenOverviewDetails({ kitchenData }: any) {
                       fontSize: "0.75rem",
                       fontWeight: "500",
                       cursor:
-                        accessDetails.role === "Admin" &&
+                      user.role === "Admin" &&
                         (badge === "Active" || badge === "Inactive")
                           ? "pointer"
                           : "default",
                     }}
                     onClick={
-                      accessDetails.role === "Admin" &&
+                      user.role === "Admin" &&
                       (badge === "Active" || badge === "Inactive")
                         ? () => handleStatusToggle()
                         : undefined
@@ -195,8 +192,8 @@ function KitchenOverviewDetails({ kitchenData }: any) {
           md={3}
           className="d-flex justify-content-md-end mt-4 mt-md-0"
         >
-          {accessDetails.role === "Admin" ||
-            (authContextDetails?.contextId === kitchenData?._id ? (
+          {user.role === "Admin" ||
+            (context?.contextId === kitchenData?._id ? (
               <div className="d-flex gap-2">
                 <Button
                   variant="light"
