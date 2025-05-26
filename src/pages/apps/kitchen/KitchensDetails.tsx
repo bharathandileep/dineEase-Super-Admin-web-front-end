@@ -23,6 +23,9 @@ import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
 import FSSAILicenseModal from "../../../components/FSSAILicenseModal";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import PANPreview from "../../../components/PANPreview";
+import GSTPreview from "../../../components/GSTPreview";
+import FSSAIPreview from "../../../components/FSSAIPreview";
 
 // Define interfaces
 type FoodItem = {
@@ -113,8 +116,6 @@ function KitchensDetails() {
   const [status, setStatus] = useState<boolean>(true);
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string>("");
-  const [showPanModal, setShowPanModal] = useState(false);
-  const [showGSTModal, setShowGSTModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const fssaiDetails = kitchenData?.fssaiDetails?.[0];
   const panDetails = kitchenData?.panDetails[0];
@@ -445,111 +446,9 @@ function KitchensDetails() {
         </Row>
       </div>
       <Row className="mb-4 g-3">
-        <Col md={6}>
-          <Card
-            className="h-100 shadow-sm"
-            style={{
-              cursor: fssaiDetails?.ffsai_certificate_image
-                ? "pointer"
-                : "default",
-            }}
-            onClick={() => {
-              if (fssaiDetails?.ffsai_certificate_image) setShowModal(true);
-            }}
-          >
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  FSSAI License
-                </h5>
-              </div>
-              {fssaiDetails?.ffsai_certificate_image && (
-                <img
-                  src={fssaiDetails.ffsai_certificate_image}
-                  alt="FSSAI Certificate"
-                  className="img-fluid rounded"
-                  style={{
-                    maxHeight: "250px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                />
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card
-            className="h-100 shadow-sm"
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowPanModal(true)}
-          >
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">PAN Details</h5>
-                {user?.role === "Admin" && (
-                  <VerificationButton
-                    isVerified={kitchenData?.isapproved || false}
-                  />
-                )}
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>PAN Number:</strong> {panDetails?.pan_card_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Card Holder:</strong> {panDetails?.pan_card_user_name}
-                </p>
-              </div>
-              <img
-                src={panDetails?.pan_card_image}
-                alt="PAN Card"
-                className="img-fluid rounded"
-                style={{ maxHeight: "150px", objectFit: "cover" }}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <Card
-            className="h-100 shadow-sm"
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowGSTModal(true)}
-          >
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <h5 className="card-title text-bold text-black">
-                  GST Registration
-                </h5>
-                {user?.role === "Admin" && (
-                  <VerificationButton
-                    isVerified={kitchenData?.isapproved || false}
-                  />
-                )}
-              </div>
-              <div className="mb-3">
-                <p className="mb-2">
-                  <strong>GST Number:</strong> {gstDetails?.gst_number}
-                </p>
-                <p className="mb-2">
-                  <strong>Expiry Date:</strong>{" "}
-                  {formatDateToDDMMYY(gstDetails?.expiry_date)}
-                </p>
-              </div>
-              <img
-                src={gstDetails?.gst_certificate_image}
-                alt="GST Certificate"
-                className="img-fluid rounded"
-                style={{
-                  maxHeight: "150px",
-                  objectFit: "cover",
-                  width: "100%",
-                }}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
+        <FSSAIPreview fssaiDetails={fssaiDetails} />
+        <PANPreview panDetails={panDetails} />
+        <GSTPreview gstDetails={gstDetails} />
         <Col md={6}>
           <Card className="h-100 shadow-sm">
             <Card.Body>
@@ -822,22 +721,6 @@ function KitchensDetails() {
           </Card.Body>
         </Card>
       )}
-      <PANDetailsModal
-        show={showPanModal}
-        onHide={() => setShowPanModal(false)}
-        panDetails={panDetails}
-      />
-      <GSTDetailsModal
-        show={showGSTModal}
-        onHide={() => setShowGSTModal(false)}
-        gstDetails={gstDetails}
-        formatDateToDDMMYY={formatDateToDDMMYY}
-      />
-      <FSSAILicenseModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        fssaiDetails={fssaiDetails}
-      />
     </div>
   );
 }

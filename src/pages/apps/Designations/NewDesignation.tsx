@@ -13,12 +13,16 @@ import {
   Zap,
   Command,
   Airplay,
-  ChevronUp,
   ChevronDown,
+  ChevronRight,
+  Edit,
+  Check,
+  Minus,
 } from "lucide-react";
 import PageTitle from "../../../components/PageTitle";
 import {
   createNewDesignation,
+  editRoleName,
   getDesignation,
 } from "../../../server/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
@@ -30,106 +34,137 @@ import {
   getMenuSuperAdminItems,
 } from "../../../helpers/menu";
 
-interface AccessPermission {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
+interface MenuItem {
+  key: string;
+  label: string;
+  icon?: string;
+  children?: MenuItem[];
 }
 
 const menuIconMap: Record<string, React.ReactNode> = {
-  airplay: <Airplay className="text-primary" size={20} />,
-  coffee: <Coffee className="text-primary" size={20} />,
-  trello: <Trello className="text-primary" size={20} />,
-  twitch: <Twitch className="text-primary" size={20} />,
-  zap: <Zap className="text-primary" size={20} />,
-  command: <Command className="text-primary" size={20} />,
-  fileText: <FileText className="text-primary" size={20} />,
-  chartBar: <ChartBar className="text-primary" size={20} />,
-  users: <Users className="text-primary" size={20} />,
-  shield: <Shield className="text-primary" size={20} />,
-  settings: <Settings className="text-primary" size={20} />,
+  airplay: <Airplay className="text-primary" size={16} />,
+  coffee: <Coffee className="text-primary" size={16} />,
+  trello: <Trello className="text-primary" size={16} />,
+  twitch: <Twitch className="text-primary" size={16} />,
+  zap: <Zap className="text-primary" size={16} />,
+  command: <Command className="text-primary" size={16} />,
+  fileText: <FileText className="text-primary" size={16} />,
+  chartBar: <ChartBar className="text-primary" size={16} />,
+  users: <Users className="text-primary" size={16} />,
+  shield: <Shield className="text-primary" size={16} />,
+  settings: <Settings className="text-primary" size={16} />,
 };
 
 const PERMISSION_TYPES = ["view", "add", "edit", "delete"];
 
-const PermissionControls = ({
-  items,
+const PermissionRow = ({
+  item,
+  level = 0,
   selectedPermissions,
-  onAllToggle,
-  onAccessToggle,
-}: any) => {
+  onToggleItem,
+  onTogglePermission,
+  expandedItems,
+  onToggleExpand,
+}: {
+  item: MenuItem;
+  level?: number;
+  selectedPermissions: Record<string, string[]>;
+  onToggleItem: (item: MenuItem) => void;
+  onTogglePermission: (itemKey: string, permission: string) => void;
+  expandedItems: string[];
+  onToggleExpand: (key: string) => void;
+}) => {
+  const isExpanded = expandedItems.includes(item.key);
+  const hasChildren = item.children && item.children.length > 0;
+  const isSelected = !!selectedPermissions[item.key];
+  const isPartiallySelected =
+    hasChildren &&
+    !isSelected &&
+    item.children?.some(
+      (child) =>
+        selectedPermissions[child.key] ||
+        child.children?.some(
+          (grandchild) => selectedPermissions[grandchild.key]
+        )
+    );
+
+  const getIcon = () => {
+    if (!hasChildren) return null;
+    return isExpanded ? (
+      <ChevronDown size={16} className="me-2" />
+    ) : (
+      <ChevronRight size={16} className="me-2" />
+    );
+  };
+
   return (
     <>
-      {items.map((permissionItem: any) => {
-        const itemId = permissionItem.key;
-        const selected = selectedPermissions[itemId] || [];
-        const isAllChecked = PERMISSION_TYPES.every((t) =>
-          selected.includes(t)
-        );
-
-        return (
-          <div key={itemId} className="mb-3">
-            <div className="card border-0 bg-light">
-              <div className="card-body p-3">
-                {/* <div className="d-flex justify-content-between align-items-center mb-2">
-                  <label className="fw-semibold">{permissionItem.label}</label>
-                  <div className="form-check form-switch">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={`${itemId}-all`}
-                      checked={isAllChecked}
-                      onChange={() => onAllToggle(itemId)}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={`${itemId}-all`}
-                    >
-                      All
-                    </label>
-                  </div>
-                </div> */}
-
-                <div className="d-flex flex-wrap gap-4">
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={`${itemId}-all`}
-                      checked={isAllChecked}
-                      onChange={() => onAllToggle(itemId)}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={`${itemId}-all`}
-                    >
-                      All
-                    </label>
-                  </div>
-                  {PERMISSION_TYPES.map((type) => (
-                    <div key={type} className="form-check form-check-inline">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id={`${itemId}-${type}`}
-                        checked={selected.includes(type)}
-                        onChange={() => onAccessToggle(itemId, type)}
-                      />
-                      <label
-                        className="form-check-label text-capitalize"
-                        htmlFor={`${itemId}-${type}`}
-                      >
-                        {type}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      <tr
+        className={`${level > 0 ? "child-row" : ""} ${
+          isSelected ? "table-primary" : ""
+        }`}
+        style={{
+          backgroundColor: level % 2 === 0 ? "#f8f9fa" : "white",
+        }}
+      >
+        <td style={{ paddingLeft: `${level * 20 + 8}px` }}>
+          <div className="d-flex align-items-center">
+            {hasChildren && (
+              <button
+                className="btn btn-sm btn-link p-0 me-2"
+                onClick={() => onToggleExpand(item.key)}
+              >
+                {getIcon()}
+              </button>
+            )}
+            {!hasChildren && (
+              <span style={{ width: 24, display: "inline-block" }} />
+            )}
+            <div className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={isSelected}
+                onChange={() => onToggleItem(item)}
+                id={`perm-${item.key}`}
+              />
+              <label className="form-check-label" htmlFor={`perm-${item.key}`}>
+                {item.label}
+              </label>
+              {isPartiallySelected && (
+                <Minus size={16} className="text-primary ms-2" />
+              )}
             </div>
           </div>
-        );
-      })}
+        </td>
+        {PERMISSION_TYPES.map((permission) => (
+          <td key={permission} className="text-center">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={
+                selectedPermissions[item.key]?.includes(permission) || false
+              }
+              onChange={() => onTogglePermission(item.key, permission)}
+              disabled={!isSelected && !isPartiallySelected}
+            />
+          </td>
+        ))}
+      </tr>
+      {hasChildren &&
+        isExpanded &&
+        item.children?.map((child) => (
+          <PermissionRow
+            key={child.key}
+            item={child}
+            level={level + 1}
+            selectedPermissions={selectedPermissions}
+            onToggleItem={onToggleItem}
+            onTogglePermission={onTogglePermission}
+            expandedItems={expandedItems}
+            onToggleExpand={onToggleExpand}
+          />
+        ))}
     </>
   );
 };
@@ -143,13 +178,14 @@ function NewDesignation() {
   const [selectedPermissions, setSelectedPermissions] = useState<
     Record<string, string[]>
   >({});
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [originalDesignation, setOriginalDesignation] = useState<{
     roleName: string;
     permissions: Record<string, string[]>;
   } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [designationToEdit, setDesignationToEdit] = useState("");
 
-  // Get menu items based on user role/context
   const menuItems = (() => {
     switch (true) {
       case isSuperAdmin:
@@ -163,7 +199,6 @@ function NewDesignation() {
     }
   })();
 
-  // Recursively get all menu keys including nested ones
   const getAllMenuKeys = (items: any[]): string[] => {
     return items.reduce((keys: string[], item) => {
       keys.push(item.key);
@@ -174,18 +209,15 @@ function NewDesignation() {
     }, []);
   };
 
-  // Get all permission keys
   const getAllPermissionKeys = () => {
     return getAllMenuKeys(menuItems);
   };
 
-  // Toggle permission for an item and its children
   const handleToggleItem = (item: any) => {
     setSelectedPermissions((prev) => {
       const newPerms = { ...prev };
       const allKeys = [item.key];
 
-      // Recursively collect all child keys
       const collectKeys = (menuItem: any) => {
         if (menuItem.children) {
           menuItem.children.forEach((child: any) => {
@@ -196,8 +228,6 @@ function NewDesignation() {
       };
 
       collectKeys(item);
-
-      // Toggle all collected keys
       const isCurrentlySelected = !!newPerms[item.key];
       allKeys.forEach((key) => {
         if (isCurrentlySelected) {
@@ -211,55 +241,103 @@ function NewDesignation() {
     });
   };
 
-  // Toggle specific permission type for a key
-  const handleAccessToggle = (permissionId: string, accessType: string) => {
+  const handleTogglePermission = (itemKey: string, permission: string) => {
     setSelectedPermissions((prev) => {
-      const current = prev[permissionId] || [];
-      const isChecked = current.includes(accessType);
+      const current = prev[itemKey] || [];
+      const isChecked = current.includes(permission);
       const updated = isChecked
-        ? current.filter((t) => t !== accessType)
-        : [...current, accessType];
-      return { ...prev, [permissionId]: updated };
+        ? current.filter((t) => t !== permission)
+        : [...current, permission];
+      return { ...prev, [itemKey]: updated };
     });
   };
 
-  // Toggle all permission types for a key
-  const handleAllToggle = (permissionId: string) => {
-    setSelectedPermissions((prev) => {
-      const hasAll = PERMISSION_TYPES.every((t) =>
-        prev[permissionId]?.includes(t)
-      );
-      return {
-        ...prev,
-        [permissionId]: hasAll ? [] : [...PERMISSION_TYPES],
-      };
-    });
-  };
-
-  // Toggle menu expansion
-  const toggleExpand = (key: string) => {
-    setExpandedMenus((prev) =>
+  const handleToggleExpand = (key: string) => {
+    setExpandedItems((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
 
-  // Add new designation
-  const handleAddNewDesignation = () => {
+  const handleAddNewDesignation = async () => {
     if (newDesignation.trim()) {
-      const roleName = newDesignation.trim();
-      const newDesignationObj = {
-        _id: `temp-${Date.now()}`,
-        roleName,
-        permissions: [],
-      };
-      setDesignations((prev) => [...prev, newDesignationObj]);
-      setNewDesignation("");
-      setShowNewDesignationInput(false);
-      setSelectedDesignation(roleName);
+      try {
+        if (isEditing) {
+          const designationToUpdate = designations.find(
+            (d) => d.roleName === designationToEdit
+          );
+
+          if (!designationToUpdate) {
+            toast.error("Designation not found");
+            return;
+          }
+          const response = await editRoleName({
+            id: designationToUpdate._id,
+            roleName: newDesignation.trim(),
+          });
+
+          if (response.status) {
+            setDesignations((prev) =>
+              prev.map((d) =>
+                d.roleName === designationToEdit
+                  ? {
+                      ...d,
+                      roleName: newDesignation.trim(),
+                      permissions: selectedPermissions,
+                    }
+                  : d
+              )
+            );
+
+            if (selectedDesignation === designationToEdit) {
+              setSelectedDesignation(newDesignation.trim());
+            }
+
+            toast.success(response.message);
+          } else {
+            toast.error(response.message);
+          }
+        } else {
+          // Add new designation
+          const roleName = newDesignation.trim();
+          const response = await createNewDesignation({
+            roleName,
+            permissions: selectedPermissions,
+            entityId: context?.contextId,
+            entityType: context?.contextType,
+          });
+
+          if (response.status) {
+            const newDesignationObj = {
+              ...response.data,
+              roleName,
+              permissions: selectedPermissions,
+            };
+            setDesignations((prev) => [...prev, newDesignationObj]);
+            setSelectedDesignation(roleName);
+            toast.success(response.message);
+          } else {
+            toast.error(response.message);
+          }
+        }
+
+        // Reset form
+        setNewDesignation("");
+        setShowNewDesignationInput(false);
+        setIsEditing(false);
+        setDesignationToEdit("");
+      } catch (err: any) {
+        toast.error(err.message);
+      }
     }
   };
 
-  // Save designation to backend
+  const handleEditDesignation = (designationName: string) => {
+    setDesignationToEdit(designationName);
+    setNewDesignation(designationName);
+    setShowNewDesignationInput(true);
+    setIsEditing(true);
+  };
+
   const saveNewDesignation = async (data: {
     roleName: string;
     permissions: Record<string, string[]>;
@@ -279,18 +357,21 @@ function NewDesignation() {
     }
   };
 
-  // Check if there are unsaved changes
   const hasChanges = () => {
     if (!originalDesignation) return true;
-    const current = JSON.stringify(selectedPermissions);
-    const original = JSON.stringify(originalDesignation.permissions);
-    return (
-      selectedDesignation !== originalDesignation.roleName ||
-      current !== original
-    );
+    const currentPermissions = JSON.stringify(selectedPermissions);
+    const originalPermissions = JSON.stringify(originalDesignation.permissions);
+    const permissionsChanged = currentPermissions !== originalPermissions;
+    const nameChanged =
+      !isEditing && selectedDesignation !== originalDesignation.roleName;
+    const editingNameChanged =
+      isEditing &&
+      newDesignation.trim() !== originalDesignation.roleName &&
+      newDesignation.trim() !== "";
+
+    return permissionsChanged || nameChanged || editingNameChanged;
   };
 
-  // Toggle select all permissions
   const handleSelectAllToggle = () => {
     const allKeys = getAllPermissionKeys();
     const allSelected = allKeys.every(
@@ -308,7 +389,6 @@ function NewDesignation() {
     }
   };
 
-  // Fetch designations on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -325,7 +405,6 @@ function NewDesignation() {
     fetchData();
   }, []);
 
-  // Update permissions when designation changes
   useEffect(() => {
     const selected = designations.find(
       (d) => d.roleName === selectedDesignation
@@ -336,100 +415,22 @@ function NewDesignation() {
         roleName: selected.roleName,
         permissions: selected.permissions || {},
       });
+      // Expand all items when a designation is selected
+      setExpandedItems(getAllMenuKeys(menuItems));
     } else {
       setSelectedPermissions({});
       setOriginalDesignation(null);
     }
   }, [selectedDesignation, designations]);
-  const renderPermissionGroup = (item: any, level = 0) => {
-    const isExpanded = expandedMenus.includes(item.key);
-    const itemSelected = selectedPermissions[item.key];
-    const isLeafNode = !item.children || item.children.length === 0;
-
-    return (
-      <div
-        key={item.key}
-        className="permission-group"
-        style={{ marginLeft: `${level * 20}px` }}
-      >
-        <div
-          className={`card ${
-            itemSelected?.length
-              ? "border-primary bg-primary bg-opacity-10"
-              : "border"
-          }`}
-        >
-          <div className="card-body p-3">
-            <div className="d-flex align-items-center justify-content-between">
-              <div className="form-check d-flex align-items-center">
-                <input
-                  type="checkbox"
-                  className="form-check-input me-3"
-                  id={item.key}
-                  checked={!!itemSelected}
-                  onChange={() => handleToggleItem(item)}
-                />
-                <label
-                  className="form-check-label fw-semibold"
-                  htmlFor={item.key}
-                >
-                  {item.label}
-                </label>
-              </div>
-              {item.children && (
-                <button
-                  className="btn btn-sm btn-link text-decoration-none"
-                  onClick={() => toggleExpand(item.key)}
-                >
-                  {isExpanded ? (
-                    <ChevronUp size={18} />
-                  ) : (
-                    <ChevronDown size={18} />
-                  )}
-                </button>
-              )}
-            </div>
-
-            {item.children && isExpanded && (
-              <div className="mt-3">
-                {item.children.map((child: any) =>
-                  renderPermissionGroup(child, level + 1)
-                )}
-
-                {isLeafNode && (
-                  <PermissionControls
-                    items={[item]}
-                    selectedPermissions={selectedPermissions}
-                    onAllToggle={handleAllToggle}
-                    onAccessToggle={handleAccessToggle}
-                  />
-                )}
-              </div>
-            )}
-            {!item.children && (
-              <div className="mt-3">
-                <PermissionControls
-                  items={[item]}
-                  selectedPermissions={selectedPermissions}
-                  onAllToggle={handleAllToggle}
-                  onAccessToggle={handleAccessToggle}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="min-vh-100 bg-light">
       <PageTitle
         breadCrumbItems={[
-          { label: "Kitchens", path: "/apps/kitchen/list" },
-          { label: "List", path: "/apps/kitchen/list", active: true },
+          { label: "designations", path: "/apps/designations" },
+          { label: "list", path: "/apps/designations", active: true },
         ]}
-        title={"Kitchens"}
+        title={"designations"}
       />
 
       <div
@@ -469,33 +470,60 @@ function NewDesignation() {
                       ))}
                     </select>
                   </div>
-                  {!showNewDesignationInput ? (
-                    <button
-                      onClick={() => setShowNewDesignationInput(true)}
-                      className="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
-                    >
-                      <PlusCircle size={16} className="me-2" />
-                      Add New Designation
-                    </button>
-                  ) : (
+                  <div className="d-flex gap-2">
+                    {/* Always show Add New button */}
+
+                    {selectedDesignation ? (
+                      <button
+                        onClick={() =>
+                          handleEditDesignation(selectedDesignation)
+                        }
+                        className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center"
+                      >
+                        <Edit size={16} className="me-2" />
+                        Edit Designation
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setShowNewDesignationInput(true);
+                          setIsEditing(false);
+                          setDesignationToEdit("");
+                          setNewDesignation("");
+                        }}
+                        className="btn btn-sm btn-primary d-inline-flex align-items-center"
+                      >
+                        <PlusCircle size={16} className="me-2" />
+                        Add New Designation
+                      </button>
+                    )}
+                  </div>
+
+                  {showNewDesignationInput && (
                     <div className="mt-3 d-flex align-items-center gap-2">
                       <input
                         type="text"
                         value={newDesignation}
                         onChange={(e) => setNewDesignation(e.target.value)}
-                        placeholder="Enter new designation"
+                        placeholder={
+                          isEditing
+                            ? "Edit designation name"
+                            : "Enter new designation"
+                        }
                         className="form-control"
                       />
                       <button
                         onClick={handleAddNewDesignation}
                         className="btn btn-primary"
                       >
-                        Add
+                        {isEditing ? "Update" : "Add"}
                       </button>
                       <button
                         onClick={() => {
                           setShowNewDesignationInput(false);
                           setNewDesignation("");
+                          setIsEditing(false);
+                          setDesignationToEdit("");
                         }}
                         className="btn btn-outline-secondary rounded-circle p-1"
                       >
@@ -504,6 +532,7 @@ function NewDesignation() {
                     </div>
                   )}
                 </div>
+
                 <div className="mb-4">
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <h2 className="h5 fw-semibold">Access Permissions</h2>
@@ -522,10 +551,35 @@ function NewDesignation() {
                     </button>
                   </div>
 
-                  <div className="d-flex flex-column gap-3">
-                    {menuItems.map((item: any) => renderPermissionGroup(item))}
+                  <div className="table-responsive">
+                    <table className="table table-bordered table-hover">
+                      <thead className="table-light">
+                        <tr>
+                          <th style={{ width: "40%" }}>Permission</th>
+                          {PERMISSION_TYPES.map((perm) => (
+                            <th key={perm} className="text-center">
+                              {perm.charAt(0).toUpperCase() + perm.slice(1)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {menuItems.map((item: any) => (
+                          <PermissionRow
+                            key={item.key}
+                            item={item}
+                            selectedPermissions={selectedPermissions}
+                            onToggleItem={handleToggleItem}
+                            onTogglePermission={handleTogglePermission}
+                            expandedItems={expandedItems}
+                            onToggleExpand={handleToggleExpand}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
+
                 <div className="d-flex justify-content-end pt-4 border-top">
                   <button
                     type="button"

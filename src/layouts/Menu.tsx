@@ -95,11 +95,13 @@ const MenuItemWithChildren = ({
         {!item.badge ? (
           <span className="menu-arrow">
             {/* {item.children && (
-              <FeatherIcon icon={open ? "chevron-up" : "chevron-down"} size={14} />
-            )} */}
+                <FeatherIcon icon={open ? "chevron-up" : "chevron-down"} size={14} />
+              )} */}
           </span>
         ) : (
-          <span className={`badge bg-${item.badge.variant} rounded-pill ms-auto`}>
+          <span
+            className={`badge bg-${item.badge.variant} rounded-pill ms-auto`}
+          >
             {item.badge.text}
           </span>
         )}
@@ -222,14 +224,13 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
     (menuItem: MenuItemTypes, show: boolean) => {
       if (menuItem.key) {
         if (show) {
-          setActiveMenuItems((prev) => [
-            ...new Set([
-              menuItem.key,
-              ...findAllParent(menuItems, menuItem),
-              ...prev,
-            ]),
+          // When opening a menu, close all others by only keeping the current menu and its parents
+          setActiveMenuItems([
+            menuItem.key,
+            ...findAllParent(menuItems, menuItem),
           ]);
         } else {
+          // When closing a menu, just remove its key
           setActiveMenuItems((prev) =>
             prev.filter((item) => item !== menuItem.key)
           );

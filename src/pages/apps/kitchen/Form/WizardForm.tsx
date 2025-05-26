@@ -388,7 +388,9 @@ export function WizardForm({ initialData }: WizardFormProps) {
     try {
       setLoading(true);
       const response = await kitchensGetSubcategoriesByCategory(catId);
-      const subcatData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      const subcatData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
       setSubcategories(subcatData);
       if (subcatData.length === 0) {
         toast.warn("No subcategories available for this category.");
@@ -404,19 +406,28 @@ export function WizardForm({ initialData }: WizardFormProps) {
     }
   };
 
+  // const handleNext = () => {
+  //   if (currentStep === 1) {
+  //     if (validateStep1()) setCurrentStep(2);
+  //     else
+  //       toast.error("Please complete all required fields in Step 1 correctly.");
+  //   } else if (currentStep === 2) {
+  //     if (validateStep2()) setCurrentStep(3);
+  //     else
+  //       toast.error("Please complete all required fields in Step 2 correctly.");
+  //   } else if (currentStep === 3) {
+  //     if (validateStep3()) initialData ? handleEdit() : handleSubmit();
+  //     else
+  //       toast.error("Please complete all required fields in Step 3 correctly.");
+  //   }
+  // };
   const handleNext = () => {
     if (currentStep === 1) {
-      if (validateStep1()) setCurrentStep(2);
-      else
-        toast.error("Please complete all required fields in Step 1 correctly.");
+      setCurrentStep(2);
     } else if (currentStep === 2) {
-      if (validateStep2()) setCurrentStep(3);
-      else
-        toast.error("Please complete all required fields in Step 2 correctly.");
+      setCurrentStep(3);
     } else if (currentStep === 3) {
-      if (validateStep3()) initialData ? handleEdit() : handleSubmit();
-      else
-        toast.error("Please complete all required fields in Step 3 correctly.");
+      initialData ? handleEdit() : handleSubmit();
     }
   };
 
@@ -451,9 +462,8 @@ export function WizardForm({ initialData }: WizardFormProps) {
         user.role === "Admin"
           ? navigate("/apps/organizations/list-kitchens")
           : navigate("/dashboard/kitchen-list");
-      }
-      else{
-        toast.error(response.message)
+      } else {
+        toast.error(response.message);
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -472,7 +482,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       setFormData((prev) => ({
         ...prev,
         category: value,
-        subcategoryName: "", 
+        subcategoryName: "",
       }));
       await fetchSubcategories(value);
     } else {
@@ -553,97 +563,115 @@ export function WizardForm({ initialData }: WizardFormProps) {
     ).length;
   };
 
-useEffect(() => {
-  const fetchInitialData = async () => {
-    try {
-      setLoading(true);
-      await fetchCategories();
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setLoading(true);
+        await fetchCategories();
 
-      if (id) {
-        const kitchenResponse = await getkitchenDetails(id);
-        const kitchenData = kitchenResponse.data;
-        const initialSubcategory =
-          kitchenData?.subcategoryName?._id ||
-          (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
-          "";
-        setFormData({
-          ...initialFormData,
-          kitchen_name: kitchenData?.kitchen_name || "",
-          kitchen_status: kitchenData?.kitchen_status || "Active",
-          kitchen_owner_name: kitchenData?.kitchen_owner_name || "",
-          owner_email: kitchenData?.owner_email || "",
-          owner_phone_number: kitchenData?.owner_phone_number || "",
-          restaurant_type: kitchenData?.restaurant_type || "",
-          kitchen_type: kitchenData?.kitchen_type || "",
-          kitchen_phone_number: kitchenData?.kitchen_phone_number || "",
-          category: kitchenData?.category?._id || "",
-          subcategoryName: initialSubcategory, // Set as string ID
-          address_type: kitchenData?.addresses?.[0]?.address_type || "Home",
-          street_address: kitchenData?.addresses?.[0]?.street_address || "",
-          district: kitchenData?.addresses?.[0]?.district_id || "",
-          city: kitchenData?.addresses?.[0]?.city_id || "",
-          state: kitchenData?.addresses?.[0]?.state_id || "",
-          pincode: kitchenData?.addresses?.[0]?.pincode || "",
-          country: kitchenData?.addresses?.[0]?.country_id || "",
-          pan_card_number: kitchenData?.panDetails?.[0]?.pan_card_number || "",
-          pan_card_user_name: kitchenData?.panDetails?.[0]?.pan_card_user_name || "",
-          pan_card_image: kitchenData?.panDetails?.[0]?.pan_card_image || "",
-          gst_number: kitchenData?.gstDetails?.[0]?.gst_number || "",
-          gst_expiry_date: kitchenData?.gstDetails?.[0]?.expiry_date
-            ? new Date(kitchenData.gstDetails[0].expiry_date).toISOString().split("T")[0]
-            : "",
-          gst_certificate_image: kitchenData?.gstDetails?.[0]?.gst_certificate_image || "",
-          ffsai_certificate_number: kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_number || "",
-          ffsai_card_owner_name: kitchenData?.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
-          ffsai_expiry_date: kitchenData?.fssaiDetails?.[0]?.expiry_date
-            ? new Date(kitchenData.fssaiDetails[0].expiry_date).toISOString().split("T")[0]
-            : "",
-          ffsai_certificate_image: kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image || "",
-          kitchen_image: kitchenData?.kitchen_image || "",
-          isapproved: kitchenData?.isapproved || false,
-          working_days: kitchenData?.working_days || [],
-          pre_ordering_options: kitchenData?.pre_ordering_options || [],
-        });
-
-        // Fetch subcategories if category exists
-        if (kitchenData?.category?._id) {
-          setCategoryId(kitchenData.category._id);
-          const subcatData = await fetchSubcategories(kitchenData.category._id);
-
-          // Use subcategoryName._id for validation
-          const selectedSubcategoryId =
+        if (id) {
+          const kitchenResponse = await getkitchenDetails(id);
+          const kitchenData = kitchenResponse.data;
+          const initialSubcategory =
             kitchenData?.subcategoryName?._id ||
-            (typeof kitchenData?.subcategoryName === "string" ? kitchenData.subcategoryName : "") ||
+            (typeof kitchenData?.subcategoryName === "string"
+              ? kitchenData.subcategoryName
+              : "") ||
             "";
+          setFormData({
+            ...initialFormData,
+            kitchen_name: kitchenData?.kitchen_name || "",
+            kitchen_status: kitchenData?.kitchen_status || "Active",
+            kitchen_owner_name: kitchenData?.kitchen_owner_name || "",
+            owner_email: kitchenData?.owner_email || "",
+            owner_phone_number: kitchenData?.owner_phone_number || "",
+            restaurant_type: kitchenData?.restaurant_type || "",
+            kitchen_type: kitchenData?.kitchen_type || "",
+            kitchen_phone_number: kitchenData?.kitchen_phone_number || "",
+            category: kitchenData?.category?._id || "",
+            subcategoryName: initialSubcategory, // Set as string ID
+            address_type: kitchenData?.addresses?.[0]?.address_type || "Home",
+            street_address: kitchenData?.addresses?.[0]?.street_address || "",
+            district: kitchenData?.addresses?.[0]?.district_id || "",
+            city: kitchenData?.addresses?.[0]?.city_id || "",
+            state: kitchenData?.addresses?.[0]?.state_id || "",
+            pincode: kitchenData?.addresses?.[0]?.pincode || "",
+            country: kitchenData?.addresses?.[0]?.country_id || "",
+            pan_card_number:
+              kitchenData?.panDetails?.[0]?.pan_card_number || "",
+            pan_card_user_name:
+              kitchenData?.panDetails?.[0]?.pan_card_user_name || "",
+            pan_card_image: kitchenData?.panDetails?.[0]?.pan_card_image || "",
+            gst_number: kitchenData?.gstDetails?.[0]?.gst_number || "",
+            gst_expiry_date: kitchenData?.gstDetails?.[0]?.expiry_date
+              ? new Date(kitchenData.gstDetails[0].expiry_date)
+                  .toISOString()
+                  .split("T")[0]
+              : "",
+            gst_certificate_image:
+              kitchenData?.gstDetails?.[0]?.gst_certificate_image || "",
+            ffsai_certificate_number:
+              kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_number || "",
+            ffsai_card_owner_name:
+              kitchenData?.fssaiDetails?.[0]?.ffsai_card_owner_name || "",
+            ffsai_expiry_date: kitchenData?.fssaiDetails?.[0]?.expiry_date
+              ? new Date(kitchenData.fssaiDetails[0].expiry_date)
+                  .toISOString()
+                  .split("T")[0]
+              : "",
+            ffsai_certificate_image:
+              kitchenData?.fssaiDetails?.[0]?.ffsai_certificate_image || "",
+            kitchen_image: kitchenData?.kitchen_image || "",
+            isapproved: kitchenData?.isapproved || false,
+            working_days: kitchenData?.working_days || [],
+            pre_ordering_options: kitchenData?.pre_ordering_options || [],
+          });
 
-          const isValidSubcategory = subcatData.some((sub: { _id: any; }) => sub._id === selectedSubcategoryId);
+          // Fetch subcategories if category exists
+          if (kitchenData?.category?._id) {
+            setCategoryId(kitchenData.category._id);
+            const subcatData = await fetchSubcategories(
+              kitchenData.category._id
+            );
 
-          if (!isValidSubcategory && subcatData.length > 0) {
-            setFormData(prev => ({ ...prev, subcategoryName: "" }));
-          } 
-        } 
-        // Fetch address-related data
-        if (kitchenData?.addresses?.[0]?.country_id) {
-          await fetchStates(kitchenData.addresses[0].country_id);
+            // Use subcategoryName._id for validation
+            const selectedSubcategoryId =
+              kitchenData?.subcategoryName?._id ||
+              (typeof kitchenData?.subcategoryName === "string"
+                ? kitchenData.subcategoryName
+                : "") ||
+              "";
+
+            const isValidSubcategory = subcatData.some(
+              (sub: { _id: any }) => sub._id === selectedSubcategoryId
+            );
+
+            if (!isValidSubcategory && subcatData.length > 0) {
+              setFormData((prev) => ({ ...prev, subcategoryName: "" }));
+            }
+          }
+          // Fetch address-related data
+          if (kitchenData?.addresses?.[0]?.country_id) {
+            await fetchStates(kitchenData.addresses[0].country_id);
+          }
+          if (kitchenData?.addresses?.[0]?.state_id) {
+            await fetchCities(kitchenData.addresses[0].state_id);
+            await fetchDistricts(kitchenData.addresses[0].state_id);
+          }
         }
-        if (kitchenData?.addresses?.[0]?.state_id) {
-          await fetchCities(kitchenData.addresses[0].state_id);
-          await fetchDistricts(kitchenData.addresses[0].state_id);
-        }
+
+        await fetchCountries();
+        setIsOpen(user.role === "Admin" && !initialData);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+        toast.error("Failed to load initial data");
+      } finally {
+        setLoading(false);
       }
+    };
 
-      await fetchCountries();
-      setIsOpen(user.role === "Admin" && !initialData);
-    } catch (error) {
-      console.error("Error fetching initial data:", error);
-      toast.error("Failed to load initial data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchInitialData();
-}, [id]);
+    fetchInitialData();
+  }, [id]);
   return (
     <>
       <UserCreateModal
@@ -910,7 +938,11 @@ useEffect(() => {
                                 className={`form-select ${
                                   errors.subcategoryName ? "is-invalid" : ""
                                 }`}
-                                disabled={loading || !formData.category || subcategories.length === 0}
+                                disabled={
+                                  loading ||
+                                  !formData.category ||
+                                  subcategories.length === 0
+                                }
                               >
                                 <option value="">Select Subcategory</option>
                                 {subcategories.map((sub) => (
@@ -924,11 +956,13 @@ useEffect(() => {
                                   {errors.subcategoryName}
                                 </div>
                               )}
-                              {formData.category && !subcategories.length && !loading && (
-                                <div className="text-muted mt-1">
-                                  No subcategories available
-                                </div>
-                              )}
+                              {formData.category &&
+                                !subcategories.length &&
+                                !loading && (
+                                  <div className="text-muted mt-1">
+                                    No subcategories available
+                                  </div>
+                                )}
                             </div>
                           </div>
                         </div>
@@ -1544,7 +1578,9 @@ useEffect(() => {
                           type="button"
                           className="btn btn-outline-primary mt-2"
                           onClick={() => addArrayItem("working_days")}
-                          disabled={formData.working_days.length >= 7 || loading}
+                          disabled={
+                            formData.working_days.length >= 7 || loading
+                          }
                         >
                           Add Working Day
                         </button>
@@ -1652,12 +1688,7 @@ useEffect(() => {
                                     }
                                   </div>
                                 )}
-                                {option.day && (
-                                  <small className="form-text text-muted">
-                                    {getMealTypeCountForDay(option.day)}/4
-                                    options selected
-                                  </small>
-                                )}
+                        
                               </div>
                             </div>
                             <div className="col-md-2">
@@ -1783,7 +1814,7 @@ useEffect(() => {
                                       e.target.value === "true"
                                     )
                                   }
-                                  className="form-select"
+                                  className="form-select w-100"
                                   disabled={loading}
                                 >
                                   <option value="true">Active</option>
@@ -1812,7 +1843,8 @@ useEffect(() => {
                           disabled={
                             formData.pre_ordering_options.length >=
                               formData.working_days.filter((wd) => wd.is_open)
-                                .length * 4 || loading
+                                .length *
+                                4 || loading
                           }
                         >
                           Add Pre-order Option

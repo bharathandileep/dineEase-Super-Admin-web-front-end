@@ -172,8 +172,9 @@ function RequestedOrganization() {
           {organizations.length > 0 ? (
             organizations.map((item) => (
               <Col key={item._id} md={6} xl={3} className="mb-3">
-                <Card className="product-box h-100 shadow-sm">
+                <Card className="h-100 shadow-sm border-0">
                   <Card.Body className="d-flex flex-column">
+                    {/* Image */}
                     <div className="bg-light mb-3">
                       <img
                         src={
@@ -181,40 +182,47 @@ function RequestedOrganization() {
                           "https://via.placeholder.com/150"
                         }
                         alt={item.organizationName}
-                        className="img-fluid"
-                        style={{
-                          width: "100%",
-                          height: "200px",
-                          objectFit: "contain",
-                        }}
+                        className="img-fluid w-100"
+                        style={{ height: "200px", objectFit: "contain" }}
                       />
                     </div>
-                    <div className="product-info mt-auto">
-                      <h5 className="font-16 mt-0 text-dark">
+
+                    {/* Info */}
+                    <div className="mt-auto">
+                      <h5 className="h6 text-dark fw-bold">
                         {item.organizationName}
                       </h5>
-                      <p className="text-muted">
-                        <i className="mdi mdi-map-marker me-1"></i>
-                        {item.addresses[0]?.street_address},{" "}
-                        {item.addresses[0]?.city_name},{" "}
-                        {item.addresses[0]?.state_name},{" "}
-                        {item.addresses[0]?.country_name}
+
+                      <p className="text-muted mb-1 text-wrap text-break">
+                        <i className="mdi mdi-map-marker me-1 text-dark"></i>
+                        {item.addresses?.[0]?.street_address || "N/A"},{" "}
+                        {item.addresses?.[0]?.city_name || "N/A"},{" "}
+                        {item.addresses?.[0]?.state_name || "N/A"},{" "}
+                        {item.addresses?.[0]?.country_name || "N/A"}
                       </p>
-                      <p className="text-muted">
-                        <i className="mdi mdi-phone-classic me-1"></i>
-                        {item.contact_number}
+
+                      <p className="text-muted mb-1 text-wrap text-break">
+                        <i className="mdi mdi-phone-classic me-1 text-dark"></i>
+                        {item.contact_number || "N/A"}
                       </p>
-                      <p className="text-muted">
-                        <i className="mdi mdi-email me-1"></i>
-                        {item.email}
-                      </p>
-                      <p className="text-muted">
-                        <i className="mdi mdi-account-group me-1"></i>
+
+                      <div className="d-flex align-items-start text-muted mb-1 text-wrap text-break">
+                        <i className="mdi mdi-email me-1 text-dark"></i>
+                        <span className="flex-grow-1">
+                          {item.email || "N/A"}
+                        </span>
+                      </div>
+
+                      <p className="text-muted mb-2">
+                        <i className="mdi mdi-account-group me-1 text-dark"></i>
                         {item.no_of_employees} Employees
                       </p>
-                      <div className="d-flex justify-content-between mt-3">
+
+                      {/* Action Buttons */}
+                      <div className="d-flex justify-content-between gap-2">
                         <Button
-                          variant="outline-info"
+                          variant="outline-primary"
+                          size="sm"
                           onClick={() =>
                             navigate(`/apps/organizations/${item.slug}`)
                           }
@@ -223,6 +231,7 @@ function RequestedOrganization() {
                         </Button>
                         <Button
                           variant="success"
+                          size="sm"
                           onClick={() => handleApproveOrganization(item._id)}
                         >
                           Approve

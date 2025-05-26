@@ -97,7 +97,7 @@ function OurMenu() {
   }
 
   return (
-    <>
+    <div className="min-vh-100 bg-light">
       <PageTitle
         breadCrumbItems={[
           { label: "Kitchens", path: "/apps/kitchen/our-menu" },
@@ -126,7 +126,6 @@ function OurMenu() {
           </Link>
         </div>
       </div>
-
       <Row>
         {kitchenMenuItems && kitchenMenuItems.length > 0 ? (
           kitchenMenuItems.map((menu) =>
@@ -135,79 +134,94 @@ function OurMenu() {
                 key={`${menu._id}-${item._id}-${index}`}
                 md={6}
                 xl={3}
-                className="mb-3"
+                className="mb-4"
               >
                 <Link
                   to={`/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`}
+                  className="text-decoration-none"
                 >
-                  <Card className="product-box h-100">
-                    <Card.Body className="d-flex flex-column position-relative">
-                      <div className="product-action position-absolute top-0 end-0 m-2">
-                        <Link
-                          to="#"
-                          className="btn btn-success btn-xs waves-effect waves-light me-1"
-                          onClick={() => handleEdit(item.item_id._id)}
-                        >
-                          <i className="mdi mdi-pencil"></i>
-                        </Link>
-                        <Link
-                          to="#"
-                          className="btn btn-danger btn-xs waves-effect waves-light"
-                          onClick={() => handleDelete(item?.item_id._id)}
-                        >
-                          <i className="mdi mdi-close"></i>
-                        </Link>
+                  <Card className="h-100 shadow-sm">
+                    <div className="position-relative">
+                      <img
+                        src={item.custom_image || item.item_id.item_image}
+                        alt={item.item_id.item_name}
+                        className="card-img-top"
+                        style={{
+                          height: "200px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <div className="position-absolute top-0 end-0 m-2">
+                        <div className="d-flex gap-1">
+                          <Link
+                            to="#"
+                            className="btn btn-success btn-sm rounded-circle p-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleEdit(item.item_id._id);
+                            }}
+                            style={{ width: "32px", height: "32px" }}
+                          >
+                            <i className="mdi mdi-pencil"></i>
+                          </Link>
+                          <Link
+                            to="#"
+                            className="btn btn-danger btn-sm rounded-circle p-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDelete(item?.item_id._id);
+                            }}
+                            style={{ width: "32px", height: "32px" }}
+                          >
+                            <i className="mdi mdi-close"></i>
+                          </Link>
+                        </div>
                       </div>
-                      <div className="bg-light mb-3">
-                        <img
-                          src={item.custom_image || item.item_id.item_image}
-                          alt={item.item_id.item_name}
-                          className="img-fluid"
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "cover",
-                          }}
-                        />
+                    </div>
+
+                    <Card.Body className="d-flex flex-column">
+                      <div className="text-center mb-3">
+                        <h5 className="card-title mb-2 text-dark">
+                          {item.item_id.item_name}
+                        </h5>
+
+                        <div className="text-warning mb-2">
+                          <i className="fa fa-star"></i>
+                          <i className="fa fa-star"></i>
+                          <i className="fa fa-star"></i>
+                          <i className="fa fa-star"></i>
+                          <i className="fa fa-star"></i>
+                        </div>
+
+                        <div className="d-flex align-items-center justify-content-center mb-2">
+                          <i className="mdi mdi-tag-outline me-1 text-muted"></i>
+                          <span className="text-muted small">
+                            {item?.item_id?.category?.category}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Product Info */}
-                      <div className="product-info mt-auto">
-                        <div className="row align-items-center">
-                          <div className="col">
-                            <h5 className="font-16 mt-0 sp-line-1">
-                              <Link to="#" className="text-dark">
-                                {item.item_id.item_name}
-                              </Link>
-                            </h5>
-                            <div className="text-warning mb-2 font-13">
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star"></i>
-                            </div>
+                      <p className="text-muted small text-center mb-3 flex-grow-1">
+                        {item.item_id.item_description}
+                      </p>
 
-                            <div className="d-flex align-items-center mb-1">
-                              <i className="mdi mdi-tag-outline me-1"></i>
-                              <span className="text-muted">
-                                {item?.item_id?.category?.category}
+                      <div className="mt-auto">
+                        <div className="d-flex align-items-center justify-content-between">
+                          <span className="fw-bold">Status:</span>
+                          <div className="d-flex gap-1">
+                            {item.isAvailable ? (
+                              <span className="badge bg-success">
+                                <i className="mdi mdi-check me-1"></i>
+                                Available
                               </span>
-                            </div>
-                            <h5 className="m-0">
-                              <span className="text-muted">
-                                Status:{" "}
-                                {item.isAvailable
-                                  ? "Available"
-                                  : "Not Available"}
+                            ) : (
+                              <span className="badge bg-danger">
+                                <i className="mdi mdi-close me-1"></i>
+                                Not Available
                               </span>
-                            </h5>
-                          </div>
-
-                          <div className="col-12 mt-2">
-                            <p className="text-muted mb-0 font-13 text-truncate">
-                              {item.item_id.item_description}
-                            </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -218,52 +232,12 @@ function OurMenu() {
             ))
           )
         ) : (
-          <Col className="text-center mt-5 ">
+          <Col className="text-center mt-5">
             <h4>No menu items are selected.</h4>
           </Col>
         )}
       </Row>
-
-      <style>
-        {`
-          .product-box {
-            position: relative;
-            transition: all 0.3s ease;
-          }
-          
-          .product-box:hover {
-            box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.1);
-          }
-
-          .product-action {
-            opacity: 0;
-            transition: all 0.3s ease;
-          }
-
-          .product-box:hover .product-action {
-            opacity: 1;
-          }
-
-          .btn-xs {
-            padding: 0.2rem 0.6rem;
-            font-size: 0.75rem;
-          }
-
-          .sp-line-1 {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-          }
-        `}
-      </style>
-    </>
+    </div>
   );
 }
 

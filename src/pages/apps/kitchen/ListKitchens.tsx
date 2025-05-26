@@ -8,6 +8,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
 
 interface Kitchen {
   _id: string;
@@ -59,8 +60,7 @@ function ListKitchens() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
-  
-
+  const { context } = useAuthDetails();
   const loadingRef = useRef(loading);
   const loadingMoreRef = useRef(loadingMore);
   const hasMoreRef = useRef(hasMore);
@@ -197,12 +197,14 @@ function ListKitchens() {
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
             Kitchens
           </h3>
-          <Link
-            to="/apps/kitchen/new"
-            className="btn btn-danger waves-effect waves-light"
-          >
-            <i className="mdi mdi-plus-circle me-1"></i> Add New Kitchen
-          </Link>
+          {context?.contextType !== "Organization" && ( 
+            <Link
+              to="/apps/kitchen/new"
+              className="btn btn-danger waves-effect waves-light"
+            >
+              <i className="mdi mdi-plus-circle me-1"></i> Add New Kitchen
+            </Link>
+          )}
         </div>
       </div>
 

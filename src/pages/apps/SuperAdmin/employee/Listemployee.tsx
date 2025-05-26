@@ -196,80 +196,56 @@ const EmployeeList = () => {
           {employees.length > 0 ? (
             employees.map((employee) => (
               <Col md={6} xl={3} className="mb-3" key={employee._id}>
-                <Card
-                  className="product-box h-100"
-                  style={{
-                    transition: "all 0.3s ease-in-out",
-                    cursor: "pointer",
-                  }}
-                  onClick={() =>
-                    navigate(`/apps/admin/employee/${employee._id}`)
-                  }
+                <Link
+                  to={`/apps/admin/employee/${employee._id}`}
+                  className="text-decoration-none"
                 >
-                  <Card.Body className="d-flex flex-column h-100">
-                    <div className="product-action">
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="me-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(employee._id);
-                        }}
+                  <Card className="h-100 shadow-sm border-0">
+                    <Card.Body className="d-flex flex-column">
+
+                      <div
+                        className="bg-light mb-2 d-flex justify-content-center align-items-center"
+                        style={{ height: "200px" }}
                       >
-                        <Pencil size={16} />
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="me-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(employee._id);
-                        }}
-                      >
-                        <Trash size={16} />
-                      </Button>
-                    </div>
-                    <div className="bg-light mb-3 d-flex justify-content-center">
-                      <img
-                        src={
-                          employee.profile_picture ||
-                          "https://via.placeholder.com/150"
-                        }
-                        alt={employee.fullName}
-                        className="img-fluid"
-                        style={{
-                          width: "100%",
-                          height: "180px",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
-                    <div className="product-info d-flex flex-column flex-grow-1">
-                      <h5 className="font-16 mt-0 sp-line-1">
-                        <Link to="#" className="text-dark">
+                        <img
+                          src={
+                            employee.profile_picture ||
+                            "https://via.placeholder.com/150"
+                          }
+                          alt={employee.fullName}
+                          className="img-fluid"
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+
+                      {/* Employee Info */}
+                      <div className="mt-auto">
+                        <h5 className="fw-bold text-dark mb-3 fs-4">
                           {employee.fullName}
-                        </Link>
-                      </h5>
-                      <h5 className="m-0">
-                        <span className="text-muted">
-                          Email: {employee.email}
-                        </span>
-                      </h5>
-                      <h5 className="m-0">
-                        <span className="text-muted">
-                          Phone: {employee.phone_number}
-                        </span>
-                      </h5>
-                      <h5 className="m-0">
-                        <span className="text-muted">
-                          Designation: {employee.roleName || "Unknown"}
-                        </span>
-                      </h5>
-                    </div>
-                  </Card.Body>
-                </Card>
+                        </h5>
+
+                        <div className="text-muted fs-6">
+                          <div className="d-flex align-items-center font-14 mb-2 text-black text-wrap text-break">
+                            <i className="mdi mdi-email me-2"></i>
+                            <span>{employee.email || "N/A"}</span>
+                          </div>
+                          <div className="d-flex font-14 align-items-center mb-2 text-black">
+                            <i className="mdi mdi-phone-classic me-2"></i>
+                            <span>{employee.phone_number || "N/A"}</span>
+                          </div>
+                          <div className="d-flex font-14 align-items-center text-black">
+                            <i className="mdi mdi-account-tie me-2"></i>
+                            <span>{employee.roleName || "Unknown"}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Link>
               </Col>
             ))
           ) : (
@@ -277,8 +253,7 @@ const EmployeeList = () => {
               <Card>
                 <Card.Body className="text-center">
                   <i
-                    className="mdi mdi-account-off text-muted"
-                    style={{ fontSize: "48px" }}
+                    className="mdi mdi-account-off text-muted font-14"
                   ></i>
                   <h4 className="mt-3">No Employees Found</h4>
                   <p className="text-muted">

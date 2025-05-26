@@ -141,3 +141,15 @@ export const getDesignation = async (entity_id: any, entity_type: any) => {
     throw new Error(error);
   }
 };
+
+export const editRoleName = async (data: any) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiConfig.roleAndAccess.editDesignation(data.id),
+      { roleName: data.roleName }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || error;
+  }
+};

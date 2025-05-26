@@ -47,7 +47,7 @@ const Login = () => {
       >
         <VerticalForm<UserData> onSubmit={onSubmit} resolver={schemaResolver}>
           <FormInput
-            label={t("userName")}
+            label={t("User Name")}
             type="text"
             name="userName"
             placeholder="Enter your userName"

@@ -71,7 +71,6 @@ const CollaborationsPage: React.FC = () => {
 
   return (
     <React.Fragment>
-      {/* Breadcrumb Navigation */}
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb m-2">
           <li className="breadcrumb-item">
@@ -82,8 +81,6 @@ const CollaborationsPage: React.FC = () => {
           </li>
         </ol>
       </nav>
-
-      {/* Header */}
       <div
         className="mb-3"
         style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
@@ -96,7 +93,7 @@ const CollaborationsPage: React.FC = () => {
       </div>
       <Row>
         <Col>
-          <Card>  
+          <Card>
             <Card.Body>
               <Row className="justify-content-between">
                 <Col className="col-auto">
@@ -122,8 +119,6 @@ const CollaborationsPage: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
-      {/* Collaborations Grid */}
       <Row className="mt-3">
         {filteredCollaborations.length > 0 ? (
           filteredCollaborations.map((collab) => (
@@ -136,12 +131,10 @@ const CollaborationsPage: React.FC = () => {
                   <div className="card-body text-center position-relative">
                     <div className="d-flex justify-content-center mb-4">
                       <div className="profile-container">
-                        {/* Decorative rings */}
                         <div className="profile-ring"></div>
                         <div className="profile-ring"></div>
                         <div className="profile-ring"></div>
 
-                        {/* Organization Logo */}
                         {collab.organization.logo && (
                           <div className="profile-image left">
                             <img
@@ -164,14 +157,24 @@ const CollaborationsPage: React.FC = () => {
                     </div>
                     <div className="text-center">
                       <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
-                        <span className="h3 mb-0 text-black">
-                          {collab.kitchen.name}
+                        <span
+                          className="h3 mb-0 text-black"
+                          title={collab.kitchen.name}
+                        >
+                          {collab.kitchen.name.length > 10
+                            ? collab.kitchen.name.slice(0, 10) + "..."
+                            : collab.kitchen.name}
                         </span>
                         <span className="text-success">
                           <LucideHandshake />
                         </span>
-                        <span className="h3 mb-0 text-black">
-                          {collab.organization.name}
+                        <span
+                          className="h3 mb-0 text-black"
+                          title={collab.organization.name}
+                        >
+                          {collab.organization.name.length > 10
+                            ? collab.organization.name.slice(0, 10) + "..."
+                            : collab.organization.name}
                         </span>
                       </div>
                       <p className="text-muted small mb-0">

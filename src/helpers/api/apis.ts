@@ -317,6 +317,7 @@ export const apiConfig = {
   },
   roleAndAccess: {
     newDesignation: "/role-and-access/new",
+    editDesignation: (roleId: string | number) => `/role-and-access/${roleId}`,
     getDesignation: (entity_id: string | number, entity_type: string) =>
       `/role-and-access?entity_id=${encodeURIComponent(
         String(entity_id)
