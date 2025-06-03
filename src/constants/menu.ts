@@ -385,7 +385,7 @@ const ORG_MENU: MenuItemTypes[] = [
       {
         key: "List-kitchens",
         label: "List of Kitchens",
-        url: "/apps/organizations/list-kitchens",
+        url: "/apps/kitchen/list",
         parentKey: "apps-kitchen",
       },
     ],

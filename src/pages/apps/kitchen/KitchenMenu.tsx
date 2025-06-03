@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Row, Col, Card, Spinner, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { useParams } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import { Pencil, Trash } from "lucide-react";
 
 // TypeScript interfaces
 interface MenuItem {
@@ -51,6 +52,7 @@ function OurMenu() {
   const [kitchenMenuItems, setKitchenMenuItems] = useState<Menu[]>([]);
   const [isRemoved, setIsRemoved] = useState(false);
   const [loader, setLoader] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoader(true);
@@ -97,7 +99,7 @@ function OurMenu() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
+    <>
       <PageTitle
         breadCrumbItems={[
           { label: "Kitchens", path: "/apps/kitchen/our-menu" },
@@ -134,110 +136,123 @@ function OurMenu() {
                 key={`${menu._id}-${item._id}-${index}`}
                 md={6}
                 xl={3}
-                className="mb-4"
+                className="mb-3"
               >
-                <Link
-                  to={`/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`}
-                  className="text-decoration-none"
+                <Card
+                  className="product-box h-100"
+                  style={{
+                    transition: "all 0.3s ease-in-out",
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate(
+                      `/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`
+                    )
+                  }
                 >
-                  <Card className="h-100 shadow-sm">
-                    <div className="position-relative">
+                  <Card.Body className="d-flex flex-column h-100">
+                    <div className="product-action">
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="me-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(item.item_id._id);
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item?.item_id._id);
+                        }}
+                      >
+                        <Trash size={16} />
+                      </Button>
+                    </div>
+                    <div className="bg-light mb-3 d-flex justify-content-center">
                       <img
                         src={item.custom_image || item.item_id.item_image}
                         alt={item.item_id.item_name}
-                        className="card-img-top"
+                        className="img-fluid"
                         style={{
-                          height: "200px",
+                          width: "100%",
+                          height: "180px",
                           objectFit: "cover",
                         }}
                       />
-                      <div className="position-absolute top-0 end-0 m-2">
-                        <div className="d-flex gap-1">
-                          <Link
-                            to="#"
-                            className="btn btn-success btn-sm rounded-circle p-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleEdit(item.item_id._id);
-                            }}
-                            style={{ width: "32px", height: "32px" }}
-                          >
-                            <i className="mdi mdi-pencil"></i>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="btn btn-danger btn-sm rounded-circle p-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleDelete(item?.item_id._id);
-                            }}
-                            style={{ width: "32px", height: "32px" }}
-                          >
-                            <i className="mdi mdi-close"></i>
-                          </Link>
-                        </div>
-                      </div>
                     </div>
-
-                    <Card.Body className="d-flex flex-column">
-                      <div className="text-center mb-3">
-                        <h5 className="card-title mb-2 text-dark">
+                    <div className="d-flex flex-column flex-grow-1">
+                      <h5 className="font-16 mt-0 sp-line-1">
+                        <Link to="#" className="text-dark">
                           {item.item_id.item_name}
-                        </h5>
-
-                        <div className="text-warning mb-2">
-                          <i className="fa fa-star"></i>
-                          <i className="fa fa-star"></i>
-                          <i className="fa fa-star"></i>
-                          <i className="fa fa-star"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                          <i className="mdi mdi-tag-outline me-1 text-muted"></i>
-                          <span className="text-muted small">
-                            {item?.item_id?.category?.category}
-                          </span>
-                        </div>
+                        </Link>
+                      </h5>
+                      <div className="text-warning mb-2 font-13">
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star"></i>
                       </div>
 
-                      <p className="text-muted small text-center mb-3 flex-grow-1">
-                        {item.item_id.item_description}
-                      </p>
+                      <h5 className="m-0">
+                        <span className="text-muted">
+                          Category: {item?.item_id?.category?.category}
+                        </span>
+                      </h5>
+                      <h5 className="m-0">
+                        <span className="text-muted">
+                          Status:{" "}
+                          {item.isAvailable ? "Available" : "Not Available"}
+                        </span>
+                      </h5>
 
                       <div className="mt-auto">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <span className="fw-bold">Status:</span>
-                          <div className="d-flex gap-1">
-                            {item.isAvailable ? (
-                              <span className="badge bg-success">
-                                <i className="mdi mdi-check me-1"></i>
-                                Available
-                              </span>
-                            ) : (
-                              <span className="badge bg-danger">
-                                <i className="mdi mdi-close me-1"></i>
-                                Not Available
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                        <p
+                          className="text-muted mb-0 small lh-sm overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                          title={item.item_id.item_description}
+                        >
+                          {item.item_id.item_description}
+                        </p>
                       </div>
-                    </Card.Body>
-                  </Card>
-                </Link>
+                    </div>
+                  </Card.Body>
+                </Card>
               </Col>
             ))
           )
         ) : (
-          <Col className="text-center mt-5">
-            <h4>No menu items are selected.</h4>
+          <Col>
+            <Card>
+              <Card.Body className="text-center">
+                <i
+                  className="mdi mdi-food-off text-muted"
+                  style={{ fontSize: "48px" }}
+                ></i>
+                <h4 className="mt-3">No Menu Items Found</h4>
+                <p className="text-muted">No menu items are selected.</p>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate("/apps/kitchen/menu/new")}
+                >
+                  Add New Menu Item
+                </Button>
+              </Card.Body>
+            </Card>
           </Col>
         )}
       </Row>
-    </div>
+    </>
   );
 }
 

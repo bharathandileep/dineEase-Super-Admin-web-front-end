@@ -64,7 +64,7 @@ const Logout = () => {
             {t("You are now successfully sign out.")}{" "}
           </p>
         </div>
-      </AuthLayout>
+      </AuthLayout> 
     </>
   );
 };

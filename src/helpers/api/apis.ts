@@ -86,6 +86,7 @@ export const apiConfig = {
       `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${
         query.search || ""
       }`,
+    getCollabeDetails: "/kitchens/get-details",
   },
   organization: {
     newOrganization: "/organization/new",

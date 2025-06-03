@@ -35,6 +35,25 @@ export const getkitchenDetails = async (id: string | undefined) => {
     console.error("Error:", error.response?.data || error.message);
   }
 };
+
+export const getCollaborationStatus = async (
+  kitchenId: string | undefined,
+  orgID: string | number | undefined
+) => {
+  try {
+    const response = await axiosInstance.post(
+      `${apiConfig.kitchens.getCollabeDetails}`,
+      {
+        kitchenId,
+        orgID,
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
 export const updatekitchenDetails = async (
   id: string | undefined,
   kitchenDetails: any

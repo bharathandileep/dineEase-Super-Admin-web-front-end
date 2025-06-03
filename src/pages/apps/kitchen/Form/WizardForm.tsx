@@ -460,7 +460,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
       if (response.status) {
         toast.success(response.message);
         user.role === "Admin"
-          ? navigate("/apps/organizations/list-kitchens")
+          ? navigate("/apps/kitchen/list")
           : navigate("/dashboard/kitchen-list");
       } else {
         toast.error(response.message);
@@ -1688,7 +1688,6 @@ export function WizardForm({ initialData }: WizardFormProps) {
                                     }
                                   </div>
                                 )}
-                        
                               </div>
                             </div>
                             <div className="col-md-2">
