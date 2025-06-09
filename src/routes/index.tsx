@@ -18,6 +18,9 @@ import Dashboard from "../pages/landing/Dashboard/Dashboard";
 
 import SelectedKitchen from "../pages/apps/kitchen/SelectedKitchenDetails";
 import NewDesignation from "../pages/apps/Designations/NewDesignation";
+import Menu from "../pages/apps/menu/Menu";
+import MenuItemDetails from "../pages/apps/menu/MenuItemDetails";
+import { CreateMenu } from "../pages/apps/menu/CreateMenu";
 
 // Common
 const Profile = React.lazy(() => import("../pages/apps/MyAccount/Profile"));
@@ -51,6 +54,7 @@ const MenuCategory = React.lazy(
 const MenuSubCategory = React.lazy(
   () => import("../pages/apps/menu/MenuSubCategory")
 );
+const MenuTags = React.lazy(() => import("../pages/apps/menu/MenuTags"));
 const MenuItems = React.lazy(() => import("../pages/apps/MenuItems/Items"));
 const ItemsListing = React.lazy(
   () => import("../pages/apps/MenuItems/ListItems")
@@ -487,6 +491,12 @@ const superAdminRoutes = {
       route: PrivateRoute,
     },
     {
+      path: "/apps/menu/tags",
+      name: "Menu Sub Category",
+      element: <MenuTags />,
+      route: PrivateRoute,
+    },
+    {
       path: "/apps/admin/add-employee",
       name: "Super Admin Add Employee",
       element: <SuperAdminAddEmployee />,
@@ -616,7 +626,6 @@ const organizationsAppRoutes = {
     },
   ],
 };
-
 const kitchenAppRoutes = {
   path: "/apps/kitchen",
   name: "Kitchens",
@@ -668,12 +677,22 @@ const kitchenAppRoutes = {
     {
       path: "/apps/kitchen/kitchen-menu",
       name: "Kitchen-Menu",
-      element: <KitchenMenuPage />,
+      element: <Menu />,
+    },
+    {
+      path: "/apps/kitchen/create-menu",
+      name: "Kitchen-Menu",
+      element: <CreateMenu />,
     },
     {
       path: "/apps/kitchen/:kitchenId/item-details/:id",
       name: "Editing",
       element: <MenuDetails />,
+    },
+    {
+      path: "/apps/kitchen/item-details/:id",
+      name: "Editing",
+      element: <MenuItemDetails />,
     },
     {
       path: "/apps/kitchen/requested-kitchens",
@@ -713,7 +732,6 @@ const kitchenAppRoutes = {
     },
   ],
 };
-
 const itemAppRoutes = {
   path: "/apps/items",
   name: "items",
@@ -728,7 +746,6 @@ const itemAppRoutes = {
     },
   ],
 };
-
 const designationRoutes = {
   path: "/apps/designations",
   name: "List designations",

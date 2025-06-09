@@ -10,10 +10,16 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
+import TagModal from "./modal/TagModal ";
+import {
+  deleteTag,
+  getAllTags,
+  toggleTagStatus,
+} from "../../../server/admin/admin";
 
-function MenuCategory() {
+function MenuTags() {
   const navigate = useNavigate();
-  const [action, setAction] = useState("");
+  const [action, setAction] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -25,9 +31,11 @@ function MenuCategory() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchAllCategories = async () => {
+    const fetchAllTags = async () => {
       setLoading(true);
       try {
         const query = {
@@ -37,9 +45,9 @@ function MenuCategory() {
           status: statusFilter,
         };
 
-        const response = await getAllCategories(query);
+        const response = await getAllTags(query);
         if (response.status) {
-          setMenuItems(response.data.categories);
+          setMenuItems(response.data.tags);
           setTotalPages(response.data.pagination.totalPages);
           setTotalItems(response.data.pagination.totalItems);
         } else {
@@ -52,7 +60,7 @@ function MenuCategory() {
         setLoading(false);
       }
     };
-    fetchAllCategories();
+    fetchAllTags();
   }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
@@ -62,11 +70,12 @@ function MenuCategory() {
 
   const handleToggleStatus = async (id: string) => {
     try {
-      const response = await toggleCategoryStatus(id);
+      const response = await toggleTagStatus(id);
       if (response.status) {
         const item = menuItems.find((d) => d._id === id);
-        const newStatus = !item.status;
-
+        const newStatus = !item?.is_active;
+        console.log(item, "dd");
+        console.log(newStatus, "dd");
         toast.success(
           `Category status changed to ${newStatus ? "Active" : "Inactive"}`
         );
@@ -89,14 +98,14 @@ function MenuCategory() {
           } else {
             setMenuItems((prevItems) =>
               prevItems.map((item) =>
-                item._id === id ? { ...item, status: newStatus } : item
+                item._id === id ? { ...item, is_active: newStatus } : item
               )
             );
           }
         } else {
           setMenuItems((prevItems) =>
             prevItems.map((item) =>
-              item._id === id ? { ...item, status: newStatus } : item
+              item._id === id ? { ...item, is_active: newStatus } : item
             )
           );
         }
@@ -111,14 +120,16 @@ function MenuCategory() {
 
   const handleEdit = (id: string) => {
     const item = menuItems.find((menu) => menu._id === id);
-    setShow(true);
+    setAction("edit");
+    setSelectedItem(item);
+    setShowTagModal(true);
   };
 
   const handleDelete = async (id: any) => {
     if (!window.confirm("Are you sure you want to delete this category?"))
       return;
     try {
-      const response = await deleteCategory(id);
+      const response = await deleteTag(id);
       if (response.status) {
         toast.success(response.message);
 
@@ -142,6 +153,11 @@ function MenuCategory() {
     }
   };
 
+  const addNewTag = () => {
+    setShowTagModal(true);
+    setAction("add");
+  };
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
@@ -158,23 +174,23 @@ function MenuCategory() {
   };
 
   const CategoryColumn = ({ row }: { row: any }) => {
-    return <span className="fw-bold">{row?.original?.category}</span>;
+    return <span className="fw-bold">{row?.original?.name}</span>;
   };
 
   const CreatedAtColumn = ({ row }: { row: any }) => {
-    return <span>{new Date(row?.original?.createdAt).toLocaleString()}</span>;
+    return <span>{new Date(row?.original?.created_at).toLocaleString()}</span>;
   };
 
   const StatusColumn = ({ row }: { row: any }) => {
-    console.log(row,"cate")
+    console.log(row, "tags");
     return (
       <button
         className={`badge border-0 text-white  ${
-          row.original.status ? "bg-success" : "bg-secondary"
+          row.original?.is_active ? "bg-success" : "bg-secondary"
         }`}
         onClick={() => handleToggleStatus(row?.original?._id)}
       >
-        {row.original.status ? "Active" : "Inactive"}
+        {row.original.is_active ? "Active" : "Inactive"}
       </button>
     );
   };
@@ -200,9 +216,9 @@ function MenuCategory() {
 
   const columns = [
     { Header: "No.", accessor: "number", Cell: NumberColumn },
-    { Header: "Category", accessor: "category", Cell: CategoryColumn },
+    { Header: "Tag", accessor: "name", Cell: CategoryColumn },
     { Header: "Created At", accessor: "createdAt", Cell: CreatedAtColumn },
-    { Header: "Status", accessor: "status", Cell: StatusColumn },
+    { Header: "Status", accessor: "is_active", Cell: StatusColumn },
     { Header: "Action", accessor: "action", Cell: ActionColumn },
   ];
 
@@ -217,10 +233,10 @@ function MenuCategory() {
       <div className="container py-2">
         <PageTitle
           breadCrumbItems={[
-            { label: "Menu", path: "/apps/menu/category" },
-            { label: "Category", path: "/apps/menu/category", active: true },
+            { label: "Menu", path: "/apps/menu/tags" },
+            { label: "Category", path: "/apps/menu/tags", active: true },
           ]}
-          title={"Menu Categories"}
+          title={"Menu tags"}
         />
         <div
           className="mb-3"
@@ -228,15 +244,12 @@ function MenuCategory() {
         >
           <div className="d-flex align-items-center justify-content-between">
             <h3 className="page-title m-0" style={{ color: "#fff" }}>
-              Menu Category
+              Menu tags
             </h3>
             <Link
               to="#"
               className="btn btn-danger waves-effect waves-light"
-              onClick={() => {
-                setAction("add");
-                setShow(true);
-              }}
+              onClick={() => addNewTag()}
             >
               <i className="mdi mdi-plus-circle me-1"></i> Add New
             </Link>
@@ -324,14 +337,16 @@ function MenuCategory() {
           </div>
         </div>
       </div>
-      <AddCategory
-        show={show}
-        onHide={() => setShow(false)}
-        action={action}
-        selectedItem={selectedItem}
+      <TagModal
+        show={showTagModal}
+        onHide={() => setShowTagModal(false)}
+        onSave={(newTags) => setTags(newTags)}
+        existingTags={tags}
+        type={action}
+        editData={selectedItem}
       />
     </>
   );
 }
 
-export default MenuCategory;
+export default MenuTags;

@@ -288,6 +288,12 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
             url: "/apps/menu/subcategory",
             parentKey: "menu-list",
           },
+          {
+            key: "Menu-tags",
+            label: "Menu tags",
+            url: "/apps/menu/tags",
+            parentKey: "menu-list",
+          },
         ],
       },
       {

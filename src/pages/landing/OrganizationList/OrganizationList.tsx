@@ -173,7 +173,7 @@ const OrganizationList = () => {
                   </p>
                   {org.isapproved === "approved" ? (
                     <Button
-                      className="w-100"
+                      className="w-100 btn"
                       onClick={() => handleNavigateOrg(org)}
                     >
                       View Dashboard
