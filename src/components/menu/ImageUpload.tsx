@@ -1,127 +1,159 @@
-import React, { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { Button, Form } from 'react-bootstrap';
+import React, { useRef, useState } from "react";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Form, Button, Card } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 interface ImageUploadProps {
-  image?: string;
-  onImageChange: (image: string | undefined) => void;
-  className?: string;
+  label: string;
+  value?: string;
+  onChange: (imageUrl: string) => void;
+  required?: boolean;
+  error?: string;
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
-  image,
-  onImageChange,
-  className = '',
+  label,
+  value,
+  onChange,
+  required = false,
+  error,
 }) => {
-  const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find(file => file.type.startsWith('image/'));
-    
-    if (imageFile) {
+  const handleFileSelect = (file: File) => {
+    if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        onImageChange(e.target?.result as string);
-      };
-      reader.readAsDataURL(imageFile);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        onImageChange(e.target?.result as string);
+        const result = e.target?.result as string;
+        onChange(result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleRemoveImage = () => {
-    onImageChange(undefined);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileSelect(files[0]);
     }
   };
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileSelect(files[0]);
+    }
+  };
+
+  const removeImage = () => {
+    onChange("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
-    <div className={`mb-3 ${className}`}>
-      <Form.Label>Item Image (Optional)</Form.Label>
-      
-      {image ? (
-        <div className="position-relative">
-          <img
-            src={image}
-            alt="Menu item"
-            className="w-100 h-32 object-cover rounded border"
-            style={{ objectFit: 'cover' }}
+    <Form.Group className="mb-3">
+      <Form.Label>
+        {label} {required && <span className="text-danger">*</span>}
+      </Form.Label>
+
+      {value ? (
+        <Card className="position-relative">
+          <Card.Img
+            variant="top"
+            src={value}
+            className="object-fit-contain"
+            style={{ height: "200px" }}
           />
           <Button
-            variant="outline-secondary"
+            variant="danger"
             size="sm"
-            className="position-absolute top-0 end-0 bg-white m-2"
-            onClick={handleRemoveImage}
+            className="position-absolute top-0 end-0 m-2"
+            onClick={removeImage}
+            style={{ zIndex: 1, opacity: 1 }}
           >
             <X size={16} />
           </Button>
-        </div>
-      ) : (
-        <div
-          className={`
-            border-2 border-dashed rounded p-5 text-center cursor-pointer
-            ${isDragOver 
-              ? 'border-success bg-success bg-opacity-10' 
-              : 'border-secondary hover-border-primary'
+          <Card.ImgOverlay
+            className="bg-dark bg-opacity-10"
+            onMouseEnter={(e: any) =>
+              e.currentTarget.classList.add("bg-opacity-25")
             }
-          `}
+            onMouseLeave={(e: any) =>
+              e.currentTarget.classList.remove("bg-opacity-25")
+            }
+          />
+        </Card>
+      ) : (
+        <Card
+          onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={handleClick}
-          style={{ transition: 'border-color 0.2s ease, background-color 0.2s ease' }}
+          onClick={() => fileInputRef.current?.click()}
+          className={`text-center border ${
+            isDragging
+              ? "border-primary bg-primary bg-opacity-10"
+              : error
+              ? "border-danger"
+              : "border-secondary border-2"
+          } border-dashed`}
+          style={{
+            minHeight: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
         >
-          <div className="d-flex flex-column align-items-center gap-2">
-            <div className="d-flex align-items-center gap-2 text-muted">
-              <ImageIcon size={32} />
-              <Upload size={24} />
+          <Card.Body>
+            <div className="d-flex flex-column align-items-center gap-3">
+              <div className="p-3 bg-light rounded-circle">
+                {isDragging ? (
+                  <Upload size={32} className="text-primary" />
+                ) : (
+                  <ImageIcon size={32} className="text-secondary" />
+                )}
+              </div>
+              <div>
+                <h5 className="mb-1">
+                  {isDragging ? "Drop image here" : "Upload dish image"}
+                </h5>
+                <p className="text-muted mb-0">
+                  Drag & drop or click to browse
+                </p>
+              </div>
             </div>
-            <div className="text-muted small">
-              <span className="fw-medium">Click to upload</span> or drag and drop
-            </div>
-            <div className="text-muted small">
-              PNG, JPG, GIF up to 10MB
-            </div>
-          </div>
-        </div>
+          </Card.Body>
+        </Card>
       )}
-      
+
       <Form.Control
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={handleFileSelect}
+        onChange={handleFileInputChange}
         className="d-none"
+        isInvalid={!!error}
       />
-    </div>
+
+      {error && (
+        <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+      )}
+    </Form.Group>
   );
 };

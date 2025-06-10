@@ -2,8 +2,6 @@ import React, { useState, useMemo } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { SearchFilters } from "../../../components/menu/SearchFilters";
 import { MenuAccordion } from "../../../components/menu/MenuAccordion";
-import { AddItemModal } from "../../../components/menu/AddItemModal";
-import { EditItemModal } from "../../../components/menu/EditItemModal";
 import { categories, masterFoods, menuItems } from "../../../helpers/api/data";
 import { KitchenHeader } from "../../../components/menu/KitchenHeader";
 import { MenuItem } from "../../../types/menu";
@@ -133,15 +131,7 @@ const Menu = () => {
         </Row>
       </Container>
 
-      <AddItemModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddItem}
-        categories={categories}
-        masterFoods={masterFoods}
-      />
-
-      {editingItem && (
+      {/* {editingItem && (
         <EditItemModal
           isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
@@ -149,7 +139,7 @@ const Menu = () => {
           item={editingItem}
           categories={categories}
         />
-      )}
+      )} */}
     </div>
   );
 };

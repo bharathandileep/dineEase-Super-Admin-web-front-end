@@ -16,11 +16,10 @@ import Dashboard from "../pages/landing/Dashboard/Dashboard";
 
 //import Notification from "../pages/notification/Notification"
 
-import SelectedKitchen from "../pages/apps/kitchen/SelectedKitchenDetails";
 import NewDesignation from "../pages/apps/Designations/NewDesignation";
 import Menu from "../pages/apps/menu/Menu";
 import MenuItemDetails from "../pages/apps/menu/MenuItemDetails";
-import { CreateMenu } from "../pages/apps/menu/CreateMenu";
+import { MenuCreationForm } from "../pages/apps/menu/MenuCreationForm";
 
 // Common
 const Profile = React.lazy(() => import("../pages/apps/MyAccount/Profile"));
@@ -682,7 +681,7 @@ const kitchenAppRoutes = {
     {
       path: "/apps/kitchen/create-menu",
       name: "Kitchen-Menu",
-      element: <CreateMenu />,
+      element: <MenuCreationForm />,
     },
     {
       path: "/apps/kitchen/:kitchenId/item-details/:id",
