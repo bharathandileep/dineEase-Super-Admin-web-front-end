@@ -29,18 +29,20 @@ export interface MasterFood {
   image?: string;
   mealPeriods: string[];
 }
-
 export interface MenuItems {
-  id?: number;
+  id?: string;
   category: string;
   name: string;
   mealTypes: string[];
   foodType: string;
+  basicprice: string;
+  orgPirce: string;
   image?: string;
   description: string;
   ingredients: string[];
   tags: string[];
   addOns: AddOnGroup[];
+  gst?: number;
 }
 
 export interface AddOnGroup {
@@ -56,6 +58,9 @@ export interface AddOnItem {
   name: string;
   price: number;
   active: boolean;
+  gst?: number;
+  discount?: number;
+  description?: string;
 }
 
 export interface SuggestionData {
@@ -64,4 +69,5 @@ export interface SuggestionData {
   ingredients: string[];
   tags: string[];
   addOnItems: string[];
+  quantityTypes: string[];
 }

@@ -1,12 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
-import {
-  Form,
-  InputGroup,
-  Button,
-  ListGroup,
-  Dropdown
-} from 'react-bootstrap';
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { Form, InputGroup, Button, ListGroup, Dropdown } from "react-bootstrap";
 
 interface AutoSuggestInputProps {
   label: string;
@@ -25,7 +19,7 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
   suggestions,
   placeholder,
   required = false,
-  error
+  error,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
@@ -34,7 +28,7 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
 
   useEffect(() => {
     if (value) {
-      const filtered = suggestions.filter(suggestion =>
+      const filtered = suggestions.filter((suggestion) =>
         suggestion.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredSuggestions(filtered);
@@ -54,8 +48,8 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +68,7 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
       <Form.Label>
         {label} {required && <span className="text-danger">*</span>}
       </Form.Label>
-      
+
       <InputGroup>
         <Form.Control
           ref={inputRef}
@@ -86,9 +80,7 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
           isInvalid={!!error}
         />
         {error && (
-          <Form.Control.Feedback type="invalid">
-            {error}
-          </Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
         )}
       </InputGroup>
 
@@ -97,9 +89,9 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({
         show={isOpen && filteredSuggestions.length > 0}
         className="w-100 mt-1 position-absolute"
         style={{
-          maxHeight: '200px',
-          overflowY: 'auto',
-        //   zIndex: 50
+          maxHeight: "200px",
+          overflowY: "auto",
+          //   zIndex: 50
         }}
       >
         {filteredSuggestions.map((suggestion, index) => (
