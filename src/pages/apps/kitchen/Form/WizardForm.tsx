@@ -1571,7 +1571,7 @@ export function WizardForm({ initialData }: WizardFormProps) {
                         ))}
                         {errors.working_days && (
                           <div className="text-danger mb-2">
-                            {errors.working_days}
+                            {errors.working_days?.toString()}
                           </div>
                         )}
                         <button

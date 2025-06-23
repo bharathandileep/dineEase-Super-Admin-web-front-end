@@ -1,11 +1,9 @@
 import React from "react";
-import { Row, Col, Card, Pagination, Badge, Breadcrumb } from "react-bootstrap";
+import { Row, Col, Card, Pagination, Badge, Breadcrumb, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
-
-// components
 import PageTitle from "../../components/PageTitle";
-import Button from "@restart/ui/esm/Button";
+
 
 interface ColorTypes {
   name: string;

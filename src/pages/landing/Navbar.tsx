@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { IoMdMenu } from "react-icons/io";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Table as BootstrapTable, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom'; // Ensure you have react-router-dom installed
 

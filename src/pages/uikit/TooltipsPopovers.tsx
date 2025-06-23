@@ -48,7 +48,7 @@ const PopoverDirection = () => {
             key={item.placement}
             placement={item.placement}
             overlay={
-              <Popover popper id={`popover-positioned-${item.placement}`}>
+              <Popover  id={`popover-positioned-${item.placement}`}>
                 <Popover.Body>
                   Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                 </Popover.Body>

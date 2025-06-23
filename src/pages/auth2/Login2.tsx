@@ -31,9 +31,9 @@ const BottomLink = () => {
   return (
     <footer className="footer footer-alt">
       <p className="text-muted">
-        {t("Don't have an account?")}{" "}
+        {t("Don't have an account?").toString()}{" "}
         <Link to={"/auth/register2"} className="text-muted ms-1">
-          <b>{t("Sign Up")}</b>
+          <b>{t("Sign Up").toString()}</b>
         </Link>
       </p>
     </footer>
@@ -80,9 +80,9 @@ const Login2 = () => {
   return (
     <>
       <AuthLayout bottomLinks={<BottomLink />}>
-        <h4 className="mt-0">{t("Sign In")}</h4>
+        <h4 className="mt-0">{t("Sign In").toString()}</h4>
         <p className="text-muted mb-4">
-          {t("Enter your User name and password to access account.")}
+          {t("Enter your User name and password to access account.").toString()}
         </p>
 
         <VerticalForm
@@ -105,13 +105,13 @@ const Login2 = () => {
             containerClass={"mb-3"}
           >
             <Link to="/" className="text-muted float-end">
-              <small>{t("Forgot your password?")}</small>
+              <small>{t("Forgot your password?").toString()}</small>
             </Link>
           </FormInput>
 
           <div className="d-grid mb-0 text-center">
             <Button variant="primary" type="submit" disabled={loading}>
-              {t("Log In")}
+              {t("Log In").toString()}
             </Button>
           </div>
         </VerticalForm>

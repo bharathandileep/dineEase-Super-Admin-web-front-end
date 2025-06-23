@@ -20,6 +20,7 @@ import NewDesignation from "../pages/apps/Designations/NewDesignation";
 import Menu from "../pages/apps/menu/Menu";
 import MenuItemDetails from "../pages/apps/menu/MenuItemDetails";
 import { MenuCreationForm } from "../pages/apps/menu/MenuCreationForm";
+import HomePage from "../pages/home/HomePage";
 
 // Common
 const Profile = React.lazy(() => import("../pages/apps/MyAccount/Profile"));
@@ -1630,7 +1631,7 @@ const authRoutes: RoutesProps[] = [
   {
     path: "/",
     name: "Login",
-    element: <Landing />,
+    element: <HomePage />,
     route: Route,
   },
   {

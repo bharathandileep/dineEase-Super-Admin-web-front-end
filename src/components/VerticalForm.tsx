@@ -1,11 +1,11 @@
 import React from "react";
 import { useForm, Resolver, SubmitHandler } from "react-hook-form";
-import { FieldValues } from 'react-hook-form';
+import { FieldValues } from "react-hook-form";
 
 interface VerticalFormProps<TFormValues extends FieldValues = any> {
   defaultValues?: any;
   resolver?: Resolver<TFormValues>;
-  children?: React.ReactNode; // Changed from any to React.ReactNode for better typing
+  children?: React.ReactNode; 
   onSubmit: SubmitHandler<TFormValues>;
   formClass?: string;
 }
@@ -33,20 +33,19 @@ const VerticalForm = <
   // Return JSX
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={formClass} noValidate>
-      {React.Children.map(children, child =>
-        React.isValidElement(child) &&
-          child.props &&
-          child.props.name
-         ? React.cloneElement(child, {
-             ...child.props,
-              register,
-              errors,
-              control,
-            })
-          : child
-      )}
+      {React.Children.map(children, (child: any) => {
+        if (React.isValidElement(child) && child.props && (child.props as any).name) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            ...child.props,
+            register,
+            errors,
+            control,
+          });
+        }
+        return child;
+      })}
     </form>
   );
 };
 
-export default VerticalForm;
+export default VerticalForm; 

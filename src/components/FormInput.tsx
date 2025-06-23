@@ -133,7 +133,7 @@ const FormInput = ({
 
                 {errors && errors[name] ? (
                   <Form.Control.Feedback type="invalid" className="d-block">
-                    {errors[name]?.message} {/* Display error message */}
+                    {errors[name]?.message?.toString()} {/* Display error message */}
                   </Form.Control.Feedback>
                 ) : null}
               </Form.Group>
@@ -159,7 +159,7 @@ const FormInput = ({
 
                     {errors && errors[name] ? (
                       <Form.Control.Feedback type="invalid">
-                        {errors[name]?.message} {/* Display error message */}
+                        {errors[name]?.message?.toString()} {/* Display error message */}
                       </Form.Control.Feedback>
                     ) : null}
                   </Form.Group>
@@ -191,7 +191,7 @@ const FormInput = ({
 
                   {errors && errors[name] ? (
                     <Form.Control.Feedback type="invalid">
-                      {errors[name]?.message} {/* Display error message */}
+                      {errors[name]?.message?.toString()} {/* Display error message */}
                     </Form.Control.Feedback>
                   ) : null}
                 </Form.Group>

@@ -31,19 +31,19 @@ const Confirm2 = () => {
       <AuthLayout >
         <div className="text-center">
           <img src={mailSent} alt="mail sent" height="64" />
-          <h3>{t("Success !")}</h3>
+          <h3>{t("Success !").toString()}</h3>
           <p className="text-muted font-14 mt-2">
-            {t("A email has been send to ")}
-            <b>{t("youremail@domain.com")}</b>
+            {t("A email has been send to ").toString()}
+            <b>{t("youremail@domain.com").toString()}</b>
             {t(
               "Please check for an email from company and click on the included link to reset your password."
-            )}
+            ).toString()}
           </p>
           <Link
             to="/auth/login2"
             className="btn w-100 btn-primary waves-effect waves-light mt-3"
           >
-            {t("Back to Home")}{" "}
+            {t("Back to Home").toString()}{" "}
           </Link>
         </div>
       </AuthLayout>

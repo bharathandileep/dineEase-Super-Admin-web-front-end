@@ -1,0 +1,182 @@
+.testimonial-section {
+  // Pause when clicked
+  &.paused-by-click .testimonial-row {
+    animation-play-state: paused;
+  }
+  padding: 4rem 4rem 2rem 4rem;
+}
+
+.testimonial-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #00c4b4;
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.testimonial-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.testimonial-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 1.8rem;
+  }
+}
+
+.testimonial-carousel {
+  overflow: hidden;
+}
+
+.testimonial-row {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content; // Allow the row to be wider than the container
+
+  animation: scroll-left 53.333s linear infinite; // Adjusted for 48px/s speed
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(
+      -50%
+    ); // Move to the left by half the width (since we duplicated the testimonials)
+  }
+}
+
+.testimonial-card-wrapper {
+  flex: 0 0 auto;
+  width: 305px; // Fixed width for each card
+  height: 280px;
+  margin-right: 20px; // Gap between cards
+  cursor: pointer; // Indicate the card is clickable
+
+  @media (max-width: 768px) {
+    width: 250px;
+  }
+
+  @media (max-width: 576px) {
+    width: 220px;
+  }
+
+  // Visual feedback when paused by click
+  .testimonial-section.paused-by-click & {
+    opacity: 0.9; // Slight opacity change to indicate paused state
+  }
+}
+
+.testimonial-card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  height: 100%;
+}
+
+.testimonial-content {
+  .testimonial-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+
+    @media (min-width: 768px) {
+      font-size: 15px;
+    }
+  }
+}
+
+.testimonial-footer {
+  .avatar-container {
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #f0f0f0;
+    }
+  }
+
+  .user-info {
+    .user-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0 0 4px 0;
+    }
+
+    .rating {
+      .star {
+        font-size: 14px;
+        margin-right: 2px;
+
+        &.filled {
+          color: #ffd700;
+        }
+
+        &.empty {
+          color: #ddd;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .testimonial-section {
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .testimonial-section {
+    padding: 10px 0px;
+  }
+
+  .testimonial-card {
+    .card-body {
+      padding: 20px 15px;
+
+      .testimonial-content {
+        margin-bottom: 20px;
+
+        .testimonial-text {
+          font-size: 14px;
+        }
+      }
+
+      .testimonial-footer {
+        .avatar-container {
+          .avatar {
+            width: 45px;
+            height: 45px;
+          }
+        }
+
+        .user-info {
+          .user-name {
+            font-size: 15px;
+          }
+        }
+      }
+    }
+  }
+}
