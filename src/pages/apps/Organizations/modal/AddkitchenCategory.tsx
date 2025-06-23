@@ -31,6 +31,7 @@ const AddkitchenCategory = ({
 }: AddkitchenCategory) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [menuItems, setMenuItems] = useState([]);
+  
   const schemaResolver = yupResolver(
     yup.object().shape({
       category: yup.string().required("Please enter category"),
@@ -81,7 +82,6 @@ const AddkitchenCategory = ({
           });
         } else {
           response = await orgCreateCategory(formdata);
-        
         }
       }
       if (response) {
@@ -92,22 +92,22 @@ const AddkitchenCategory = ({
       }
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
-       const errorMessage =
-    error.response?.data?.message || "Something went wrong. Please try again.";
-      toast.error(error.message);
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   return (
     <Modal show={show} onHide={onHide} centered>
-      <Modal.Header className="bg-light" onHide={onHide} closeButton>
+      <Modal.Header className="bg-light" closeButton>
         <Modal.Title className="m-0">
           {action === "edit" ? "Edit Category" : "Add New Category"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-4">
         <VerticalForm
-          onSubmit={(data) =>
+          onSubmit={(data: any) =>
             onSubmit({
               ...data,
             })

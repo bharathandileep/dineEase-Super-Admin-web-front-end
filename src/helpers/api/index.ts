@@ -8,6 +8,9 @@ function login(params: { username: string; password: string }) {
 }
 
 function logout() {
+//here call the logout api
+
+
   localStorage.removeItem("Session_token");
   // later will change
   localStorage.clear();

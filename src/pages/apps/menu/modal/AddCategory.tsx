@@ -98,7 +98,7 @@ const AddCategory = ({
       </Modal.Header>
       <Modal.Body className="p-4">
         <VerticalForm
-          onSubmit={(data) =>
+          onSubmit={(data:any) =>
             onSubmit({
               ...data,
             })

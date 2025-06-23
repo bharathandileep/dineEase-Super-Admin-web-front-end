@@ -1,0 +1,78 @@
+.why-choose-us-section {
+  padding: 4rem 4rem 2rem 4rem;
+}
+
+.why-choose-us-heading {
+  font-size: 2rem;
+  font-weight: bold;
+  
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
+  }
+}
+
+.why-choose-us-subheading {
+  font-size: 1rem;
+  
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+    width: 350px;
+  }
+}
+
+.why-choose-us-card {
+  border: 1px solid #ddd; // Border for cards
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9); // Slightly more opaque for card
+  height: 100%; // Ensure cards are equal height in row
+}
+
+.why-choose-us-icon {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  
+  @media (min-width: 768px) {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+.why-choose-us-card-title {
+  font-size: 1rem;
+  font-weight: bold;
+  
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+}
+
+.why-choose-us-card-description {
+  font-size: 0.85rem;
+  color: #737373;
+;
+  
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
+
+.why-choose-us-learn-more {
+  font-size: 0.85rem;
+  color: #000000; // Brand color from buttons
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: none;
+    color: #5BD2BC;
+  }
+  
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
+
+a {
+  text-decoration: none;
+}

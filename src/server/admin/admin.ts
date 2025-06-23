@@ -147,3 +147,55 @@ export const verifyDocument = async (
     return error.response?.data || error;
   }
 };
+
+export const createNewTags = async (tags: string[]) => {
+  try {
+    const response = await axiosInstance.post(
+      apiConfig.menu.createNewMenutags,
+      tags
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};
+export const getAllTags = async (query: any) => {
+  try {
+    const url = `${apiConfig.menu.getAllTags(query)}`;
+    const response = await axiosInstance.get(url);
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};
+
+export const deleteTag = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.delete(apiConfig.menu.deleteTag(id));
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};
+
+export const toggleTagStatus = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiConfig.menu.toggleTagStatus(id)
+    );
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};
+
+export const updateTag = async (id: string | undefined, data: any) => {
+  try {
+    const response = await axiosInstance.put(apiConfig.menu.updateTag(id), {
+      name: data,
+    });
+    return response.data;
+  } catch (error: any) {
+    return error.response?.data || error;
+  }
+};

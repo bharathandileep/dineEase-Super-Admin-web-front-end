@@ -35,7 +35,7 @@ const SigninForm: React.FC = () => {
   const [otp, setOTP] = useState("");
   const [showLoader, setShowLoader] = useState(false);
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
-  const [otpTimer, setOTPTimer] = useState(10);
+  const [otpTimer, setOTPTimer] = useState(60);
   const [canResendOTP, setCanResendOTP] = useState(false);
   const otpTimerRef = useRef<any>(null);
   const { userLoggedIn, user, loading } = useSelector(
@@ -82,8 +82,8 @@ const SigninForm: React.FC = () => {
   }, [showOTP]);
 
   const startOTPTimer = () => {
-    setOTPTimer(10);
-    setCanResendOTP(false); 
+    setOTPTimer(60);
+    setCanResendOTP(false);
   };
   useEffect(() => {
     if (userLoggedIn && user) {

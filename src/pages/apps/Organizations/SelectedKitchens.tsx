@@ -16,15 +16,17 @@ function SelectedKitchensList() {
     const fetchSelectedKitchens = async () => {
       setLoading(true);
       try {
-        const response = await listCollaboratedKitchens((context?.contextId ?? "").toString());
+        const response = await listCollaboratedKitchens(
+          (context?.contextId ?? "").toString()
+        );
         if (response?.status) {
           setSelectedKitchens(response.data);
         } else {
           toast.error(response?.message || "Failed to fetch kitchens.");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching kitchens:", error);
-        toast.error(error || "Failed to fetch kitchens.");
+        toast.error(error.message || "Failed to fetch kitchens.");
       } finally {
         setLoading(false);
       }

@@ -34,9 +34,9 @@ const AddFoodItem = () => {
         if (response.status) {
           setCategories(response.data.categories);
         } else {
-          toast.error( response.message);
+          toast.error(response.message);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching categories:", error);
         toast.error(error.message);
       } finally {
@@ -56,7 +56,7 @@ const AddFoodItem = () => {
           } else {
             toast.error(response.message);
           }
-        } catch (error:any) {
+        } catch (error: any) {
           console.error("Error fetching subcategories:", error);
           toast.error(error.message);
         }
@@ -108,7 +108,7 @@ const AddFoodItem = () => {
       } else {
         toast.error(response.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error creating item:", error);
       toast.error(error.message);
     } finally {

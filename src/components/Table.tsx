@@ -1,5 +1,5 @@
 // Table.tsx
-import React from "react";
+import React, { useRef } from "react";
 import {
   useTable,
   useSortBy,
@@ -64,7 +64,7 @@ const GlobalFilter = ({
 };
 
 const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }: any, ref) => {
-  const defaultRef = React.useRef();
+  const defaultRef = useRef(null);
   const resolvedRef: any = ref || defaultRef;
 
   React.useEffect(() => {

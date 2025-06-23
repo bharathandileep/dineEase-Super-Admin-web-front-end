@@ -147,12 +147,12 @@ const SignInSignUp2 = () => {
           <Nav variant="tabs" className="nav-bordered">
             <Nav.Item as="li">
               <Nav.Link className="cursor-pointer" eventKey="login">
-                {t("Log In")}
+                {t("Log In").toString()}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item as="li">
               <Nav.Link className="cursor-pointer" eventKey="signup">
-                {t("Sign Up")}
+                {t("Sign Up").toString()}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -161,7 +161,7 @@ const SignInSignUp2 = () => {
             {/* login form */}
             <Tab.Pane eventKey="login">
               <p className="text-muted mb-3">
-                {t("Enter your email address and password to access account.")}
+                {t("Enter your email address and password to access account.").toString()}
               </p>
 
               {error && (
@@ -192,7 +192,7 @@ const SignInSignUp2 = () => {
                     to="/auth/forget-password"
                     className="text-muted float-end"
                   >
-                    <small>{t("Forgot your password?")}</small>
+                    <small>{t("Forgot your password?").toString()}</small>
                   </Link>
                 </FormInput>
 
@@ -205,13 +205,13 @@ const SignInSignUp2 = () => {
 
                 <div className="d-grid mb-0 text-center">
                   <Button variant="primary" type="submit" disabled={loading}>
-                    {t("Log In")}
+                    {t("Log In").toString()}
                   </Button>
                 </div>
 
                 {/* social links */}
                 <div className="text-center mt-4">
-                  <p className="text-muted font-16">{t("Sign in with")}</p>
+                  <p className="text-muted font-16">{t("Sign in with").toString()}</p>
                   <SocialLinks />
                 </div>
               </VerticalForm>
@@ -222,7 +222,7 @@ const SignInSignUp2 = () => {
               <p className="text-muted mb-3">
                 {t(
                   "Don't have an account? Create your account, it takes less than a minute"
-                )}
+                ).toString()}
               </p>
               <VerticalForm
                 onSubmit={onSignUp}
@@ -259,13 +259,13 @@ const SignInSignUp2 = () => {
 
                 <div className="mb-0 d-grid text-center">
                   <Button variant="primary" type="submit" disabled={loading}>
-                    {t("Sign Up")}
+                    {t("Sign Up").toString()}
                   </Button>
                 </div>
 
                 {/* social links */}
                 <div className="text-center mt-4">
-                  <p className="text-muted font-16">{t("Sign up with")}</p>
+                  <p className="text-muted font-16">{t("Sign up with").toString()}</p>
                   <SocialLinks />
                 </div>
               </VerticalForm>

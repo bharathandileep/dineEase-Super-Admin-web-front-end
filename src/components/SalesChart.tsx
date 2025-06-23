@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col } from "react-bootstrap";
-import Chart from "react-apexcharts";
+// import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 // components
@@ -74,7 +74,7 @@ const SalesChart = () => {
 
   return (
     <>
-      <BasicPortlet cardTitle="Lifetime Sales" titleClass="header-title">
+      {/* <BasicPortlet cardTitle="Lifetime Sales" titleClass="header-title">
         <div className="text-center">
           <Chart
             options={options}
@@ -110,7 +110,7 @@ const SalesChart = () => {
             </Col>
           </Row>
         </div>
-      </BasicPortlet>
+      </BasicPortlet> */}
     </>
   );
 };

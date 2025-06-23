@@ -86,6 +86,7 @@ export const apiConfig = {
       `/kitchens/requested/all?page=${query.page}&limit=${query.limit}&search=${
         query.search || ""
       }`,
+    getCollabeDetails: "/kitchens/get-details",
   },
   organization: {
     newOrganization: "/organization/new",
@@ -154,39 +155,34 @@ export const apiConfig = {
     // getSelectedKitchen:(orgId: string | undefined)=>`/organization/${orgId}/selcted-kitchens`
   },
   menu: {
-    createCategory: "/menu-category/categories",
+    createCategory: "/menu/categories",
     getAllCategories: (query: any) =>
-      `/menu-category/categories?page=${query.page}&limit=${query.limit}${
+      `/menu/categories?page=${query.page}&limit=${query.limit}${
         query.search ? `&search=${encodeURIComponent(query.search)}` : ""
       }${
         query.status && query.status !== "all" ? `&status=${query.status}` : ""
       }`,
-    updateCategory: (id: string | undefined) =>
-      `/menu-category/categories/${id}`,
-    deleteCategory: (id: string | undefined) =>
-      `/menu-category/categories/${id}`,
+    updateCategory: (id: string | undefined) => `/menu/categories/${id}`,
+    deleteCategory: (id: string | undefined) => `/menu/categories/${id}`,
     toggleCategoryStatus: (id: string | undefined) =>
-      `/menu-category/categories/${id}/toggle-status`,
+      `/menu/categories/${id}/toggle-status`,
 
     createSubcategory: "/sub-menu-category/subcategories",
     getAllCategoriesByStatus: "/sub-menu-category/category/status",
     getAllSubCategories: (query: any) =>
-      `/sub-menu-category/subcategories?page=${query.page}&limit=${
-        query.limit
-      }${query.search ? `&search=${encodeURIComponent(query.search)}` : ""}${
+      `/menu/subcategories?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
         query.status && query.status !== "all" ? `&status=${query.status}` : ""
       }`,
 
     getSubcategoriesByCategory: (categoryId: string | undefined) =>
-      `/sub-menu-category/categories/${categoryId}/subcategories`,
-    getSubcategoryById: (id: string | undefined) =>
-      `/sub-menu-category/subcategories/${id}`,
-    updateSubcategory: (id: string | undefined) =>
-      `/sub-menu-category/subcategories/${id}`,
-    deleteSubcategory: (id: string | undefined) =>
-      `/sub-menu-category/subcategories/${id}`,
+      `/menu/categories/${categoryId}/subcategories`,
+    getSubcategoryById: (id: string | undefined) => `/menu/subcategories/${id}`,
+    updateSubcategory: (id: string | undefined) => `/menu/subcategories/${id}`,
+    deleteSubcategory: (id: string | undefined) => `/menu/subcategories/${id}`,
     toggleSubcategoryStatus: (id: string | undefined) =>
-      `/sub-menu-category/subcategories/${id}/toggle-status`,
+      `/menu/subcategories/${id}/toggle-status`,
 
     createItem: "/menu-items/allmenuitems",
     listItems: (query: any) =>
@@ -209,6 +205,17 @@ export const apiConfig = {
 
     getMenuItemsByKitchen: (id: string | undefined, role: string) =>
       `/menu-items/kitchen/${id}?role=${role}`,
+
+    createNewMenutags: "/menu/new/menu-tags",
+    getAllTags: (query: any) =>
+      `/menu/get/menu-tags?page=${query.page}&limit=${query.limit}${
+        query.search ? `&search=${encodeURIComponent(query.search)}` : ""
+      }${
+        query.status && query.status !== "all" ? `&status=${query.status}` : ""
+      }`,
+    updateTag: (id: string | undefined) => `/menu/update/menu-tags/${id}`,
+    deleteTag: (id: string | undefined) => `/menu/delete/menu-tags/${id}`,
+    toggleTagStatus: (id: string | undefined) => `/menu/toggle/menu-tags/${id}`,
   },
   designation: {
     createDesignation: "/designation/designations",
@@ -317,6 +324,7 @@ export const apiConfig = {
   },
   roleAndAccess: {
     newDesignation: "/role-and-access/new",
+    editDesignation: (roleId: string | number) => `/role-and-access/${roleId}`,
     getDesignation: (entity_id: string | number, entity_type: string) =>
       `/role-and-access?entity_id=${encodeURIComponent(
         String(entity_id)

@@ -460,7 +460,7 @@ const EditEmployee = () => {
                       </select>
                       {errors.country && (
                         <div className="invalid-feedback">
-                          {errors.country.message}
+                          {errors.country.message?.toString()}
                         </div>
                       )}
                     </div>
@@ -488,7 +488,7 @@ const EditEmployee = () => {
                       </select>
                       {errors.state && (
                         <div className="invalid-feedback">
-                          {errors.state.message}
+                          {errors.state.message?.toString()}
                         </div>
                       )}
                     </div>
@@ -516,7 +516,7 @@ const EditEmployee = () => {
                       </select>
                       {errors.district && (
                         <div className="invalid-feedback">
-                          {errors.district.message}
+                          {errors.district.message?.toString()}
                         </div>
                       )}
                     </div>
@@ -544,7 +544,7 @@ const EditEmployee = () => {
                       </select>
                       {errors.city && (
                         <div className="invalid-feedback">
-                          {errors.city.message}
+                          {errors.city.message?.toString()}
                         </div>
                       )}
                     </div>

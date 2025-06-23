@@ -21,7 +21,7 @@ import { LayoutTypes } from "../constants/layout";
 import AppMenu from "./Menu";
 
 import profileImg from "../assets/images/users/user-1.jpg";
-import logoSm from "../assets/images/logo-sm.png";
+import logoSm from "../assets/images/logo-light-01.png";
 import { useAuthDetails } from "../hooks/useAuthDetails";
 
 /* user box */
@@ -167,22 +167,22 @@ const LeftSidebar = ({ isCondensed, hideLogo }: LeftSidebarProps) => {
       <div className="app-menu" ref={menuNodeRef}>
         {!hideLogo && (
           <div className="logo-box">
-            <Link to="/" className="logo logo-dark text-center">
-              <span className="logo-sm">
-                <img src={logoSm} alt="" height="40" />
-              </span>
-              <span className="logo-lg">
-                <img
-                  src={
-                    layoutType === LayoutTypes.LAYOUT_TWO_COLUMN
-                      ? dineEas
-                      : dineEas
-                  }
-                  alt=""
-                  height="40"
-                />
-              </span>
-            </Link>
+            {/* <Link to="/" className="logo logo-dark text-center"> */}
+            <span className="logo-sm">
+              <img src={logoSm} alt="" height="40" />
+            </span>
+            <span className="logo-lg">
+              <img
+                src={
+                  layoutType === LayoutTypes.LAYOUT_TWO_COLUMN
+                    ? dineEas
+                    : dineEas
+                }
+                alt=""
+                height="40"
+              />
+            </span>
+            {/* </Link> */}
             <Link to="/" className="logo logo-light text-center">
               <span className="logo-sm">
                 <img src={logoSm} alt="" height="22" />

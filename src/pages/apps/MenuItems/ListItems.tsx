@@ -142,7 +142,10 @@ function FoodItemsList() {
         title={"Food Items"}
       />
 
-      <div className="mb-3" style={{ backgroundColor: "#5bd2bc", padding: "10px" }}>
+      <div
+        className="mb-3"
+        style={{ backgroundColor: "#5bd2bc", padding: "10px" }}
+      >
         <div className="d-flex align-items-center justify-content-between">
           <h3 className="page-title m-0" style={{ color: "#fff" }}>
             Food Items
@@ -226,7 +229,9 @@ function FoodItemsList() {
                     </div>
                     <div className="bg-light mb-1">
                       <img
-                        src={item.item_image || "https://via.placeholder.com/150"}
+                        src={
+                          item.item_image || "https://via.placeholder.com/150"
+                        }
                         alt={item.item_name}
                         className="img-fluid"
                         style={{
@@ -243,15 +248,24 @@ function FoodItemsList() {
                       <div className="text-muted font-14">
                         <div className="d-flex align-items-center mb-1 text-black">
                           <i className="mdi mdi-food me-1"></i>
-                          <span>{item.category?.category || "Unknown Category"}</span>
+                          <span>
+                            {item.category?.category || "Unknown Category"}
+                          </span>
                         </div>
                         <div className="d-flex align-items-center mb-1 text-black">
                           <i className="mdi mdi-food-variant me-1"></i>
-                          <span>{item.subcategory?.subcategoryName || "Unknown Subcategory"}</span>
+                          <span>
+                            {item.subcategory?.subcategoryName ||
+                              "Unknown Subcategory"}
+                          </span>
                         </div>
                         <div className="d-flex align-items-center text-black">
                           <i className="mdi mdi-text me-1"></i>
-                          <span>{item.item_description}</span>
+                          <span>
+                            {item.item_description?.length > 80
+                              ? `${item.item_description.slice(0, 80)}...`
+                              : item.item_description || "No description"}
+                          </span>
                         </div>
                       </div>
                     </div>

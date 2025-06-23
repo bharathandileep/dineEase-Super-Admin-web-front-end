@@ -36,7 +36,7 @@ function MenuCategory() {
           search: searchTerm,
           status: statusFilter,
         };
-   
+
         const response = await getAllCategories(query);
         if (response.status) {
           setMenuItems(response.data.categories);
@@ -56,7 +56,6 @@ function MenuCategory() {
   }, [currentPage, pageSize, isDeleted, show, searchTerm, statusFilter]);
 
   const onSearchData = (searchValue: string) => {
-
     setSearchTerm(searchValue);
     setCurrentPage(1);
   };
@@ -68,14 +67,18 @@ function MenuCategory() {
         const item = menuItems.find((d) => d._id === id);
         const newStatus = !item.status;
 
-        toast.success(`Category status changed to ${newStatus ? "Active" : "Inactive"}`);
+        toast.success(
+          `Category status changed to ${newStatus ? "Active" : "Inactive"}`
+        );
 
         if (statusFilter !== "all") {
           if (
             (statusFilter === "active" && !newStatus) ||
             (statusFilter === "inactive" && newStatus)
           ) {
-            setMenuItems((prevItems) => prevItems.filter((item) => item._id !== id));
+            setMenuItems((prevItems) =>
+              prevItems.filter((item) => item._id !== id)
+            );
             setTotalItems((prev) => prev - 1);
             const newTotalPages = Math.ceil((totalItems - 1) / pageSize);
             setTotalPages(newTotalPages);
@@ -108,8 +111,6 @@ function MenuCategory() {
 
   const handleEdit = (id: string) => {
     const item = menuItems.find((menu) => menu._id === id);
-    setAction("edit");
-    setSelectedItem(item);
     setShow(true);
   };
 
@@ -151,8 +152,6 @@ function MenuCategory() {
     setPageSize(size);
     setCurrentPage(1);
   };
-
-  /* Column render functions */
   const NumberColumn = ({ row }: { row: any }) => {
     const rowNumber = (currentPage - 1) * pageSize + row.index + 1;
     return <span className="fw-bold">{rowNumber}</span>;
@@ -167,6 +166,7 @@ function MenuCategory() {
   };
 
   const StatusColumn = ({ row }: { row: any }) => {
+    console.log(row,"cate")
     return (
       <button
         className={`badge border-0 text-white  ${
@@ -249,7 +249,10 @@ function MenuCategory() {
                 <Row className="justify-content-between">
                   <Col className="col-auto">
                     <form className="d-flex align-items-center">
-                      <label htmlFor="inputPassword2" className="visually-hidden">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="visually-hidden"
+                      >
                         Search
                       </label>
                       <div>
@@ -274,9 +277,8 @@ function MenuCategory() {
                           className="w-auto"
                           value={statusFilter}
                           onChange={(e: any) => {
-                        
                             setStatusFilter(e.target.value);
-                            setCurrentPage(1); 
+                            setCurrentPage(1);
                           }}
                         >
                           <option value="all">All</option>

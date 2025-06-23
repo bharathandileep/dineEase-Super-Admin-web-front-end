@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Row, Col, Card, Spinner, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { useParams } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../../server/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import { Pencil, Trash } from "lucide-react";
 
 // TypeScript interfaces
 interface MenuItem {
@@ -51,6 +52,7 @@ function OurMenu() {
   const [kitchenMenuItems, setKitchenMenuItems] = useState<Menu[]>([]);
   const [isRemoved, setIsRemoved] = useState(false);
   const [loader, setLoader] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoader(true);
@@ -126,7 +128,6 @@ function OurMenu() {
           </Link>
         </div>
       </div>
-
       <Row>
         {kitchenMenuItems && kitchenMenuItems.length > 0 ? (
           kitchenMenuItems.map((menu) =>
@@ -137,132 +138,120 @@ function OurMenu() {
                 xl={3}
                 className="mb-3"
               >
-                <Link
-                  to={`/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`}
+                <Card
+                  className="product-box h-100"
+                  style={{
+                    transition: "all 0.3s ease-in-out",
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate(
+                      `/apps/kitchen/${context?.contextId}/item-details/${item?.item_id._id}`
+                    )
+                  }
                 >
-                  <Card className="product-box h-100">
-                    <Card.Body className="d-flex flex-column position-relative">
-                      <div className="product-action position-absolute top-0 end-0 m-2">
-                        <Link
-                          to="#"
-                          className="btn btn-success btn-xs waves-effect waves-light me-1"
-                          onClick={() => handleEdit(item.item_id._id)}
-                        >
-                          <i className="mdi mdi-pencil"></i>
+                  <Card.Body className="d-flex flex-column h-100">
+                    <div className="product-action">
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="me-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(item.item_id._id);
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item?.item_id._id);
+                        }}
+                      >
+                        <Trash size={16} />
+                      </Button>
+                    </div>
+                    <div className="bg-light mb-3 d-flex justify-content-center">
+                      <img
+                        src={item.custom_image || item.item_id.item_image}
+                        alt={item.item_id.item_name}
+                        className="img-fluid"
+                        style={{
+                          width: "100%",
+                          height: "180px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                    <div className="d-flex flex-column flex-grow-1">
+                      <h5 className="font-16 mt-0 sp-line-1">
+                        <Link to="#" className="text-dark">
+                          {item.item_id.item_name}
                         </Link>
-                        <Link
-                          to="#"
-                          className="btn btn-danger btn-xs waves-effect waves-light"
-                          onClick={() => handleDelete(item?.item_id._id)}
-                        >
-                          <i className="mdi mdi-close"></i>
-                        </Link>
+                      </h5>
+                      <div className="text-warning mb-2 font-13">
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star me-1"></i>
+                        <i className="fa fa-star"></i>
                       </div>
-                      <div className="bg-light mb-3">
-                        <img
-                          src={item.custom_image || item.item_id.item_image}
-                          alt={item.item_id.item_name}
-                          className="img-fluid"
+
+                      <h5 className="m-0">
+                        <span className="text-muted">
+                          Category: {item?.item_id?.category?.category}
+                        </span>
+                      </h5>
+                      <h5 className="m-0">
+                        <span className="text-muted">
+                          Status:{" "}
+                          {item.isAvailable ? "Available" : "Not Available"}
+                        </span>
+                      </h5>
+
+                      <div className="mt-auto">
+                        <p
+                          className="text-muted mb-0 small lh-sm overflow-hidden"
                           style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "cover",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
                           }}
-                        />
+                          title={item.item_id.item_description}
+                        >
+                          {item.item_id.item_description}
+                        </p>
                       </div>
-
-                      {/* Product Info */}
-                      <div className="product-info mt-auto">
-                        <div className="row align-items-center">
-                          <div className="col">
-                            <h5 className="font-16 mt-0 sp-line-1">
-                              <Link to="#" className="text-dark">
-                                {item.item_id.item_name}
-                              </Link>
-                            </h5>
-                            <div className="text-warning mb-2 font-13">
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star me-1"></i>
-                              <i className="fa fa-star"></i>
-                            </div>
-
-                            <div className="d-flex align-items-center mb-1">
-                              <i className="mdi mdi-tag-outline me-1"></i>
-                              <span className="text-muted">
-                                {item?.item_id?.category?.category}
-                              </span>
-                            </div>
-                            <h5 className="m-0">
-                              <span className="text-muted">
-                                Status:{" "}
-                                {item.isAvailable
-                                  ? "Available"
-                                  : "Not Available"}
-                              </span>
-                            </h5>
-                          </div>
-
-                          <div className="col-12 mt-2">
-                            <p className="text-muted mb-0 font-13 text-truncate">
-                              {item.item_id.item_description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Link>
+                    </div>
+                  </Card.Body>
+                </Card>
               </Col>
             ))
           )
         ) : (
-          <Col className="text-center mt-5 ">
-            <h4>No menu items are selected.</h4>
+          <Col>
+            <Card>
+              <Card.Body className="text-center">
+                <i
+                  className="mdi mdi-food-off text-muted"
+                  style={{ fontSize: "48px" }}
+                ></i>
+                <h4 className="mt-3">No Menu Items Found</h4>
+                <p className="text-muted">No menu items are selected.</p>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate("/apps/kitchen/menu/new")}
+                >
+                  Add New Menu Item
+                </Button>
+              </Card.Body>
+            </Card>
           </Col>
         )}
       </Row>
-
-      <style>
-        {`
-          .product-box {
-            position: relative;
-            transition: all 0.3s ease;
-          }
-          
-          .product-box:hover {
-            box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.1);
-          }
-
-          .product-action {
-            opacity: 0;
-            transition: all 0.3s ease;
-          }
-
-          .product-box:hover .product-action {
-            opacity: 1;
-          }
-
-          .btn-xs {
-            padding: 0.2rem 0.6rem;
-            font-size: 0.75rem;
-          }
-
-          .sp-line-1 {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-          }
-        `}
-      </style>
     </>
   );
 }

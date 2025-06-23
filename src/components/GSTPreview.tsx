@@ -64,7 +64,6 @@ const VerificationButton = ({
 
 function GSTPreview({ gstDetails }: { gstDetails: IGSTPreview | undefined }) {
   const [showGSTModal, setShowGSTModal] = useState(false);
-
   const { user } = useAuthDetails();
   return (
     <>

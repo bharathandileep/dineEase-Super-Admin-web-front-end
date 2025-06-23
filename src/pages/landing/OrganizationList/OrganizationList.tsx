@@ -8,6 +8,7 @@ import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
 import { setContext } from "../../../helpers/api/utils";
 import { getUserInfo } from "../../../server/admin/auth";
 import { toast } from "react-toastify";
+import { Alert, Button } from "react-bootstrap";
 
 interface Organization {
   id: number;
@@ -109,7 +110,7 @@ const OrganizationList = () => {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5">
           {organizations.map((org) => (
             <div key={org.id} className="col">
-              <div className="card h-100 border-0 shadow-sm hover-card">
+              <div className="card h-100 border-0 shadow-lg hover-card">
                 <div
                   className="position-relative"
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
@@ -120,7 +121,7 @@ const OrganizationList = () => {
                     alt={org.name}
                     style={{
                       height: "220px",
-                      objectFit: "contain",
+                      objectFit: "cover",
                       padding: "2rem",
                       borderRadius: "12px 12px 0 0",
                       background: "#f8f9fa",
@@ -170,12 +171,19 @@ const OrganizationList = () => {
                     <i className="bi bi-people-fill me-2 text-success"></i>
                     Employees: {org.employees || "Not specified"}
                   </p>
-                  <button
-                    className="btn btn-primary w-100 rounded-pill hover-button"
-                    onClick={() => handleNavigateOrg(org)}
-                  >
-                    View Organization
-                  </button>
+                  {org.isapproved === "approved" ? (
+                    <Button
+                      className="w-100 btn"
+                      onClick={() => handleNavigateOrg(org)}
+                    >
+                      View Dashboard
+                    </Button>
+                  ) : (
+                    <Alert variant="info">
+                      The organization details are undergoing verification.
+                      Please wait for approval.
+                    </Alert>
+                  )}
                 </div>
               </div>
             </div>

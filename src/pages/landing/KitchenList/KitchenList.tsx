@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { getUserInfo } from "../../../server/admin/auth";
 import { toast } from "react-toastify";
+import { Alert, Button } from "react-bootstrap";
 
 const KitchenList = () => {
   interface Kitchen {
@@ -95,7 +96,7 @@ const KitchenList = () => {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-5">
           {kitchens.map((kitchen) => (
             <div key={kitchen.id} className="col">
-              <div className="card h-100 border-0 shadow-sm hover-card">
+              <div className="card h-100 border-0 shadow-lg hover-card">
                 <div
                   className="position-relative"
                   style={{ boxShadow: "rgba(50, 50, 93, 0.11) 0px 1px 3px" }}
@@ -103,7 +104,7 @@ const KitchenList = () => {
                   <img
                     src={
                       kitchen.profilePic || "https://via.placeholder.com/220"
-                    } // Fallback image
+                    }
                     className="card-img-top"
                     alt={kitchen.name}
                     style={{
@@ -156,19 +157,24 @@ const KitchenList = () => {
                     <i className="bi bi-award-fill me-2 text-success"></i>
                     Specialty: {kitchen.specialty || "Not specified"}
                   </p>
-                  <button
-                    className="btn btn-primary w-100 rounded-pill hover-button"
-                    onClick={() => handleNavigateKitchen(kitchen)}
-                  >
-                    View Dashboard
-                  </button>
+                  {kitchen.isapproved === "approved" ? (
+                    <Button
+                      className="w-100"
+                      onClick={() => handleNavigateKitchen(kitchen)}
+                    >
+                      View Dashboard
+                    </Button>
+                  ) : (
+                    <Alert variant="info">
+                      The kitchen details are undergoing verification. Please
+                      wait for approval.
+                    </Alert>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
-
-        {/* Add Your Kitchen button section */}
         <div className="text-center mt-5">
           <button
             className="btn btn-lg btn-outline-primary rounded-pill px-5 py-3 hover-button"
