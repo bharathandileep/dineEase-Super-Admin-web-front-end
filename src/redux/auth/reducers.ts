@@ -6,12 +6,13 @@ import { AuthActionTypes } from "./constants";
 
 const api = new APICore();
 
+const userData = api.getLoggedInUserInfo() as UserData | {};
+
 const INIT_STATE = {
-  user: api.getLoggedInUserInfo() as UserData | {},
-  userLoggedIn: false,
+  user: userData,
+  userLoggedIn: !!(userData && (userData as UserData)),
   loading: false,
 };
-
 interface UserData {
   id?: number;
   username?: string;

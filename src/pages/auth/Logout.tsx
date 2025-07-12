@@ -18,7 +18,6 @@ const LogoutIcon = () => {
   );
 };
 
-/* bottom link */
 const BottomLink = () => {
   const { t } = useTranslation();
   return (

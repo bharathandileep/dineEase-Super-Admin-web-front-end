@@ -7,15 +7,9 @@ import { MenuItem } from "../../types/menu";
 
 interface MenuItemCardProps {
   item: MenuItem;
-  onEdit: () => void;
-  onDelete: () => void;
 }
 
-export const MenuItemCard: React.FC<MenuItemCardProps> = ({
-  item,
-  onEdit,
-  onDelete,
-}) => {
+export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
   const getTagVariant = (tag: string) => {
     const variants: Record<string, string> = {
       Veg: "success",
@@ -56,7 +50,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 <Eye size={16} />
               </Button>
             </Link>
-            <Button variant="outline-secondary" size="sm" onClick={onEdit}>
+            <Button variant="outline-secondary" size="sm">
               <Edit size={16} />
             </Button>
           </div>

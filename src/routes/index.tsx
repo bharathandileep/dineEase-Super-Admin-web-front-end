@@ -21,6 +21,8 @@ import Menu from "../pages/apps/menu/Menu";
 import MenuItemDetails from "../pages/apps/menu/MenuItemDetails";
 import { MenuCreationForm } from "../pages/apps/menu/MenuCreationForm";
 import HomePage from "../pages/home/HomePage";
+import ProfilePage from "../components/Home/Profile/ProfilePage";
+import RequestedMenus from "../pages/apps/menu/RequestedMenus";
 
 // Common
 const Profile = React.lazy(() => import("../pages/apps/MyAccount/Profile"));
@@ -430,6 +432,12 @@ const superAdminRoutes = {
       path: "/apps/colloborated",
       name: "Colloborated kitchens",
       element: <CollaborationsPage />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/kitchen/requested-menus",
+      name: "Requested Menus",
+      element: <RequestedMenus />,
       route: PrivateRoute,
     },
     {
@@ -1728,6 +1736,12 @@ const authRoutes: RoutesProps[] = [
     path: "/dashboard/organization-list",
     name: "Organization List",
     element: <OrganizationList />,
+    route: Route,
+  },
+  {
+    path: "/user/profile/:id",
+    name: "User Profile",
+    element: <ProfilePage />,
     route: Route,
   },
   {

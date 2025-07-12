@@ -20,6 +20,10 @@ import { ImageUpload } from "../../../components/menu/ImageUpload";
 import { IngredientsInput } from "../../../components/menu/IngredientsInput";
 import { AddOnsDrawer } from "../../../components/menu/AddOnsDrawer";
 import PageTitle from "../../../components/PageTitle";
+import { appendToFormData } from "../../../helpers/formdataAppend";
+import { createNewMenu } from "../../../server/admin/items";
+import { useAuthDetails } from "../../../hooks/useAuthDetails";
+import { toast } from "react-toastify";
 
 const mealTypeOptions = [
   { value: "breakfast", label: "Breakfast" },
@@ -36,7 +40,9 @@ const foodTypeOptions = [
 ];
 
 export const MenuCreationForm: React.FC = () => {
-  const [formData, setFormData] = useState<MenuItems>({
+  const { context } = useAuthDetails();
+  const initialFormData: MenuItems = {
+    kitchenId: String(context?.contextId),
     category: "",
     name: "",
     mealTypes: [],
@@ -54,7 +60,8 @@ export const MenuCreationForm: React.FC = () => {
       required: false,
       multiSelect: false,
     })),
-  });
+  };
+  const [formData, setFormData] = useState<MenuItems>(initialFormData);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -80,21 +87,37 @@ export const MenuCreationForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      setIsSubmitted(true);
+  const handlePublish = async () => {
+    const menuFormData = appendToFormData(formData);
+    setIsSubmitted(true);
+    try {
+      const response = await createNewMenu(menuFormData);
+      response.status
+        ? toast.success(response.message)
+        : toast.error(response.error);
+      setFormData({
+        ...initialFormData,
+        kitchenId: String(context?.contextId),
+        addOns: addOnCategories.map((cat) => ({
+          id: cat.id,
+          title: cat.title,
+          items: [],
+          required: false,
+          multiSelect: false,
+        })),
+      });
+      setIsSubmitted(false);
+      setIsApproved(true);
       setTimeout(() => {
-        setIsApproved(true);
+        setIsApproved(false);
       }, 2000);
-      console.log("Form submitted:", formData);
+    } catch (error: any) {
+      setIsSubmitted(false);
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Failed to publish menu item."
+      );
     }
-  };
-
-  const handlePublish = () => {
-    console.log("Item published:", formData);
-    alert("Menu item published successfully!");
   };
 
   const updateFormData = (field: keyof MenuItems, value: any) => {
@@ -125,7 +148,7 @@ export const MenuCreationForm: React.FC = () => {
       </div>
       <div className="bg-gradient-custom min-vh-100 p-0">
         <Container className="p-0">
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <Card className="form-section">
               <h2 className="section-header">Basic Information</h2>
               <Row>
@@ -326,6 +349,7 @@ export const MenuCreationForm: React.FC = () => {
                     variant="primary"
                     size="lg"
                     className="d-flex align-items-center gap-2 px-4"
+                    onClick={handlePublish}
                   >
                     Send Request
                   </Button>
@@ -348,11 +372,10 @@ export const MenuCreationForm: React.FC = () => {
                   <Button
                     variant="success"
                     size="lg"
-                    onClick={handlePublish}
                     className="d-flex align-items-center gap-2 px-4"
                   >
                     <CheckCircle size={20} />
-                    Publish
+                    Waiting Approval
                   </Button>
                 )}
               </div>
