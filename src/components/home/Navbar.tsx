@@ -154,7 +154,7 @@ const NavbarComponent: React.FC = () => {
                 <Button
                   className="rounded-pill sign-in-btn"
                   variant="primary"
-                  onClick={() => navigate("/auth/signin-signup")}
+                  onClick={() => navigate("/auth")}
                 >
                   SIGN IN
                 </Button>

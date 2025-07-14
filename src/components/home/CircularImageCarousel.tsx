@@ -3,12 +3,10 @@ import "./CircularImageCarousel.scss";
 import carouselImage1 from "../../assets/images/SliderImage1.png";
 import carouselImage2 from "../../assets/images/SliderImage2.png";
 import carouselImage3 from "../../assets/images/SliderImage3.png";
-import carouselImage4 from "../../assets/images/SliderImage4.png";
-import carouselImage5 from "../../assets/images/SliderImage5.png";
+
 
 const CircularImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const images = [carouselImage1, carouselImage2, carouselImage3];
 
   useEffect(() => {
