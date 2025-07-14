@@ -21,6 +21,7 @@ import Menu from "../pages/apps/menu/Menu";
 import MenuItemDetails from "../pages/apps/menu/MenuItemDetails";
 import { MenuCreationForm } from "../pages/apps/menu/MenuCreationForm";
 import HomePage from "../pages/home/HomePage";
+import NewLogin from "../pages/home/NewLogin";
 
 // Common
 const Profile = React.lazy(() => import("../pages/apps/MyAccount/Profile"));
@@ -1638,6 +1639,12 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/signin-signup",
     name: "Register",
     element: <SigninForm />,
+    route: Route,
+  },
+   {
+    path: "/auth",
+    name: "Register",
+    element: <NewLogin />,
     route: Route,
   },
   {

@@ -1,0 +1,36 @@
+.circular-carousel {
+  &-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    width: 100%;
+  }
+
+  &-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-card {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.7s ease-out;
+
+    &-inner {
+      width: 100%;
+    }
+
+    img {
+      width: 288px;
+      height: 450px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,248 @@
+.new-login-container {
+  height: 100vh;
+  padding: 1rem;
+  overflow: hidden;
+
+  .left-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    flex-direction: column;
+    padding: 0.75rem;
+
+    .logo-container {
+      margin-bottom: 1rem;
+      width: 100%;
+      .logo {
+        width: 200px;
+        object-fit: contain;
+      }
+    }
+
+    .form-container {
+      max-width: 350px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .header-container {
+        margin-bottom: 0.75rem;
+
+        .app-title {
+          font-weight: bold;
+          margin-bottom: 0.5rem;
+          font-size: 1.5rem;
+        }
+
+        .app-subtitle {
+          color: #6c757d;
+          font-size: 0.875rem;
+        }
+      }
+
+      .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+
+      .input-container {
+        position: relative;
+
+        .form-input {
+          padding-right: 1.25rem;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          font-size: 0.875rem;
+        }
+
+        .input-icon {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translateY(-50%);
+          padding-right: 0.75rem;
+          cursor: default;
+
+          &.clickable {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .options-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        .remember-me {
+          font-size: 0.875rem;
+        }
+
+        .forgot-password {
+          padding: 0;
+          text-decoration: none;
+          font-size: 0.875rem;
+          color: #ff5900;
+        }
+      }
+
+      .signin-button {
+        width: 100%;
+        margin-bottom: 0.75rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        background: #00c4b4;
+        border: none;
+        border-radius: 12px;
+      }
+
+      .google-signin {
+        width: 100%;
+        margin-bottom: 0.75rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .signup-container {
+        text-align: center;
+        font-size: 0.875rem;
+        color: #6c757d;
+
+        .signup-link {
+          padding: 0;
+          text-decoration: none;
+          color: #ff5900;
+        }
+      }
+    }
+  }
+
+  .right-column {
+    position: relative;
+    border-radius: 30px;
+    background-image: url("../../assets/images/siginImg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    .right-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      color: white;
+      height: 100%;
+
+      .right-header {
+        text-align: center;
+        margin-bottom: 1rem;
+
+        .heading-with-offset {
+          text-align: center;
+          font-weight: 700;
+          font-size: 1.5rem;
+          line-height: 1.4;
+          color: #fff;
+
+          span {
+            display: inline-block;
+            transform: translateX(10%);
+          }
+        }
+
+        h2 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          text-align: center;
+          color: #ffffff;
+          line-height: 1.4;
+          margin: 0;
+        }
+      }
+
+      .image-container {
+        position: relative;
+        max-height: 400px;
+
+        .main-image-wrapper {
+          position: relative;
+          z-index: 2;
+
+          .main-image {
+            border-radius: 25px;
+            max-height: 350px;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
+          }
+        }
+
+        .left-image {
+          position: absolute;
+          left: -80px;
+          top: 15px;
+          z-index: 1;
+          display: none;
+
+          @media (min-width: 992px) {
+            display: block;
+          }
+
+          img {
+            border-radius: 20px;
+            max-height: 280px;
+            opacity: 0.9;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+          }
+        }
+
+        .right-image {
+          position: absolute;
+          right: -80px;
+          top: 40px;
+          z-index: 1;
+          display: none;
+
+          @media (min-width: 992px) {
+            display: block;
+          }
+
+          img {
+            border-radius: 18px;
+            max-height: 250px;
+            opacity: 0.8;
+            filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.1));
+          }
+        }
+      }
+
+      .indicators {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+
+        .indicator {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: white;
+
+          &.inactive {
+            opacity: 0.5;
+          }
+        }
+      }
+    }
+    @media (max-width: 999px) {
+      display: none;
+    }
+  }
+}
