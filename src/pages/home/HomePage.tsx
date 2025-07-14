@@ -11,17 +11,18 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomePage.scss";
 import logo from "../../assets/images/logo-dark.png";
-import CoverflowSlider from "../../components/Home/CoverflowSlider";
-import TestimonialCards from "../../components/Home/TestimonialCards";
-import AboutUs from "../../components/Home/AboutUs";
-import Footer from "../../components/Home/Footer";
-import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import DeliveryIcon from "../../assets/images/DeliveryIcon.png";
 import PickupIcon from "../../assets/images/PickupIcon.png";
 import PreorderIcon from "../../assets/images/PreorderIcon.png";
 
 import { FaGooglePlay } from "react-icons/fa";
-import NavbarComponent from "../../components/Home/Navbar";
+import NavbarComponent from "../../components/home/Navbar";
+import CoverflowSlider from "../../components/home/CoverflowSlider";
+import WhyChooseUs from "../../components/home/WhyChooseUs";
+import TestimonialCards from "../../components/home/TestimonialCards";
+import AboutUs from "../../components/home/AboutUs";
+import Footer from "../../components/home/Footer";
+
 
 const HomePage: React.FC = () => {
   return (

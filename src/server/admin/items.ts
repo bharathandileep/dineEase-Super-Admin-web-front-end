@@ -1,4 +1,3 @@
-import { log } from "console";
 import { axiosInstance } from "../../helpers/api/apiCore";
 import { apiConfig } from "../../helpers/api/apis";
 
