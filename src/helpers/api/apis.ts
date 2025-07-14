@@ -216,6 +216,8 @@ export const apiConfig = {
     updateTag: (id: string | undefined) => `/menu/update/menu-tags/${id}`,
     deleteTag: (id: string | undefined) => `/menu/delete/menu-tags/${id}`,
     toggleTagStatus: (id: string | undefined) => `/menu/toggle/menu-tags/${id}`,
+
+    createNewMenu: "/kit-menu/items/creatd",
   },
   designation: {
     createDesignation: "/designation/designations",

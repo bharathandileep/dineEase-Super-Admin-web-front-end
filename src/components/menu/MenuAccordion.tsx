@@ -6,15 +6,11 @@ import { MenuItemCard } from "./MenuItemCard";
 interface MenuAccordionProps {
   groupedItems: Record<string, MenuItem[]>;
   categories: Category[];
-  onEditItem: (item: MenuItem) => void;
-  onDeleteItem: (id: number) => void;
 }
 
 export const MenuAccordion: React.FC<MenuAccordionProps> = ({
   groupedItems,
   categories,
-  onEditItem,
-  onDeleteItem,
 }) => {
   return (
     <div>
@@ -51,11 +47,7 @@ export const MenuAccordion: React.FC<MenuAccordionProps> = ({
                   <div className="row row-cols-1 row-cols-lg-2 row-cols-xl-3 g-3">
                     {items.map((item) => (
                       <div key={item.id} className="col">
-                        <MenuItemCard
-                          item={item}
-                          onEdit={() => onEditItem(item)}
-                          onDelete={() => onDeleteItem(item.id)}
-                        />
+                        <MenuItemCard item={item} />
                       </div>
                     ))}
                   </div>

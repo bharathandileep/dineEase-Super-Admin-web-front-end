@@ -243,6 +243,12 @@ const SUPER_ADMIN_MENU: MenuItemTypes[] = [
         url: "/apps/kitchen/requested-kitchens",
         parentKey: "apps-kitchen",
       },
+      {
+        key: "requested-menus",
+        label: "Requested Menus",
+        url: "/apps/kitchen/requested-menus",
+        parentKey: "apps-kitchen",
+      },
     ],
   },
   {

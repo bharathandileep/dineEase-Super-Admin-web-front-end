@@ -1,4 +1,5 @@
 import { SuggestionData } from "../../types/menu";
+import { Kitchen, Organisation, User } from "../../types/profile";
 
 export const mockSuggestions: SuggestionData = {
   categories: [
@@ -102,3 +103,17 @@ export const addOnCategories = [
   { id: "extras", title: "Extras" },
   { id: "addons", title: "Add-ons" },
 ];
+
+export const mockUser: User = {
+  id: "1",
+  email: "john.doe@example.com",
+  firstName: "John",
+  lastName: "Doe",
+  website: "https://johndoe.com",
+  facebook: "https://facebook.com/johndoe",
+  avatar:
+    "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+  fullName: "John Doe",
+};
+
+

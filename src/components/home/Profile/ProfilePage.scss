@@ -1,0 +1,26 @@
+.profilePage {
+  &__sidebar {
+    position: fixed;
+    height: 100%;
+    z-index: 100;
+    background-color: white;
+  }
+
+  &__mainContent {
+    max-height: calc(97vh - 56px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+.min-vh-90 {
+  min-height: 90vh;
+}
+
+.nav-item {
+  padding: 20px 25px !important;
+}

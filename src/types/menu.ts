@@ -30,6 +30,7 @@ export interface MasterFood {
   mealPeriods: string[];
 }
 export interface MenuItems {
+  kitchenId: string;
   id?: string;
   category: string;
   name: string;

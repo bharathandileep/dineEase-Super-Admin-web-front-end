@@ -124,8 +124,6 @@ const Menu = () => {
             <MenuAccordion
               groupedItems={groupedItems}
               categories={categories}
-              onEditItem={setEditingItem}
-              onDeleteItem={handleDeleteItem}
             />
           </Col>
         </Row>

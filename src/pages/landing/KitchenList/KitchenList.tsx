@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedKitchens } from "../../../server/admin/kitchens"; // Adjust path to your API service file
+import { getUserApprovedKitchens } from "../../../server/admin/kitchens";
 import { setContext } from "../../../helpers/api/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";

@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 interface ImageUploadProps {
   label: string;
   value?: string;
-  onChange: (imageUrl: string) => void;
+  onChange: (imageUrl: any) => void;
   required?: boolean;
   error?: string;
 }
@@ -20,13 +20,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [image, setImage] = useState<string>();
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        onChange(result);
+        setImage(result);
+        onChange(file);
       };
       reader.readAsDataURL(file);
     }
@@ -76,9 +78,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         <Card className="position-relative">
           <Card.Img
             variant="top"
-            src={value}
+            src={image}
             className="object-fit-contain"
-            style={{ height: "200px" }}
+            style={{ height: "200px" }} 
           />
           <Button
             variant="danger"
