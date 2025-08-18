@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { VerticalForm, FormInput } from "../../../../components";
 import { toast } from "react-toastify";
-import { createDesignation, updateDesignation } from "../../../../server/admin/designations";
+import { createDesignation, updateDesignation } from "../../../../services/admin/designations";
 
 interface DesignationModalProps {
   show: boolean;

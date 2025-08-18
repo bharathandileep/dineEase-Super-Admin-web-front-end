@@ -21,7 +21,7 @@ import { IngredientsInput } from "../../../components/menu/IngredientsInput";
 import { AddOnsDrawer } from "../../../components/menu/AddOnsDrawer";
 import PageTitle from "../../../components/PageTitle";
 import { appendToFormData } from "../../../helpers/formdataAppend";
-import { createNewMenu } from "../../../server/admin/items";
+import { createNewMenu } from "../../../services/admin/items";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 import { toast } from "react-toastify";
 

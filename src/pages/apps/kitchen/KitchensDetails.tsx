@@ -5,7 +5,7 @@ import {
   getCollaborationStatus,
   getkitchenDetails,
   toggleKitchenStatus,
-} from "../../../server/admin/kitchens";
+} from "../../../services/admin/kitchens";
 import {
   Row,
   Col,
@@ -18,12 +18,12 @@ import {
   Modal,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getMenuItemsByKitchen } from "../../../server/admin/menu";
+import { getMenuItemsByKitchen } from "../../../services/admin/menu";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 import PANPreview from "../../../components/PANPreview";
 import GSTPreview from "../../../components/GSTPreview";
 import FSSAIPreview from "../../../components/FSSAIPreview";
-import { collaborateKitchen } from "../../../server/admin/collab";
+import { collaborateKitchen } from "../../../services/admin/collab";
 import KitchenOverviewDetails from "../../../components/KitchenOverviewDetails";
 
 // Define interfaces

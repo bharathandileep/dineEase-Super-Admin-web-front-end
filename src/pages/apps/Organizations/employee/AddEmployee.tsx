@@ -4,8 +4,8 @@ import { Row, Col, Card, Button, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { createOrgEmployee, getDesignation } from "../../../../server/admin/orgemployeemanagment";
-import { getAllCountries, getCitiesByState, getDistrictsByState, getStatesByCountry } from "../../../../server/admin/addressDetails";
+import { createOrgEmployee, getDesignation } from "../../../../services/admin/orgemployeemanagment";
+import { getAllCountries, getCitiesByState, getDistrictsByState, getStatesByCountry } from "../../../../services/admin/addressDetails";
 import { FormInput } from "../../../../components";
 import FileUploader from "../../../../components/FileUploader";
 

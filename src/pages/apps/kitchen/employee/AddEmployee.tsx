@@ -4,16 +4,16 @@ import { Row, Col, Card, Button, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
+import { getDesignation } from "../../../../services/admin/orgemployeemanagment";
 import {
   getAllCountries,
   getCitiesByState,
   getDistrictsByState,
   getStatesByCountry,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 import FileUploader from "../../../../components/FileUploader";
 import { FormInput } from "../../../../components";
-import { createKitchenEmployee } from "../../../../server/admin/kitchenEmployeeManagemant";
+import { createKitchenEmployee } from "../../../../services/admin/kitchenEmployeeManagemant";
 
 const AddEmployee = () => {
   const navigate = useNavigate();

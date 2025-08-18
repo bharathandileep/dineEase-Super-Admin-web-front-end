@@ -7,7 +7,7 @@ import {
   kitchensGetAllCategories,
   kitchensGetSubcategoriesByCategory,
   updatekitchenDetails,
-} from "../../../../server/admin/kitchens";
+} from "../../../../services/admin/kitchens";
 import { toast } from "react-toastify";
 import { appendToFormData } from "../../../../helpers/formdataAppend";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,7 +17,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
   getStatesByCountry,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 import { UserCreateModal } from "../../../../components/UserCreateModal";
 import { RootState } from "../../../../redux/store";
 import { useSelector } from "react-redux";

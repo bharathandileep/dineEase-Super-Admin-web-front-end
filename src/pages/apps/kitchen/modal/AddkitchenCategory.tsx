@@ -9,7 +9,7 @@ import {
   getAllCategories,
   updateCategory,
   updateSubcategory,
-} from "../../../../server/admin/menu";
+} from "../../../../services/admin/menu";
 import { toast } from "react-toastify";
 import {
   kitchenCreateCategory,
@@ -17,7 +17,7 @@ import {
   kitchensGetAllCategories,
   kitchensUpdateCategory,
   kitchensUpdateSubcategory,
-} from "../../../../server/admin/kitchens";
+} from "../../../../services/admin/kitchens";
 
 interface AddkitchenCategory {
   show: boolean;

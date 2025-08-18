@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
-import { verifyDocument } from "../server/admin/admin";
+import { verifyDocument } from "../services/admin/admin";
 import { toast } from "react-toastify";
 import PANDetailsModal from "./PANDetailsModal";
 import { useAuthDetails } from "../hooks/useAuthDetails";

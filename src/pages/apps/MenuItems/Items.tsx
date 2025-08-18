@@ -8,11 +8,11 @@ import { toast } from "react-toastify";
 
 import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components";
-import { createItem } from "../../../server/admin/items";
+import { createItem } from "../../../services/admin/items";
 import {
   getAllCategories,
   getSubcategoriesByCategory,
-} from "../../../server/admin/menu";
+} from "../../../services/admin/menu";
 
 const AddFoodItem = () => {
   const [itemImage, setItemImage] = useState<File | null>(null);

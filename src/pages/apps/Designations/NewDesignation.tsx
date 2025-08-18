@@ -24,7 +24,7 @@ import {
   createNewDesignation,
   editRoleName,
   getDesignation,
-} from "../../../server/admin/orgemployeemanagment";
+} from "../../../services/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 import { toast } from "react-toastify";
 import {

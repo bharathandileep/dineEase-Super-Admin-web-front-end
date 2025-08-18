@@ -3,13 +3,13 @@ import { Row, Col, Button, Card, Spinner } from "react-bootstrap";
 import { Plus } from "lucide-react";
 import OrgCard from "./OrgCard";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedOrganizations } from "../../../server/admin/organization";
+import { getUserApprovedOrganizations } from "../../../services/admin/organization";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setContext } from "../../../helpers/api/utils";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { toast } from "react-toastify";
-import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
+import { getEmployeeOrg } from "../../../services/admin/orgemployeemanagment";
 import { Organisation } from "../../../types/profile";
 
 const YourOrgTab: React.FC = () => {

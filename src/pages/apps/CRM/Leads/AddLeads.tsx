@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { VerticalForm, FormInput } from "../../../../components/";
-import { getAllCategories } from "../../../../server/admin/menu";
+import { getAllCategories } from "../../../../services/admin/menu";
 
 interface AddLeadsProps {
   show: boolean;

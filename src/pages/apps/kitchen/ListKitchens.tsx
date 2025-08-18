@@ -4,7 +4,7 @@ import {
   getAllKitches,
   kitchensGetAllCategories,
   kitchensGetSubcategoriesByCategory,
-} from "../../../server/admin/kitchens";
+} from "../../../services/admin/kitchens";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";

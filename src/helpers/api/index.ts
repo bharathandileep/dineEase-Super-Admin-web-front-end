@@ -1,4 +1,4 @@
-import { AuthAdminCredentials } from "../../server/admin/auth";
+import { AuthAdminCredentials } from "../../services/admin/auth";
 import { APICore } from "./apiCore";
 
 const api = new APICore();

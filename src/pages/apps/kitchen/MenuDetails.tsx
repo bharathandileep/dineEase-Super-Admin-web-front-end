@@ -14,7 +14,7 @@ import PageTitle from "../../../components/PageTitle";
 import {
   getKitchenMenuItemDetails,
   updateKitchenMenuItemDetails,
-} from "../../../server/admin/kitchensMenuCreation";
+} from "../../../services/admin/kitchensMenuCreation";
 import { appendToFormData } from "../../../helpers/formdataAppend";
 import { toast } from "react-toastify";
 

@@ -4,7 +4,6 @@ import React from "react";
 import PageTitle from "../../../components/PageTitle";
 
 // import UsersDetails from "./List/AddUsers";
-import ListUsers from "./UsersDetails";
 import { usersInfo } from "./data";
 
 
@@ -18,7 +17,7 @@ const Users = () => {
         ]}
         title={"Users"}
       />
-      <ListUsers />
+      {/* <ListUsers /> */}
     </>
   );
 };

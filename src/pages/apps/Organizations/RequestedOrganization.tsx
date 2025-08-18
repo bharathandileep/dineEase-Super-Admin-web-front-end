@@ -3,8 +3,8 @@ import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import { getUnapprovedOrganizations } from "../../../server/admin/organization";
-import { approveOrganisation } from "../../../server/admin/admin";
+import { getUnapprovedOrganizations } from "../../../services/admin/organization";
+import { approveOrganisation } from "../../../services/admin/admin";
 
 interface UnapprovedOrganization {
   _id: string;

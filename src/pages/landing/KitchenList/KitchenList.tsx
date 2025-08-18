@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedKitchens } from "../../../server/admin/kitchens";
+import { getUserApprovedKitchens } from "../../../services/admin/kitchens";
 import { setContext } from "../../../helpers/api/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { toast } from "react-toastify";
 import { Alert, Button } from "react-bootstrap";
 

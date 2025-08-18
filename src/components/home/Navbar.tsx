@@ -14,12 +14,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FaUserCircle } from "react-icons/fa";
 import LogoutModal from "../LogoutModal";
+import profilePlaceHolder from "../../assets/images/users/profileplaceholder.png";
 
 const NavbarComponent: React.FC = () => {
   const navigate = useNavigate();
   const { userLoggedIn, user, loading } = useSelector(
     (state: RootState) => state.Auth
   );
+
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -118,13 +121,15 @@ const NavbarComponent: React.FC = () => {
                     className="d-flex align-items-center gap-2 bg-transparent border-0"
                   >
                     {user?.profile_photo ? (
-                      <Image
-                        src={user.profile_photo}
-                        roundedCircle
-                        width={32}
-                        height={32}
-                        alt="Profile"
-                      />
+                      <>
+                        <Image
+                          src={user?.profile_photo}
+                          roundedCircle
+                          width={32}
+                          height={32}
+                          alt="Profile"
+                        />
+                      </>
                     ) : (
                       <div
                         className="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white"

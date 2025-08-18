@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Accordion, Button, Tabs, Tab, Card, Row, Col } from "react-bootstrap";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { listItems } from "../../../server/admin/items";
-import { createNewkitchenMenu } from "../../../server/admin/kitchensMenuCreation";
+import { listItems } from "../../../services/admin/items";
+import { createNewkitchenMenu } from "../../../services/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import PageTitle from "../../../components/PageTitle";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import KitchenOverviewDetails from "../../../components/KitchenOverviewDetails";
-import { getkitchenDetails } from "../../../server/admin/kitchens";
+import { getkitchenDetails } from "../../../services/admin/kitchens";
 import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 import CollaborationAgreementForm from "../../../components/CollaborationAgreementForm";

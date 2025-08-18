@@ -6,7 +6,7 @@ import {
   deleteOrgEmployee,
   getAllOrgEmployees,
   toggleOrgEmployeeStatus,
-} from "../../../../server/admin/orgemployeemanagment";
+} from "../../../../services/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
 import { Pencil, Trash } from "lucide-react";
 

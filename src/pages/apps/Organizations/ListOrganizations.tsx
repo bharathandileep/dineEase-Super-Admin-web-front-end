@@ -4,7 +4,7 @@ import {
   getAllOrg,
   orgGetAllCategories,
   orgGetSubcategoriesByCategory,
-} from "../../../server/admin/organization";
+} from "../../../services/admin/organization";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";

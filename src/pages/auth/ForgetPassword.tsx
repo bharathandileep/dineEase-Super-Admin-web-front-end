@@ -20,7 +20,7 @@ import {
   generateForgotPasswordOtp, 
   verifyForgotPasswordOtp, 
   updateAdminPassword 
-} from "../../server/admin/auth";
+} from "../../services/admin/auth";
 
 interface FormData {
   email?: string;

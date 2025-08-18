@@ -4,7 +4,7 @@ import {
   deleteOrgDetails,
   getOrgDetails,
   toggleOrganizationStatus,
-} from "../../../server/admin/organization";
+} from "../../../services/admin/organization";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ import { formatDateToDDMMYY } from "../../../helpers/api/utils";
 import PANDetailsModal from "../../../components/PANDetailsModal";
 import GSTDetailsModal from "../../../components/GSTDetailsModal";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
-import { verifyDocument } from "../../../server/admin/admin";
+import { verifyDocument } from "../../../services/admin/admin";
 import GSTPreview from "../../../components/GSTPreview";
 import PANPreview from "../../../components/PANPreview";
 

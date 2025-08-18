@@ -11,7 +11,7 @@ import {
   loginUserWithMail,
   loginUserWithPhone,
   verifyPhoneOTP,
-} from "../../../server/admin/auth";
+} from "../../../services/admin/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { googleLoginUser } from "../../../redux/actions";

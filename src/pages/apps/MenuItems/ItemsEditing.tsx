@@ -7,11 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import FileUploader from "../../../components/FileUploader";
 import { FormInput } from "../../../components/";
-import { getItemById, updateItem } from "../../../server/admin/items";
+import { getItemById, updateItem } from "../../../services/admin/items";
 import {
   getAllCategories,
   getSubcategoriesByCategory,
-} from "../../../server/admin/menu";
+} from "../../../services/admin/menu";
 
 const EditFoodItem = () => {
   const { id } = useParams();

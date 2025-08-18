@@ -7,7 +7,7 @@ import {
   deleteKitchenEmployee,
   getKitchenEmployeeById,
   toggleKitchenEmployeeStatus,
-} from "../../../../server/admin/kitchenEmployeeManagemant";
+} from "../../../../services/admin/kitchenEmployeeManagemant";
 
 interface Employee {
   _id: string;

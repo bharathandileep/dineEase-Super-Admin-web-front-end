@@ -1,4 +1,4 @@
-import { listItems } from "../../server/admin/items";
+import { listItems } from "../../services/admin/items";
 
 export const apiConfig = {
   token: {

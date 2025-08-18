@@ -18,8 +18,8 @@ import {
   deleteOrgEmployee,
   getOrgEmployeeById,
   toggleOrgEmployeeStatus,
-} from "../../../../server/admin/orgemployeemanagment";
-import { toggleKitchenEmployeeStatus } from "../../../../server/admin/kitchenEmployeeManagemant";
+} from "../../../../services/admin/orgemployeemanagment";
+import { toggleKitchenEmployeeStatus } from "../../../../services/admin/kitchenEmployeeManagemant";
 
 interface Employee {
   _id: string;

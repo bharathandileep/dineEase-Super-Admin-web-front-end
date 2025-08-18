@@ -6,7 +6,7 @@ import {
   getAllCategories,
   deleteCategory,
   toggleCategoryStatus,
-} from "../../../server/admin/menu";
+} from "../../../services/admin/menu";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { listItems, deleteItem } from "../../../server/admin/items";
+import { listItems, deleteItem } from "../../../services/admin/items";
 import PageTitle from "../../../components/PageTitle";
 
 interface Item {

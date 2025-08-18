@@ -11,7 +11,7 @@ import {
   Star,
 } from "lucide-react";
 import { Kitchen } from "../../../types/profile";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { toast } from "react-toastify";

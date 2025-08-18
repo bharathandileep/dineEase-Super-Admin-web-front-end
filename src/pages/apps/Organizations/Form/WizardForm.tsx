@@ -7,7 +7,7 @@ import {
   orgGetAllCategories,
   orgGetSubcategoriesByCategory,
   updateOrgDetails,
-} from "../../../../server/admin/organization";
+} from "../../../../services/admin/organization";
 import { toast } from "react-toastify";
 import { appendToFormData } from "../../../../helpers/formdataAppend";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,7 +17,7 @@ import {
   getCitiesByState,
   getDistrictsByState,
   getStatesByCountry,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { UserCreateModal } from "../../../../components/UserCreateModal";

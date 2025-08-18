@@ -12,14 +12,14 @@ import {
   getCitiesByState,
   getDistrictsByState,
   getStatesByCountry,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 
-import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
+import { getDesignation } from "../../../../services/admin/orgemployeemanagment";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
 import {
   getKitchenEmployeeById,
   updateKitchenEmployee,
-} from "../../../../server/admin/kitchenEmployeeManagemant";
+} from "../../../../services/admin/kitchenEmployeeManagemant";
 
 const EditEmployee = () => {
   const navigate = useNavigate();

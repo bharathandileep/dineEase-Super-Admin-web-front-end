@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Badge, Stack } from "react-bootstrap";
-import { createNewTags, updateTag } from "../../../../server/admin/admin";
+import { createNewTags, updateTag } from "../../../../services/admin/admin";
 import { toast } from "react-toastify";
 
 interface TagModalProps {

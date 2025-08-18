@@ -5,14 +5,14 @@ import { toast } from "react-toastify";
 import {
   getCollaborationById,
   getCollaborationDetails,
-} from "../../../server/admin/collab"; // Frontend controller
+} from "../../../services/admin/collab"; // Frontend controller
 import { MapPin, Building, Calendar } from "lucide-react";
 import "./Colloborations.scss";
 import { Tabs, Tab } from "react-bootstrap";
-import { getkitchenDetails } from "../../../server/admin/kitchens";
+import { getkitchenDetails } from "../../../services/admin/kitchens";
 import { IKitchenDetails } from "../Organizations/KitchenView";
-import { getOrgDetails } from "../../../server/admin/organization";
-import { getMenuItemsByKitchen } from "../../../server/admin/menu";
+import { getOrgDetails } from "../../../services/admin/organization";
+import { getMenuItemsByKitchen } from "../../../services/admin/menu";
 import {
   formatDateToDDMMYY,
 } from "../../../helpers/api/utils";

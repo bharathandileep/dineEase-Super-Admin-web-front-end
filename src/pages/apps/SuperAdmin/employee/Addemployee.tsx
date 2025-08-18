@@ -7,16 +7,16 @@ import { toast } from "react-toastify";
 import FileUploader from "../../../../components/FileUploader";
 import { FormInput } from "../../../../components";
 
-import { getAllDesignations } from "../../../../server/admin/designations";
+import { getAllDesignations } from "../../../../services/admin/designations";
 import {
   getAllCountries,
   getStatesByCountry,
   getCitiesByState,
   getDistrictsByState,
-} from "../../../../server/admin/addressDetails";
-import { createEmployee } from "../../../../server/admin/employeemanagment";
+} from "../../../../services/admin/addressDetails";
+import { createEmployee } from "../../../../services/admin/employeemanagment";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
+import { getDesignation } from "../../../../services/admin/orgemployeemanagment";
 
 const AddEmployee = () => {
   const navigate = useNavigate();

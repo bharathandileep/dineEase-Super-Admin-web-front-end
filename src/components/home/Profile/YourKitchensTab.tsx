@@ -3,12 +3,12 @@ import { Row, Col, Button, Card, Spinner } from "react-bootstrap";
 import { Plus } from "lucide-react";
 import KitchenCard from "./KitchenCard";
 import { Kitchen } from "../../../types/profile";
-import { getUserApprovedKitchens } from "../../../server/admin/kitchens";
+import { getUserApprovedKitchens } from "../../../services/admin/kitchens";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { setContext } from "../../../helpers/api/utils";
 
 const YourKitchensTab: React.FC = () => {

@@ -10,12 +10,12 @@ import {
   getCitiesByState,
   getDistrictsByState,
   getStatesByCountry,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 import {
   getDesignation,
   getOrgEmployeeById,
   updateOrgEmployee,
-} from "../../../../server/admin/orgemployeemanagment";
+} from "../../../../services/admin/orgemployeemanagment";
 import { FormInput } from "../../../../components";
 import FileUploader from "../../../../components/FileUploader";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";

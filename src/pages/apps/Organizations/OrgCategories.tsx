@@ -6,7 +6,7 @@ import {
   orgDeleteCategory,
   orgGetAllCategories,
   orgToggleCategoryStatus,
-} from "../../../server/admin/organization";
+} from "../../../services/admin/organization";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";

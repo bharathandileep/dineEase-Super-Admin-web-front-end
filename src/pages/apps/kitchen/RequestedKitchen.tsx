@@ -3,8 +3,8 @@ import { Button, Card, Col, Row, Spinner, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { toast } from "react-toastify";
-import { getUnapprovedKitchens } from "../../../server/admin/kitchens";
-import { approveKitchen } from "../../../server/admin/admin";
+import { getUnapprovedKitchens } from "../../../services/admin/kitchens";
+import { approveKitchen } from "../../../services/admin/admin";
 
 interface UnapprovedKitchen {
   _id: string;

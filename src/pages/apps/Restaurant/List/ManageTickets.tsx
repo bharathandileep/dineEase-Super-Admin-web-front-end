@@ -9,7 +9,7 @@ import Table from "../../../../components/Table";
 // dummy data
 import { TicketDetailsItems } from "./data";
 // import AddCompanyModal from "../../Company/AddCompannyModal";
-import AddRestaurantModal from "../AddRestaurantModal";
+
 
 /* id column render */
 const IdColumn = ({ row }: { row: any }) => {

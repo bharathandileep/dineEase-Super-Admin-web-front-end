@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Organisation } from "../../../types/profile";
 import { formatDateToDDMMYY, setContext } from "../../../helpers/api/utils";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";

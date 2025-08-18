@@ -11,7 +11,7 @@ import {
   orgCreateSubcategory,
   orgUpdateCategory,
   orgUpdateSubcategory,
-} from "../../../../server/admin/organization";
+} from "../../../../services/admin/organization";
 
 interface AddkitchenCategory {
   show: boolean;

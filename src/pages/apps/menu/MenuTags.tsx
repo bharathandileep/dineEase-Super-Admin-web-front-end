@@ -6,7 +6,7 @@ import {
   getAllCategories,
   deleteCategory,
   toggleCategoryStatus,
-} from "../../../server/admin/menu";
+} from "../../../services/admin/menu";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";
@@ -15,7 +15,7 @@ import {
   deleteTag,
   getAllTags,
   toggleTagStatus,
-} from "../../../server/admin/admin";
+} from "../../../services/admin/admin";
 
 function MenuTags() {
   const navigate = useNavigate();

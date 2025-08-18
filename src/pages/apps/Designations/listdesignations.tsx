@@ -9,7 +9,7 @@ import {
   updateDesignation,
   deleteDesignation,
   toggleDesignationStatus,
-} from "../../../server/admin/designations";
+} from "../../../services/admin/designations";
 
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";

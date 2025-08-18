@@ -9,7 +9,7 @@ import {
   getAllCategoriesByStatus,
   updateCategory,
   updateSubcategory,
-} from "../../../../server/admin/menu";
+} from "../../../../services/admin/menu";
 import { toast } from "react-toastify";
 
 interface AddCategory {

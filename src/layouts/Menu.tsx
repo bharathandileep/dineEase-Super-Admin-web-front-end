@@ -6,7 +6,7 @@ import FeatherIcon from "feather-icons-react";
 import { findAllParent, findMenuItem } from "../helpers/menu";
 import { MenuItemTypes } from "../constants/menu";
 import { useAuthDetails } from "../hooks/useAuthDetails";
-import { getRoleAndAccessById } from "../server/admin/auth";
+import { getRoleAndAccessById } from "../services/admin/auth";
 
 interface SubMenus {
   item: MenuItemTypes;

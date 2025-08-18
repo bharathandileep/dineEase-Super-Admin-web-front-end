@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { listCollaboratedKitchens } from "../../../server/admin/collab";
+import { listCollaboratedKitchens } from "../../../services/admin/collab";
 import PageTitle from "../../../components/PageTitle";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 

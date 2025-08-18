@@ -4,7 +4,7 @@ import { Card, Button, Row, Col, Spinner, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { Pencil, Trash, ToggleLeft, ToggleRight } from "lucide-react";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { deleteKitchenEmployee, getAllKitchenEmployees } from "../../../../server/admin/kitchenEmployeeManagemant";
+import { deleteKitchenEmployee, getAllKitchenEmployees } from "../../../../services/admin/kitchenEmployeeManagemant";
 
 
 

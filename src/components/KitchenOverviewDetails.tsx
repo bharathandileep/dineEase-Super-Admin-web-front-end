@@ -15,10 +15,10 @@ import {
   deletekitchenDetails,
   getCollaborationStatus,
   toggleKitchenStatus,
-} from "../server/admin/kitchens";
+} from "../services/admin/kitchens";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../hooks/useAuthDetails";
-import { collaborateKitchen } from "../server/admin/collab";
+import { collaborateKitchen } from "../services/admin/collab";
 
 function KitchenOverviewDetails({ kitchenData }: any) {
   const { user, context, isContext, isSuperAdmin } = useAuthDetails();

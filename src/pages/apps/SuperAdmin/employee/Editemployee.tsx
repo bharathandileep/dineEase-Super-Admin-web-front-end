@@ -11,16 +11,16 @@ import { FormInput } from "../../../../components";
 import {
   getEmployeeById,
   updateEmployee,
-} from "../../../../server/admin/employeemanagment";
-import { getAllDesignations } from "../../../../server/admin/designations";
+} from "../../../../services/admin/employeemanagment";
+import { getAllDesignations } from "../../../../services/admin/designations";
 import {
   getAllCountries,
   getStatesByCountry,
   getCitiesByState,
   getDistrictsByState,
-} from "../../../../server/admin/addressDetails";
+} from "../../../../services/admin/addressDetails";
 import { useAuthDetails } from "../../../../hooks/useAuthDetails";
-import { getDesignation } from "../../../../server/admin/orgemployeemanagment";
+import { getDesignation } from "../../../../services/admin/orgemployeemanagment";
 
 const EditEmployee = () => {
   const navigate = useNavigate();

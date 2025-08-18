@@ -6,7 +6,7 @@ import {
   kitchensDeleteSubcategory,
   kitchensGetSubcategories,
   kitchensToggleSubcategoryStatus,
-} from "../../../server/admin/kitchens";
+} from "../../../services/admin/kitchens";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import Table from "../../../components/Table";

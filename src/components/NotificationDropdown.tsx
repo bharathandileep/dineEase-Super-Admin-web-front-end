@@ -5,7 +5,7 @@ import SimpleBar from "simplebar-react";
 import classNames from "classnames";
 
 import { NotificationItem } from "../layouts/Topbar";
-import { getAllNotifications } from "../server/admin/notification";
+import { getAllNotifications } from "../services/admin/notification";
 import { useAuthDetails } from "../hooks/useAuthDetails";
 
 const notificationContainerStyle = {

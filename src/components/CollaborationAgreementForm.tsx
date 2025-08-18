@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FileText, Printer } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import jsPDF from "jspdf";
-import { requestCollaboration } from "../server/admin/collab";
+import { requestCollaboration } from "../services/admin/collab";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../hooks/useAuthDetails";
 

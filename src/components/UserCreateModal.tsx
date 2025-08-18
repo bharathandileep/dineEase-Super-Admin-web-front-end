@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import FormInput from "./FormInput";
 import VerticalForm from "./VerticalForm";
-import { checkUserIspresent, createNewUser } from "../server/admin/auth";
+import { checkUserIspresent, createNewUser } from "../services/admin/auth";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 

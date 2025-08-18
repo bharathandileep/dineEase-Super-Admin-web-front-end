@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { googleLoginUser } from "../../redux/actions";
 import { useNavigate } from "react-router-dom";
+import { loginUserWithMail, loginUserWithPhone } from "../../services/admin/auth";
 interface GoogleSignInButtonProps {
   loading: boolean;
   onClick: () => void;
@@ -154,7 +155,8 @@ const NewLogin = () => {
   const makeAPICall = async (type: string) => {
     setShowLoader(true);
     try {
-      // Replace with actual API calls
+      // await loginUserWithMail({ email: identifier });
+      // await loginUserWithPhone({ phone: identifier });
       const response = { status: true, message: "OTP sent to your email" };
       if (response.status) {
         setShowOTP(true);
@@ -392,7 +394,7 @@ const NewLogin = () => {
   };
 
   return (
-    <div className="new-login-container p-4">
+    <div className="new-login-container bg-white p-4">
       <Row className="h-100 g-0">
         <Col lg={5} className="left-column">
           <div className="logo-container">

@@ -250,7 +250,7 @@ const SocialFeed = React.lazy(() => import("../pages/apps/SocialFeed/"));
 // settings
 const Settings = React.lazy(() => import("../pages/apps/Settings"));
 // Orders
-const FoodOrders = React.lazy(() => import("../pages/apps/orders/Orders"));
+// const FoodOrders = React.lazy(() => import("../pages/apps/orders/Orders"));
 
 // food
 const FoodDetails = React.lazy(() => import("../pages/apps/FoodMenu/Products"));
@@ -268,7 +268,7 @@ const TotalRestaurants = React.lazy(
   () => import("../pages/apps/Company/TotalRstaurant")
 );
 // - Restaurants
-const Restaurants = React.lazy(() => import("../pages/apps/Restaurant"));
+// const Restaurants = React.lazy(() => import("../pages/apps/Restaurant"));
 // const List = React.lazy(() => import("../pages/apps/Restaurant/List"))
 const RestaurantDetails = React.lazy(
   () => import("../pages/apps/Restaurant/StaffDetails")
@@ -281,7 +281,7 @@ const Users = React.lazy(() => import("../pages/apps/Users"));
 const UsersProfile = React.lazy(() => import("../pages/apps/Users/Profile"));
 
 // - Customers
-const Customer = React.lazy(() => import("../pages/apps/Customers/List/"));
+// const Customer = React.lazy(() => import("../pages/apps/Customers/List/"));
 const CustomerContactsProfile = React.lazy(
   () => import("../pages/apps/Customers/Profile/")
 );
@@ -1020,21 +1020,21 @@ const foodCheckoutAppRoute = {
   icon: "users",
   element: <CheckoutDetails />,
 };
-const ordersAppRoutes = {
-  path: "/apps/orders",
-  name: "Orders",
-  element: <FoodOrders />,
-  route: PrivateRoute,
-};
+// const ordersAppRoutes = {
+//   path: "/apps/orders",
+//   name: "Orders",
+//   element: <FoodOrders />,
+//   route: PrivateRoute,
+// };
 // Customers Details
-const customerAppRoute = {
-  path: "/apps/customer",
-  name: "customers",
-  route: PrivateRoute,
-  roles: ["Admin", "Employee"],
-  icon: "users",
-  element: <Customer />,
-};
+// const customerAppRoute = {
+//   path: "/apps/customer",
+//   name: "customers",
+//   route: PrivateRoute,
+//   roles: ["Admin", "Employee"],
+//   icon: "users",
+//   element: <Customer />,
+// };
 const CustomerProfileAppRoutes = {
   path: "/apps/customer/profile",
   name: "profile",
@@ -1061,14 +1061,14 @@ const userProfileAppRoutes = {
   element: <UsersProfile />,
 };
 // RestaurantDetails
-const restaurantsAppRoutes = {
-  path: "/apps/restaurants",
-  name: "restaurants",
-  route: PrivateRoute,
-  roles: ["Admin", "Employee"],
-  icon: "restaurant",
-  element: <Restaurants />,
-};
+// const restaurantsAppRoutes = {
+//   path: "/apps/restaurants",
+//   name: "restaurants",
+//   route: PrivateRoute,
+//   roles: ["Admin", "Employee"],
+//   icon: "restaurant",
+//   element: <Restaurants />,
+// };
 const totalCompanyAppRoute = {
   path: "/apps/restaurants/company",
   name: "totalCompany",
@@ -1841,7 +1841,7 @@ const appRoutes = [
   ticketsRoutes,
   fileAppRoutes,
   restaurantDetailsAppRoute,
-  restaurantsAppRoutes,
+  // restaurantsAppRoutes,
   usersAppRoutes,
   companyDetailsAppRoutes,
   ListAppRouts,
@@ -1849,11 +1849,11 @@ const appRoutes = [
   totalCompanyAppRoute,
   userProfileAppRoutes,
   sttingsAppRoutes,
-  customerAppRoute,
+  // customerAppRoute,
   foodAppRoutes,
   foodCartAppRoute,
   foodCheckoutAppRoute,
-  ordersAppRoutes,
+  // ordersAppRoutes,
   CustomerProfileAppRoutes,
 ];
 

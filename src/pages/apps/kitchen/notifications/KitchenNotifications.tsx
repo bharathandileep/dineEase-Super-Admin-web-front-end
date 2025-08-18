@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllNotifications } from "../../../../server/admin/notification";
+import { getAllNotifications } from "../../../../services/admin/notification";
 
 
 interface NotificationItem {

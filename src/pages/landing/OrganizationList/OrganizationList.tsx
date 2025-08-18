@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import DashboardNavbar from "../Dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
-import { getUserApprovedOrganizations } from "../../../server/admin/organization";
+import { getUserApprovedOrganizations } from "../../../services/admin/organization";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { getEmployeeOrg } from "../../../server/admin/orgemployeemanagment";
+import { getEmployeeOrg } from "../../../services/admin/orgemployeemanagment";
 import { setContext } from "../../../helpers/api/utils";
-import { getUserInfo } from "../../../server/admin/auth";
+import { getUserInfo } from "../../../services/admin/auth";
 import { toast } from "react-toastify";
 import { Alert, Button } from "react-bootstrap";
 

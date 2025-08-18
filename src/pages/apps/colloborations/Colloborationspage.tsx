@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllCollaborations } from "../../../server/admin/collab";
+import { getAllCollaborations } from "../../../services/admin/collab";
 import PageTitle from "../../../components/PageTitle";
 import "./Colloborations.scss";
 import { Card, Row, Col, Spinner, Form } from "react-bootstrap";

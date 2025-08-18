@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Card, Button } from "react-bootstrap";
 import FSSAILicenseModal from "./FSSAILicenseModal";
-import { verifyDocument } from "../server/admin/admin";
+import { verifyDocument } from "../services/admin/admin";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../hooks/useAuthDetails";
 

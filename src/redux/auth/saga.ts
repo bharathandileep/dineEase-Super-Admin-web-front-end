@@ -17,9 +17,9 @@ import { authApiResponseSuccess, authApiResponseError } from "./actions";
 
 // constants
 import { AuthActionTypes } from "./constants";
-import { googleAuth } from "../../server/admin/auth";
+import { googleAuth } from "../../services/admin/auth";
 import jwtDecode from "jwt-decode";
-import { authAccessCredentials } from "../../server/admin/login";
+import { authAccessCredentials } from "../../services/admin/login";
 import { setContext } from "../../helpers/api/utils";
 
 interface UserData {

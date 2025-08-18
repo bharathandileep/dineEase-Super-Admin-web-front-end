@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import {
   getKitchenMenus,
   removeKitchenMenus,
-} from "../../../server/admin/kitchensMenuCreation";
+} from "../../../services/admin/kitchensMenuCreation";
 import { toast } from "react-toastify";
 import { useAuthDetails } from "../../../hooks/useAuthDetails";
 import { Pencil, Trash } from "lucide-react";

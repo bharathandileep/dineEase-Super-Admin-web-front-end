@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Row, Col, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { deleteItem, getItemById, changeItemStatus } from "../../../server/admin/items";
+import { deleteItem, getItemById, changeItemStatus } from "../../../services/admin/items";
 import { Pencil, Trash } from "lucide-react"; // Icons
 
 interface Item {
